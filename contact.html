@@ -54,71 +54,95 @@
       </div>
 
       <!-- Direct Contact Channels Grid -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.75rem; margin-top: var(--space-xl);">
+      <div class="contact-channels-grid">
         
         <!-- WhatsApp Direct Card -->
-        <div style="background: var(--white); border-radius: var(--radius-lg); border: 2px dashed var(--rose); padding: 2rem; text-align: center; box-shadow: var(--shadow-card);">
-          <div style="width: 64px; height: 64px; border-radius: 50%; background: #E8F7ED; color: #1E6B39; font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto;">
-            💬
+        <article class="contact-channel-card card-wa">
+          <div>
+            <div class="contact-icon-bubble whatsapp">💬</div>
+            <span class="contact-channel-badge wa-badge">⚡ Instant Replies</span>
+            <h2 class="contact-card-title">WhatsApp Chat</h2>
+            <p class="contact-card-desc">
+              The fastest way to reach Bhumika for instant replies, order updates, and sharing reference photos.
+            </p>
           </div>
-          <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">WhatsApp Chat</h2>
-          <p style="font-size: 0.9rem; color: #73615A; margin-bottom: 1.5rem;">
-            The fastest way to reach Bhumika for instant replies, order updates, and sharing reference photos.
-          </p>
-          <a id="contact-wa-btn" href="https://wa.me/919509966512?text=Hi%20Bhumika!%20I'm%20contacting%20you%20from%20the%20Swan%20Studio%20website." target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width: 100%;">
-            Open WhatsApp (<span id="contact-wa-number">+91 9509966512</span>)
-          </a>
-        </div>
+          <div class="contact-action-wrapper">
+            <a id="contact-wa-btn" href="https://wa.me/919509966512?text=Hi%20Bhumika!%20I'm%20contacting%20you%20from%20the%20Swan%20Studio%20website." target="_blank" rel="noopener noreferrer" class="contact-btn contact-btn-primary">
+              <span>Chat on WhatsApp</span> <span>&rarr;</span>
+            </a>
+            <a href="https://wa.me/919509966512" class="contact-meta-info" id="contact-wa-sublink" target="_blank" rel="noopener noreferrer">
+              <span>📞</span> <strong id="contact-wa-number">+91 9509966512</strong> &bull; Direct Line
+            </a>
+          </div>
+        </article>
 
         <!-- Email Support Card -->
-        <div style="background: var(--white); border-radius: var(--radius-lg); border: 2px dashed var(--rose); padding: 2rem; text-align: center; box-shadow: var(--shadow-card);">
-          <div style="width: 64px; height: 64px; border-radius: 50%; background: #EFF6FF; color: #1D4ED8; font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto;">
-            ✉️
+        <article class="contact-channel-card card-email">
+          <div>
+            <div class="contact-icon-bubble email">✉️</div>
+            <span class="contact-channel-badge email-badge">💌 Order Support</span>
+            <h2 class="contact-card-title">Email Support</h2>
+            <p class="contact-card-desc">
+              Have order inquiries, need invoice details, or want to discuss custom commissions via email?
+            </p>
           </div>
-          <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Email Support</h2>
-          <p style="font-size: 0.9rem; color: #73615A; margin-bottom: 1.5rem;">
-            Have order inquiries, need invoice details, or want to discuss custom commissions via email?
-          </p>
-          <a id="contact-email-btn" href="mailto:swanstudio2604@gmail.com" class="btn btn-secondary" style="width: 100%; word-break: break-all; font-size: 0.9rem;">
-            ✉️ <span id="contact-email-text">swanstudio2604@gmail.com</span>
-          </a>
-        </div>
+          <div class="contact-action-wrapper">
+            <a id="contact-email-btn" href="mailto:swanstudio2604@gmail.com" class="contact-btn contact-btn-outline">
+              <span>Send an Email</span> <span>&rarr;</span>
+            </a>
+            <a href="mailto:swanstudio2604@gmail.com" class="contact-meta-info clickable" id="contact-email-link">
+              <span>✉️</span> <strong id="contact-email-text">swanstudio2604@gmail.com</strong>
+            </a>
+          </div>
+        </article>
 
         <!-- Custom Order Card -->
-        <div style="background: var(--white); border-radius: var(--radius-lg); border: 1.5px dashed var(--rose); padding: 2rem; text-align: center; box-shadow: var(--shadow-card);">
-          <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(232, 183, 192, 0.3); color: var(--rose-text); font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto;">
-            ✨
+        <article class="contact-channel-card card-custom">
+          <div>
+            <div class="contact-icon-bubble custom">✨</div>
+            <span class="contact-channel-badge custom-badge">🎨 Bespoke Atelier</span>
+            <h2 class="contact-card-title">Custom Order Inquiry</h2>
+            <p class="contact-card-desc">
+              Looking for customized bouquets, specific yarn colors, or personalized initials?
+            </p>
           </div>
-          <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Custom Order Inquiry</h2>
-          <p style="font-size: 0.9rem; color: #73615A; margin-bottom: 1.5rem;">
-            Looking for customized bouquets, specific yarn colors, or personalized initials?
-          </p>
-          <a href="custom-order.html" class="btn btn-secondary" style="width: 100%;">
-            Submit Custom Order Details
-          </a>
-        </div>
+          <div class="contact-action-wrapper">
+            <a href="custom-order.html" class="contact-btn contact-btn-outline">
+              <span>Submit Custom Details</span> <span>&rarr;</span>
+            </a>
+            <span class="contact-meta-info">
+              <span>🧵</span> Handcrafted with milk cotton in Jaipur
+            </span>
+          </div>
+        </article>
 
         <!-- Instagram Community & QR Card -->
-        <div style="background: var(--white); border-radius: var(--radius-lg); border: 1.5px dashed var(--rose); padding: 2rem; text-align: center; box-shadow: var(--shadow-card); display: flex; flex-direction: column; align-items: center;">
-          <div style="width: 64px; height: 64px; border-radius: 50%; background: #FFF0F2; color: var(--rose-text); font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem auto;">
-            📷
+        <article class="contact-channel-card card-insta">
+          <div>
+            <div class="contact-icon-bubble instagram">📷</div>
+            <span class="contact-channel-badge insta-badge">🌸 Behind The Scenes</span>
+            <h2 class="contact-card-title">Instagram Community</h2>
+            <p class="contact-card-desc">
+              Follow stitch-by-stitch reels, yarn hauls, and bespoke WIPs on Instagram.
+            </p>
+            <div style="width: 105px; aspect-ratio: 1080 / 1574; border-radius: 12px; overflow: hidden; border: 1.5px solid rgba(199, 131, 145, 0.35); margin: 0 auto 0.85rem auto; padding: 3px; background: #fff; box-shadow: 0 4px 12px rgba(199, 131, 145, 0.12);">
+              <img src="assets/images/instagram-qr.jpeg" alt="Instagram QR" style="width: 100%; height: 100%; object-fit: contain; border-radius: 9px; display: block;">
+            </div>
           </div>
-          <h2 style="font-size: 1.5rem; margin-bottom: 0.35rem;">Instagram Community</h2>
-          <p style="font-size: 0.82rem; color: #73615A; margin-bottom: 0.85rem;">
-            @swan_handcrafted_studio.3568
-          </p>
-          <div style="width: 120px; aspect-ratio: 1080 / 1574; border-radius: 14px; overflow: hidden; border: 1.5px solid rgba(199, 131, 145, 0.4); margin-bottom: 1rem; padding: 4px; background: #fff; box-shadow: 0 4px 12px rgba(199, 131, 145, 0.12);">
-            <img src="assets/images/instagram-qr.jpeg" alt="Instagram QR" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px; display: block;">
+          <div class="contact-action-wrapper">
+            <a href="https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==" target="_blank" rel="noopener noreferrer" class="contact-btn contact-btn-primary">
+              <span>Follow on Instagram</span> <span>&rarr;</span>
+            </a>
+            <span class="contact-meta-info">
+              <span>📸</span> @swan_handcrafted_studio.3568
+            </span>
           </div>
-          <a href="https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width: 100%; font-size: 0.88rem;">
-            Follow on Instagram &rarr;
-          </a>
-        </div>
+        </article>
 
       </div>
 
       <!-- Honest Transparency Note (PRD Section 7.6) -->
-      <div id="contact-policy-card" style="margin-top: var(--space-2xl); background: #FFF4F6; border-radius: var(--radius-md); border-left: 4px solid var(--rose); padding: 1.25rem; font-size: 0.88rem; color: #73615A;">
+      <div id="contact-policy-card" class="contact-direct-policy">
         <strong style="color: var(--rose-text);">Direct Connection Policy:</strong> Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email (<a href="mailto:swanstudio2604@gmail.com" id="policy-email-link" style="color: var(--rose-text); font-weight: 600; text-decoration: underline;">swanstudio2604@gmail.com</a>) so you talk straight with Bhumika with no middlemen.
       </div>
 
@@ -139,11 +163,16 @@
         const waNum = s.whatsapp || (window.SITE && window.SITE.whatsapp) || '9509966512';
         const cleanWa = waNum.replace(/[^0-9]/g, '');
         const waBtn = document.getElementById('contact-wa-btn');
+        const waSublink = document.getElementById('contact-wa-sublink');
         const waNumSpan = document.getElementById('contact-wa-number');
 
         if (waBtn && cleanWa) {
           const defaultMsg = encodeURIComponent("Hi Bhumika! I'm contacting you from the Swan Studio website.");
           waBtn.href = `https://wa.me/91${cleanWa}?text=${defaultMsg}`;
+        }
+        if (waSublink && cleanWa) {
+          const defaultMsg = encodeURIComponent("Hi Bhumika! I'm contacting you from the Swan Studio website.");
+          waSublink.href = `https://wa.me/91${cleanWa}?text=${defaultMsg}`;
         }
         if (waNumSpan) {
           waNumSpan.textContent = `+91 ${cleanWa}`;
@@ -151,10 +180,14 @@
 
         const email = s.email || (window.SITE && window.SITE.email) || 'swanstudio2604@gmail.com';
         const emailBtn = document.getElementById('contact-email-btn');
+        const emailLink = document.getElementById('contact-email-link');
         const emailSpan = document.getElementById('contact-email-text');
         const policyEmailLink = document.getElementById('policy-email-link');
         if (emailBtn && email) {
           emailBtn.href = `mailto:${email}`;
+        }
+        if (emailLink && email) {
+          emailLink.href = `mailto:${email}`;
         }
         if (emailSpan && email) {
           emailSpan.textContent = email;
