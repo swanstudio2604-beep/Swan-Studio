@@ -143,12 +143,12 @@
             </label>
             <div class="photo-upload-wrap">
               <label for="custom-ref-photo" class="photo-upload-trigger" id="custom-ref-trigger">
-                <span class="upload-icon-circle">🎨</span>
+                <span class="upload-icon-circle" aria-label="Upload Photo">📷</span>
                 <div class="upload-text-group">
                   <span class="upload-title">Upload Photo</span>
                   <span class="upload-subtitle" id="custom-ref-file-label">Click to browse or drop reference photo here</span>
                 </div>
-                <span class="upload-badge-action" id="custom-ref-btn-text">Upload Photo</span>
+                <span class="upload-badge-action" id="custom-ref-btn-text">📷 Upload Photo</span>
               </label>
               <input type="file" id="custom-ref-photo" accept="image/*" class="photo-upload-input">
             </div>
@@ -257,13 +257,13 @@
             labelEl.textContent = `✓ ${filename} (${sizeKb} KB)`;
             labelEl.classList.add('has-file');
           }
-          if (btnTextEl) btnTextEl.textContent = 'Change Photo';
+          if (btnTextEl) btnTextEl.textContent = '📷 Change Photo';
         } else {
           if (labelEl) {
             labelEl.textContent = 'Click to browse or drop reference photo here';
             labelEl.classList.remove('has-file');
           }
-          if (btnTextEl) btnTextEl.textContent = 'Upload Photo';
+          if (btnTextEl) btnTextEl.textContent = '📷 Upload Photo';
         }
       }
 

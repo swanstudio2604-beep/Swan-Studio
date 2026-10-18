@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="../css/admin.css?v=m2">
+  <link rel="stylesheet" href="../css/admin.css?v=m3">
 </head>
 <body>
 
@@ -150,7 +150,7 @@
             <span style="font-size: 0.75rem; color: #8A7670;">JPG, PNG, WebP supported</span>
           </label>
           
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start;">
+          <div class="upload-options-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start;">
             <div>
               <label style="display: block; font-size: 0.8rem; color: #73615A; margin-bottom: 0.35rem; font-weight: 500;">
                 📁 Option 1: Upload photo from computer/phone
@@ -162,7 +162,7 @@
                     <span class="upload-title">Upload Photo</span>
                     <span class="upload-subtitle" id="prod-file-label">Click to browse or drop photo here</span>
                   </div>
-                  <span class="upload-badge-action" id="prod-upload-btn-text">Upload Photo</span>
+                  <span class="upload-badge-action" id="prod-upload-btn-text">📷 Upload Photo</span>
                 </label>
                 <input type="file" id="prod-image-file" accept="image/*" class="photo-upload-input">
               </div>
@@ -612,13 +612,13 @@
             labelEl.textContent = `✓ ${filename} (${sizeKb} KB)`;
             labelEl.classList.add('has-file');
           }
-          if (btnTextEl) btnTextEl.textContent = 'Change Photo';
+          if (btnTextEl) btnTextEl.textContent = '📷 Change Photo';
         } else {
           if (labelEl) {
             labelEl.textContent = 'Click to browse or drop photo here';
             labelEl.classList.remove('has-file');
           }
-          if (btnTextEl) btnTextEl.textContent = 'Upload Photo';
+          if (btnTextEl) btnTextEl.textContent = '📷 Upload Photo';
         }
       }
 

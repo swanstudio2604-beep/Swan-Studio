@@ -707,6 +707,86 @@ body {
     gap: 0.75rem !important;
   }
 
+  /* Photo Upload Trigger & Upload Zones on Mobile */
+  .upload-zone {
+    padding: 1rem !important;
+  }
+
+  .upload-zone > div[style*="grid-template-columns"],
+  .upload-zone div[style*="grid-template-columns"],
+  .upload-options-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+  }
+
+  .photo-upload-trigger {
+    flex-wrap: wrap !important;
+    padding: 0.85rem !important;
+    gap: 0.75rem !important;
+    background: #FFFFFF !important;
+    border: 2px dashed rgba(199, 131, 145, 0.85) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .photo-upload-trigger .upload-icon-circle {
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    font-size: 1.35rem !important;
+    border: 2px solid var(--rose) !important;
+    box-shadow: 0 2px 8px rgba(199, 131, 145, 0.25) !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .photo-upload-trigger .upload-text-group {
+    flex: 1 1 140px !important;
+    min-width: 130px !important;
+  }
+
+  .photo-upload-trigger .upload-title {
+    font-size: 0.92rem !important;
+    font-weight: 600 !important;
+    color: var(--cocoa) !important;
+  }
+
+  .photo-upload-trigger .upload-subtitle {
+    font-size: 0.76rem !important;
+    color: #8A7670 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+
+  .photo-upload-trigger .upload-badge-action {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 0.65rem 1rem !important;
+    font-size: 0.85rem !important;
+    margin-top: 0.25rem !important;
+    box-sizing: border-box !important;
+    border-radius: 999px !important;
+    box-shadow: 0 3px 8px rgba(199, 131, 145, 0.3) !important;
+  }
+
+  .preview-box {
+    flex-wrap: wrap !important;
+    gap: 0.85rem !important;
+    padding: 0.85rem !important;
+  }
+
+  .preview-box .btn {
+    width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
   .modal-header h2,
   .modal-header h3 {
     font-size: 1.3rem !important;
@@ -1045,24 +1125,32 @@ body {
   opacity: 0;
 }
 
+.photo-upload-wrap {
+  width: 100%;
+  position: relative;
+}
+
 .photo-upload-trigger {
   display: flex;
   align-items: center;
   gap: 0.85rem;
   background: #FFFDFB;
-  border: 1.5px dashed rgba(199, 131, 145, 0.65);
+  border: 1.5px dashed rgba(199, 131, 145, 0.75);
   border-radius: var(--radius-sm);
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
 }
 
 .photo-upload-trigger:hover,
 .photo-upload-trigger.dragover {
   background: #FFF7F8;
   border-color: var(--rose);
-  box-shadow: 0 4px 14px rgba(199, 131, 145, 0.18);
+  box-shadow: 0 4px 14px rgba(199, 131, 145, 0.22);
   transform: translateY(-1px);
 }
 
@@ -1071,22 +1159,29 @@ body {
 }
 
 .upload-icon-circle {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #FFF0F2;
-  border: 1px solid rgba(199, 131, 145, 0.3);
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  max-height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #FFF0F2 0%, #FFE4E8 100%);
+  border: 2px solid var(--rose);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
+  font-size: 1.35rem;
+  line-height: 1;
   flex-shrink: 0;
-  transition: transform 0.25s ease, background 0.25s ease;
+  box-shadow: 0 2px 8px rgba(199, 131, 145, 0.25);
+  transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
 }
 
 .photo-upload-trigger:hover .upload-icon-circle {
   transform: scale(1.08) rotate(-4deg);
-  background: #FFE5E9;
+  background: linear-gradient(135deg, #FFE4E8 0%, #FFD3DB 100%);
+  box-shadow: 0 4px 12px rgba(199, 131, 145, 0.38);
 }
 
 .upload-text-group {
@@ -1097,14 +1192,14 @@ body {
 }
 
 .upload-title {
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: var(--cocoa);
   line-height: 1.25;
 }
 
 .upload-subtitle {
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   color: #8A7670;
   white-space: nowrap;
   overflow: hidden;
@@ -1118,11 +1213,11 @@ body {
 }
 
 .upload-badge-action {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #FFFFFF !important;
   background: linear-gradient(135deg, var(--rose) 0%, #B86F7E 100%);
-  padding: 0.4rem 0.9rem;
+  padding: 0.45rem 0.95rem;
   border-radius: 20px;
   box-shadow: 0 2px 6px rgba(199, 131, 145, 0.25);
   white-space: nowrap;
