@@ -191,6 +191,12 @@
         alertBox.style.color = 'var(--cocoa)';
         alertBox.style.border = '1px dashed var(--rose)';
         alertBox.innerHTML = 'Please sign in to view your personal customer account and order history.';
+      } else if (reason === 'logged_out') {
+        alertBox.style.display = 'block';
+        alertBox.style.background = '#F0FDF4';
+        alertBox.style.color = '#166534';
+        alertBox.style.border = '1.5px solid #86EFAC';
+        alertBox.innerHTML = '✓ You have safely signed out of Swan Studio.';
       }
 
       form.addEventListener('submit', async (e) => {

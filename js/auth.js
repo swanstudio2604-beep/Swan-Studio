@@ -320,7 +320,7 @@ const AUTH = {
   /**
    * Sign Out
    */
-  async signOut() {
+  async signOut(options = {}) {
     const client = getSupabaseClient();
     localStorage.removeItem('swan_demo_user');
 
@@ -332,7 +332,13 @@ const AUTH = {
       }
     }
 
-    window.location.href = 'index.html';
+    const isInAdmin = window.location.pathname.includes('/admin/');
+    const defaultRedirect = isInAdmin 
+      ? '../login.html?reason=logged_out' 
+      : (window.location.pathname.includes('account.html') ? 'account.html?signed_out=1' : 'index.html');
+
+    const targetUrl = (options && options.redirectUrl) || defaultRedirect;
+    window.location.href = targetUrl;
   },
 
   /**

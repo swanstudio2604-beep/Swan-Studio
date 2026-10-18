@@ -35,6 +35,12 @@
 
       <!-- Unauthenticated Visitor Portal (Shown if not signed in) -->
       <div id="account-unauth-view" style="display: none; max-width: 520px; margin: 1.5rem auto 3.5rem; background: var(--white); border: 2px dashed var(--rose); border-radius: 24px; padding: 2.25rem 1.5rem; box-shadow: var(--shadow-card); text-align: center;">
+        
+        <!-- Signed Out Alert Banner -->
+        <div id="signed-out-alert" style="display: none; background: #F0FDF4; border: 1.5px solid #86EFAC; color: #166534; padding: 0.85rem 1.15rem; border-radius: 14px; font-size: 0.88rem; margin-bottom: 1.25rem; font-weight: 500;">
+          ✓ You have been signed out safely. Come back anytime!
+        </div>
+
         <div style="width: 64px; height: 64px; border-radius: 50%; background: #FFF0F3; color: var(--rose-text); font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 1.5px dashed var(--rose);">
           🌸
         </div>
@@ -125,7 +131,7 @@
               <a href="custom-order.html">✨ Request Custom Piece</a>
             </li>
             <li class="account-nav-item logout">
-              <button id="logout-btn">🚪 Sign Out</button>
+              <button id="logout-btn" type="button" onclick="AUTH.signOut()">🚪 Sign Out</button>
             </li>
           </ul>
         </aside>
@@ -143,7 +149,7 @@
             <a href="custom-order.html" class="account-mobile-tab-btn">
               <span>✨</span> Custom Order
             </a>
-            <button type="button" class="account-mobile-tab-btn" id="mob-tab-logout" style="color: #BE123C;">
+            <button type="button" class="account-mobile-tab-btn" id="mob-tab-logout" style="color: #BE123C;" onclick="AUTH.signOut()">
               <span>🚪</span> Sign Out
             </button>
           </div>
@@ -270,6 +276,91 @@
       const unauthView = document.getElementById('account-unauth-view');
       const authView = document.getElementById('account-auth-view');
       const adminTopBanner = document.getElementById('admin-top-banner');
+
+      // Check URL parameters for sign out notification
+      const urlParams = new URLSearchParams(window.location.search);
+      const isSignedOut = urlParams.get('signed_out') === '1';
+      const signedOutAlert = document.getElementById('signed-out-alert');
+      if (signedOutAlert && isSignedOut) {
+        signedOutAlert.style.display = 'block';
+      }
+
+      // Logout handler - attached immediately so sign out ALWAYS works
+      const handleLogout = async (e) => {
+        if (e) e.preventDefault();
+        await AUTH.signOut();
+      };
+      const logoutBtn = document.getElementById('logout-btn');
+      const mobTabLogout = document.getElementById('mob-tab-logout');
+      if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+      if (mobTabLogout) mobTabLogout.addEventListener('click', handleLogout);
+
+      // Tab Switching Logic (Mobile & Desktop)
+      const mobTabOrders = document.getElementById('mob-tab-orders');
+      const mobTabProfile = document.getElementById('mob-tab-profile');
+      const ordersCard = document.getElementById('orders-card');
+      const profileCard = document.getElementById('profile-card');
+      const deskNavOrders = document.getElementById('desk-nav-orders');
+      const deskNavProfile = document.getElementById('desk-nav-profile');
+
+      function switchAccountTab(tab) {
+        if (tab === 'orders') {
+          if (ordersCard) ordersCard.style.display = 'block';
+          if (profileCard && window.innerWidth <= 860) profileCard.style.display = 'none';
+          if (mobTabOrders) { mobTabOrders.classList.add('active'); mobTabOrders.setAttribute('aria-selected', 'true'); }
+          if (mobTabProfile) { mobTabProfile.classList.remove('active'); mobTabProfile.setAttribute('aria-selected', 'false'); }
+          if (deskNavOrders) deskNavOrders.classList.add('active');
+          if (deskNavProfile) deskNavProfile.classList.remove('active');
+        } else if (tab === 'profile') {
+          if (ordersCard && window.innerWidth <= 860) ordersCard.style.display = 'none';
+          if (profileCard) profileCard.style.display = 'block';
+          if (mobTabOrders) { mobTabOrders.classList.remove('active'); mobTabOrders.setAttribute('aria-selected', 'false'); }
+          if (mobTabProfile) { mobTabProfile.classList.add('active'); mobTabProfile.setAttribute('aria-selected', 'true'); }
+          if (deskNavOrders) deskNavOrders.classList.remove('active');
+          if (deskNavProfile) deskNavProfile.classList.add('active');
+        }
+      }
+
+      if (mobTabOrders) mobTabOrders.addEventListener('click', () => switchAccountTab('orders'));
+      if (mobTabProfile) mobTabProfile.addEventListener('click', () => switchAccountTab('profile'));
+
+      if (deskNavOrders) {
+        const link = deskNavOrders.querySelector('a');
+        if (link) {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchAccountTab('orders');
+            if (ordersCard) ordersCard.scrollIntoView({ behavior: 'smooth' });
+          });
+        }
+      }
+      if (deskNavProfile) {
+        const link = deskNavProfile.querySelector('a');
+        if (link) {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchAccountTab('profile');
+            if (profileCard) profileCard.scrollIntoView({ behavior: 'smooth' });
+          });
+        }
+      }
+
+      // Responsive resize handler
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 860) {
+          if (ordersCard) ordersCard.style.display = 'block';
+          if (profileCard) profileCard.style.display = 'block';
+        } else {
+          const isOrdersActive = mobTabOrders && mobTabOrders.classList.contains('active');
+          if (ordersCard) ordersCard.style.display = isOrdersActive ? 'block' : 'none';
+          if (profileCard) profileCard.style.display = isOrdersActive ? 'none' : 'block';
+        }
+      });
+
+      // Initial state on mobile
+      if (window.innerWidth <= 860) {
+        switchAccountTab('orders');
+      }
 
       // Check authenticated user
       let profile = await AUTH.getProfile();
@@ -638,7 +729,6 @@
         }).join('');
 
         ordersContainer.innerHTML = statsBannerHtml + cardsHtml;
-        const mobOrderCount = document.getElementById('mob-order-count');
         if (mobOrderCount) mobOrderCount.textContent = orders.length;
 
         // Attach listeners for photo selection in account orders
@@ -706,7 +796,11 @@
         });
       }
 
-      await loadUserOrders();
+      try {
+        await loadUserOrders();
+      } catch (err) {
+        console.error('Error loading user orders:', err);
+      }
 
       // Edit Profile Modal Logic
       const modal = document.getElementById('profile-modal');
@@ -814,82 +908,6 @@
           saveBtn.textContent = 'Save Changes';
         }
       });
-
-      // Tab Switching Logic (Mobile & Desktop)
-      const mobTabOrders = document.getElementById('mob-tab-orders');
-      const mobTabProfile = document.getElementById('mob-tab-profile');
-      const mobTabLogout = document.getElementById('mob-tab-logout');
-      const ordersCard = document.getElementById('orders-card');
-      const profileCard = document.getElementById('profile-card');
-      const deskNavOrders = document.getElementById('desk-nav-orders');
-      const deskNavProfile = document.getElementById('desk-nav-profile');
-
-      function switchAccountTab(tab) {
-        if (tab === 'orders') {
-          if (ordersCard) ordersCard.style.display = 'block';
-          if (profileCard && window.innerWidth <= 860) profileCard.style.display = 'none';
-          if (mobTabOrders) { mobTabOrders.classList.add('active'); mobTabOrders.setAttribute('aria-selected', 'true'); }
-          if (mobTabProfile) { mobTabProfile.classList.remove('active'); mobTabProfile.setAttribute('aria-selected', 'false'); }
-          if (deskNavOrders) deskNavOrders.classList.add('active');
-          if (deskNavProfile) deskNavProfile.classList.remove('active');
-        } else if (tab === 'profile') {
-          if (ordersCard && window.innerWidth <= 860) ordersCard.style.display = 'none';
-          if (profileCard) profileCard.style.display = 'block';
-          if (mobTabOrders) { mobTabOrders.classList.remove('active'); mobTabOrders.setAttribute('aria-selected', 'false'); }
-          if (mobTabProfile) { mobTabProfile.classList.add('active'); mobTabProfile.setAttribute('aria-selected', 'true'); }
-          if (deskNavOrders) deskNavOrders.classList.remove('active');
-          if (deskNavProfile) deskNavProfile.classList.add('active');
-        }
-      }
-
-      if (mobTabOrders) mobTabOrders.addEventListener('click', () => switchAccountTab('orders'));
-      if (mobTabProfile) mobTabProfile.addEventListener('click', () => switchAccountTab('profile'));
-
-      if (deskNavOrders) {
-        const link = deskNavOrders.querySelector('a');
-        if (link) {
-          link.addEventListener('click', (e) => {
-            e.preventDefault();
-            switchAccountTab('orders');
-            if (ordersCard) ordersCard.scrollIntoView({ behavior: 'smooth' });
-          });
-        }
-      }
-      if (deskNavProfile) {
-        const link = deskNavProfile.querySelector('a');
-        if (link) {
-          link.addEventListener('click', (e) => {
-            e.preventDefault();
-            switchAccountTab('profile');
-            if (profileCard) profileCard.scrollIntoView({ behavior: 'smooth' });
-          });
-        }
-      }
-
-      // Responsive resize handler
-      window.addEventListener('resize', () => {
-        if (window.innerWidth > 860) {
-          if (ordersCard) ordersCard.style.display = 'block';
-          if (profileCard) profileCard.style.display = 'block';
-        } else {
-          const isOrdersActive = mobTabOrders && mobTabOrders.classList.contains('active');
-          if (ordersCard) ordersCard.style.display = isOrdersActive ? 'block' : 'none';
-          if (profileCard) profileCard.style.display = isOrdersActive ? 'none' : 'block';
-        }
-      });
-
-      // Initial state on mobile
-      if (window.innerWidth <= 860) {
-        switchAccountTab('orders');
-      }
-
-      // Logout handler
-      const handleLogout = async () => {
-        await AUTH.signOut();
-      };
-      const logoutBtn = document.getElementById('logout-btn');
-      if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-      if (mobTabLogout) mobTabLogout.addEventListener('click', handleLogout);
     });
   </script>
 </body>
