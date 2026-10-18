@@ -2408,25 +2408,9 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
   color: var(--admin-text-muted);
 }
 
+/* Review Card Footer & Helpful Button Cleanup */
 .btn-helpful {
-  background: none;
-  border: 1px solid #E6D8D0;
-  border-radius: 999px;
-  padding: 0.25rem 0.65rem;
-  font-size: 0.75rem;
-  color: #73615A;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  transition: all 0.15s ease;
-}
-
-.btn-helpful:hover,
-.btn-helpful.voted {
-  border-color: var(--rose);
-  background: #FFF0F2;
-  color: var(--rose-text);
+  display: none !important;
 }
 
 /* ==========================================================================
@@ -2452,35 +2436,80 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
   align-items: center;
 }
 
+.instagram-perks-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  font-size: 0.92rem;
+  color: #55443F;
+}
+
+.instagram-perks-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  line-height: 1.45;
+}
+
+.instagram-banner-actions {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .instagram-qr-card {
   background: #FFFFFF;
   border: 2px solid rgba(199, 131, 145, 0.35);
-  border-radius: 32px;
-  padding: 2.25rem;
+  border-radius: 28px;
+  padding: 2rem 1.75rem;
   text-align: center;
   box-shadow: 0 16px 40px rgba(199, 131, 145, 0.12);
   position: relative;
-  max-width: 360px;
+  max-width: 340px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .instagram-qr-frame {
-  width: 220px;
-  height: 220px;
-  margin: 0 auto 1.25rem;
+  width: 200px;
+  max-width: 80%;
+  aspect-ratio: 1080 / 1574;
+  height: auto;
+  margin: 0 auto 1.15rem;
   border-radius: 20px;
   overflow: hidden;
   border: 2px dashed var(--rose);
-  padding: 8px;
+  padding: 6px;
   background: #FFF8F9;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 8px 24px rgba(199, 131, 145, 0.14);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.instagram-qr-frame:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(199, 131, 145, 0.22);
+}
+
+.instagram-qr-frame a {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .instagram-qr-frame img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: 12px;
+  object-fit: contain;
+  display: block;
+  border-radius: 14px;
 }
 
 .instagram-handle-badge {
@@ -2503,25 +2532,82 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
   .reviews-summary-grid {
     grid-template-columns: 1fr;
   }
-  .instagram-banner-grid {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 1.75rem;
-  }
-  .instagram-banner-grid .instagram-handle-badge {
-    margin: 0 auto 0.85rem;
-  }
-  .instagram-qr-card {
-    padding: 1.5rem 1rem !important;
-    max-width: 290px !important;
-  }
-  .instagram-qr-frame {
-    width: 170px !important;
-    height: 170px !important;
+  .instagram-community-section {
+    padding: 3rem 0 !important;
   }
   .instagram-banner-box {
-    padding: 1.5rem 1rem !important;
-    margin-top: 2.5rem !important;
+    padding: 1.75rem 1.15rem !important;
+    margin-top: 2rem !important;
+    border-radius: 22px !important;
+  }
+  .instagram-banner-grid {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+    gap: 2rem !important;
+  }
+  .instagram-banner-grid .instagram-handle-badge {
+    margin: 0 auto 0.85rem auto !important;
+    display: inline-flex !important;
+  }
+  .instagram-banner-grid h2 {
+    font-size: clamp(1.6rem, 5.5vw, 2.2rem) !important;
+    line-height: 1.25 !important;
+    margin-bottom: 0.85rem !important;
+  }
+  .instagram-banner-grid p {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    max-width: 480px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-bottom: 1.25rem !important;
+  }
+  .instagram-perks-list {
+    text-align: left !important;
+    max-width: 360px !important;
+    margin: 0 auto 1.5rem auto !important;
+    background: #FFF7F8 !important;
+    border: 1px solid rgba(199, 131, 145, 0.25) !important;
+    border-radius: 16px !important;
+    padding: 0.9rem 1.15rem !important;
+  }
+  .instagram-perks-list li {
+    font-size: 0.86rem !important;
+    margin-bottom: 0.4rem !important;
+  }
+  .instagram-banner-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+    max-width: 360px !important;
+    margin: 0 auto !important;
+  }
+  .instagram-banner-actions .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 0.8rem 1.25rem !important;
+    font-size: 0.9rem !important;
+    box-sizing: border-box !important;
+  }
+  .instagram-qr-card {
+    padding: 1.5rem 1.15rem !important;
+    max-width: 290px !important;
+    border-radius: 22px !important;
+    margin: 0 auto !important;
+  }
+  .instagram-qr-frame {
+    width: 175px !important;
+    max-width: 75% !important;
+    aspect-ratio: 1080 / 1574 !important;
+    height: auto !important;
+    margin: 0 auto 1rem auto !important;
+    border-radius: 18px !important;
+    padding: 5px !important;
+  }
+  .instagram-qr-frame img {
+    border-radius: 14px !important;
   }
 }
 
