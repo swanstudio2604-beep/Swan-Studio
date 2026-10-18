@@ -136,14 +136,41 @@ const AUTH = {
     }
 
     if (!client) {
-      // Local Demo Login Simulation
-      const isDemoAdmin = email.trim().toLowerCase() === 'swanstudio2604@gmail.com';
+      // Local / GitHub Pages Demo Login Simulation
+      const cleanEmail = email.trim().toLowerCase();
+      const isDemoAdmin = cleanEmail === 'swanstudio2604@gmail.com';
+
+      if (isDemoAdmin) {
+        // Enforce verified admin password (default: Bhumika26##)
+        const storedAdminPassword = localStorage.getItem('swan_admin_password') || 'Bhumika26##';
+        if (password !== storedAdminPassword) {
+          localStorage.removeItem('swan_demo_user');
+          throw new Error('Invalid email or password.');
+        }
+
+        const demoProfile = {
+          id: 'admin-bhumika-1',
+          email: cleanEmail,
+          full_name: 'Bhumika Nama',
+          phone: '9509966512',
+          role: 'admin'
+        };
+        const demoSession = {
+          user: { id: demoProfile.id, email: demoProfile.email },
+          profile: demoProfile,
+          isDemo: true
+        };
+        localStorage.setItem('swan_demo_user', JSON.stringify(demoSession));
+        return { session: demoSession, profile: demoProfile, isDemo: true };
+      }
+
+      // Customer demo login
       const demoProfile = {
         id: 'demo-user-1',
-        email: email.trim().toLowerCase(),
-        full_name: isDemoAdmin ? 'Bhumika Nama' : 'Demo Customer',
+        email: cleanEmail,
+        full_name: 'Demo Customer',
         phone: '9509966512',
-        role: isDemoAdmin ? 'admin' : 'customer'
+        role: 'customer'
       };
       const demoSession = {
         user: { id: demoProfile.id, email: demoProfile.email },
@@ -229,5 +256,23 @@ const AUTH = {
     }
 
     return profile;
+  },
+
+  /**
+   * Retrieves the current administrator access password
+   */
+  getAdminPassword() {
+    return localStorage.getItem('swan_admin_password') || 'Bhumika26##';
+  },
+
+  /**
+   * Updates administrator access password
+   */
+  setAdminPassword(newPassword) {
+    if (!newPassword || newPassword.length < 8) {
+      throw new Error('Password must be at least 8 characters long.');
+    }
+    localStorage.setItem('swan_admin_password', newPassword);
+    return true;
   }
 };

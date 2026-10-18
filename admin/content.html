@@ -1026,6 +1026,34 @@
             
             <!-- Left Column: Payment & Shipping Operations -->
             <div>
+              <!-- Card 0: Administrator Access & Security Credentials -->
+              <div class="admin-card" style="border-left: 4px solid var(--rose);">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">🔐</div>
+                  <h2 class="card-title-styled">Admin Atelier Access Credentials</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  Master login credentials for Bhumika Nama to manage the Swan Studio Atelier.
+                </p>
+
+                <div class="form-group">
+                  <label class="form-label">Administrator Email</label>
+                  <input type="email" class="form-control" value="swanstudio2604@gmail.com" readonly style="background: #F8F1EB; color: #51413C; font-weight: 600;">
+                  <small style="color: #8A7670; font-size: 0.75rem;">Verified master administrative email.</small>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                  <label for="cfg-admin-pass" class="form-label">Admin Access Password <span style="color: var(--rose);">*</span></label>
+                  <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="cfg-admin-pass" class="form-control" value="Bhumika26##" required style="font-family: monospace; font-weight: 600; flex: 1; min-width: 180px;">
+                    <button type="button" id="btn-save-admin-pass" class="btn btn-primary btn-sm" style="white-space: nowrap; padding: 0.55rem 0.95rem;">
+                      💾 Update Password
+                    </button>
+                  </div>
+                  <small style="color: #8A7670; font-size: 0.75rem;">Used at /login.html to authenticate admin access.</small>
+                </div>
+              </div>
+
               <!-- Card 1: Manual UPI Payment Gateway -->
               <div class="admin-card">
                 <div class="admin-card-header-styled">
@@ -1446,6 +1474,20 @@
       const instaUrlInput = document.getElementById('cfg-instagram-url');
       const instaHandleInput = document.getElementById('cfg-instagram-handle');
       const btnTestInsta = document.getElementById('btn-test-insta');
+      const adminPassInput = document.getElementById('cfg-admin-pass');
+      const btnSaveAdminPass = document.getElementById('btn-save-admin-pass');
+
+      if (btnSaveAdminPass && adminPassInput) {
+        btnSaveAdminPass.addEventListener('click', () => {
+          const newPass = adminPassInput.value.trim();
+          if (!newPass || newPass.length < 8) {
+            ADMIN.toast('Password must be at least 8 characters.', 'error');
+            return;
+          }
+          localStorage.setItem('swan_admin_password', newPass);
+          ADMIN.toast('✓ Admin password successfully updated!', 'success');
+        });
+      }
 
       // Featured Creations fields
       const featHeadingInput = document.getElementById('cfg-featured-heading');
@@ -1875,6 +1917,10 @@
             if (s.instagramHandle && instaHandleInput) instaHandleInput.value = s.instagramHandle;
           }
 
+          if (adminPassInput) {
+            adminPassInput.value = localStorage.getItem('swan_admin_password') || 'Bhumika26##';
+          }
+
           // Hydrate review moderation and count from localStorage
           const STARTER_REVIEWS = [
             { id: 'rev-init-1', author: 'Ananya Sharma', city: 'Mumbai', rating: 5, product: '🌸 Pastel Daisy Bouquet', date: 'October 14, 2026', notes: 'I ordered the Pastel Daisy Bouquet for my sister’s birthday and we were completely in tears! The flowers will literally never wither and the handwritten care card from Bhumika was so personal.' },
@@ -2132,6 +2178,9 @@
           // 1. Save to localStorage for instant local reflection
           localStorage.setItem('swan_site_content', JSON.stringify(contentPayload));
           localStorage.setItem('swan_site_settings', JSON.stringify(settingsPayload));
+          if (adminPassInput && adminPassInput.value.trim().length >= 8) {
+            localStorage.setItem('swan_admin_password', adminPassInput.value.trim());
+          }
 
           // 2. Also save to Supabase if connected
           const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;

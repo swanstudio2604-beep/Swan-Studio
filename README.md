@@ -98,12 +98,16 @@ npm start
 
 ---
 
-## 👑 Admin Elevation (Bhumika Nama)
+## 👑 Admin Access Credentials (Bhumika Nama)
 
-Security Principle: Admin roles are NEVER granted by the client. The database role in `public.profiles` dictates authorization.
+- **Admin Login Page:** `/login.html`
+- **Master Admin Email:** `swanstudio2604@gmail.com`
+- **Admin Password:** `Bhumika26##`
 
-1. Bhumika signs up at `/signup.html` (or on the deployed site) using her email:  
-   `swanstudio2604@gmail.com`
+Upon signing in with these credentials, the system redirects to `/admin/index.html` with full administrative privileges. Non-admin users and invalid passwords are automatically rejected.
+
+When connecting Supabase production database:
+1. Bhumika signs up at `/signup.html` using `swanstudio2604@gmail.com` and `Bhumika26##`.
 2. In the Supabase SQL Editor, run this command to elevate her to administrator:
    ```sql
    UPDATE public.profiles
