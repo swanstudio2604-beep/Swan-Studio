@@ -58,10 +58,10 @@
       </div>
 
       <!-- Checkout Grid -->
-      <div style="display: grid; grid-template-columns: 1.25fr 0.9fr; gap: var(--space-2xl); align-items: start;">
+      <div class="checkout-content-layout">
         
         <!-- Left Column: Delivery Form -->
-        <div style="background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); padding: 2rem; box-shadow: var(--shadow-sm);">
+        <div class="checkout-card-box" style="background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); padding: 2rem; box-shadow: var(--shadow-sm);">
           <h2 style="font-size: 1.4rem; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px dashed var(--border-subtle);">
             📍 Delivery Details
           </h2>
@@ -74,7 +74,7 @@
             </div>
 
             <!-- Contact Row -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-row-2">
               <div class="form-group">
                 <label for="order-phone" class="form-label">WhatsApp / Mobile <span style="color: var(--rose);">*</span></label>
                 <input type="tel" id="order-phone" class="form-control" placeholder="10-digit number" required>
@@ -93,7 +93,7 @@
             </div>
 
             <!-- City, State, PIN -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <div class="form-row-3">
               <div class="form-group">
                 <label for="order-city" class="form-label">City <span style="color: var(--rose);">*</span></label>
                 <input type="text" id="order-city" class="form-control" placeholder="e.g. Jaipur" required>

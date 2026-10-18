@@ -290,9 +290,107 @@ function renderFooter() {
 }
 
 // ---------------------------------------------------------------------------
-// 6. DOM Initialization
+// 6. Mobile Fixed Billing Notification Bar
+// Firmly anchored at bottom of phone screens to direct customers to payment/checkout
+// ---------------------------------------------------------------------------
+function renderMobileBillingBar() {
+  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+  // Do not show on checkout or order confirmation where customer is already paying
+  if (currentPath === 'checkout.html' || currentPath === 'order-confirmation.html') {
+    return;
+  }
+
+  let bar = document.getElementById('swan-mobile-billing-bar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'swan-mobile-billing-bar';
+    bar.className = 'mobile-billing-bar';
+    bar.setAttribute('aria-label', 'Shopping Bag & Billing Summary');
+    bar.innerHTML = `
+      <div class="mobile-billing-inner">
+        <a href="cart.html" class="mobile-billing-info" id="mobile-bill-info-btn" aria-label="Review shopping bag items">
+          <div class="mobile-billing-badge-row">
+            <span class="mobile-billing-icon">🛍️</span>
+            <span id="mobile-bill-items-count" class="mobile-billing-count">0 items</span>
+          </div>
+          <div class="mobile-billing-amount-wrap">
+            <span class="mobile-billing-label">Total:</span>
+            <strong id="mobile-bill-total-price" class="mobile-billing-total">₹0</strong>
+          </div>
+        </a>
+        <div class="mobile-billing-actions">
+          <a href="checkout.html" id="mobile-bill-checkout-btn" class="mobile-billing-btn" aria-label="Proceed directly to payment and checkout">
+            <span>Proceed to Payment</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(bar);
+  }
+
+  updateMobileBillingBar();
+}
+
+function updateMobileBillingBar() {
+  const bar = document.getElementById('swan-mobile-billing-bar');
+  if (!bar) return;
+
+  try {
+    const rawCart = localStorage.getItem('swan_cart');
+    const cart = rawCart ? JSON.parse(rawCart) : [];
+    if (!Array.isArray(cart) || cart.length === 0) {
+      bar.classList.remove('is-visible');
+      document.body.classList.remove('has-mobile-billing-bar');
+      return;
+    }
+
+    const totalQty = cart.reduce((sum, i) => sum + (parseInt(i.quantity, 10) || 1), 0);
+    const subtotal = cart.reduce((sum, i) => sum + (parseFloat(i.price) || 0) * (parseInt(i.quantity, 10) || 1), 0);
+
+    const countEl = document.getElementById('mobile-bill-items-count');
+    const priceEl = document.getElementById('mobile-bill-total-price');
+
+    if (countEl) {
+      countEl.textContent = `${totalQty} item${totalQty === 1 ? '' : 's'}`;
+    }
+    if (priceEl) {
+      priceEl.textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+    }
+
+    bar.classList.add('is-visible');
+    document.body.classList.add('has-mobile-billing-bar');
+
+    // Trigger subtle pulse animation on update
+    bar.classList.remove('pulse');
+    void bar.offsetWidth;
+    bar.classList.add('pulse');
+  } catch (err) {
+    console.warn('Error updating mobile billing bar:', err);
+  }
+}
+
+window.updateMobileBillingBar = updateMobileBillingBar;
+
+// ---------------------------------------------------------------------------
+// 7. DOM Initialization
 // ---------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   renderHeader();
   renderFooter();
+  renderMobileBillingBar();
 });
+
+// Sync cart across browser tabs
+window.addEventListener('storage', (e) => {
+  if (e.key === 'swan_cart') {
+    const count = getSafeCartCount();
+    const bagCount = document.getElementById('bag-count');
+    if (bagCount) bagCount.textContent = count;
+    updateMobileBillingBar();
+  }
+});
+

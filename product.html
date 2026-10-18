@@ -352,6 +352,11 @@
             bagCountEl.setAttribute('aria-label', `${total} items in bag`);
           }
 
+          // Instantly refresh fixed mobile billing notification bar
+          if (typeof updateMobileBillingBar === 'function') {
+            updateMobileBillingBar();
+          }
+
           feedbackMsg.style.display = 'block';
           feedbackMsg.textContent = `✓ Added ${qty} × "${product.name}" to your Bag!`;
           setTimeout(() => {

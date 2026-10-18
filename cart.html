@@ -58,7 +58,7 @@
       </div>
 
       <!-- Cart Content Grid -->
-      <div id="cart-content-layout" style="display: grid; grid-template-columns: 1.4fr 0.8fr; gap: var(--space-2xl); align-items: start;">
+      <div id="cart-content-layout" class="cart-content-layout">
         
         <!-- Items Table Card -->
         <div style="background: var(--white); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); padding: 1.5rem; box-shadow: var(--shadow-sm);">
@@ -204,6 +204,9 @@
           const total = items.reduce((sum, i) => sum + (i.quantity || 0), 0);
           bagCount.textContent = total;
           bagCount.setAttribute('aria-label', `${total} items in bag`);
+        }
+        if (typeof updateMobileBillingBar === 'function') {
+          updateMobileBillingBar();
         }
       }
 
