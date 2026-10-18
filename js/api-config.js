@@ -13,7 +13,7 @@ const SWAN_API = {
       const custom = localStorage.getItem('swan_backend_url');
       if (custom && custom.trim()) return custom.trim();
     } catch (e) {}
-    return window.SWAN_BACKEND_URL || 'https://swan-studio-api.onrender.com';
+    return window.SWAN_BACKEND_URL || 'https://swan-studio.onrender.com';
   },
 
   async checkHealth() {
