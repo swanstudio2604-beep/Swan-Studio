@@ -2436,22 +2436,61 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
   align-items: center;
 }
 
+.instagram-lead-desc {
+  color: #6E5A54;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  margin: 0 auto 1.5rem auto;
+  max-width: 520px;
+  word-break: normal;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+  hyphens: none;
+  -webkit-hyphens: none;
+}
+
 .instagram-perks-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 2rem 0;
+  margin: 0 auto 2rem auto;
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
+}
+
+.instagram-perk-item {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 0.65rem;
+  align-items: start;
+  text-align: left;
+  line-height: 1.5;
   font-size: 0.92rem;
   color: #55443F;
 }
 
-.instagram-perks-list li {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  line-height: 1.45;
+.perk-icon {
+  color: var(--rose-text);
+  font-weight: 700;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  user-select: none;
+}
+
+.perk-text {
+  line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.perk-text strong {
+  color: var(--cocoa);
+  font-weight: 600;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .instagram-banner-actions {
@@ -2533,69 +2572,91 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
     grid-template-columns: 1fr;
   }
   .instagram-community-section {
-    padding: 3rem 0 !important;
+    padding: 3rem 1.25rem !important;
+    box-sizing: border-box !important;
+  }
+  .instagram-community-section .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
   .instagram-banner-box {
     padding: 1.75rem 1.15rem !important;
     margin-top: 2rem !important;
     border-radius: 22px !important;
+    box-sizing: border-box !important;
   }
   .instagram-banner-grid {
     grid-template-columns: 1fr !important;
     text-align: center !important;
     gap: 2rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
   }
   .instagram-banner-grid .instagram-handle-badge {
     margin: 0 auto 0.85rem auto !important;
     display: inline-flex !important;
+    max-width: 100% !important;
+    font-size: 0.84rem !important;
+    padding: 0.4rem 0.85rem !important;
+    box-sizing: border-box !important;
   }
   .instagram-banner-grid h2 {
-    font-size: clamp(1.6rem, 5.5vw, 2.2rem) !important;
+    font-size: clamp(1.65rem, 6vw, 2.2rem) !important;
     line-height: 1.25 !important;
     margin-bottom: 0.85rem !important;
+    padding: 0 0.5rem !important;
   }
-  .instagram-banner-grid p {
-    font-size: 0.95rem !important;
+  .instagram-lead-desc {
+    font-size: 0.94rem !important;
     line-height: 1.6 !important;
-    max-width: 480px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    max-width: 100% !important;
+    padding: 0 0.25rem !important;
     margin-bottom: 1.25rem !important;
+    box-sizing: border-box !important;
   }
   .instagram-perks-list {
     text-align: left !important;
-    max-width: 360px !important;
+    width: 100% !important;
+    max-width: 100% !important;
     margin: 0 auto 1.5rem auto !important;
     background: #FFF7F8 !important;
     border: 1px solid rgba(199, 131, 145, 0.25) !important;
     border-radius: 16px !important;
-    padding: 0.9rem 1.15rem !important;
+    padding: 1rem 1.15rem !important;
+    box-sizing: border-box !important;
   }
-  .instagram-perks-list li {
+  .instagram-perk-item {
     font-size: 0.86rem !important;
-    margin-bottom: 0.4rem !important;
+    gap: 0.55rem !important;
   }
   .instagram-banner-actions {
     display: flex !important;
     flex-direction: column !important;
     gap: 0.75rem !important;
     width: 100% !important;
-    max-width: 360px !important;
+    max-width: 100% !important;
     margin: 0 auto !important;
+    box-sizing: border-box !important;
   }
   .instagram-banner-actions .btn {
     width: 100% !important;
     justify-content: center !important;
     text-align: center !important;
-    padding: 0.8rem 1.25rem !important;
-    font-size: 0.9rem !important;
+    padding: 0.85rem 1.25rem !important;
+    font-size: 0.92rem !important;
+    font-weight: 600 !important;
     box-sizing: border-box !important;
+    white-space: normal !important;
   }
   .instagram-qr-card {
     padding: 1.5rem 1.15rem !important;
     max-width: 290px !important;
     border-radius: 22px !important;
     margin: 0 auto !important;
+    box-sizing: border-box !important;
   }
   .instagram-qr-frame {
     width: 175px !important;
