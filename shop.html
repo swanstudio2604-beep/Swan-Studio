@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop All Creations — Swan Studio | Handmade Crochet</title>
+  <meta name="description" content="Browse our complete collection of handmade crochet creations: floral bouquets, plushies, bags, bookmarks, and personalized gifts. Handcrafted in India.">
+  <link rel="canonical" href="https://swanstudio2604-beep.github.io/shop.html">
+  
+  <!-- OpenGraph / Social Meta -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://swanstudio2604-beep.github.io/shop.html">
+  <meta property="og:title" content="Shop All Creations — Swan Studio | Handmade Crochet">
+  <meta property="og:description" content="Browse our complete collection of handmade crochet creations: floral bouquets, plushies, bags, bookmarks, and personalized gifts.">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Shop All Creations — Swan Studio">
+  <meta name="twitter:description" content="Browse our complete collection of handmade crochet creations: floral bouquets, plushies, bags, bookmarks, and personalized gifts.">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Skip Link for Accessibility -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Global Header (Injected by js/main.js) -->
+  <div id="site-header"></div>
+
+  <!-- Main Content -->
+  <main id="main" class="section section-cream">
+    <div class="container">
+      
+      <!-- Section Header -->
+      <div class="section-header" style="margin-bottom: var(--space-xl);">
+        <h1 class="section-title">The Crochet Atelier</h1>
+        <p class="section-subtitle">
+          Every piece is carefully handcrafted with love and intention. Explore our ready-to-ship pieces and made-to-order creations.
+        </p>
+      </div>
+
+      <!-- Catalog Status Banner (Live Supabase vs Demo Fallback) -->
+      <div class="demo-banner" id="catalog-status-banner" role="status">
+        <span class="demo-banner-icon" id="catalog-status-icon" aria-hidden="true">💡</span>
+        <div id="catalog-status-text">
+          <strong>Demonstration Catalog:</strong> The products below are sample entries for layout, search, and filtering verification. When your Supabase credentials are added to <code>js/supabase.js</code>, live database data will automatically display here.
+        </div>
+      </div>
+
+      <!-- Shop Toolbar: Search, Sorting & Category Filters -->
+      <div class="shop-toolbar" role="region" aria-label="Product filters and search">
+        <div class="shop-toolbar-top">
+          <!-- Search Form -->
+          <div class="shop-search-form">
+            <span class="shop-search-icon" aria-hidden="true">🔍</span>
+            <input 
+              type="search" 
+              id="shop-search" 
+              class="shop-search-input" 
+              placeholder="Search flowers, bags, plushies..." 
+              aria-label="Search products"
+            >
+          </div>
+
+          <!-- Sort Selector -->
+          <div class="shop-sort-wrap">
+            <label for="shop-sort" style="font-size: 0.88rem; font-weight: 500; color: var(--cocoa);">Sort by:</label>
+            <select id="shop-sort" class="shop-sort-select" aria-label="Sort products">
+              <option value="featured">Featured First</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="name-asc">Name: A to Z</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Category Pills -->
+        <div class="shop-categories" role="group" aria-label="Filter by category" id="category-pills">
+          <button class="category-pill active" data-category="all">All Creations</button>
+          <button class="category-pill" data-category="bouquets">🌸 Floral Bouquets</button>
+          <button class="category-pill" data-category="bags">👜 Bags & Totes</button>
+          <button class="category-pill" data-category="plushies">🧸 Cute Plushies</button>
+          <button class="category-pill" data-category="accessories">🎁 Personalized Gifts</button>
+        </div>
+      </div>
+
+      <!-- Products Grid & Results Count -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <p id="results-count" style="font-size: 0.9rem; color: #73615A; font-weight: 500;">
+          Showing demonstration products...
+        </p>
+      </div>
+
+      <div class="products-grid" id="products-grid" aria-live="polite">
+        <!-- Injected via shop.js -->
+      </div>
+
+      <!-- Empty State Container (Hidden by default) -->
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">🧶</div>
+        <h3>No matching crochet creations found</h3>
+        <p>
+          We couldn't find anything matching your search. Try adjusting your keywords, browsing all creations, or request a custom order tailored to your idea.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <button id="reset-filters-btn" class="btn btn-secondary">Browse All Creations</button>
+          <a href="custom-order.html" class="btn btn-primary">Request a Custom Order</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Global Footer (Injected by js/main.js) -->
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/products-demo.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // -------------------------------------------------------------------------
+    // Shop Page Logic (Reads URL params ?category=, ?search=, ?sort=)
+    // -------------------------------------------------------------------------
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('shop-search');
+      const sortSelect = document.getElementById('shop-sort');
+      const categoryPills = document.querySelectorAll('.category-pill');
+      const productsGrid = document.getElementById('products-grid');
+      const emptyState = document.getElementById('empty-state');
+      const resultsCount = document.getElementById('results-count');
+      const resetBtn = document.getElementById('reset-filters-btn');
+      const bannerIcon = document.getElementById('catalog-status-icon');
+      const bannerText = document.getElementById('catalog-status-text');
+
+      // 1. Read URL Parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      let currentCategory = urlParams.get('category') || 'all';
+      let currentSearch = urlParams.get('search') || '';
+      let currentSort = urlParams.get('sort') || 'featured';
+
+      // Initialize UI inputs from URL
+      searchInput.value = currentSearch;
+      sortSelect.value = currentSort;
+      updateActivePill(currentCategory);
+
+      // SVG Icon Generator for Product Thumbnails
+      function getProductSvg(type) {
+        if (type === 'flower') {
+          return `
+            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <circle cx="50" cy="50" r="42" fill="#FFF0F3" stroke="#C78391" stroke-dasharray="3 3"/>
+              <path d="M50 30 C58 20 68 30 60 40 C70 50 60 60 50 50 C40 60 30 50 40 40 C32 30 42 20 50 30 Z" fill="#E8B7C0" stroke="#C78391"/>
+              <circle cx="50" cy="40" r="5" fill="#FFF8F1" stroke="#51413C"/>
+              <path d="M50 50 L50 75" stroke="#A9B6A0" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          `;
+        } else if (type === 'bag') {
+          return `
+            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <rect x="25" y="40" width="50" height="42" rx="6" fill="#F8F3EC" stroke="#C78391" stroke-dasharray="3 3"/>
+              <path d="M35 40 C35 22 65 22 65 40" stroke="#51413C" stroke-width="2.5" fill="none"/>
+              <rect x="36" y="50" width="28" height="22" rx="2" fill="#E8B7C0" stroke="#C78391"/>
+              <circle cx="50" cy="61" r="4" fill="#FFF8F1"/>
+            </svg>
+          `;
+        } else if (type === 'plushie') {
+          return `
+            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <circle cx="50" cy="58" r="28" fill="#FBF5F0" stroke="#C78391" stroke-dasharray="3 3"/>
+              <ellipse cx="40" cy="26" rx="6" ry="16" fill="#E8B7C0" stroke="#C78391"/>
+              <ellipse cx="60" cy="26" rx="6" ry="16" fill="#E8B7C0" stroke="#C78391"/>
+              <circle cx="43" cy="54" r="2" fill="#51413C"/>
+              <circle cx="57" cy="54" r="2" fill="#51413C"/>
+              <path d="M48 60 Q50 63 52 60" stroke="#51413C" stroke-linecap="round"/>
+            </svg>
+          `;
+        } else {
+          return `
+            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <rect x="35" y="20" width="30" height="58" rx="4" fill="#F2EBE5" stroke="#C78391" stroke-dasharray="3 3"/>
+              <circle cx="50" cy="38" r="8" fill="#E8B7C0" stroke="#C78391"/>
+              <line x1="50" y1="46" x2="50" y2="65" stroke="#A9B6A0" stroke-width="2"/>
+              <path d="M50 78 L50 92" stroke="#C78391" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          `;
+        }
+      }
+
+      function updateActivePill(cat) {
+        categoryPills.forEach(pill => {
+          if (pill.dataset.category === cat) {
+            pill.classList.add('active');
+          } else {
+            pill.classList.remove('active');
+          }
+        });
+      }
+
+      // Filter & Fetch Catalogue
+      async function renderCatalogue() {
+        resultsCount.textContent = 'Loading creations...';
+
+        const result = await fetchProducts({
+          category: currentCategory,
+          search: currentSearch,
+          sort: currentSort
+        });
+
+        const products = result.data;
+        const isLive = result.isLive;
+
+        // Update banner indicator
+        if (isLive) {
+          bannerIcon.textContent = '🟢';
+          bannerText.innerHTML = `<strong>Live Supabase Database Connected:</strong> Displaying published creations directly from PostgreSQL.`;
+        } else {
+          bannerIcon.textContent = '💡';
+          bannerText.innerHTML = `<strong>Demonstration Mode:</strong> Showing sample local entries. Add your Supabase URL & anon key in <code>js/supabase.js</code> to connect live database data.`;
+        }
+
+        // Update count & URL
+        resultsCount.textContent = `Showing ${products.length} creation${products.length === 1 ? '' : 's'} (${isLive ? 'Live DB' : 'Demo Mode'})`;
+
+        // Render Cards
+        if (products.length === 0) {
+          productsGrid.style.display = 'none';
+          emptyState.style.display = 'block';
+        } else {
+          emptyState.style.display = 'none';
+          productsGrid.style.display = 'grid';
+
+          productsGrid.innerHTML = products.map(p => {
+            const isOutOfStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) <= 0 : false;
+            return `
+            <article class="product-card ${isOutOfStock ? 'product-card-out-of-stock' : ''}">
+              <div class="product-thumb" style="overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
+                ${isOutOfStock 
+                  ? `<span class="product-tag badge-out-of-stock">🚫 Out of Stock</span>`
+                  : `<span class="product-tag">${p.badge || (p.madeToOrder ? 'Made to Order' : 'Ready to Ship')}</span>`
+                }
+                ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width: 100%; height: 100%; object-fit: cover; ${isOutOfStock ? 'filter: grayscale(35%) opacity(0.85);' : ''}">` : getProductSvg(p.iconType)}
+              </div>
+              <div class="product-info">
+                <span class="product-category">${p.categoryName}</span>
+                <span class="badge-sample">${isLive ? 'Verified Creation' : 'Sample Product'}</span>
+                <h3 class="product-name">${p.name}</h3>
+                <p style="font-size: 0.85rem; color: #73615A; margin-bottom: 0.5rem; line-height: 1.5;">
+                  ${(p.description || '').slice(0, 85)}...
+                </p>
+                <div class="product-price-row">
+                  <span class="product-price">₹${p.price.toLocaleString('en-IN')}</span>
+                  ${p.salePrice ? `<span class="product-price-old">₹${p.salePrice.toLocaleString('en-IN')}</span>` : ''}
+                </div>
+                <div class="product-actions">
+                  <a href="product.html?slug=${p.slug}" class="btn btn-outline btn-sm" style="width: 100%; ${isOutOfStock ? 'border-color: #F87171; color: #991B1B; font-weight: 600;' : ''}">
+                    ${isOutOfStock ? 'View (Out of Stock)' : 'View Details'}
+                  </a>
+                </div>
+              </div>
+            </article>
+          `;}).join('');
+        }
+
+        // Sync URL query without reloading
+        const newParams = new URLSearchParams();
+        if (currentCategory !== 'all') newParams.set('category', currentCategory);
+        if (currentSearch) newParams.set('search', currentSearch);
+        if (currentSort !== 'featured') newParams.set('sort', currentSort);
+        const newUrl = `${window.location.pathname}${newParams.toString() ? '?' + newParams.toString() : ''}`;
+        window.history.replaceState({}, '', newUrl);
+      }
+
+      // Event Listeners
+      categoryPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          currentCategory = pill.dataset.category;
+          updateActivePill(currentCategory);
+          renderCatalogue();
+        });
+      });
+
+      let searchDebounce;
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(() => {
+          currentSearch = e.target.value;
+          renderCatalogue();
+        }, 250);
+      });
+
+      sortSelect.addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        renderCatalogue();
+      });
+
+      resetBtn.addEventListener('click', () => {
+        currentCategory = 'all';
+        currentSearch = '';
+        currentSort = 'featured';
+        searchInput.value = '';
+        sortSelect.value = 'featured';
+        updateActivePill('all');
+        renderCatalogue();
+      });
+
+      // Initial Render
+      renderCatalogue();
+    });
+  </script>
+</body>
+</html>

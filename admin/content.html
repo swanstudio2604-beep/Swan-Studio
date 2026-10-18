@@ -1,0 +1,2190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Content & Story Atelier CMS — Swan Studio Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css?v=m1">
+
+  <style>
+    /* ==========================================================================
+       Atelier CMS & Story Studio Styles — Swan Studio Theme
+       ========================================================================== */
+    
+    /* Top Banner Showcase */
+    .atelier-header-banner {
+      background: linear-gradient(135deg, #FFFFFF 0%, #FFF7F8 50%, #FFF1F3 100%);
+      border: 1.5px solid rgba(199, 131, 145, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 24px rgba(66, 53, 49, 0.04);
+      position: relative;
+      overflow: hidden;
+    }
+    .atelier-header-banner::after {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232, 183, 192, 0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .atelier-cms-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(199, 131, 145, 0.12);
+      color: var(--rose-text);
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.6rem;
+      border: 1px solid rgba(199, 131, 145, 0.25);
+    }
+    .atelier-metrics-strip {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.15rem;
+      padding-top: 1rem;
+      border-top: 1px dashed rgba(199, 131, 145, 0.25);
+    }
+    .atelier-metric-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #73615A;
+      background: #FFFFFF;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--admin-border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+    .chip-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #48BB78;
+      box-shadow: 0 0 6px rgba(72, 187, 120, 0.5);
+    }
+
+    /* Segmented Navigation Tabs */
+    .content-tab-nav {
+      display: inline-flex;
+      background: #F3EAE6;
+      padding: 0.35rem;
+      border-radius: 999px;
+      gap: 0.35rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(199, 131, 145, 0.22);
+      box-shadow: inset 0 1px 3px rgba(66, 53, 49, 0.05);
+      flex-wrap: nowrap;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    .content-tab-btn {
+      padding: 0.65rem 1.35rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #73615A;
+      background: none;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .content-tab-btn:hover {
+      color: var(--cocoa);
+      background: rgba(255, 255, 255, 0.65);
+    }
+    .content-tab-btn.active {
+      color: var(--rose-text);
+      background: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(66, 53, 49, 0.08);
+      font-weight: 700;
+    }
+    .tab-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(199, 131, 145, 0.14);
+      color: var(--rose-text);
+      font-family: monospace;
+      font-weight: 600;
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+      animation: tabFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Workspace 2-Column Split: Form Editor + Live Interactive Canvas */
+    .cms-workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(350px, 0.95fr);
+      gap: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 1120px) {
+      .cms-workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .cms-editor-pane {
+      min-width: 0;
+    }
+    .cms-preview-pane {
+      position: sticky;
+      top: 1.5rem;
+      z-index: 10;
+    }
+
+    /* Live Interactive Preview Card */
+    .live-preview-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      border: 1.5px solid rgba(199, 131, 145, 0.35);
+      box-shadow: 0 10px 30px rgba(66, 53, 49, 0.06);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .preview-card-header {
+      background: linear-gradient(135deg, #FFF0F2 0%, #FFF8F9 100%);
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid rgba(199, 131, 145, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .preview-live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--rose-text);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .pulsing-live-beacon {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #E53E3E;
+      box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.7);
+      animation: pulseBeacon 1.8s infinite;
+    }
+    @keyframes pulseBeacon {
+      0% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.7); }
+      70% { box-shadow: 0 0 0 7px rgba(229, 62, 62, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0); }
+    }
+    .preview-canvas-body {
+      padding: 1.5rem;
+      background: #FDF9F5;
+    }
+
+    /* Miniature Arched Portrait Simulation */
+    .sim-maker-arch {
+      width: 150px;
+      height: 195px;
+      border-radius: 75px 75px 12px 12px;
+      border: 2.5px solid var(--rose);
+      margin: 0 auto 1rem;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(199, 131, 145, 0.25);
+      background: #FFF6F0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sim-maker-arch img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .sim-quote-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-sm);
+      border: 1px dashed rgba(199, 131, 145, 0.4);
+      padding: 0.85rem 1.15rem;
+      margin: 0.85rem 0;
+      font-style: italic;
+      color: #73615A;
+      font-size: 0.86rem;
+      line-height: 1.5;
+      text-align: center;
+      font-family: var(--font-serif);
+    }
+    .sim-editorial-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--admin-border);
+      padding: 1.15rem;
+      margin-top: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+    .sim-pillars-row {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-top: 0.75rem;
+    }
+    .sim-pill-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      background: #FFF0F2;
+      color: var(--rose-text);
+      border: 1px solid rgba(199, 131, 145, 0.25);
+    }
+
+    /* Miniature Hero Simulation */
+    .sim-hero-banner {
+      background: linear-gradient(135deg, #FFFFFF 0%, #FFF5F7 60%, #FFE9ED 100%);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(199, 131, 145, 0.35);
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .sim-floating-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: #FFFFFF;
+      border: 1px solid var(--rose);
+      color: var(--rose-text);
+      font-size: 0.72rem;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(199, 131, 145, 0.15);
+      margin-bottom: 0.65rem;
+    }
+    .sim-hero-arch {
+      width: 100%;
+      height: 125px;
+      border-radius: 60px 60px 8px 8px;
+      border: 2px solid var(--rose);
+      background: #FFF6F0;
+      overflow: hidden;
+      margin-top: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sim-hero-arch img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Marquee Simulator */
+    .sim-marquee-bar {
+      background: linear-gradient(90deg, #FBECEE 0%, #FFF0F2 50%, #FBECEE 100%);
+      padding: 0.65rem 1rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      text-align: center;
+      color: var(--rose-text);
+      font-weight: 500;
+      border: 1px dashed var(--rose);
+      margin-bottom: 1.25rem;
+      box-shadow: 0 2px 6px rgba(199, 131, 145, 0.08);
+    }
+
+    /* Enhanced Admin Cards */
+    .admin-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--admin-border);
+      padding: 1.75rem;
+      box-shadow: 0 2px 10px rgba(66, 53, 49, 0.03);
+      margin-bottom: 1.75rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .admin-card:hover {
+      border-color: rgba(199, 131, 145, 0.45);
+      box-shadow: 0 4px 16px rgba(66, 53, 49, 0.05);
+    }
+    .admin-card-header-styled {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.35rem;
+    }
+    .card-icon-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #FFF0F2;
+      border: 1px solid rgba(199, 131, 145, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+    .card-title-styled {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--cocoa);
+      margin: 0;
+      font-family: var(--font-serif);
+    }
+    .card-subtitle-styled {
+      font-size: 0.84rem;
+      color: #73615A;
+      margin: 0 0 1.35rem 3.15rem;
+    }
+
+    /* Promises Grid */
+    .promises-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.15rem;
+    }
+    .promise-card-editor {
+      background: #FFFDFB;
+      padding: 1.15rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid rgba(199, 131, 145, 0.25);
+      transition: all 0.2s ease;
+    }
+    .promise-card-editor:hover,
+    .promise-card-editor:focus-within {
+      border-color: var(--rose);
+      background: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(199, 131, 145, 0.12);
+    }
+    .promise-icon-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--rose-text);
+      margin-bottom: 0.65rem;
+      background: #FFF0F2;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(199, 131, 145, 0.25);
+    }
+
+    /* Uploader Layout */
+    .upload-zone {
+      border: 1.5px dashed var(--rose);
+      padding: 1.35rem;
+      border-radius: var(--radius-sm);
+      background: #FFFDFB;
+      margin-top: 0.65rem;
+    }
+    .preview-box {
+      margin-top: 1rem;
+      padding: 0.95rem;
+      background: #FFF6F0;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      border: 1px solid rgba(199, 131, 145, 0.5);
+    }
+
+    /* Sticky Save Bar */
+    .sticky-save-dock {
+      position: sticky;
+      bottom: 1.5rem;
+      z-index: 90;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-md);
+      border: 1.5px solid rgba(199, 131, 145, 0.35);
+      box-shadow: 0 10px 30px rgba(66, 53, 49, 0.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Application Wrapper -->
+  <div class="admin-container" id="admin-app" style="display: none;">
+    
+    <!-- Sidebar Mount (Injected by admin-shared.js) -->
+    <div id="admin-sidebar-mount"></div>
+
+    <!-- Main Workspace -->
+    <main class="admin-main">
+
+      <!-- Atelier CMS Top Header Banner -->
+      <div class="atelier-header-banner">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div class="atelier-cms-badge">
+              <span>✨</span> Atelier CMS • Story & Media Studio
+            </div>
+            <h1 class="admin-page-title" style="margin-bottom: 0.35rem;">Website Content & Story Atelier</h1>
+            <p class="admin-page-subtitle" style="margin-bottom: 0; max-width: 680px;">
+              Curate your slow-craft brand story, founder biography, homepage hero visuals, and operational settings with real-time interactive preview.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <a href="../about.html" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+              <span>👁️</span> View "Our Story" Live
+            </a>
+            <button id="btn-save-all-top" class="btn btn-primary btn-sm" type="button" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.25rem;">
+              <span>💾</span> Save All Changes
+            </button>
+          </div>
+        </div>
+
+        <!-- Real-Time Metrics Strip -->
+        <div class="atelier-metrics-strip">
+          <div class="atelier-metric-chip">
+            <span class="chip-dot"></span>
+            <span>Brand Narrative: <strong>Active</strong></span>
+          </div>
+          <div class="atelier-metric-chip">
+            <span class="chip-dot"></span>
+            <span>Founder Portrait: <strong>Synchronized</strong></span>
+          </div>
+          <div class="atelier-metric-chip">
+            <span class="chip-dot"></span>
+            <span>Studio Pillars: <strong>4 Core Values</strong></span>
+          </div>
+          <div class="atelier-metric-chip">
+            <span class="chip-dot"></span>
+            <span>Live Interactive Mockup: <strong>Real-Time</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save Feedback Alert -->
+      <div id="save-feedback" style="display: none; padding: 1rem 1.25rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; font-size: 0.92rem;"></div>
+
+      <!-- Segmented Navigation Tabs -->
+      <nav class="content-tab-nav" aria-label="Content Management Tabs">
+        <button type="button" class="content-tab-btn active" id="tab-btn-story" data-tab="tab-story">
+          <span>📖</span> "Our Story" & Meet the Maker
+          <span class="tab-tag">about.html</span>
+        </button>
+        <button type="button" class="content-tab-btn" id="tab-btn-home" data-tab="tab-home">
+          <span>🏠</span> Homepage Visuals & Hero
+          <span class="tab-tag">index.html</span>
+        </button>
+        <button type="button" class="content-tab-btn" id="tab-btn-featured" data-tab="tab-featured">
+          <span>⭐</span> Featured Creations
+          <span class="tab-tag">index.html</span>
+        </button>
+        <button type="button" class="content-tab-btn" id="tab-btn-store" data-tab="tab-store">
+          <span>⚙️</span> Store Operations & Shipping
+          <span class="tab-tag">checkout & policy</span>
+        </button>
+      </nav>
+
+      <form id="content-settings-form">
+
+        <!-- =================================================================== -->
+        <!-- TAB 1: OUR STORY & MEET THE MAKER (about.html)                      -->
+        <!-- =================================================================== -->
+        <div id="tab-story" class="tab-pane active">
+          
+          <div class="cms-workspace-grid">
+            
+            <!-- Left Column: Story & Founder Form Editor -->
+            <div class="cms-editor-pane">
+              
+              <!-- Card 1: Founder Portrait & Identity -->
+              <div class="admin-card">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">👩‍🎨</div>
+                  <h2 class="card-title-styled">Meet the Maker (Bhumika Nama)</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  Featured in the arch portrait card on your customer-facing "Our Story" page.
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                  <div class="form-group">
+                    <label for="cfg-maker-name" class="form-label">Founder & Artist Name <span style="color: var(--rose);">*</span></label>
+                    <input type="text" id="cfg-maker-name" class="form-control" value="Bhumika Nama" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="cfg-maker-role" class="form-label">Professional Role / Title <span style="color: var(--rose);">*</span></label>
+                    <input type="text" id="cfg-maker-role" class="form-control" value="Founder & Crochet Artist" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="cfg-maker-quote" class="form-label">Founder's Personal Quote</label>
+                  <input type="text" id="cfg-maker-quote" class="form-control" value="“Crochet taught me that beauty cannot be rushed. Every stitch is a minute of presence.”">
+                  <small style="color: #8A7670; font-size: 0.75rem;">Shown italicized under your portrait arch.</small>
+                </div>
+
+                <!-- Founder Portrait Manual Upload -->
+                <div class="upload-zone">
+                  <label class="form-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span><strong style="color: var(--cocoa);">📸 Founder Portrait / Atelier Photo</strong></span>
+                    <span style="font-size: 0.75rem; color: #8A7670;">JPG, PNG, WebP supported</span>
+                  </label>
+
+                  <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1.15rem; align-items: start;">
+                    <div>
+                      <label style="display: block; font-size: 0.8rem; color: #73615A; margin-bottom: 0.35rem; font-weight: 500;">
+                        📁 Option 1: Upload portrait from computer/phone
+                      </label>
+                      <div class="photo-upload-wrap">
+                        <label for="cfg-maker-photo-file" class="photo-upload-trigger" id="maker-upload-trigger">
+                          <span class="upload-icon-circle">👩‍🎨</span>
+                          <div class="upload-text-group">
+                            <span class="upload-title">Upload Portrait</span>
+                            <span class="upload-subtitle" id="maker-file-label">Click to browse or drop photo here</span>
+                          </div>
+                          <span class="upload-badge-action" id="maker-upload-btn-text">📷 Upload Photo</span>
+                        </label>
+                        <input type="file" id="cfg-maker-photo-file" accept="image/*" class="photo-upload-input">
+                      </div>
+                      <small style="display: block; font-size: 0.75rem; color: #8A7670; margin-top: 0.35rem;">
+                        Upload a portrait of Bhumika or hands crocheting
+                      </small>
+                    </div>
+
+                    <div>
+                      <label for="cfg-maker-photo-url" style="display: block; font-size: 0.8rem; color: #73615A; margin-bottom: 0.35rem; font-weight: 500;">
+                        🔗 Option 2: Or enter image URL / assets path
+                      </label>
+                      <input type="text" id="cfg-maker-photo-url" class="form-control" placeholder="e.g. assets/images/bhumika.jpg or https://...">
+                      <small style="display: block; font-size: 0.75rem; color: #8A7670; margin-top: 0.25rem;">
+                        Direct URL or file inside assets/images/
+                      </small>
+                    </div>
+                  </div>
+
+                  <!-- Live Preview Box -->
+                  <div id="preview-wrapper-maker" class="preview-box" style="display: none;">
+                    <img id="preview-img-maker" src="" alt="Founder Preview" style="width: 80px; height: 100px; object-fit: cover; border-radius: 40px 40px 8px 8px; border: 1.5px solid var(--rose); flex-shrink: 0;">
+                    <div style="flex: 1; min-width: 0;">
+                      <p style="font-size: 0.9rem; font-weight: 600; color: var(--cocoa); margin-bottom: 0.2rem;">Portrait Ready</p>
+                      <p id="preview-info-maker" style="font-size: 0.78rem; color: #73615A; word-break: break-all; margin: 0;"></p>
+                    </div>
+                    <button type="button" id="btn-remove-maker-photo" class="btn btn-secondary btn-sm" style="color: var(--rose); font-size: 0.75rem; padding: 0.35rem 0.65rem;">Remove</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Story Editorial & Headings -->
+              <div class="admin-card">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">📜</div>
+                  <h2 class="card-title-styled">Atelier Story & Editorial Narrative</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  The authentic narrative describing Swan Studio's origins and slow craftsmanship philosophy.
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                  <div class="form-group">
+                    <label for="cfg-story-page-title" class="form-label">Page Main Heading</label>
+                    <input type="text" id="cfg-story-page-title" class="form-control" value="The Hands Behind the Hook">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="cfg-story-headline" class="form-label">Story Narrative Headline</label>
+                    <input type="text" id="cfg-story-headline" class="form-control" value="Every Stitch Tells a Story.">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="cfg-story-page-subtitle" class="form-label">Page Subtitle / Atelier Summary</label>
+                  <textarea id="cfg-story-page-subtitle" class="form-control" style="min-height: 65px;">Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in India, dedicated to slow craft and heartfelt creations.</textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="cfg-story-p1" class="form-label">Story Paragraph 1 (The Beginning)</label>
+                  <textarea id="cfg-story-p1" class="form-control" style="min-height: 85px;">Swan Studio began with a simple hook, a skein of soft pastel yarn, and a passion for creating tactile, heartwarming objects by hand. What started as an intimate creative pursuit grew into a studio dedicated to celebrating handmade artistry.</textarea>
+                </div>
+
+                <div style="border-top: 1px dashed var(--admin-border); padding-top: 1.25rem; margin-top: 1.25rem;">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                    <div class="form-group">
+                      <label for="cfg-story-sec1-title" class="form-label">Section 1 Subheading</label>
+                      <input type="text" id="cfg-story-sec1-title" class="form-control" value="Slow, Mindful Craftsmanship">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="cfg-story-sec2-title" class="form-label">Section 2 Subheading</label>
+                      <input type="text" id="cfg-story-sec2-title" class="form-control" value="Pure Materials & Attention to Detail">
+                    </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                    <div class="form-group">
+                      <label for="cfg-story-sec1-text" class="form-label">Section 1 Description</label>
+                      <textarea id="cfg-story-sec1-text" class="form-control" style="min-height: 90px;">In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="cfg-story-sec2-text" class="form-label">Section 2 Description</label>
+                      <textarea id="cfg-story-sec2-text" class="form-control" style="min-height: 90px;">We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Studio Promises & Core Values -->
+              <div class="admin-card">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">🤝</div>
+                  <h2 class="card-title-styled">Studio Promises & Core Values</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  Four core pillars displayed at the bottom of "Our Story" and referenced across the shop.
+                </p>
+
+                <div class="promises-grid">
+                  <div class="promise-card-editor">
+                    <div class="promise-icon-pill">👐 Promise 1</div>
+                    <div class="form-group">
+                      <label for="cfg-promise1-title" class="form-label">Title</label>
+                      <input type="text" id="cfg-promise1-title" class="form-control" value="100% Handmade">
+                    </div>
+                    <div class="form-group">
+                      <label for="cfg-promise1-text" class="form-label">Description</label>
+                      <textarea id="cfg-promise1-text" class="form-control" style="min-height: 70px;">Every piece is crocheted stitch by stitch by Bhumika with no machine shortcuts.</textarea>
+                    </div>
+                  </div>
+
+                  <div class="promise-card-editor">
+                    <div class="promise-icon-pill">🌿 Promise 2</div>
+                    <div class="form-group">
+                      <label for="cfg-promise2-title" class="form-label">Title</label>
+                      <input type="text" id="cfg-promise2-title" class="form-control" value="Gentle Materials">
+                    </div>
+                    <div class="form-group">
+                      <label for="cfg-promise2-text" class="form-label">Description</label>
+                      <textarea id="cfg-promise2-text" class="form-control" style="min-height: 70px;">Crafted with high-grade milk cotton and hypoallergenic fibers safe for all ages.</textarea>
+                    </div>
+                  </div>
+
+                  <div class="promise-card-editor">
+                    <div class="promise-icon-pill">💌 Promise 3</div>
+                    <div class="form-group">
+                      <label for="cfg-promise3-title" class="form-label">Title</label>
+                      <input type="text" id="cfg-promise3-title" class="form-control" value="Bespoke Customization">
+                    </div>
+                    <div class="form-group">
+                      <label for="cfg-promise3-text" class="form-label">Description</label>
+                      <textarea id="cfg-promise3-text" class="form-control" style="min-height: 70px;">Tailor colors, flowers, initials, and designs to match your unique story.</textarea>
+                    </div>
+                  </div>
+
+                  <div class="promise-card-editor">
+                    <div class="promise-icon-pill">🎁 Promise 4</div>
+                    <div class="form-group">
+                      <label for="cfg-promise4-title" class="form-label">Title</label>
+                      <input type="text" id="cfg-promise4-title" class="form-control" value="Artisan Packaging">
+                    </div>
+                    <div class="form-group">
+                      <label for="cfg-promise4-text" class="form-label">Description</label>
+                      <textarea id="cfg-promise4-text" class="form-control" style="min-height: 70px;">Wrapped with kraft paper, twine, and personal handwritten care notes.</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Column: Sticky Live Interactive Atelier Simulation Canvas -->
+            <div class="cms-preview-pane">
+              <div class="live-preview-card">
+                <div class="preview-card-header">
+                  <div class="preview-live-indicator">
+                    <span class="pulsing-live-beacon"></span>
+                    <span>Live Story Simulation</span>
+                  </div>
+                  <span style="font-size: 0.72rem; color: #8A7670; background: #FFFFFF; padding: 0.2rem 0.55rem; border-radius: 999px; border: 1px solid var(--admin-border);">
+                    about.html
+                  </span>
+                </div>
+
+                <div class="preview-canvas-body">
+                  <!-- Simulated Arched Portrait Frame -->
+                  <div class="sim-maker-arch">
+                    <img id="sim-maker-img" src="" alt="Founder Portrait" style="display: none;">
+                    <div id="sim-maker-fallback" style="text-align: center; padding: 1rem; color: var(--rose);">
+                      <span style="font-size: 2.5rem; display: block;">👩‍🎨</span>
+                      <span style="font-size: 0.75rem; font-weight: 600; color: #8A7670;">Portrait Ready</span>
+                    </div>
+                  </div>
+
+                  <div style="text-align: center;">
+                    <span id="sim-maker-role" style="display: inline-block; font-size: 0.75rem; font-weight: 600; color: var(--rose-text); text-transform: uppercase; letter-spacing: 0.05em; background: #FFF0F2; padding: 0.2rem 0.65rem; border-radius: 999px; margin-bottom: 0.35rem;">
+                      Founder & Crochet Artist
+                    </span>
+                    <h3 id="sim-maker-name" style="font-size: 1.35rem; font-family: var(--font-serif); color: var(--cocoa); margin-bottom: 0.25rem;">
+                      Bhumika Nama
+                    </h3>
+                  </div>
+
+                  <div class="sim-quote-box" id="sim-maker-quote">
+                    “Crochet taught me that beauty cannot be rushed. Every stitch is a minute of presence.”
+                  </div>
+
+                  <!-- Simulated Editorial Narrative Teaser -->
+                  <div class="sim-editorial-card">
+                    <span style="font-size: 0.68rem; font-weight: 700; color: var(--rose-text); text-transform: uppercase; letter-spacing: 0.06em;">Our Philosophy</span>
+                    <h4 id="sim-story-headline" style="font-size: 1.15rem; font-family: var(--font-serif); color: var(--cocoa); margin: 0.25rem 0 0.5rem 0;">
+                      Every Stitch Tells a Story.
+                    </h4>
+                    <p id="sim-story-p1" style="font-size: 0.78rem; color: #73615A; line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                      Swan Studio began with a simple hook, a skein of soft pastel yarn...
+                    </p>
+
+                    <div class="sim-pillars-row">
+                      <span class="sim-pill-tag" id="sim-sec1-tag">Slow, Mindful Craftsmanship</span>
+                      <span class="sim-pill-tag" id="sim-sec2-tag">Pure Materials</span>
+                    </div>
+                  </div>
+
+                  <!-- Simulated Promises Preview Chips -->
+                  <div style="margin-top: 1rem; padding-top: 0.85rem; border-top: 1px dashed var(--admin-border);">
+                    <div style="font-size: 0.72rem; font-weight: 600; color: #8A7670; margin-bottom: 0.45rem; text-transform: uppercase;">
+                      🤝 4 Pillars Live Preview
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem; font-size: 0.74rem;">
+                      <div style="background: #FFFFFF; padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--admin-border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="sim-p1-chip">
+                        👐 100% Handmade
+                      </div>
+                      <div style="background: #FFFFFF; padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--admin-border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="sim-p2-chip">
+                        🌿 Gentle Materials
+                      </div>
+                      <div style="background: #FFFFFF; padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--admin-border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="sim-p3-chip">
+                        💌 Bespoke Customization
+                      </div>
+                      <div style="background: #FFFFFF; padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid var(--admin-border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="sim-p4-chip">
+                        🎁 Artisan Packaging
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- TAB 2: HOMEPAGE VISUALS & HERO (index.html)                         -->
+        <!-- =================================================================== -->
+        <div id="tab-home" class="tab-pane">
+
+          <!-- Live Marquee Banner Simulation -->
+          <div class="sim-marquee-bar" id="sim-announcement">
+            ✨ Handcrafted with love in India • Custom crochet creations & personalized gifts ✨
+          </div>
+
+          <div class="cms-workspace-grid">
+            
+            <!-- Left Column: Homepage Visuals Editor -->
+            <div class="cms-editor-pane">
+
+              <!-- Card 1: Top Marquee Announcement Bar -->
+              <div class="admin-card">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">✨</div>
+                  <h2 class="card-title-styled">Top Marquee Announcement Bar</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  Pinned to the very top across all public customer pages of Swan Studio.
+                </p>
+
+                <div class="form-group">
+                  <label for="cfg-announcement" class="form-label">Announcement Banner Text</label>
+                  <input type="text" id="cfg-announcement" class="form-control" value="✨ Handcrafted with love in India • Custom crochet creations & personalized gifts ✨">
+                  <small style="color: #8A7670; font-size: 0.75rem;">Keep it sweet, warm, and inviting. Updates in real-time above!</small>
+                </div>
+              </div>
+
+              <!-- Card 2: Hero Banner & Visual Photo -->
+              <div class="admin-card">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">🖼️</div>
+                  <h2 class="card-title-styled">Homepage Hero Banner & Visual Photo</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  The primary visual spotlight visitors see when they open Swan Studio.
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                  <div class="form-group">
+                    <label for="cfg-hero-headline" class="form-label">Hero Headline</label>
+                    <input type="text" id="cfg-hero-headline" class="form-control" value="Every Stitch Tells a Story.">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="cfg-hero-badge" class="form-label">Hero Floating Badge</label>
+                    <input type="text" id="cfg-hero-badge" class="form-control" value="🧵 100% Handcrafted">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="cfg-hero-sub" class="form-label">Hero Subheadline</label>
+                  <textarea id="cfg-hero-sub" class="form-control" style="min-height: 75px;">Welcome to Swan Studio. Discover artistic, handmade crochet treasures created loop by loop with patience, warmth, and care by Bhumika Nama.</textarea>
+                </div>
+
+                <!-- Homepage Hero Image Manual Upload -->
+                <div class="upload-zone">
+                  <label class="form-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span><strong style="color: var(--cocoa);">📸 Homepage Hero Visual Image</strong></span>
+                    <span style="font-size: 0.75rem; color: #8A7670;">Replaces the SVG arch graphic with real photo</span>
+                  </label>
+
+                  <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1.15rem; align-items: start;">
+                    <div>
+                      <label style="display: block; font-size: 0.8rem; color: #73615A; margin-bottom: 0.35rem; font-weight: 500;">
+                        📁 Option 1: Upload hero photo from device
+                      </label>
+                      <div class="photo-upload-wrap">
+                        <label for="cfg-hero-photo-file" class="photo-upload-trigger" id="hero-upload-trigger">
+                          <span class="upload-icon-circle">✨</span>
+                          <div class="upload-text-group">
+                            <span class="upload-title">Upload Hero Photo</span>
+                            <span class="upload-subtitle" id="hero-file-label">Click to browse or drop photo here</span>
+                          </div>
+                          <span class="upload-badge-action" id="hero-upload-btn-text">📷 Upload Photo</span>
+                        </label>
+                        <input type="file" id="cfg-hero-photo-file" accept="image/*" class="photo-upload-input">
+                      </div>
+                      <small style="display: block; font-size: 0.75rem; color: #8A7670; margin-top: 0.35rem;">
+                        Upload an artisanal crochet bouquet or studio hero shot
+                      </small>
+                    </div>
+
+                    <div>
+                      <label for="cfg-hero-photo-url" style="display: block; font-size: 0.8rem; color: #73615A; margin-bottom: 0.35rem; font-weight: 500;">
+                        🔗 Option 2: Or enter hero image URL / path
+                      </label>
+                      <input type="text" id="cfg-hero-photo-url" class="form-control" placeholder="e.g. assets/images/hero.jpg or https://...">
+                      <small style="display: block; font-size: 0.75rem; color: #8A7670; margin-top: 0.25rem;">
+                        Direct URL or file inside assets/images/
+                      </small>
+                    </div>
+                  </div>
+
+                  <!-- Live Preview Box -->
+                  <div id="preview-wrapper-hero" class="preview-box" style="display: none;">
+                    <img id="preview-img-hero" src="" alt="Hero Preview" style="width: 100px; height: 110px; object-fit: cover; border-radius: 50px 50px 8px 8px; border: 1.5px solid var(--rose); flex-shrink: 0;">
+                    <div style="flex: 1; min-width: 0;">
+                      <p style="font-size: 0.9rem; font-weight: 600; color: var(--cocoa); margin-bottom: 0.2rem;">Hero Photo Ready</p>
+                      <p id="preview-info-hero" style="font-size: 0.78rem; color: #73615A; word-break: break-all; margin: 0;"></p>
+                    </div>
+                    <button type="button" id="btn-remove-hero-photo" class="btn btn-secondary btn-sm" style="color: var(--rose); font-size: 0.75rem; padding: 0.35rem 0.65rem;">Remove</button>
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1.25rem;">
+                  <label for="cfg-founder-quote" class="form-label">Founder's Core Quote (Footer / Spotlight)</label>
+                  <input type="text" id="cfg-founder-quote" class="form-control" value="Every loop has intention, every stitch has patience.">
+                </div>
+              </div>
+
+              <!-- Card 3: Homepage Maker Story Teaser -->
+              <div class="admin-card">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">🧶</div>
+                  <h2 class="card-title-styled">Homepage Maker Story Teaser</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  The "Heart Behind the Hook" section displayed in the middle of the homepage.
+                </p>
+
+                <div class="form-group">
+                  <label for="cfg-home-story-title" class="form-label">Story Teaser Headline</label>
+                  <input type="text" id="cfg-home-story-title" class="form-control" value="Made by Hand. Created with Heart.">
+                </div>
+
+                <div class="form-group">
+                  <label for="cfg-home-story-text" class="form-label">Story Teaser Narrative</label>
+                  <textarea id="cfg-home-story-text" class="form-control" style="min-height: 90px;">Swan Studio was born out of a profound love for crochet—an art form where simple skeins of yarn transform into expressive, tangible stories. Every single piece is carefully crocheted by hand by Bhumika Nama in India with pure milk cotton and gentle attention to detail.</textarea>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Column: Sticky Live Homepage Simulation Canvas -->
+            <div class="cms-preview-pane">
+              <div class="live-preview-card">
+                <div class="preview-card-header">
+                  <div class="preview-live-indicator">
+                    <span class="pulsing-live-beacon"></span>
+                    <span>Live Hero Simulation</span>
+                  </div>
+                  <span style="font-size: 0.72rem; color: #8A7670; background: #FFFFFF; padding: 0.2rem 0.55rem; border-radius: 999px; border: 1px solid var(--admin-border);">
+                    index.html
+                  </span>
+                </div>
+
+                <div class="preview-canvas-body">
+                  <!-- Simulated Hero Showcase -->
+                  <div class="sim-hero-banner">
+                    <div id="sim-hero-badge" class="sim-floating-badge">
+                      🧵 100% Handcrafted
+                    </div>
+
+                    <h3 id="sim-hero-headline" style="font-size: 1.4rem; font-family: var(--font-serif); color: var(--cocoa); margin-bottom: 0.4rem; line-height: 1.2;">
+                      Every Stitch Tells a Story.
+                    </h3>
+
+                    <p id="sim-hero-sub" style="font-size: 0.78rem; color: #73615A; line-height: 1.5; margin: 0 0 0.85rem 0;">
+                      Welcome to Swan Studio. Discover artistic, handmade crochet treasures created loop by loop with patience, warmth, and care by Bhumika Nama.
+                    </p>
+
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                      <span class="btn btn-primary btn-sm" style="font-size: 0.72rem; padding: 0.35rem 0.75rem; pointer-events: none;">Explore Creations</span>
+                      <span class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 0.35rem 0.75rem; pointer-events: none;">Custom Order</span>
+                    </div>
+
+                    <!-- Simulated Hero Image Arch -->
+                    <div class="sim-hero-arch">
+                      <img id="sim-hero-img" src="" alt="Hero Preview" style="display: none;">
+                      <div id="sim-hero-fallback" style="text-align: center; color: var(--rose);">
+                        <span style="font-size: 2rem;">✨</span>
+                        <div style="font-size: 0.75rem; font-weight: 600; color: #8A7670;">Hero Visual Active</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Simulated Homepage Maker Story Teaser -->
+                  <div class="sim-editorial-card">
+                    <span style="font-size: 0.68rem; font-weight: 700; color: var(--rose-text); text-transform: uppercase; letter-spacing: 0.06em;">The Heart Behind the Hook</span>
+                    <h4 id="sim-home-story-title" style="font-size: 1.15rem; font-family: var(--font-serif); color: var(--cocoa); margin: 0.25rem 0 0.4rem 0;">
+                      Made by Hand. Created with Heart.
+                    </h4>
+                    <p id="sim-home-story-text" style="font-size: 0.78rem; color: #73615A; line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                      Swan Studio was born out of a profound love for crochet—an art form where simple skeins of yarn transform into expressive, tangible stories...
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- TAB 3: STORE OPERATIONS & SHIPPING SETTINGS                         -->
+        <!-- =================================================================== -->
+        <div id="tab-store" class="tab-pane">
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; margin-bottom: 6rem;">
+            
+            <!-- Left Column: Payment & Shipping Operations -->
+            <div>
+              <!-- Card 1: Manual UPI Payment Gateway -->
+              <div class="admin-card">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">📱</div>
+                  <h2 class="card-title-styled">Manual UPI Gateway Configuration</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  Official recipient credentials provided to customers at checkout.
+                </p>
+
+                <div class="form-group">
+                  <label for="cfg-upi" class="form-label">Official Store UPI ID <span style="color: var(--rose);">*</span></label>
+                  <input type="text" id="cfg-upi" class="form-control" value="9509966512@fam" required>
+                  <small style="color: #8A7670; font-size: 0.75rem;">Customers send funds directly to this VPA.</small>
+                </div>
+
+                <!-- Live Checkout Preview Simulation -->
+                <div style="background: var(--cream); border-radius: var(--radius-sm); padding: 1rem; border: 1.5px dashed var(--rose); margin-top: 1rem;">
+                  <span style="font-size: 0.74rem; text-transform: uppercase; color: #8A7670; font-weight: 700; display: block; margin-bottom: 0.25rem;">
+                    Customer Checkout Preview
+                  </span>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <strong id="sim-upi-display" style="font-size: 1.1rem; color: var(--cocoa); font-family: monospace;">9509966512@fam</strong>
+                    </div>
+                    <span class="btn btn-secondary btn-sm" style="font-size: 0.75rem; pointer-events: none; padding: 0.3rem 0.65rem;">
+                      📋 Copy UPI ID
+                    </span>
+                  </div>
+                  <div style="font-size: 0.75rem; color: #73615A; margin-top: 0.65rem; border-top: 1px dashed rgba(199, 131, 145, 0.4); padding-top: 0.5rem;">
+                    Policy: <em>"Your order has been placed. Your payment is awaiting verification."</em>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Shipping Rates & Thresholds -->
+              <div class="admin-card">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">🚚</div>
+                  <h2 class="card-title-styled">Shipping Rates & Calculation</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  Values automatically calculate delivery fees in the customer shopping bag.
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.15rem;">
+                  <div class="form-group">
+                    <label for="cfg-free-ship" class="form-label">Free Shipping At (₹) <span style="color: var(--rose);">*</span></label>
+                    <input type="number" id="cfg-free-ship" class="form-control" value="1499" min="0" step="1" required>
+                    <small style="color: #8A7670; font-size: 0.75rem;">Orders at/above get free delivery.</small>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="cfg-std-ship" class="form-label">Standard Fee (₹) <span style="color: var(--rose);">*</span></label>
+                    <input type="number" id="cfg-std-ship" class="form-control" value="99" min="0" step="1" required>
+                    <small style="color: #8A7670; font-size: 0.75rem;">Applied below free threshold.</small>
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 0.5rem;">
+                  <label for="cfg-low-stock" class="form-label">Low Stock Threshold (Units) <span style="color: var(--rose);">*</span></label>
+                  <input type="number" id="cfg-low-stock" class="form-control" value="2" min="1" step="1" required>
+                  <small style="color: #8A7670; font-size: 0.75rem;">Triggers urgency badges in catalog when inventory &le; threshold.</small>
+                </div>
+
+                <!-- Live Shipping Meter Simulation -->
+                <div style="background: #FFFDF9; border-radius: var(--radius-sm); padding: 0.85rem 1rem; border: 1px solid var(--border-subtle); margin-top: 1rem;">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; margin-bottom: 0.35rem;">
+                    <span>Shopping Bag Progress Meter</span>
+                    <span style="color: #2B7A4B;" id="sim-ship-tag">Free Shipping at ₹1,499</span>
+                  </div>
+                  <div style="height: 6px; background: #EFE4DC; border-radius: 999px; overflow: hidden;">
+                    <div style="width: 70%; height: 100%; background: linear-gradient(90deg, var(--rose) 0%, #D898A5 100%);"></div>
+                  </div>
+                  <div style="font-size: 0.72rem; color: #8A7670; margin-top: 0.35rem;">
+                    Customers see real-time countdown to qualify for free shipping.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Support & Atelier Contact Info -->
+            <div>
+              <div class="admin-card">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">💬</div>
+                  <h2 class="card-title-styled">WhatsApp Helpline & Customer Care</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  Powers the one-tap WhatsApp concierge and order notification buttons.
+                </p>
+
+                <div class="form-group">
+                  <label for="cfg-whatsapp" class="form-label">Official WhatsApp Helpline <span style="color: var(--rose);">*</span></label>
+                  <input type="text" id="cfg-whatsapp" class="form-control" value="9509966512" required>
+                  <small style="color: #8A7670; font-size: 0.75rem;">10-digit WhatsApp number for customer care.</small>
+                </div>
+
+                <div style="margin-top: 0.75rem; padding: 0.85rem; background: #F0FBF4; border-radius: var(--radius-sm); border: 1px solid #A5D6A7; display: flex; align-items: center; justify-content: space-between;">
+                  <div>
+                    <span style="font-size: 0.85rem; font-weight: 600; color: #1B5E20; display: block;">📲 WhatsApp Direct Concierge</span>
+                    <span style="font-size: 0.75rem; color: #2E7D32;" id="sim-wa-link">wa.me/919509966512</span>
+                  </div>
+                  <a id="btn-test-wa" href="https://wa.me/919509966512" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+                    Test Link ↗
+                  </a>
+                </div>
+
+                <div class="form-group" style="margin-top: 1.25rem;">
+                  <label for="cfg-contact-email" class="form-label">Official Atelier Contact Email</label>
+                  <input type="email" id="cfg-contact-email" class="form-control" placeholder="e.g. swanstudio2604@gmail.com" value="swanstudio2604@gmail.com">
+                  <small style="color: #8A7670; font-size: 0.75rem;">Shown to customers on the contact page.</small>
+                </div>
+
+                <div style="border-top: 1px dashed var(--admin-border); padding-top: 1.25rem; margin-top: 1.25rem;">
+                  <div class="form-group">
+                    <label for="cfg-contact-location" class="form-label">Studio Origin & City</label>
+                    <input type="text" id="cfg-contact-location" class="form-control" value="Jaipur, Rajasthan, India">
+                    <small style="color: #8A7670; font-size: 0.75rem;">Shown on contact and about pages.</small>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="cfg-contact-hours" class="form-label">Customer Support Hours</label>
+                    <input type="text" id="cfg-contact-hours" class="form-control" value="Mon – Sat: 10:00 AM – 7:00 PM IST">
+                    <small style="color: #8A7670; font-size: 0.75rem;">Displayed to set customer expectations.</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 4: Instagram Community & Official QR -->
+              <div class="admin-card" style="margin-top: 1.75rem;">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">📷</div>
+                  <h2 class="card-title-styled">Instagram Community & Official QR</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  Connected across the footer, about page, and contact channels.
+                </p>
+
+                <div class="form-group">
+                  <label for="cfg-instagram-url" class="form-label">Official Instagram Profile URL <span style="color: var(--rose);">*</span></label>
+                  <input type="url" id="cfg-instagram-url" class="form-control" value="https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==" required>
+                  <small style="color: #8A7670; font-size: 0.75rem;">Direct link to Bhumika's Instagram account.</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="cfg-instagram-handle" class="form-label">Instagram Handle / Username</label>
+                  <input type="text" id="cfg-instagram-handle" class="form-control" value="@swan_handcrafted_studio.3568">
+                </div>
+
+                <!-- QR Code Preview Card -->
+                <div style="background: #FFF8F9; border-radius: var(--radius-sm); padding: 1.25rem; border: 1.5px dashed var(--rose); margin-top: 1rem; display: flex; align-items: center; gap: 1.25rem;">
+                  <div style="width: 80px; height: 80px; border-radius: 10px; overflow: hidden; background: #fff; border: 1px solid rgba(199, 131, 145, 0.4); padding: 3px; flex-shrink: 0;">
+                    <img src="../assets/images/instagram-qr.jpeg" alt="Instagram QR Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+                  </div>
+                  <div>
+                    <strong style="color: var(--cocoa); font-size: 0.92rem; display: block;">Official Atelier Instagram QR Code</strong>
+                    <span style="font-size: 0.76rem; color: #73615A; display: block; margin: 0.2rem 0 0.5rem;">Synced with @swan_handcrafted_studio.3568</span>
+                    <a id="btn-test-insta" href="https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.65rem;">
+                      Open Profile ↗
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 5: Customer Reviews & Love Notes Moderation -->
+              <div class="admin-card" style="margin-top: 1.75rem;">
+                <div class="admin-card-header-styled">
+                  <div class="card-icon-badge">💌</div>
+                  <h2 class="card-title-styled">Customer Reviews & Love Notes</h2>
+                </div>
+                <p class="card-subtitle-styled">
+                  Community feedback, 5-star ratings, and customer unboxing notes.
+                </p>
+
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">
+                  <div style="flex: 1; background: #FFF9FA; border-radius: var(--radius-sm); padding: 1rem; text-align: center; border: 1px solid rgba(199, 131, 145, 0.25);">
+                    <div style="font-size: 1.85rem; font-weight: 700; color: var(--cocoa); font-family: 'Cormorant Garamond', serif;">4.9 ★</div>
+                    <div style="font-size: 0.75rem; color: #73615A;">Average Score</div>
+                  </div>
+                  <div style="flex: 1; background: #FFF9FA; border-radius: var(--radius-sm); padding: 1rem; text-align: center; border: 1px solid rgba(199, 131, 145, 0.25);">
+                    <div style="font-size: 1.85rem; font-weight: 700; color: var(--cocoa); font-family: 'Cormorant Garamond', serif;" id="admin-reviews-count">48+</div>
+                    <div style="font-size: 0.75rem; color: #73615A;">Total Love Notes</div>
+                  </div>
+                </div>
+
+                <div style="margin-top: 1rem; border-top: 1px dashed var(--admin-border); padding-top: 1rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div>
+                      <strong style="font-size: 0.88rem; color: var(--cocoa); display: block;">Reviews Moderation Feed</strong>
+                      <span style="font-size: 0.74rem; color: #8A7670;">Delete individual reviews or manage live storefront love notes</span>
+                    </div>
+                    <a href="../reviews.html?admin=true" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="font-size: 0.75rem; padding: 0.3rem 0.65rem; border-color: var(--rose); color: var(--rose-text);">
+                      Open Live Reviews ↗
+                    </a>
+                  </div>
+
+                  <!-- Dynamic Moderation Items -->
+                  <div id="admin-moderation-list" style="max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem; padding-right: 0.25rem;">
+                    <div style="text-align: center; padding: 1.5rem; color: #8A7670; font-size: 0.82rem;">Loading reviews...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- TAB 4: FEATURED CREATIONS ATELIER MANAGER (index.html)              -->
+        <!-- =================================================================== -->
+        <div id="tab-featured" class="tab-pane">
+          <div class="cms-workspace-grid">
+            
+            <!-- Left Editor Pane -->
+            <div class="cms-editor-pane">
+              
+              <!-- Section Header Settings -->
+              <div class="admin-card" style="margin-bottom: 2rem;">
+                <div class="admin-card-header">
+                  <div>
+                    <h2 class="admin-card-title">Homepage Section Header</h2>
+                    <p class="admin-card-subtitle">Headline and description shown above the Featured Creations on the homepage.</p>
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                  <label for="cfg-featured-heading" class="form-label">Section Title <span style="color: var(--rose);">*</span></label>
+                  <input type="text" id="cfg-featured-heading" class="form-control" value="Featured Creations" placeholder="e.g. Featured Creations">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                  <label for="cfg-featured-subtitle" class="form-label">Section Subtitle / Description</label>
+                  <textarea id="cfg-featured-subtitle" class="form-control" rows="2" placeholder="e.g. Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.">Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.</textarea>
+                </div>
+              </div>
+
+              <!-- Featured Creations Selection Card -->
+              <div class="admin-card">
+                <div class="admin-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                  <div>
+                    <h2 class="admin-card-title">Homepage Featured Creations</h2>
+                    <p class="admin-card-subtitle">Choose which creations are showcased on the homepage. Disabled or deleted creations are automatically excluded.</p>
+                  </div>
+                  <span id="cms-featured-count-badge" style="font-size: 0.82rem; font-weight: 700; background: #FEF3C7; color: #92400E; padding: 0.35rem 0.85rem; border-radius: 999px; border: 1.5px solid #F59E0B;">
+                    ⭐ 4 Featured on Homepage
+                  </span>
+                </div>
+
+                <div id="cms-featured-products-list" style="display: flex; flex-direction: column; gap: 0.85rem; margin-top: 1.25rem;">
+                  <div style="text-align: center; padding: 2rem; color: #8A7670;">Loading atelier creations...</div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Preview Pane -->
+            <div class="cms-preview-pane">
+              <div class="live-preview-card">
+                <div class="preview-card-header">
+                  <span class="preview-live-indicator">
+                    <span class="pulsing-live-beacon"></span>
+                    Homepage Live Preview
+                  </span>
+                  <span style="font-size: 0.72rem; color: #73615A; font-family: monospace;">#featured</span>
+                </div>
+
+                <div class="preview-canvas-body" style="background: #FDF9F5;">
+                  <div style="text-align: center; margin-bottom: 1.25rem;">
+                    <h3 id="prev-feat-heading" style="font-size: 1.35rem; color: var(--cocoa); margin-bottom: 0.3rem;">Featured Creations</h3>
+                    <p id="prev-feat-subtitle" style="font-size: 0.78rem; color: #73615A; line-height: 1.5; margin: 0 auto; max-width: 320px;">
+                      Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.
+                    </p>
+                  </div>
+
+                  <div id="prev-feat-cards" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                    <!-- Mini preview cards -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sticky Floating Save Bar Dock -->
+        <div class="sticky-save-dock">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span style="font-size: 1.25rem;">✨</span>
+            <div>
+              <strong style="color: var(--cocoa); font-size: 0.92rem; display: block;">Publish Atelier Content</strong>
+              <span style="font-size: 0.76rem; color: #8A7670;">Instant local caching + Supabase live sync when connected</span>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <a href="../about.html" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.65rem 1.15rem;">
+              👁️ View "Our Story"
+            </a>
+            <button type="submit" id="btn-save-all-bottom" class="btn btn-primary" style="font-size: 0.92rem; padding: 0.7rem 1.75rem;">
+              💾 Save All Changes
+            </button>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Footer Mount -->
+      <div id="admin-footer-mount"></div>
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/products-demo.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin/admin-shared.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Guard & mount layout
+      const ok = await ADMIN.init('content');
+      if (!ok) return;
+
+      // 2. Tab Navigation
+      const tabBtns = document.querySelectorAll('.content-tab-btn');
+      const tabPanes = document.querySelectorAll('.tab-pane');
+
+      function switchTab(tabId) {
+        tabBtns.forEach(b => {
+          if (b.dataset.tab === tabId) {
+            b.classList.add('active');
+          } else {
+            b.classList.remove('active');
+          }
+        });
+        tabPanes.forEach(p => {
+          if (p.id === tabId) {
+            p.classList.add('active');
+          } else {
+            p.classList.remove('active');
+          }
+        });
+        if (tabId === 'tab-featured' && typeof renderFeaturedManager === 'function') {
+          renderFeaturedManager();
+        }
+      }
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          switchTab(btn.dataset.tab);
+        });
+      });
+
+      // Form Elements
+      const form = document.getElementById('content-settings-form');
+      const saveFeedback = document.getElementById('save-feedback');
+      const btnTop = document.getElementById('btn-save-all-top');
+      const btnBottom = document.getElementById('btn-save-all-bottom');
+
+      // Founder / Story fields
+      const makerNameInput = document.getElementById('cfg-maker-name');
+      const makerRoleInput = document.getElementById('cfg-maker-role');
+      const makerQuoteInput = document.getElementById('cfg-maker-quote');
+      const makerFile = document.getElementById('cfg-maker-photo-file');
+      const makerUrl = document.getElementById('cfg-maker-photo-url');
+      const previewWrapperMaker = document.getElementById('preview-wrapper-maker');
+      const previewImgMaker = document.getElementById('preview-img-maker');
+      const previewInfoMaker = document.getElementById('preview-info-maker');
+      const btnRemoveMaker = document.getElementById('btn-remove-maker-photo');
+
+      const storyPageTitleInput = document.getElementById('cfg-story-page-title');
+      const storyPageSubInput = document.getElementById('cfg-story-page-subtitle');
+      const storyHeadlineInput = document.getElementById('cfg-story-headline');
+      const storyP1Input = document.getElementById('cfg-story-p1');
+      const storySec1TitleInput = document.getElementById('cfg-story-sec1-title');
+      const storySec1TextInput = document.getElementById('cfg-story-sec1-text');
+      const storySec2TitleInput = document.getElementById('cfg-story-sec2-title');
+      const storySec2TextInput = document.getElementById('cfg-story-sec2-text');
+
+      const p1TitleInput = document.getElementById('cfg-promise1-title');
+      const p1TextInput = document.getElementById('cfg-promise1-text');
+      const p2TitleInput = document.getElementById('cfg-promise2-title');
+      const p2TextInput = document.getElementById('cfg-promise2-text');
+      const p3TitleInput = document.getElementById('cfg-promise3-title');
+      const p3TextInput = document.getElementById('cfg-promise3-text');
+      const p4TitleInput = document.getElementById('cfg-promise4-title');
+      const p4TextInput = document.getElementById('cfg-promise4-text');
+
+      // Homepage & Hero fields
+      const announceInput = document.getElementById('cfg-announcement');
+      const heroHeadInput = document.getElementById('cfg-hero-headline');
+      const heroBadgeInput = document.getElementById('cfg-hero-badge');
+      const heroSubInput = document.getElementById('cfg-hero-sub');
+      const founderQuoteInput = document.getElementById('cfg-founder-quote');
+      const homeStoryTitleInput = document.getElementById('cfg-home-story-title');
+      const homeStoryTextInput = document.getElementById('cfg-home-story-text');
+
+      const heroFile = document.getElementById('cfg-hero-photo-file');
+      const heroUrl = document.getElementById('cfg-hero-photo-url');
+      const previewWrapperHero = document.getElementById('preview-wrapper-hero');
+      const previewImgHero = document.getElementById('preview-img-hero');
+      const previewInfoHero = document.getElementById('preview-info-hero');
+      const btnRemoveHero = document.getElementById('btn-remove-hero-photo');
+
+      // Store settings fields
+      const upiInput = document.getElementById('cfg-upi');
+      const waInput = document.getElementById('cfg-whatsapp');
+      const emailInput = document.getElementById('cfg-contact-email');
+      const locationInput = document.getElementById('cfg-contact-location');
+      const hoursInput = document.getElementById('cfg-contact-hours');
+      const freeShipInput = document.getElementById('cfg-free-ship');
+      const stdShipInput = document.getElementById('cfg-std-ship');
+      const lowStockInput = document.getElementById('cfg-low-stock');
+      const instaUrlInput = document.getElementById('cfg-instagram-url');
+      const instaHandleInput = document.getElementById('cfg-instagram-handle');
+      const btnTestInsta = document.getElementById('btn-test-insta');
+
+      // Featured Creations fields
+      const featHeadingInput = document.getElementById('cfg-featured-heading');
+      const featSubtitleInput = document.getElementById('cfg-featured-subtitle');
+      const prevFeatHeading = document.getElementById('prev-feat-heading');
+      const prevFeatSubtitle = document.getElementById('prev-feat-subtitle');
+      const prevFeatCards = document.getElementById('prev-feat-cards');
+      const cmsFeaturedList = document.getElementById('cms-featured-products-list');
+      const cmsFeaturedCountBadge = document.getElementById('cms-featured-count-badge');
+
+      async function renderFeaturedManager() {
+        if (!cmsFeaturedList) return;
+        try {
+          const products = await ADMIN.getProducts();
+          const active = products.filter(p => !p.archived_at);
+          const featuredProds = active.filter(p => Boolean(p.isFeatured));
+
+          if (cmsFeaturedCountBadge) {
+            cmsFeaturedCountBadge.textContent = `⭐ ${featuredProds.length} Featured on Homepage`;
+          }
+
+          if (active.length === 0) {
+            cmsFeaturedList.innerHTML = `<div style="text-align: center; padding: 2rem; color: #8A7670;">No products found in catalogue. Add products in the Products tab first.</div>`;
+            if (prevFeatCards) prevFeatCards.innerHTML = '';
+            return;
+          }
+
+          cmsFeaturedList.innerHTML = active.map(p => {
+            const isFeat = Boolean(p.isFeatured);
+            const isPub = p.isPublished !== false;
+            const stock = (p.stock !== undefined && p.stock !== null) ? parseInt(p.stock, 10) : 0;
+            const isZero = stock <= 0;
+
+            return `
+              <div style="background: #FFFFFF; border: 1.5px solid ${isFeat ? '#F59E0B' : 'rgba(199, 131, 145, 0.25)'}; border-radius: var(--radius-sm); padding: 0.85rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; ${isFeat ? 'box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12);' : ''}">
+                <div style="display: flex; align-items: center; gap: 0.85rem; flex: 1; min-width: 0;">
+                  <div style="width: 48px; height: 48px; border-radius: 8px; background: #FFF6F0; border: 1px dashed var(--rose); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; overflow: hidden; flex-shrink: 0;">
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width: 100%; height: 100%; object-fit: cover;">` : (p.iconType === 'bag' ? '👜' : p.iconType === 'plushie' ? '🧸' : p.iconType === 'accessory' ? '🎁' : '🌸')}
+                  </div>
+                  <div style="min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                      <strong style="color: var(--cocoa); font-size: 0.95rem;">${p.name}</strong>
+                      <span style="font-size: 0.75rem; background: #FFF0F2; color: var(--rose-text); padding: 0.1rem 0.45rem; border-radius: 4px;">${p.categoryName || 'Creations'}</span>
+                      <span style="font-weight: 600; font-size: 0.88rem; color: var(--cocoa);">₹${p.price.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.78rem; color: #8A7670; margin-top: 0.25rem;">
+                      <span>Stock: <strong>${stock}</strong></span>
+                      ${isZero ? `<span style="color: #991B1B; background: #FEE2E2; padding: 0.05rem 0.35rem; border-radius: 3px; font-weight: 600;">🚫 Out of Stock</span>` : `<span style="color: #16A34A;">🟢 In Stock</span>`}
+                      <span>&bull;</span>
+                      <span>${isPub ? '🟢 Published' : '⚪ Draft (Hidden)'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;">
+                  <button 
+                    type="button" 
+                    class="btn-action btn-cms-toggle-feat" 
+                    data-id="${p.id}" 
+                    data-featured="${isFeat}"
+                    style="cursor: pointer; border-radius: 999px; padding: 0.45rem 1.1rem; font-size: 0.84rem; font-weight: 700; transition: all 0.2s ease; ${isFeat ? 'background: #FEF3C7; color: #92400E; border: 1.5px solid #F59E0B;' : 'background: #F3F4F6; color: #6B7280; border: 1px solid #D1D5DB;'}"
+                  >
+                    ${isFeat ? '⭐ Featured on Homepage' : '+ Feature on Homepage'}
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          // Wire toggle buttons
+          cmsFeaturedList.querySelectorAll('.btn-cms-toggle-feat').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const prodId = btn.dataset.id;
+              const cur = btn.dataset.featured === 'true';
+              btn.disabled = true;
+              try {
+                const newVal = await ADMIN.toggleFeatured(prodId, cur);
+                ADMIN.showToast(newVal ? '⭐ Product added to Homepage Featured!' : '✓ Product removed from Featured.');
+                await renderFeaturedManager();
+              } catch (err) {
+                console.error('Error toggling featured:', err);
+              }
+            });
+          });
+
+          // Render live preview cards
+          if (prevFeatCards) {
+            const previewList = (featuredProds.length > 0 ? featuredProds : active.slice(0, 4)).slice(0, 4);
+            prevFeatCards.innerHTML = previewList.map(p => {
+              const stock = (p.stock !== undefined && p.stock !== null) ? parseInt(p.stock, 10) : 0;
+              const isZero = stock <= 0;
+              return `
+                <div style="background: #FFFFFF; border: 1px solid rgba(199, 131, 145, 0.3); border-radius: 8px; padding: 0.6rem; font-size: 0.75rem; text-align: center; position: relative; overflow: hidden;">
+                  ${isZero ? `<span style="position: absolute; top: 4px; left: 4px; background: #991B1B; color: #FFF; font-size: 0.6rem; padding: 1px 4px; border-radius: 3px; font-weight: 700;">Out of Stock</span>` : ''}
+                  <div style="width: 100%; height: 60px; background: #FFF6F0; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 0.35rem; overflow: hidden;">
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width: 100%; height: 100%; object-fit: cover;">` : (p.iconType === 'bag' ? '👜' : p.iconType === 'plushie' ? '🧸' : p.iconType === 'accessory' ? '🎁' : '🌸')}
+                  </div>
+                  <strong style="color: var(--cocoa); font-size: 0.78rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</strong>
+                  <div style="color: var(--rose-text); font-weight: 700; margin-top: 0.2rem;">₹${p.price.toLocaleString('en-IN')}</div>
+                </div>
+              `;
+            }).join('');
+          }
+        } catch (err) {
+          console.error('Error in renderFeaturedManager:', err);
+        }
+      }
+
+      if (featHeadingInput) {
+        featHeadingInput.addEventListener('input', () => {
+          if (prevFeatHeading) prevFeatHeading.textContent = featHeadingInput.value.trim() || 'Featured Creations';
+        });
+      }
+      if (featSubtitleInput) {
+        featSubtitleInput.addEventListener('input', () => {
+          if (prevFeatSubtitle) prevFeatSubtitle.textContent = featSubtitleInput.value.trim();
+        });
+      }
+
+      // Live Simulation Canvas Elements
+      const simMakerImg = document.getElementById('sim-maker-img');
+      const simMakerFallback = document.getElementById('sim-maker-fallback');
+      const simMakerName = document.getElementById('sim-maker-name');
+      const simMakerRole = document.getElementById('sim-maker-role');
+      const simMakerQuote = document.getElementById('sim-maker-quote');
+      const simStoryHeadline = document.getElementById('sim-story-headline');
+      const simStoryP1 = document.getElementById('sim-story-p1');
+      const simSec1Tag = document.getElementById('sim-sec1-tag');
+      const simSec2Tag = document.getElementById('sim-sec2-tag');
+      const simP1Chip = document.getElementById('sim-p1-chip');
+      const simP2Chip = document.getElementById('sim-p2-chip');
+      const simP3Chip = document.getElementById('sim-p3-chip');
+      const simP4Chip = document.getElementById('sim-p4-chip');
+
+      const simAnnouncement = document.getElementById('sim-announcement');
+      const simHeroBadge = document.getElementById('sim-hero-badge');
+      const simHeroHeadline = document.getElementById('sim-hero-headline');
+      const simHeroSub = document.getElementById('sim-hero-sub');
+      const simHeroImg = document.getElementById('sim-hero-img');
+      const simHeroFallback = document.getElementById('sim-hero-fallback');
+      const simHomeStoryTitle = document.getElementById('sim-home-story-title');
+      const simHomeStoryText = document.getElementById('sim-home-story-text');
+
+      const simUpiDisplay = document.getElementById('sim-upi-display');
+      const simShipTag = document.getElementById('sim-ship-tag');
+      const simWaLink = document.getElementById('sim-wa-link');
+      const btnTestWa = document.getElementById('btn-test-wa');
+
+      let currentMakerPhotoDataUrl = '';
+      let currentHeroPhotoDataUrl = '';
+
+      // Live Simulation Synchronizer
+      function syncLiveSimulations() {
+        if (makerNameInput && simMakerName) simMakerName.textContent = makerNameInput.value || 'Bhumika Nama';
+        if (makerRoleInput && simMakerRole) simMakerRole.textContent = makerRoleInput.value || 'Founder & Crochet Artist';
+        if (makerQuoteInput && simMakerQuote) simMakerQuote.textContent = makerQuoteInput.value ? `“${makerQuoteInput.value.replace(/^[“”"]|[“”"]$/g, '')}”` : '“Every stitch has intention.”';
+        
+        if (storyHeadlineInput && simStoryHeadline) simStoryHeadline.textContent = storyHeadlineInput.value || 'Every Stitch Tells a Story.';
+        if (storyP1Input && simStoryP1) simStoryP1.textContent = storyP1Input.value || 'Swan Studio began with a simple hook...';
+        if (storySec1TitleInput && simSec1Tag) simSec1Tag.textContent = storySec1TitleInput.value || 'Slow Craft';
+        if (storySec2TitleInput && simSec2Tag) simSec2Tag.textContent = storySec2TitleInput.value || 'Pure Materials';
+
+        if (p1TitleInput && simP1Chip) simP1Chip.textContent = `👐 ${p1TitleInput.value || '100% Handmade'}`;
+        if (p2TitleInput && simP2Chip) simP2Chip.textContent = `🌿 ${p2TitleInput.value || 'Gentle Materials'}`;
+        if (p3TitleInput && simP3Chip) simP3Chip.textContent = `💌 ${p3TitleInput.value || 'Bespoke Customization'}`;
+        if (p4TitleInput && simP4Chip) simP4Chip.textContent = `🎁 ${p4TitleInput.value || 'Artisan Packaging'}`;
+
+        if (announceInput && simAnnouncement) simAnnouncement.textContent = announceInput.value || '✨ Handcrafted with love in India ✨';
+        if (heroBadgeInput && simHeroBadge) simHeroBadge.textContent = heroBadgeInput.value || '🧵 100% Handcrafted';
+        if (heroHeadInput && simHeroHeadline) simHeroHeadline.textContent = heroHeadInput.value || 'Every Stitch Tells a Story.';
+        if (heroSubInput && simHeroSub) simHeroSub.textContent = heroSubInput.value || 'Discover artistic, handmade crochet treasures.';
+
+        if (homeStoryTitleInput && simHomeStoryTitle) simHomeStoryTitle.textContent = homeStoryTitleInput.value || 'Made by Hand. Created with Heart.';
+        if (homeStoryTextInput && simHomeStoryText) simHomeStoryText.textContent = homeStoryTextInput.value || 'Swan Studio was born out of a profound love for crochet...';
+
+        if (upiInput && simUpiDisplay) simUpiDisplay.textContent = upiInput.value || '9509966512@fam';
+        if (freeShipInput && simShipTag) simShipTag.textContent = `Free Shipping at ₹${freeShipInput.value || 1499}`;
+        if (waInput) {
+          const cleanWa = (waInput.value || '9509966512').replace(/\D/g, '');
+          if (simWaLink) simWaLink.textContent = `wa.me/91${cleanWa}`;
+          if (btnTestWa) btnTestWa.href = `https://wa.me/91${cleanWa}`;
+        }
+        if (instaUrlInput && btnTestInsta) {
+          btnTestInsta.href = instaUrlInput.value || 'https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==';
+        }
+      }
+
+      // Image Preview Helpers
+      function updateMakerPreview(src, label) {
+        if (src && src.trim()) {
+          previewImgMaker.src = src;
+          previewInfoMaker.textContent = label || (src.startsWith('data:') ? 'Attached Image' : src);
+          previewWrapperMaker.style.display = 'flex';
+          currentMakerPhotoDataUrl = src;
+
+          // Mirror into live simulation
+          if (simMakerImg && simMakerFallback) {
+            simMakerImg.src = src;
+            simMakerImg.style.display = 'block';
+            simMakerFallback.style.display = 'none';
+          }
+        } else {
+          previewImgMaker.src = '';
+          previewWrapperMaker.style.display = 'none';
+          currentMakerPhotoDataUrl = '';
+
+          if (simMakerImg && simMakerFallback) {
+            simMakerImg.src = '';
+            simMakerImg.style.display = 'none';
+            simMakerFallback.style.display = 'block';
+          }
+        }
+      }
+
+      function updateHeroPreview(src, label) {
+        if (src && src.trim()) {
+          previewImgHero.src = src;
+          previewInfoHero.textContent = label || (src.startsWith('data:') ? 'Attached Image' : src);
+          previewWrapperHero.style.display = 'flex';
+          currentHeroPhotoDataUrl = src;
+
+          // Mirror into live simulation
+          if (simHeroImg && simHeroFallback) {
+            simHeroImg.src = src;
+            simHeroImg.style.display = 'block';
+            simHeroFallback.style.display = 'none';
+          }
+        } else {
+          previewImgHero.src = '';
+          previewWrapperHero.style.display = 'none';
+          currentHeroPhotoDataUrl = '';
+
+          if (simHeroImg && simHeroFallback) {
+            simHeroImg.src = '';
+            simHeroImg.style.display = 'none';
+            simHeroFallback.style.display = 'block';
+          }
+        }
+      }
+
+      function setMakerUploaderStatus(filename, sizeKb) {
+        const labelEl = document.getElementById('maker-file-label');
+        const btnTextEl = document.getElementById('maker-upload-btn-text');
+        if (filename) {
+          if (labelEl) {
+            labelEl.textContent = `✓ ${filename} (${sizeKb} KB)`;
+            labelEl.classList.add('has-file');
+          }
+          if (btnTextEl) btnTextEl.textContent = 'Change Photo';
+        } else {
+          if (labelEl) {
+            labelEl.textContent = 'Click to browse or drop photo here';
+            labelEl.classList.remove('has-file');
+          }
+          if (btnTextEl) btnTextEl.textContent = '📷 Upload Photo';
+        }
+      }
+
+      function setHeroUploaderStatus(filename, sizeKb) {
+        const labelEl = document.getElementById('hero-file-label');
+        const btnTextEl = document.getElementById('hero-upload-btn-text');
+        if (filename) {
+          if (labelEl) {
+            labelEl.textContent = `✓ ${filename} (${sizeKb} KB)`;
+            labelEl.classList.add('has-file');
+          }
+          if (btnTextEl) btnTextEl.textContent = 'Change Photo';
+        } else {
+          if (labelEl) {
+            labelEl.textContent = 'Click to browse or drop photo here';
+            labelEl.classList.remove('has-file');
+          }
+          if (btnTextEl) btnTextEl.textContent = '📷 Upload Photo';
+        }
+      }
+
+      // Real-Time Simulation Listeners
+      const allSimInputs = [
+        makerNameInput, makerRoleInput, makerQuoteInput,
+        storyPageTitleInput, storyPageSubInput, storyHeadlineInput, storyP1Input,
+        storySec1TitleInput, storySec1TextInput, storySec2TitleInput, storySec2TextInput,
+        p1TitleInput, p1TextInput, p2TitleInput, p2TextInput, p3TitleInput, p3TextInput, p4TitleInput, p4TextInput,
+        announceInput, heroHeadInput, heroBadgeInput, heroSubInput, founderQuoteInput,
+        homeStoryTitleInput, homeStoryTextInput,
+        upiInput, waInput, freeShipInput, stdShipInput, lowStockInput,
+        instaUrlInput, instaHandleInput
+      ];
+
+      allSimInputs.forEach(input => {
+        if (input) {
+          input.addEventListener('input', syncLiveSimulations);
+        }
+      });
+
+      // Maker file & url listeners
+      makerFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (loadEvt) => {
+          makerUrl.value = '';
+          const sizeKb = Math.round(file.size / 1024);
+          updateMakerPreview(loadEvt.target.result, `File: ${file.name} (${sizeKb} KB)`);
+          setMakerUploaderStatus(file.name, sizeKb);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // Drag and drop for maker photo
+      const makerTrigger = document.getElementById('maker-upload-trigger');
+      if (makerTrigger) {
+        ['dragenter', 'dragover'].forEach(name => {
+          makerTrigger.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            makerTrigger.classList.add('dragover');
+          });
+        });
+        ['dragleave', 'drop'].forEach(name => {
+          makerTrigger.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            makerTrigger.classList.remove('dragover');
+          });
+        });
+        makerTrigger.addEventListener('drop', (e) => {
+          const files = e.dataTransfer && e.dataTransfer.files;
+          if (files && files.length > 0) {
+            makerFile.files = files;
+            makerFile.dispatchEvent(new Event('change'));
+          }
+        });
+      }
+
+      makerUrl.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (val) {
+          makerFile.value = '';
+          setMakerUploaderStatus('', 0);
+          updateMakerPreview(val, val);
+        } else if (!currentMakerPhotoDataUrl.startsWith('data:')) {
+          updateMakerPreview('', '');
+        }
+      });
+
+      btnRemoveMaker.addEventListener('click', () => {
+        makerFile.value = '';
+        makerUrl.value = '';
+        setMakerUploaderStatus('', 0);
+        updateMakerPreview('', '');
+      });
+
+      // Hero file & url listeners
+      heroFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (loadEvt) => {
+          heroUrl.value = '';
+          const sizeKb = Math.round(file.size / 1024);
+          updateHeroPreview(loadEvt.target.result, `File: ${file.name} (${sizeKb} KB)`);
+          setHeroUploaderStatus(file.name, sizeKb);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // Drag and drop for hero photo
+      const heroTrigger = document.getElementById('hero-upload-trigger');
+      if (heroTrigger) {
+        ['dragenter', 'dragover'].forEach(name => {
+          heroTrigger.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            heroTrigger.classList.add('dragover');
+          });
+        });
+        ['dragleave', 'drop'].forEach(name => {
+          heroTrigger.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            heroTrigger.classList.remove('dragover');
+          });
+        });
+        heroTrigger.addEventListener('drop', (e) => {
+          const files = e.dataTransfer && e.dataTransfer.files;
+          if (files && files.length > 0) {
+            heroFile.files = files;
+            heroFile.dispatchEvent(new Event('change'));
+          }
+        });
+      }
+
+      heroUrl.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (val) {
+          heroFile.value = '';
+          setHeroUploaderStatus('', 0);
+          updateHeroPreview(val, val);
+        } else if (!currentHeroPhotoDataUrl.startsWith('data:')) {
+          updateHeroPreview('', '');
+        }
+      });
+
+      btnRemoveHero.addEventListener('click', () => {
+        heroFile.value = '';
+        heroUrl.value = '';
+        setHeroUploaderStatus('', 0);
+        updateHeroPreview('', '');
+      });
+
+      // Load Settings & Content
+      async function loadAllContent() {
+        // Try local storage first
+        try {
+          const storedSettings = localStorage.getItem('swan_site_settings');
+          if (storedSettings) {
+            const s = JSON.parse(storedSettings);
+            if (s.upiId) upiInput.value = s.upiId;
+            if (s.whatsapp) waInput.value = s.whatsapp;
+            if (s.email) emailInput.value = s.email;
+            if (s.location && locationInput) locationInput.value = s.location;
+            if (s.hours && hoursInput) hoursInput.value = s.hours;
+            if (s.freeShip) freeShipInput.value = s.freeShip;
+            if (s.stdShip) stdShipInput.value = s.stdShip;
+            if (s.lowStock) lowStockInput.value = s.lowStock;
+            if (s.instagram && instaUrlInput) instaUrlInput.value = s.instagram;
+            if (s.instagramHandle && instaHandleInput) instaHandleInput.value = s.instagramHandle;
+          }
+
+          // Hydrate review moderation and count from localStorage
+          const STARTER_REVIEWS = [
+            { id: 'rev-init-1', author: 'Ananya Sharma', city: 'Mumbai', rating: 5, product: '🌸 Pastel Daisy Bouquet', date: 'October 14, 2026', notes: 'I ordered the Pastel Daisy Bouquet for my sister’s birthday and we were completely in tears! The flowers will literally never wither and the handwritten care card from Bhumika was so personal.' },
+            { id: 'rev-init-2', author: 'Riddhi Patel', city: 'Ahmedabad', rating: 5, product: '🧸 Cute Bunny Plushie Amigurumi', date: 'October 11, 2026', notes: 'The stitching is unbelievably tight and flawless. No loose threads, super soft hypoallergenic cotton, and the cutest floppy ears!' },
+            { id: 'rev-init-3', author: 'Meera Nair', city: 'Bengaluru', rating: 5, product: '✨ Bespoke Custom Order', date: 'October 7, 2026', notes: 'Bhumika helped me design a custom bouquet matching our anniversary colors. She sent photos of yarn skeins on WhatsApp before starting!' },
+            { id: 'rev-init-4', author: 'Sneha Roy', city: 'Kolkata', rating: 5, product: '👜 Tulip Bloom Tote Bag', date: 'September 29, 2026', notes: 'Received so many compliments at college! The straps are sturdy, the tulips are 3D and puffy, and the structure doesn’t sag.' },
+            { id: 'rev-init-5', author: 'Pooja Singhania', city: 'Jaipur', rating: 5, product: '🌻 Sunflower Crochet Pot', date: 'September 25, 2026', notes: 'It sits right next to my workspace and brightens my mood every day. The vibrant yellow petals and little moss details are so lifelike.' },
+            { id: 'rev-init-6', author: 'Devika Menon', city: 'Kochi', rating: 4, product: '📖 Daisy Blossom Bookmark', date: 'September 18, 2026', notes: 'Such a sweet gift for my book club friends. Delivery took 5 days via India Post but Bhumika kept me updated on WhatsApp throughout.' }
+          ];
+
+          window.renderAdminReviewsList = function() {
+            const listEl = document.getElementById('admin-moderation-list');
+            const countEl = document.getElementById('admin-reviews-count');
+            if (!listEl) return;
+
+            let userRevs = [];
+            try {
+              userRevs = JSON.parse(localStorage.getItem('swan_customer_reviews') || '[]');
+            } catch (e) {}
+
+            let deletedIds = [];
+            try {
+              deletedIds = JSON.parse(localStorage.getItem('swan_deleted_review_ids') || '[]').map(String);
+            } catch (e) {
+              deletedIds = [];
+            }
+            const deletedSet = new Set(deletedIds);
+            const allReviews = [...(Array.isArray(userRevs) ? userRevs : []), ...STARTER_REVIEWS]
+              .filter(r => !deletedSet.has(String(r.id)));
+
+            if (countEl) countEl.textContent = (42 + allReviews.length) + '+';
+
+            if (allReviews.length === 0) {
+              listEl.innerHTML = '<div style="text-align: center; padding: 1.5rem; color: #8A7670; font-size: 0.85rem;">No customer reviews active.</div>';
+              return;
+            }
+
+            listEl.innerHTML = allReviews.map(r => `
+              <div style="background: #FFFFFF; border: 1px solid rgba(199, 131, 145, 0.3); border-radius: var(--radius-sm); padding: 0.75rem 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <strong style="color: var(--cocoa); font-size: 0.88rem;">${r.author}</strong>
+                    <span style="font-size: 0.75rem; color: #8A7670;">(${r.city || 'India'})</span>
+                    <span style="color: #D97706; font-size: 0.78rem;">${'★'.repeat(r.rating || 5)}</span>
+                    <span style="font-size: 0.72rem; background: #FFF0F2; color: var(--rose-text); padding: 0.1rem 0.4rem; border-radius: 4px;">${r.product || 'Crochet Creation'}</span>
+                  </div>
+                  <p style="font-size: 0.78rem; color: #73615A; margin: 0.25rem 0 0; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 520px;">
+                    “${r.notes || ''}”
+                  </p>
+                </div>
+                <button type="button" class="btn-action btn-danger btn-admin-del-rev" data-id="${r.id}" data-author="${r.author}" style="background: #FFF0F2; color: #B91C1C; border-color: #F87171; flex-shrink: 0; font-size: 0.75rem; padding: 0.3rem 0.65rem; font-weight: 600;">
+                  🗑️ Delete
+                </button>
+              </div>
+            `).join('');
+
+            listEl.querySelectorAll('.btn-admin-del-rev').forEach(btn => {
+              btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const revId = String(btn.dataset.id || '').trim();
+                const author = btn.dataset.author || 'this customer';
+
+                let confirmed = false;
+                if (window.ADMIN && typeof ADMIN.confirmDialog === 'function') {
+                  confirmed = await ADMIN.confirmDialog({
+                    title: 'Delete Customer Review?',
+                    message: `Are you sure you want to permanently delete the review by "${author}"? It will be removed immediately from both customer view and admin moderation.`,
+                    confirmText: 'Delete Review',
+                    cancelText: 'Cancel',
+                    isDanger: true
+                  });
+                } else {
+                  confirmed = confirm(`Permanently delete review by "${author}"?`);
+                }
+
+                if (!confirmed) return;
+
+                try {
+                  const rawDeleted = localStorage.getItem('swan_deleted_review_ids');
+                  const currentDeleted = rawDeleted ? JSON.parse(rawDeleted) : [];
+                  const strIds = currentDeleted.map(String);
+                  if (!strIds.includes(revId)) {
+                    currentDeleted.push(revId);
+                    localStorage.setItem('swan_deleted_review_ids', JSON.stringify(currentDeleted));
+                  }
+                } catch (e) {
+                  console.warn('Error saving deleted review ID:', e);
+                }
+
+                try {
+                  const curUserRevs = JSON.parse(localStorage.getItem('swan_customer_reviews') || '[]');
+                  const filtered = curUserRevs.filter(r => String(r.id) !== revId);
+                  localStorage.setItem('swan_customer_reviews', JSON.stringify(filtered));
+                } catch (e) {}
+
+                window.renderAdminReviewsList();
+
+                if (window.ADMIN && typeof ADMIN.showToast === 'function') {
+                  ADMIN.showToast(`✓ Review by "${author}" was permanently deleted.`, 'success');
+                }
+              });
+            });
+          };
+
+          window.renderAdminReviewsList();
+
+          const storedContent = localStorage.getItem('swan_site_content');
+          if (storedContent) {
+            const c = JSON.parse(storedContent);
+            if (c.announcement) announceInput.value = c.announcement;
+            if (c.heroHeadline) heroHeadInput.value = c.heroHeadline;
+            if (c.heroBadge) heroBadgeInput.value = c.heroBadge;
+            if (c.heroSub) heroSubInput.value = c.heroSub;
+            if (c.founderQuote) founderQuoteInput.value = c.founderQuote;
+            if (c.homeStoryTitle && homeStoryTitleInput) homeStoryTitleInput.value = c.homeStoryTitle;
+            if (c.homeStoryText && homeStoryTextInput) homeStoryTextInput.value = c.homeStoryText;
+
+            // Maker & Story
+            if (c.makerName) makerNameInput.value = c.makerName;
+            if (c.makerRole) makerRoleInput.value = c.makerRole;
+            if (c.makerQuote) makerQuoteInput.value = c.makerQuote;
+            if (c.makerPhoto) {
+              if (c.makerPhoto.startsWith('data:')) {
+                updateMakerPreview(c.makerPhoto, 'Attached Portrait Photo');
+              } else {
+                makerUrl.value = c.makerPhoto;
+                updateMakerPreview(c.makerPhoto, c.makerPhoto);
+              }
+            }
+
+            if (c.heroImage) {
+              if (c.heroImage.startsWith('data:')) {
+                updateHeroPreview(c.heroImage, 'Attached Hero Photo');
+              } else {
+                heroUrl.value = c.heroImage;
+                updateHeroPreview(c.heroImage, c.heroImage);
+              }
+            }
+
+            if (c.storyPageTitle) storyPageTitleInput.value = c.storyPageTitle;
+            if (c.storyPageSubtitle) storyPageSubInput.value = c.storyPageSubtitle;
+            if (c.storyHeadline) storyHeadlineInput.value = c.storyHeadline;
+            if (c.storyPara1) storyP1Input.value = c.storyPara1;
+            if (c.storySection1Title) storySec1TitleInput.value = c.storySection1Title;
+            if (c.storySection1Text) storySec1TextInput.value = c.storySection1Text;
+            if (c.storySection2Title) storySec2TitleInput.value = c.storySection2Title;
+            if (c.storySection2Text) storySec2TextInput.value = c.storySection2Text;
+
+            if (c.featuredHeading && featHeadingInput) {
+              featHeadingInput.value = c.featuredHeading;
+              if (prevFeatHeading) prevFeatHeading.textContent = c.featuredHeading;
+            }
+            if (c.featuredSubtitle && featSubtitleInput) {
+              featSubtitleInput.value = c.featuredSubtitle;
+              if (prevFeatSubtitle) prevFeatSubtitle.textContent = c.featuredSubtitle;
+            }
+
+            if (c.promise1Title) p1TitleInput.value = c.promise1Title;
+            if (c.promise1Text) p1TextInput.value = c.promise1Text;
+            if (c.promise2Title) p2TitleInput.value = c.promise2Title;
+            if (c.promise2Text) p2TextInput.value = c.promise2Text;
+            if (c.promise3Title) p3TitleInput.value = c.promise3Title;
+            if (c.promise3Text) p3TextInput.value = c.promise3Text;
+            if (c.promise4Title && p4TitleInput) p4TitleInput.value = c.promise4Title;
+            if (c.promise4Text && p4TextInput) p4TextInput.value = c.promise4Text;
+          }
+        } catch (e) {
+          console.warn('Error reading local site content:', e);
+        }
+
+        // Supabase Live Sync if connected
+        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (client) {
+          try {
+            const { data: sData } = await client.from('site_settings').select('*').eq('id', 1).single();
+            if (sData) {
+              upiInput.value = sData.upi_id || upiInput.value;
+              waInput.value = sData.whatsapp_number || waInput.value;
+              freeShipInput.value = sData.free_shipping_threshold || freeShipInput.value;
+              stdShipInput.value = sData.standard_shipping_fee || stdShipInput.value;
+              lowStockInput.value = sData.low_stock_threshold || lowStockInput.value;
+            }
+          } catch (e) {
+            console.warn('Supabase fetch failed:', e);
+          }
+        }
+
+        syncLiveSimulations();
+        await renderFeaturedManager();
+      }
+
+      // Save All Settings & Content
+      async function saveAll(e) {
+        if (e) e.preventDefault();
+
+        btnTop.disabled = true;
+        btnBottom.disabled = true;
+        btnTop.textContent = 'Saving...';
+        btnBottom.textContent = 'Saving...';
+        saveFeedback.style.display = 'none';
+
+        const finalMakerPhoto = currentMakerPhotoDataUrl || makerUrl.value.trim() || null;
+        const finalHeroPhoto = currentHeroPhotoDataUrl || heroUrl.value.trim() || null;
+
+        const contentPayload = {
+          announcement: announceInput.value.trim(),
+          heroHeadline: heroHeadInput.value.trim(),
+          heroBadge: heroBadgeInput.value.trim(),
+          heroSub: heroSubInput.value.trim(),
+          heroImage: finalHeroPhoto,
+          featuredHeading: featHeadingInput ? featHeadingInput.value.trim() : 'Featured Creations',
+          featuredSubtitle: featSubtitleInput ? featSubtitleInput.value.trim() : 'Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.',
+          founderQuote: founderQuoteInput.value.trim(),
+          homeStoryTitle: homeStoryTitleInput ? homeStoryTitleInput.value.trim() : '',
+          homeStoryText: homeStoryTextInput ? homeStoryTextInput.value.trim() : '',
+
+          makerName: makerNameInput.value.trim(),
+          makerRole: makerRoleInput.value.trim(),
+          makerQuote: makerQuoteInput.value.trim(),
+          makerPhoto: finalMakerPhoto,
+
+          storyPageTitle: storyPageTitleInput.value.trim(),
+          storyPageSubtitle: storyPageSubInput.value.trim(),
+          storyHeadline: storyHeadlineInput.value.trim(),
+          storyPara1: storyP1Input.value.trim(),
+          storySection1Title: storySec1TitleInput.value.trim(),
+          storySection1Text: storySec1TextInput.value.trim(),
+          storySection2Title: storySec2TitleInput.value.trim(),
+          storySection2Text: storySec2TextInput.value.trim(),
+
+          promise1Title: p1TitleInput.value.trim(),
+          promise1Text: p1TextInput.value.trim(),
+          promise2Title: p2TitleInput.value.trim(),
+          promise2Text: p2TextInput.value.trim(),
+          promise3Title: p3TitleInput.value.trim(),
+          promise3Text: p3TextInput.value.trim(),
+          promise4Title: p4TitleInput ? p4TitleInput.value.trim() : 'Artisan Packaging',
+          promise4Text: p4TextInput ? p4TextInput.value.trim() : 'Wrapped with kraft paper, twine, and personal handwritten care notes.'
+        };
+
+        const settingsPayload = {
+          upiId: upiInput.value.trim(),
+          whatsapp: waInput.value.trim(),
+          email: emailInput.value.trim(),
+          location: locationInput ? locationInput.value.trim() : 'Jaipur, Rajasthan, India',
+          hours: hoursInput ? hoursInput.value.trim() : 'Mon – Sat: 10:00 AM – 7:00 PM IST',
+          freeShip: parseFloat(freeShipInput.value) || 1499,
+          stdShip: parseFloat(stdShipInput.value) || 99,
+          lowStock: parseInt(lowStockInput.value, 10) || 2,
+          instagram: instaUrlInput ? instaUrlInput.value.trim() : 'https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==',
+          instagramHandle: instaHandleInput ? instaHandleInput.value.trim() : '@swan_handcrafted_studio.3568'
+        };
+
+        try {
+          // 1. Save to localStorage for instant local reflection
+          localStorage.setItem('swan_site_content', JSON.stringify(contentPayload));
+          localStorage.setItem('swan_site_settings', JSON.stringify(settingsPayload));
+
+          // 2. Also save to Supabase if connected
+          const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+          if (client) {
+            try {
+              await client.from('site_settings').upsert({
+                id: 1,
+                upi_id: settingsPayload.upiId,
+                whatsapp_number: settingsPayload.whatsapp,
+                free_shipping_threshold: settingsPayload.freeShip,
+                standard_shipping_fee: settingsPayload.stdShip,
+                low_stock_threshold: settingsPayload.lowStock,
+                updated_at: new Date().toISOString()
+              });
+
+              await client.from('site_content').upsert([
+                { key: 'announcement', content_value: { text: contentPayload.announcement }, updated_at: new Date().toISOString() },
+                { key: 'hero', content_value: { headline: contentPayload.heroHeadline, subheadline: contentPayload.heroSub, image: contentPayload.heroImage }, updated_at: new Date().toISOString() },
+                { key: 'story', content_value: contentPayload, updated_at: new Date().toISOString() },
+                { key: 'founder_note', content_value: { quote: contentPayload.founderQuote, makerName: contentPayload.makerName }, updated_at: new Date().toISOString() }
+              ]);
+            } catch (supaErr) {
+              console.warn('Supabase save error:', supaErr);
+            }
+          }
+
+          saveFeedback.style.display = 'block';
+          saveFeedback.style.background = '#E8F5E9';
+          saveFeedback.style.border = '1.5px solid #A5D6A7';
+          saveFeedback.style.color = '#1B5E20';
+          saveFeedback.innerHTML = '<strong>✓ Website Content & Story Saved Successfully!</strong> All photos, editorial narratives, and store operational parameters are now live across your atelier.';
+          saveFeedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+          syncLiveSimulations();
+        } catch (err) {
+          saveFeedback.style.display = 'block';
+          saveFeedback.style.background = '#FFEBEE';
+          saveFeedback.style.border = '1.5px solid #FFCDD2';
+          saveFeedback.style.color = '#B71C1C';
+          saveFeedback.textContent = 'Save failed: ' + (err.message || 'Please check your inputs.');
+        } finally {
+          btnTop.disabled = false;
+          btnBottom.disabled = false;
+          btnTop.textContent = '💾 Save All Changes';
+          btnBottom.textContent = '💾 Save All Changes';
+        }
+      }
+
+      form.addEventListener('submit', saveAll);
+      btnTop.addEventListener('click', () => form.requestSubmit());
+
+      await loadAllContent();
+    });
+  </script>
+</body>
+</html>

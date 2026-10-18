@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — Swan Studio | Join Our Circle</title>
+  <meta name="description" content="Create a Swan Studio account to track orders, save delivery addresses, and stay updated on limited edition handmade crochet drops.">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Skip Link for Accessibility -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Global Header (Injected by js/main.js) -->
+  <div id="site-header"></div>
+
+  <!-- Main Content -->
+  <main id="main" class="section section-cream" style="min-height: 80vh; display: flex; align-items: center;">
+    <div class="container" style="max-width: 520px; width: 100%;">
+
+      <!-- Section Header -->
+      <div class="section-header" style="margin-bottom: var(--space-xl);">
+        <h1 class="section-title" style="font-size: 2.3rem;">Join Our Circle</h1>
+        <p class="section-subtitle">
+          Create an account to track your orders, save delivery details, and manage custom requests.
+        </p>
+      </div>
+
+      <!-- Signup Card -->
+      <div style="background: var(--white); border-radius: var(--radius-lg); border: 2px dashed var(--rose); padding: 2.25rem; box-shadow: var(--shadow-card);">
+        
+        <form id="signup-form" novalidate>
+          <!-- Full Name -->
+          <div class="form-group">
+            <label for="signup-name" class="form-label">Full Name <span style="color: var(--rose);">*</span></label>
+            <input 
+              type="text" 
+              id="signup-name" 
+              class="form-control" 
+              placeholder="e.g. Priya Sharma" 
+              autocomplete="name"
+              required
+            >
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-group">
+            <label for="signup-phone" class="form-label">Phone Number (for order delivery) <span style="color: var(--rose);">*</span></label>
+            <input 
+              type="tel" 
+              id="signup-phone" 
+              class="form-control" 
+              placeholder="10-digit mobile number" 
+              autocomplete="tel"
+              required
+            >
+          </div>
+
+          <!-- Email Address -->
+          <div class="form-group">
+            <label for="signup-email" class="form-label">Email Address <span style="color: var(--rose);">*</span></label>
+            <input 
+              type="email" 
+              id="signup-email" 
+              class="form-control" 
+              placeholder="name@example.com" 
+              autocomplete="email"
+              required
+            >
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label for="signup-password" class="form-label">Password <span style="color: var(--rose);">*</span></label>
+            <input 
+              type="password" 
+              id="signup-password" 
+              class="form-control" 
+              placeholder="Create a password (min. 8 characters)" 
+              autocomplete="new-password"
+              required
+            >
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label for="signup-confirm-password" class="form-label">Confirm Password <span style="color: var(--rose);">*</span></label>
+            <input 
+              type="password" 
+              id="signup-confirm-password" 
+              class="form-control" 
+              placeholder="Re-enter your password" 
+              autocomplete="new-password"
+              required
+            >
+          </div>
+
+          <!-- Terms agreement -->
+          <div style="margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.85rem; color: #73615A;">
+            <input type="checkbox" id="terms-agree" style="margin-top: 3px;" required>
+            <label for="terms-agree">
+              I agree to the <a href="terms.html" style="color: var(--rose-text); text-decoration: underline;">Terms & Conditions</a> and <a href="privacy.html" style="color: var(--rose-text); text-decoration: underline;">Privacy Policy</a>.
+            </label>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="signup-submit-btn" class="btn btn-primary" style="width: 100%; padding: 0.9rem;">
+            Create Account
+          </button>
+        </form>
+
+        <!-- Feedback notice -->
+        <div id="signup-feedback" style="display: none; margin-top: 1rem; padding: 0.85rem; border-radius: var(--radius-sm); font-size: 0.85rem; text-align: center;"></div>
+
+        <!-- Footer Card Link to Sign In -->
+        <div style="text-align: center; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); font-size: 0.9rem;">
+          <p style="color: #73615A; margin: 0;">
+            Already have an account? 
+            <a href="login.html" style="color: var(--rose-text); font-weight: 600; text-decoration: underline;">
+              Sign in here
+            </a>
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Global Footer (Injected by js/main.js) -->
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/products-demo.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('signup-form');
+      const submitBtn = document.getElementById('signup-submit-btn');
+      const feedback = document.getElementById('signup-feedback');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        feedback.style.display = 'none';
+
+        const fullName = document.getElementById('signup-name').value.trim();
+        const phone = document.getElementById('signup-phone').value.trim();
+        const email = document.getElementById('signup-email').value.trim();
+        const password = document.getElementById('signup-password').value;
+        const confirmPassword = document.getElementById('signup-confirm-password').value;
+        const termsAgree = document.getElementById('terms-agree').checked;
+
+        if (!fullName || !phone || !email || !password) {
+          showFeedback('Please fill in all required fields.', 'error');
+          return;
+        }
+
+        if (password.length < 8) {
+          showFeedback('Password must be at least 8 characters long.', 'error');
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          showFeedback('Passwords do not match. Please verify.', 'error');
+          return;
+        }
+
+        if (!termsAgree) {
+          showFeedback('Please accept the Terms & Conditions and Privacy Policy.', 'error');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating account...';
+
+        try {
+          const { isDemo } = await AUTH.signUp({
+            email,
+            password,
+            fullName,
+            phone
+          });
+
+          showFeedback(
+            `✨ Welcome to Swan Studio! Your customer account is ready. Redirecting... ${isDemo ? '(Demo Mode)' : ''}`,
+            'success'
+          );
+
+          setTimeout(() => {
+            window.location.href = 'account.html';
+          }, 1200);
+
+        } catch (err) {
+          showFeedback(err.message || 'Registration failed. Please try again.', 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Account';
+        }
+      });
+
+      function showFeedback(msg, type) {
+        feedback.style.display = 'block';
+        if (type === 'error') {
+          feedback.style.background = '#FFF0F2';
+          feedback.style.color = '#9A5565';
+          feedback.style.border = '1px solid var(--rose)';
+        } else {
+          feedback.style.background = '#EBF8F0';
+          feedback.style.color = '#1E6B39';
+          feedback.style.border = '1px solid #A9D5B7';
+        }
+        feedback.textContent = msg;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Shopping Bag — Swan Studio | Handmade Crochet</title>
+  <meta name="description" content="Review items in your shopping bag. Handcrafted crochet creations from Swan Studio by Bhumika Nama.">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Skip Link for Accessibility -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Global Header (Injected by js/main.js) -->
+  <div id="site-header"></div>
+
+  <!-- Main Content -->
+  <main id="main" class="section section-cream">
+    <div class="container">
+
+      <!-- Breadcrumbs -->
+      <nav aria-label="Breadcrumbs" style="margin-bottom: var(--space-lg); font-size: 0.88rem; color: #8A7670;">
+        <a href="index.html" style="color: var(--cocoa);">Home</a>
+        <span style="margin: 0 0.4rem;">/</span>
+        <a href="shop.html" style="color: var(--cocoa);">Shop</a>
+        <span style="margin: 0 0.4rem;">/</span>
+        <span style="color: var(--rose-text); font-weight: 500;">Shopping Bag</span>
+      </nav>
+
+      <div class="section-header" style="margin-bottom: var(--space-xl); text-align: left;">
+        <h1 class="section-title">Your Shopping Bag</h1>
+        <p class="section-subtitle">
+          Review your handcrafted selections before proceeding to checkout.
+        </p>
+      </div>
+
+      <!-- Checkout 3-Stage Journey Ribbon -->
+      <div class="checkout-journey-ribbon" style="margin-bottom: var(--space-xl);">
+        <div class="checkout-step-pill active">
+          <span>🛍️</span> 1. Bag Review
+        </div>
+        <div class="checkout-step-divider"></div>
+        <div class="checkout-step-pill">
+          <span>📍</span> 2. Delivery Address
+        </div>
+        <div class="checkout-step-divider"></div>
+        <div class="checkout-step-pill">
+          <span>💳</span> 3. Manual UPI Payment
+        </div>
+      </div>
+
+      <!-- Cart Content Grid -->
+      <div id="cart-content-layout" style="display: grid; grid-template-columns: 1.4fr 0.8fr; gap: var(--space-2xl); align-items: start;">
+        
+        <!-- Items Table Card -->
+        <div style="background: var(--white); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+          <div id="cart-items-list" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <!-- Injected via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Summary & Checkout Card -->
+        <div style="background: var(--white); border-radius: var(--radius-lg); border: 2px dashed var(--rose); padding: 1.75rem; box-shadow: var(--shadow-card);">
+          <h2 style="font-size: 1.4rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
+            Order Summary
+          </h2>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem;">
+            <span style="color: #73615A;">Subtotal</span>
+            <span id="cart-subtotal" style="font-weight: 600; color: var(--cocoa);">₹0</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.95rem;">
+            <span style="color: #73615A;">Shipping</span>
+            <span style="color: var(--rose-text); font-weight: 500;">Calculated at checkout</span>
+          </div>
+
+          <!-- Coupon Input & Applied Display (Phase 6) -->
+          <div id="coupon-box" style="margin: 1.25rem 0; padding: 1rem; background: var(--cream); border-radius: var(--radius-sm); border: 1px dashed var(--border-subtle);">
+            <div id="coupon-input-wrapper">
+              <label for="coupon-input" style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--cocoa); margin-bottom: 0.35rem;">
+                Have a coupon code?
+              </label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="coupon-input" placeholder="e.g. SWANFIRST" style="flex: 1; padding: 0.5rem 0.75rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 0.85rem; text-transform: uppercase;">
+                <button id="apply-coupon-btn" class="btn btn-secondary btn-sm" type="button">Apply</button>
+              </div>
+              <div id="coupon-feedback" style="font-size: 0.78rem; margin-top: 0.45rem; display: none;"></div>
+              <div style="font-size: 0.75rem; color: #8A7670; margin-top: 0.45rem;">
+                Try code: <button type="button" class="sample-code-chip" data-code="SWANFIRST" style="background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.1); border-radius: 3px; font-weight: 600; font-size: 0.75rem; cursor: pointer; padding: 0.1rem 0.35rem; color: var(--cocoa);">SWANFIRST (10% off)</button> or <button type="button" class="sample-code-chip" data-code="BHUMIKA100" style="background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.1); border-radius: 3px; font-weight: 600; font-size: 0.75rem; cursor: pointer; padding: 0.1rem 0.35rem; color: var(--cocoa);">BHUMIKA100 (₹100 off)</button>
+              </div>
+            </div>
+
+            <!-- Applied Coupon Badge (Hidden when none applied) -->
+            <div id="coupon-applied-badge" style="display: none; align-items: center; justify-content: space-between; background: rgba(142, 110, 89, 0.12); border: 1px solid var(--rose-accent); padding: 0.65rem 0.85rem; border-radius: var(--radius-sm);">
+              <div>
+                <span style="font-size: 0.88rem; font-weight: 700; color: var(--rose-text);" id="applied-code-text"></span>
+                <span style="font-size: 0.78rem; color: #6F5E58; display: block;" id="applied-discount-text"></span>
+              </div>
+              <button id="remove-coupon-btn" type="button" class="btn btn-sm" style="padding: 0.25rem 0.55rem; font-size: 0.75rem; background: #FFF; color: #B33939; border: 1px solid rgba(179, 57, 57, 0.3); border-radius: var(--radius-sm); cursor: pointer;">
+                ✕ Remove
+              </button>
+            </div>
+          </div>
+
+          <!-- Coupon Discount Line Row -->
+          <div id="discount-row" style="display: none; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.95rem; color: #2B7A4B;">
+            <span>Coupon Discount</span>
+            <span id="cart-discount" style="font-weight: 600;">-₹0</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 1.25rem; padding-top: 1rem; border-top: 2px dashed var(--border-subtle); font-size: 1.25rem; font-weight: 700; color: var(--cocoa);">
+            <span>Estimated Total</span>
+            <span id="cart-total" style="color: var(--cocoa);">₹0</span>
+          </div>
+
+          <p id="cart-upi-footnote" style="font-size: 0.8rem; color: #8A7670; margin-top: 0.5rem; text-align: center;">
+            Manual UPI payment (9509966512@fam) verified upon order placement.
+          </p>
+
+          <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <button id="checkout-btn" class="btn btn-primary" style="width: 100%; padding: 0.9rem;">
+              Proceed to Checkout
+            </button>
+            <a href="shop.html" class="btn btn-secondary btn-sm" style="width: 100%;">
+              Continue Shopping
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Empty Cart Message (Hidden by default) -->
+      <div id="cart-empty-state" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">👜</div>
+        <h3>Your shopping bag is empty</h3>
+        <p>
+          Looks like you haven't added any handmade crochet creations yet. Explore our flower bouquets, plushies, and bags!
+        </p>
+        <a href="shop.html" class="btn btn-primary">Browse Creations</a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Global Footer (Injected by js/main.js) -->
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/coupons.js"></script>
+  <script src="js/products-demo.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const itemsList = document.getElementById('cart-items-list');
+      const subtotalEl = document.getElementById('cart-subtotal');
+      const totalEl = document.getElementById('cart-total');
+      const discountRowEl = document.getElementById('discount-row');
+      const discountEl = document.getElementById('cart-discount');
+      const layoutEl = document.getElementById('cart-content-layout');
+      const emptyEl = document.getElementById('cart-empty-state');
+      const checkoutBtn = document.getElementById('checkout-btn');
+      
+      const couponInput = document.getElementById('coupon-input');
+      const couponBtn = document.getElementById('apply-coupon-btn');
+      const couponFeedback = document.getElementById('coupon-feedback');
+      const couponInputWrapper = document.getElementById('coupon-input-wrapper');
+      const couponAppliedBadge = document.getElementById('coupon-applied-badge');
+      const appliedCodeText = document.getElementById('applied-code-text');
+      const appliedDiscountText = document.getElementById('applied-discount-text');
+      const removeCouponBtn = document.getElementById('remove-coupon-btn');
+      const upiFootnote = document.getElementById('cart-upi-footnote');
+      try {
+        const s = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
+        if (s.upiId && upiFootnote) {
+          upiFootnote.textContent = `Manual UPI payment (${s.upiId}) verified upon order placement.`;
+        }
+      } catch (e) {}
+
+      function getCartItems() {
+        try {
+          const raw = localStorage.getItem('swan_cart');
+          const parsed = raw ? JSON.parse(raw) : [];
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function saveCartItems(items) {
+        localStorage.setItem('swan_cart', JSON.stringify(items));
+        const bagCount = document.getElementById('bag-count');
+        if (bagCount) {
+          const total = items.reduce((sum, i) => sum + (i.quantity || 0), 0);
+          bagCount.textContent = total;
+          bagCount.setAttribute('aria-label', `${total} items in bag`);
+        }
+      }
+
+      let hasBlockedCartItems = false;
+
+      async function renderCart() {
+        const cart = getCartItems();
+        if (cart.length === 0) {
+          layoutEl.style.display = 'none';
+          emptyEl.style.display = 'block';
+          if (window.SwanCoupons) window.SwanCoupons.removeApplied();
+          return;
+        }
+
+        layoutEl.style.display = 'grid';
+        emptyEl.style.display = 'none';
+
+        const deletedIds = JSON.parse(localStorage.getItem('swan_deleted_product_ids') || '[]');
+        const archivedIds = JSON.parse(localStorage.getItem('swan_archived_product_ids') || '[]');
+
+        // Check each cart item's live or local status
+        hasBlockedCartItems = false;
+        let blockedItemsCount = 0;
+
+        const evaluatedCart = await Promise.all(cart.map(async (item) => {
+          let product = null;
+          if (typeof fetchProductBySlug === 'function' && item.slug) {
+            const res = await fetchProductBySlug(item.slug);
+            product = res.data;
+          }
+          if (!product) {
+            let localList = [];
+            const stored = localStorage.getItem('swan_admin_products');
+            if (stored) {
+              try { localList = JSON.parse(stored); } catch (e) { localList = []; }
+            }
+            if (!localList || localList.length === 0) {
+              localList = typeof getDemoProducts === 'function' ? getDemoProducts() : [];
+            }
+            const candidate = localList.find(p => p.id === item.id || p.slug === item.slug);
+            if (candidate) {
+              const cid = String(candidate.id);
+              const cslug = String(candidate.slug || '');
+              const isDeleted = deletedIds.includes(cid) || (cslug && deletedIds.includes(cslug));
+              const isArchived = archivedIds.includes(cid) || (cslug && archivedIds.includes(cslug));
+              const isDraft = candidate.isPublished === false || candidate.is_published === false;
+              if (!isDeleted && !isArchived && !isDraft) {
+                product = candidate;
+              }
+            }
+          }
+
+          const isUnavailable = !product;
+          const isOutOfStock = Boolean(product && (product.stock !== undefined && product.stock !== null) && Number(product.stock) <= 0);
+
+          if (isUnavailable || isOutOfStock) {
+            hasBlockedCartItems = true;
+            blockedItemsCount++;
+          }
+
+          return {
+            ...item,
+            product,
+            isUnavailable,
+            isOutOfStock
+          };
+        }));
+
+        let subtotal = 0;
+
+        const itemsHtml = evaluatedCart.map((item, index) => {
+          const qty = parseInt(item.quantity, 10) || 1;
+          const price = parseFloat(item.price) || 0;
+          const lineTotal = price * qty;
+          if (!item.isUnavailable && !item.isOutOfStock) {
+            subtotal += lineTotal;
+          }
+
+          if (item.isOutOfStock) {
+            return `
+              <div class="cart-item-out-of-stock" style="display: flex; gap: 1.25rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding: 1rem; margin-bottom: 0.5rem;" data-index="${index}">
+                <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #FEE2E2; border: 1px dashed #EF4444; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
+                  🚫
+                </div>
+                <div style="flex: 1;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">
+                      <a href="product.html?slug=${item.slug || ''}" style="color: var(--cocoa);">${item.name}</a>
+                    </h3>
+                    <span class="badge-out-of-stock" style="padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem;">🚫 Out of Stock</span>
+                  </div>
+                  <p style="font-size: 0.82rem; color: #991B1B; font-weight: 500; margin-bottom: 0.4rem;">
+                    This creation is out of stock. Please remove it from your bag to proceed with checkout.
+                  </p>
+                  <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="btn-cart-remove" data-index="${index}" style="font-size: 0.85rem; color: #991B1B; font-weight: 600; text-decoration: underline; background: none; border: none; cursor: pointer;">
+                      ✕ Remove from Bag
+                    </button>
+                  </div>
+                </div>
+                <div style="text-align: right; min-width: 80px;">
+                  <span style="font-size: 1.1rem; font-weight: 600; color: #991B1B;">
+                    ₹${lineTotal.toLocaleString('en-IN')}
+                  </span>
+                </div>
+              </div>
+            `;
+          }
+
+          if (item.isUnavailable) {
+            return `
+              <div class="cart-item-out-of-stock" style="display: flex; gap: 1.25rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding: 1rem; margin-bottom: 0.5rem;" data-index="${index}">
+                <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #F3F4F6; border: 1px dashed #9CA3AF; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
+                  ⚠️
+                </div>
+                <div style="flex: 1;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem; color: #6B7280;">
+                      ${item.name}
+                    </h3>
+                    <span style="background: #4B5563; color: #FFF; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem;">⚠️ Unavailable / Draft</span>
+                  </div>
+                  <p style="font-size: 0.82rem; color: #6B7280; margin-bottom: 0.4rem;">
+                    This creation is no longer available in the store. Please remove it from your bag.
+                  </p>
+                  <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="btn-cart-remove" data-index="${index}" style="font-size: 0.85rem; color: #991B1B; font-weight: 600; text-decoration: underline; background: none; border: none; cursor: pointer;">
+                      ✕ Remove from Bag
+                    </button>
+                  </div>
+                </div>
+                <div style="text-align: right; min-width: 80px;">
+                  <span style="font-size: 1.1rem; font-weight: 600; color: #6B7280;">
+                    ₹${lineTotal.toLocaleString('en-IN')}
+                  </span>
+                </div>
+              </div>
+            `;
+          }
+
+          return `
+            <div style="display: flex; gap: 1.25rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1.25rem;" data-index="${index}">
+              <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #FFF6F0; border: 1px dashed var(--rose); display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
+                🧶
+              </div>
+              <div style="flex: 1;">
+                <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">
+                  <a href="product.html?slug=${item.slug || ''}" style="color: var(--cocoa);">${item.name}</a>
+                </h3>
+                <p style="font-size: 0.88rem; color: #73615A; margin-bottom: 0.4rem;">
+                  Price: ₹${price.toLocaleString('en-IN')}
+                </p>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                  <div class="qty-selector" style="transform: scale(0.9); transform-origin: left center;">
+                    <button class="qty-btn btn-cart-minus" data-index="${index}">-</button>
+                    <input type="text" class="qty-input" value="${qty}" readonly>
+                    <button class="qty-btn btn-cart-plus" data-index="${index}">+</button>
+                  </div>
+                  <button class="btn-cart-remove" data-index="${index}" style="font-size: 0.8rem; color: #9A5565; text-decoration: underline; background: none; border: none; cursor: pointer;">
+                    Remove
+                  </button>
+                </div>
+              </div>
+              <div style="text-align: right; min-width: 80px;">
+                <span style="font-size: 1.1rem; font-weight: 600; color: var(--cocoa);">
+                  ₹${lineTotal.toLocaleString('en-IN')}
+                </span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const warningBanner = hasBlockedCartItems ? `
+          <div class="out-of-stock-box" style="margin-bottom: 1.25rem;">
+            <span style="font-size: 1.35rem;">⚠️</span>
+            <div>
+              <strong>Action Required:</strong> ${blockedItemsCount} creation${blockedItemsCount > 1 ? 's are' : ' is'} out of stock or no longer available. Please remove ${blockedItemsCount > 1 ? 'them' : 'it'} from your bag to proceed with checkout.
+            </div>
+          </div>
+        ` : '';
+
+        itemsList.innerHTML = warningBanner + itemsHtml;
+
+        // Button state
+        if (hasBlockedCartItems) {
+          checkoutBtn.disabled = true;
+          checkoutBtn.style.opacity = '0.6';
+          checkoutBtn.style.cursor = 'not-allowed';
+          checkoutBtn.style.background = '#991B1B';
+          checkoutBtn.style.borderColor = '#991B1B';
+          checkoutBtn.textContent = '🚫 Remove Out of Stock Items to Checkout';
+        } else {
+          checkoutBtn.disabled = false;
+          checkoutBtn.style.opacity = '1';
+          checkoutBtn.style.cursor = 'pointer';
+          checkoutBtn.style.background = '';
+          checkoutBtn.style.borderColor = '';
+          checkoutBtn.textContent = 'Proceed to Checkout';
+        }
+
+        subtotalEl.textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+
+        // Handle Coupon Discount
+        let discount = 0;
+        let applied = window.SwanCoupons ? window.SwanCoupons.getApplied() : null;
+
+        if (applied) {
+          const val = await window.SwanCoupons.validate(applied.code, subtotal);
+          if (val.valid) {
+            discount = val.discount_amount;
+            discountRowEl.style.display = 'flex';
+            discountEl.textContent = `-₹${discount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            couponInputWrapper.style.display = 'none';
+            couponAppliedBadge.style.display = 'flex';
+            appliedCodeText.textContent = `🏷️ ${val.code} Applied`;
+            appliedDiscountText.textContent = `Saving ₹${discount.toFixed(2)}`;
+          } else {
+            // No longer valid (e.g. subtotal dropped below min order threshold)
+            window.SwanCoupons.removeApplied();
+            discountRowEl.style.display = 'none';
+            couponInputWrapper.style.display = 'block';
+            couponAppliedBadge.style.display = 'none';
+            showFeedback(val.message || 'Coupon removed: minimum order no longer met.', 'error');
+          }
+        } else {
+          discountRowEl.style.display = 'none';
+          couponInputWrapper.style.display = 'block';
+          couponAppliedBadge.style.display = 'none';
+        }
+
+        const total = Math.max(0, subtotal - discount);
+        totalEl.textContent = `₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        attachItemListeners();
+      }
+
+      function showFeedback(msg, type = 'info') {
+        couponFeedback.textContent = msg;
+        couponFeedback.style.display = 'block';
+        if (type === 'error') {
+          couponFeedback.style.color = '#B33939';
+        } else if (type === 'success') {
+          couponFeedback.style.color = '#2B7A4B';
+        } else {
+          couponFeedback.style.color = 'var(--cocoa)';
+        }
+      }
+
+      function attachItemListeners() {
+        document.querySelectorAll('.btn-cart-minus').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const idx = parseInt(e.target.dataset.index, 10);
+            const cart = getCartItems();
+            if (cart[idx].quantity > 1) {
+              cart[idx].quantity -= 1;
+            } else {
+              cart.splice(idx, 1);
+            }
+            saveCartItems(cart);
+            await renderCart();
+          });
+        });
+
+        document.querySelectorAll('.btn-cart-plus').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const idx = parseInt(e.target.dataset.index, 10);
+            const cart = getCartItems();
+            if (cart[idx].quantity < 10) {
+              cart[idx].quantity += 1;
+              saveCartItems(cart);
+              await renderCart();
+            }
+          });
+        });
+
+        document.querySelectorAll('.btn-cart-remove').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const idx = parseInt(e.target.dataset.index, 10);
+            const cart = getCartItems();
+            cart.splice(idx, 1);
+            saveCartItems(cart);
+            await renderCart();
+          });
+        });
+      }
+
+      // Sample code chip quick fill
+      document.querySelectorAll('.sample-code-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          couponInput.value = btn.dataset.code;
+          couponBtn.click();
+        });
+      });
+
+      // Apply coupon button
+      couponBtn.addEventListener('click', async () => {
+        const code = couponInput.value.trim();
+        if (!code) {
+          showFeedback('Please enter a coupon code.', 'error');
+          return;
+        }
+
+        const cart = getCartItems();
+        const subtotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * (parseInt(item.quantity, 10) || 1), 0);
+
+        couponBtn.disabled = true;
+        couponBtn.textContent = '...';
+
+        try {
+          const res = await window.SwanCoupons.apply(code, subtotal);
+          if (res.valid) {
+            couponInput.value = '';
+            showFeedback(res.message, 'success');
+            await renderCart();
+          } else {
+            showFeedback(res.message, 'error');
+          }
+        } catch (err) {
+          showFeedback(err.message || 'Error applying coupon.', 'error');
+        } finally {
+          couponBtn.disabled = false;
+          couponBtn.textContent = 'Apply';
+        }
+      });
+
+      // Remove coupon button
+      removeCouponBtn.addEventListener('click', async () => {
+        if (window.SwanCoupons) window.SwanCoupons.removeApplied();
+        showFeedback('Coupon removed.', 'info');
+        await renderCart();
+      });
+
+      checkoutBtn.addEventListener('click', () => {
+        if (hasBlockedCartItems) {
+          alert('Please remove out of stock or unavailable creations from your bag before proceeding to checkout.');
+          return;
+        }
+        const cart = getCartItems();
+        if (cart.length === 0) {
+          alert('Your shopping bag is empty.');
+          return;
+        }
+        window.location.href = 'checkout.html';
+      });
+
+      renderCart();
+    });
+  </script>
+</body>
+</html>

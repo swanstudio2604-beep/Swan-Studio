@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Orders & Fulfillment — Swan Studio Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css?v=m1">
+  <style>
+    .order-badge-pending {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FCD34D;
+    }
+    .order-badge-confirmed {
+      background: #DBEAFE;
+      color: #1E40AF;
+      border: 1px solid #93C5FD;
+    }
+    .order-badge-preparing {
+      background: #F3E8FF;
+      color: #6B21A8;
+      border: 1px solid #D8B4FE;
+    }
+    .order-badge-dispatched {
+      background: #E0E7FF;
+      color: #3730A3;
+      border: 1px solid #C7D2FE;
+    }
+    .order-badge-delivered {
+      background: #DCFCE7;
+      color: #166534;
+      border: 1px solid #86EFAC;
+    }
+    .order-badge-cancelled {
+      background: #FEE2E2;
+      color: #991B1B;
+      border: 1px solid #FCA5A5;
+    }
+    .items-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: #FFF6F0;
+      border: 1px solid var(--border-subtle);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      margin-top: 0.25rem;
+      margin-right: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Application Wrapper -->
+  <div class="admin-container" id="admin-app" style="display: none;">
+    
+    <!-- Sidebar Mount (Injected by admin-shared.js) -->
+    <div id="admin-sidebar-mount"></div>
+
+    <!-- Main Workspace -->
+    <main class="admin-main">
+      <div class="admin-header-row">
+        <div>
+          <h1 class="admin-page-title">Customer Orders & Fulfillment</h1>
+          <p class="admin-page-subtitle">Track incoming orders, monitor handmade crochet production, update dispatch status, and manage courier tracking.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+          <button id="btn-refresh-orders" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600;">
+            <span id="orders-refresh-icon">🔄</span> Refresh Orders
+          </button>
+        </div>
+      </div>
+
+      <!-- Orders Month-Wise Period & Live Refresh Control Bar -->
+      <div class="admin-card" style="margin-bottom: 1.25rem; padding: 0.85rem 1.25rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; background: linear-gradient(135deg, #FFF9F7 0%, #FFFFFF 100%); border-left: 4px solid var(--rose); box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <span style="font-weight: 600; font-size: 0.88rem; color: var(--cocoa); display: flex; align-items: center; gap: 0.4rem;">
+            <span>📅</span> Orders Period:
+          </span>
+          <select id="orders-month-filter" class="form-control" style="width: auto; min-width: 220px; font-size: 0.84rem; padding: 0.35rem 0.75rem; background: #FFFFFF; font-weight: 500;">
+            <option value="all">🌐 All Time (All Orders)</option>
+          </select>
+          <div id="orders-quick-pills" style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span id="orders-refresh-status" style="font-size: 0.76rem; color: #8A7670;">Live Synced</span>
+          <button type="button" id="btn-refresh-orders-bar" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0.85rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(199, 131, 145, 0.25);">
+            <span id="orders-bar-spin-icon" style="display: inline-block;">🔄</span> Refresh Orders
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="admin-stat-label">Total Orders</div>
+            <span id="stat-orders-period-tag" style="font-size: 0.7rem; background: #ECFDF5; color: #047857; padding: 0.1rem 0.45rem; border-radius: 10px; font-weight: 600; border: 1px solid #A7F3D0;">All Time</span>
+          </div>
+          <div class="admin-stat-value" id="stat-total-orders">0</div>
+          <div class="admin-stat-meta" id="stat-total-revenue">₹0 total value</div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-label">Pending Payment</div>
+          <div class="admin-stat-value" id="stat-pending-orders" style="color: #D97706;">0</div>
+          <div class="admin-stat-meta">Awaiting UPI verification</div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-label">In Production / Preparing</div>
+          <div class="admin-stat-value" id="stat-preparing-orders" style="color: #7C3AED;">0</div>
+          <div class="admin-stat-meta">Looping stitches at atelier</div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-label">Dispatched & Delivered</div>
+          <div class="admin-stat-value" id="stat-shipped-orders" style="color: #16A34A;">0</div>
+          <div class="admin-stat-meta">In transit or received</div>
+        </div>
+      </div>
+
+      <!-- Graphical Fulfillment Pipeline Ribbon -->
+      <div class="pipeline-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+          <span style="font-weight: 600; font-size: 0.95rem; color: var(--admin-text-main); display: flex; align-items: center; gap: 0.4rem;">
+            🧶 Fulfillment Lifecycle Pipeline Flow
+          </span>
+          <span id="pipeline-completion-rate" style="font-size: 0.82rem; font-weight: 600; color: #16A34A;">0% Delivered</span>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--admin-text-muted); margin-bottom: 0.5rem;">Interactive visual progress of atelier orders. Click any stage pill or segment to filter the table below.</p>
+        
+        <div class="pipeline-bar" id="orders-pipeline-bar">
+          <!-- Injected via JavaScript -->
+        </div>
+
+        <div class="pipeline-legend" id="orders-pipeline-legend">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+      <!-- Graphical Analytics Charts Grid -->
+      <div class="chart-grid">
+        <!-- Chart 1: Donut Breakdown -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">🍩 Order Status Distribution</div>
+              <div class="chart-subtitle">Breakdown across handmade stages</div>
+            </div>
+            <span style="font-size: 0.75rem; color: var(--admin-text-muted); background: #FAF5F0; padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--admin-border);">Live Lifecycle</span>
+          </div>
+          <div class="donut-layout">
+            <div class="donut-svg-wrap">
+              <svg viewBox="0 0 42 42" class="donut-svg" id="donut-svg-orders">
+                <!-- SVG Circles injected dynamically -->
+              </svg>
+              <div class="donut-center-text">
+                <div class="donut-center-val" id="donut-total-orders">0</div>
+                <div class="donut-center-lbl">Orders</div>
+              </div>
+            </div>
+            <div class="donut-legend-list" id="donut-legend-orders">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 2: Revenue & Volume Bar Graph -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">📊 Value by Fulfillment Stage</div>
+              <div class="chart-subtitle">Order volume & monetary value in each stage</div>
+            </div>
+            <div id="chart-aov-badge" style="font-size: 0.8rem; font-weight: 600; background: #FFF6F0; border: 1px solid var(--border-subtle); padding: 0.25rem 0.6rem; border-radius: 4px; color: var(--cocoa);">
+              AOV: ₹0
+            </div>
+          </div>
+          <div class="bars-container" id="bars-container-orders">
+            <!-- Dynamic Bar Columns injected via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters & Search Toolbar -->
+      <div class="admin-toolbar" style="margin-top: 1.5rem;">
+        <div class="admin-search-box">
+          <input type="text" id="order-search" class="admin-search-input" placeholder="Search by Order ID, buyer name, phone, email, city...">
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <select id="filter-fulfillment" class="form-control" style="width: auto; min-width: 170px;">
+            <option value="all">All Fulfillment Stages</option>
+            <option value="PENDING">Pending Verification</option>
+            <option value="CONFIRMED">Confirmed</option>
+            <option value="PREPARING">Preparing (In Production)</option>
+            <option value="DISPATCHED">Dispatched (Shipped)</option>
+            <option value="DELIVERED">Delivered</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
+
+          <select id="filter-payment" class="form-control" style="width: auto; min-width: 150px;">
+            <option value="all">All Payments</option>
+            <option value="PENDING_VERIFICATION">Unverified UPI</option>
+            <option value="PAID">Paid / Verified</option>
+            <option value="FAILED">Payment Failed</option>
+          </select>
+
+          <span class="badge" id="orders-count-badge" style="background: var(--admin-surface); border: 1px solid var(--admin-border); color: #8A7670; padding: 0.5rem 0.8rem;">
+            Loading...
+          </span>
+        </div>
+      </div>
+
+      <!-- Orders Table -->
+      <div class="admin-table-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order Ref & Date</th>
+              <th>Customer & Shipping</th>
+              <th>Creations & Items</th>
+              <th>Total & Pricing</th>
+              <th>Payment</th>
+              <th>Fulfillment Stage</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-table-body">
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 2.5rem; color: #8A7670;">Loading orders...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer Mount -->
+      <div id="admin-footer-mount"></div>
+    </main>
+
+  </div>
+
+  <!-- Order Status & Tracking Modal -->
+  <div id="order-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog" style="max-width: 600px;">
+      <div class="modal-header">
+        <h2 id="order-modal-title" style="font-size: 1.35rem; color: var(--cocoa);">Manage Order & Fulfillment</h2>
+        <button class="modal-close-btn" id="order-close-btn">&times;</button>
+      </div>
+
+      <form id="order-status-form">
+        <input type="hidden" id="modal-order-id">
+
+        <div style="background: #FFF6F0; padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem; border: 1px solid var(--border-subtle);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <strong id="modal-order-ref" style="font-size: 1.05rem; color: var(--cocoa); font-family: monospace;"></strong>
+            <span id="modal-order-amount" style="font-weight: 700; color: var(--cocoa); font-size: 1.1rem;"></span>
+          </div>
+          <div id="modal-order-customer" style="font-size: 0.85rem; color: #73615A;"></div>
+          <div id="modal-order-address" style="font-size: 0.8rem; color: #8A7670; margin-top: 0.35rem;"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="modal-fulfillment-status" class="form-label">Order Fulfillment Stage <span style="color: var(--rose);">*</span></label>
+          <select id="modal-fulfillment-status" class="form-control" required>
+            <option value="PENDING">⏳ Pending Review / Payment Verification</option>
+            <option value="CONFIRMED">✓ Confirmed (Payment Verified, Queued)</option>
+            <option value="PREPARING">🧶 Preparing (In Production / Hand-Crocheting)</option>
+            <option value="DISPATCHED">🚚 Dispatched (Handed over to Courier)</option>
+            <option value="DELIVERED">🎁 Delivered (Safely Received by Customer)</option>
+            <option value="CANCELLED">❌ Cancelled / Refunded</option>
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="modal-payment-status" class="form-label">Payment Status</label>
+            <select id="modal-payment-status" class="form-control">
+              <option value="PENDING_VERIFICATION">⏳ Awaiting Verification</option>
+              <option value="PAID">✓ Paid (Verified)</option>
+              <option value="FAILED">❌ Failed / Rejected</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="modal-utr" class="form-label">UPI Reference (UTR)</label>
+            <input type="text" id="modal-utr" class="form-control" placeholder="12-digit UPI UTR">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="modal-courier-name" class="form-label">Courier / Logistics Partner</label>
+            <input type="text" id="modal-courier-name" class="form-control" placeholder="e.g. India Post Speed Post, DTDC, Delhivery">
+          </div>
+
+          <div class="form-group">
+            <label for="modal-tracking-id" class="form-label">Tracking / Waybill Number</label>
+            <input type="text" id="modal-tracking-id" class="form-control" placeholder="e.g. ED958201948IN">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="modal-admin-notes" class="form-label">Internal Atelier Notes</label>
+          <textarea id="modal-admin-notes" class="form-control" style="min-height: 70px;" placeholder="e.g. Customer requested pastel yellow wrap ribbon. Wrapped and ready."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btn-save-order-status">Save Order Updates</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin/admin-shared.js"></script>
+  <script>
+    const DEFAULT_SEED_ORDERS = [
+      {
+        orderId: 'SWAN-ORD-9842',
+        createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+        customerName: 'Priya Sharma',
+        customerPhone: '9820192831',
+        customerEmail: 'priya.sharma@example.com',
+        shippingAddress: 'Flat 402, Lotus Residency, Baner Road, Pune, Maharashtra - 411045',
+        items: [
+          { name: 'Daisy Delight Crochet Bouquet', quantity: 1, price: 1299 }
+        ],
+        subtotal: 1299,
+        discountAmount: 0,
+        couponCode: null,
+        shippingFee: 0,
+        totalAmount: 1299,
+        status: 'PREPARING',
+        paymentStatus: 'PAID',
+        utr: '429104829104',
+        courier: 'India Post Speed Post',
+        trackingNumber: '',
+        notes: 'Hand-crocheting daisy stems with yellow centers.'
+      },
+      {
+        orderId: 'SWAN-ORD-9831',
+        createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+        customerName: 'Ananya Desai',
+        customerPhone: '9877112244',
+        customerEmail: 'ananya.d@example.com',
+        shippingAddress: 'B-12, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103',
+        items: [
+          { name: 'Pastel Granny Square Tote Bag', quantity: 1, price: 1249 }
+        ],
+        subtotal: 1249,
+        discountAmount: 100,
+        couponCode: 'WELCOME10',
+        shippingFee: 0,
+        totalAmount: 1149,
+        status: 'DISPATCHED',
+        paymentStatus: 'PAID',
+        utr: '429018291039',
+        courier: 'India Post Speed Post',
+        trackingNumber: 'ED948201948IN',
+        notes: 'Dispatched via India Post. Tracking shared with customer.'
+      },
+      {
+        orderId: 'SWAN-ORD-9815',
+        createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
+        customerName: 'Rohan Verma',
+        customerPhone: '9811223344',
+        customerEmail: 'rohan.v@example.com',
+        shippingAddress: 'House 84, Sector 15, Chandigarh, Punjab - 160015',
+        items: [
+          { name: 'Sleepy Bunny Amigurumi Plushie', quantity: 1, price: 649 }
+        ],
+        subtotal: 649,
+        discountAmount: 0,
+        couponCode: null,
+        shippingFee: 99,
+        totalAmount: 748,
+        status: 'PENDING',
+        paymentStatus: 'PENDING_VERIFICATION',
+        utr: '349281094821',
+        courier: '',
+        trackingNumber: '',
+        notes: 'Customer submitted UTR. Verification pending in bank statement.'
+      }
+    ];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Guard & mount layout
+      const ok = await ADMIN.init('orders');
+      if (!ok) return;
+
+      const tbody = document.getElementById('orders-table-body');
+      const searchInput = document.getElementById('order-search');
+      const fulfillmentFilter = document.getElementById('filter-fulfillment');
+      const paymentFilter = document.getElementById('filter-payment');
+      const refreshBtn = document.getElementById('btn-refresh-orders');
+      const countBadge = document.getElementById('orders-count-badge');
+
+      // Month-Wise Period & Live Refresh Controls
+      const monthFilter = document.getElementById('orders-month-filter');
+      const quickPillsContainer = document.getElementById('orders-quick-pills');
+      const refreshBarBtn = document.getElementById('btn-refresh-orders-bar');
+      const ordersRefreshStatus = document.getElementById('orders-refresh-status');
+      const barSpinIcon = document.getElementById('orders-bar-spin-icon');
+      const topRefreshIcon = document.getElementById('orders-refresh-icon');
+      const periodTag = document.getElementById('stat-orders-period-tag');
+
+      const modal = document.getElementById('order-modal');
+      const form = document.getElementById('order-status-form');
+      const closeBtn = document.getElementById('order-close-btn');
+      const cancelBtn = document.getElementById('btn-cancel-modal');
+
+      let allOrders = [];
+      let currentMonthFilter = sessionStorage.getItem('swan_orders_filter_month') || 'all';
+
+      function getOrderMonthKey(o) {
+        const dStr = o.createdAt || o.date;
+        if (dStr) {
+          const d = new Date(dStr);
+          if (!isNaN(d.getTime())) {
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+          }
+        }
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      }
+
+      function formatMonthLabel(key) {
+        if (!key || key === 'all') return 'All Time';
+        const [y, m] = key.split('-');
+        const d = new Date(parseInt(y, 10), parseInt(m, 10) - 1, 1);
+        return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      }
+
+      function populateMonthControls() {
+        if (!monthFilter) return;
+        const now = new Date();
+        const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        const monthKeysSet = new Set();
+        monthKeysSet.add(thisMonthKey);
+
+        allOrders.forEach(o => {
+          monthKeysSet.add(getOrderMonthKey(o));
+        });
+
+        const sortedMonths = Array.from(monthKeysSet).sort().reverse();
+
+        monthFilter.innerHTML = `
+          <option value="all" ${currentMonthFilter === 'all' ? 'selected' : ''}>🌐 All Time (All Orders)</option>
+          ${sortedMonths.map(m => {
+            const isCur = m === thisMonthKey;
+            const label = formatMonthLabel(m) + (isCur ? ' (Current Month)' : '');
+            return `<option value="${m}" ${currentMonthFilter === m ? 'selected' : ''}>📅 ${label}</option>`;
+          }).join('')}
+        `;
+
+        if (quickPillsContainer) {
+          const quickOptions = [
+            { key: 'all', label: 'All Orders' },
+            ...sortedMonths.slice(0, 3).map(m => ({
+              key: m,
+              label: m === thisMonthKey ? `${formatMonthLabel(m)} (Current)` : formatMonthLabel(m)
+            }))
+          ];
+
+          quickPillsContainer.innerHTML = quickOptions.map(opt => `
+            <button type="button" class="btn-month-pill ${currentMonthFilter === opt.key ? 'active' : ''}" data-month="${opt.key}">
+              ${opt.label}
+            </button>
+          `).join('');
+
+          quickPillsContainer.querySelectorAll('.btn-month-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+              currentMonthFilter = pill.dataset.month;
+              sessionStorage.setItem('swan_orders_filter_month', currentMonthFilter);
+              monthFilter.value = currentMonthFilter;
+              populateMonthControls();
+              renderStats(currentMonthFilter);
+              applyFilters();
+            });
+          });
+        }
+      }
+
+      // Get or initialize orders
+      async function loadOrders(showToast = false) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2.5rem; color: #8A7670;">Loading orders...</td></tr>';
+        
+        if (topRefreshIcon) topRefreshIcon.classList.add('spin-anim');
+        if (barSpinIcon) barSpinIcon.classList.add('spin-anim');
+        if (ordersRefreshStatus) ordersRefreshStatus.textContent = 'Syncing orders...';
+
+        try {
+          const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+          let loadedFromSupabase = false;
+          if (client) {
+            try {
+              const { data, error } = await client
+                .from('orders')
+                .select('*, order_items(*), payments(*)')
+                .order('created_at', { ascending: false });
+
+              if (!error && data && data.length > 0) {
+                allOrders = data.map(o => ({
+                  orderId: o.order_number || ('SWAN-ORD-' + o.id.slice(0, 6).toUpperCase()),
+                  id: o.id,
+                  createdAt: o.created_at,
+                  customerName: o.customer_name,
+                  customerPhone: o.customer_phone,
+                  customerEmail: o.customer_email,
+                  shippingAddress: `${o.shipping_address}, ${o.city}, ${o.state} - ${o.postal_code}`,
+                  items: (o.order_items || []).map(i => ({
+                    name: i.product_name,
+                    quantity: i.quantity,
+                    price: parseFloat(i.unit_price)
+                  })),
+                  subtotal: parseFloat(o.subtotal || o.total_amount),
+                  discountAmount: parseFloat(o.discount_amount || 0),
+                  couponCode: o.coupon_code,
+                  shippingFee: parseFloat(o.shipping_fee || 0),
+                  totalAmount: parseFloat(o.total_amount),
+                  status: o.fulfillment_status || o.status || 'PENDING',
+                  paymentStatus: o.payment_status || (o.payments?.[0]?.status) || 'PENDING_VERIFICATION',
+                  utr: o.payments?.[0]?.utr_number || o.utr || '',
+                  courier: o.courier_partner || '',
+                  trackingNumber: o.tracking_number || '',
+                  notes: o.admin_notes || ''
+                }));
+                loadedFromSupabase = true;
+              }
+            } catch (e) {
+              console.warn('Supabase orders fetch error, falling back to local demo:', e);
+            }
+          }
+
+          if (!loadedFromSupabase) {
+            // Demo Storage
+            try {
+              const stored = localStorage.getItem('swan_demo_orders');
+              if (stored) {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  allOrders = parsed;
+                } else {
+                  allOrders = [...DEFAULT_SEED_ORDERS];
+                  localStorage.setItem('swan_demo_orders', JSON.stringify(allOrders));
+                }
+              } else {
+                allOrders = [...DEFAULT_SEED_ORDERS];
+                localStorage.setItem('swan_demo_orders', JSON.stringify(allOrders));
+              }
+            } catch (e) {
+              allOrders = [...DEFAULT_SEED_ORDERS];
+            }
+          }
+
+          populateMonthControls();
+          renderStats(currentMonthFilter);
+          applyFilters();
+
+          const nowTimeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          if (ordersRefreshStatus) ordersRefreshStatus.textContent = `Refreshed at ${nowTimeStr}`;
+
+          if (showToast && window.ADMIN && typeof ADMIN.showToast === 'function') {
+            const periodLabel = formatMonthLabel(currentMonthFilter);
+            ADMIN.showToast(`✓ Orders and pipeline refreshed (${periodLabel})`, 'success');
+          }
+        } catch (err) {
+          console.error('Error refreshing orders:', err);
+          if (ordersRefreshStatus) ordersRefreshStatus.textContent = 'Sync error';
+        } finally {
+          setTimeout(() => {
+            if (topRefreshIcon) topRefreshIcon.classList.remove('spin-anim');
+            if (barSpinIcon) barSpinIcon.classList.remove('spin-anim');
+          }, 600);
+        }
+      }
+
+      function renderStats(targetMonth = currentMonthFilter) {
+        const filteredByMonth = (targetMonth && targetMonth !== 'all') 
+          ? allOrders.filter(o => getOrderMonthKey(o) === targetMonth)
+          : allOrders;
+
+        const total = filteredByMonth.length;
+        const totalRev = filteredByMonth.reduce((sum, o) => sum + (parseFloat(o.totalAmount) || 0), 0);
+        const pending = filteredByMonth.filter(o => o.paymentStatus === 'PENDING_VERIFICATION' || o.status === 'PENDING').length;
+        const preparing = filteredByMonth.filter(o => o.status === 'PREPARING' || o.status === 'CONFIRMED').length;
+        const shipped = filteredByMonth.filter(o => o.status === 'DISPATCHED' || o.status === 'DELIVERED').length;
+
+        const pTag = document.getElementById('stat-orders-period-tag');
+        if (pTag) {
+          pTag.textContent = formatMonthLabel(targetMonth);
+        }
+
+        document.getElementById('stat-total-orders').textContent = total;
+        document.getElementById('stat-total-revenue').textContent = `₹${totalRev.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} total value`;
+        document.getElementById('stat-pending-orders').textContent = pending;
+        document.getElementById('stat-preparing-orders').textContent = preparing;
+        document.getElementById('stat-shipped-orders').textContent = shipped;
+
+        // Graphical Fulfillment Pipeline & Lifecycle Data
+        const STAGES = [
+          { key: 'PENDING', label: 'Pending', icon: '⏳', color: '#D97706' },
+          { key: 'CONFIRMED', label: 'Confirmed', icon: '✓', color: '#2563EB' },
+          { key: 'PREPARING', label: 'Preparing', icon: '🧶', color: '#7C3AED' },
+          { key: 'DISPATCHED', label: 'Dispatched', icon: '🚚', color: '#4F46E5' },
+          { key: 'DELIVERED', label: 'Delivered', icon: '🎁', color: '#16A34A' },
+          { key: 'CANCELLED', label: 'Cancelled', icon: '❌', color: '#DC2626' }
+        ].map(s => {
+          const count = filteredByMonth.filter(o => (o.status || 'PENDING') === s.key).length;
+          const val = filteredByMonth.filter(o => (o.status || 'PENDING') === s.key).reduce((sum, o) => sum + (parseFloat(o.totalAmount) || 0), 0);
+          const pct = total > 0 ? (count / total) * 100 : 0;
+          return { ...s, count, val, pct };
+        });
+
+        // 1. Render Multi-Segment Pipeline Ribbon
+        const barEl = document.getElementById('orders-pipeline-bar');
+        const legendEl = document.getElementById('orders-pipeline-legend');
+        if (barEl) {
+          barEl.innerHTML = STAGES.filter(s => s.count > 0).map(s => `
+            <div class="pipeline-segment" style="width: ${s.pct}%; background: ${s.color};" title="${s.label}: ${s.count} orders (${s.pct.toFixed(1)}%)"></div>
+          `).join('') || '<div style="width: 100%; background: #EFE4DC;"></div>';
+        }
+
+        if (legendEl) {
+          legendEl.innerHTML = STAGES.map(s => `
+            <div class="pipeline-legend-item" data-stage="${s.key}" title="Click to filter by ${s.label}">
+              <span class="pipeline-dot" style="background: ${s.color};"></span>
+              <strong>${s.label}:</strong> ${s.count} <span style="color: var(--admin-text-muted);">(${s.pct.toFixed(0)}%)</span>
+            </div>
+          `).join('');
+
+          legendEl.querySelectorAll('.pipeline-legend-item').forEach(item => {
+            item.addEventListener('click', () => {
+              fulfillmentFilter.value = item.dataset.stage;
+              applyFilters();
+            });
+          });
+        }
+
+        const deliveredCount = STAGES.find(s => s.key === 'DELIVERED')?.count || 0;
+        const compRateEl = document.getElementById('pipeline-completion-rate');
+        if (compRateEl) {
+          compRateEl.textContent = total > 0 ? `${Math.round((deliveredCount / total) * 100)}% Delivered` : '0% Delivered';
+        }
+
+        // 2. Render SVG Donut Chart
+        const donutSvg = document.getElementById('donut-svg-orders');
+        const donutLegend = document.getElementById('donut-legend-orders');
+        const donutTotal = document.getElementById('donut-total-orders');
+        if (donutTotal) donutTotal.textContent = total;
+
+        if (donutSvg) {
+          let cumulativeOffset = 25; // 25 is 12 o'clock in circle math
+          let circles = `<circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#F0E8E2" stroke-width="5"></circle>`;
+          
+          STAGES.filter(s => s.count > 0).forEach(s => {
+            circles += `
+              <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="${s.color}" stroke-width="5"
+                stroke-dasharray="${s.pct} ${100 - s.pct}"
+                stroke-dashoffset="${cumulativeOffset}"
+                style="transition: stroke-dasharray 0.5s ease;">
+              </circle>
+            `;
+            cumulativeOffset -= s.pct;
+          });
+          donutSvg.innerHTML = circles;
+        }
+
+        if (donutLegend) {
+          donutLegend.innerHTML = STAGES.map(s => `
+            <div class="donut-legend-row" style="cursor: pointer;" data-stage="${s.key}" title="Click to filter by ${s.label}">
+              <div style="display: flex; align-items: center; gap: 0.45rem;">
+                <span class="pipeline-dot" style="background: ${s.color};"></span>
+                <span style="color: var(--admin-text-main); font-weight: 500;">${s.label}</span>
+              </div>
+              <div style="text-align: right;">
+                <strong>${s.count}</strong>
+                <span style="color: var(--admin-text-muted); font-size: 0.75rem;">(${s.pct.toFixed(0)}%)</span>
+              </div>
+            </div>
+          `).join('');
+
+          donutLegend.querySelectorAll('.donut-legend-row').forEach(row => {
+            row.addEventListener('click', () => {
+              fulfillmentFilter.value = row.dataset.stage;
+              applyFilters();
+            });
+          });
+        }
+
+        // 3. Render Value & Volume Bar Graph
+        const barsContainer = document.getElementById('bars-container-orders');
+        const maxVal = Math.max(...STAGES.map(s => s.val), 1);
+        const aov = total > 0 ? Math.round(totalRev / total) : 0;
+        const aovBadge = document.getElementById('chart-aov-badge');
+        if (aovBadge) aovBadge.textContent = `AOV: ₹${aov.toLocaleString('en-IN')}`;
+
+        if (barsContainer) {
+          barsContainer.innerHTML = STAGES.filter(s => s.key !== 'CANCELLED').map(s => {
+            const heightPct = Math.max(Math.round((s.val / maxVal) * 100), s.count > 0 ? 10 : 3);
+            return `
+              <div class="bar-col" data-stage="${s.key}" style="cursor: pointer;" title="Click to filter by ${s.label}">
+                <div class="bar-pill" style="height: ${heightPct}%; background: ${s.color};">
+                  <div class="bar-tooltip">₹${Math.round(s.val).toLocaleString('en-IN')} (${s.count} orders)</div>
+                </div>
+                <div class="bar-lbl">${s.label}</div>
+              </div>
+            `;
+          }).join('');
+
+          barsContainer.querySelectorAll('.bar-col').forEach(col => {
+            col.addEventListener('click', () => {
+              fulfillmentFilter.value = col.dataset.stage;
+              applyFilters();
+            });
+          });
+        }
+      }
+
+      function applyFilters() {
+        const query = searchInput.value.trim().toLowerCase();
+        const fStage = fulfillmentFilter.value;
+        const pStage = paymentFilter.value;
+
+        const filtered = allOrders.filter(o => {
+          if (currentMonthFilter !== 'all' && getOrderMonthKey(o) !== currentMonthFilter) return false;
+          if (fStage !== 'all' && (o.status || 'PENDING') !== fStage) return false;
+          if (pStage !== 'all' && (o.paymentStatus || 'PENDING_VERIFICATION') !== pStage) return false;
+
+          if (query) {
+            const matchRef = (o.orderId || '').toLowerCase().includes(query);
+            const matchName = (o.customerName || '').toLowerCase().includes(query);
+            const matchPhone = (o.customerPhone || '').toLowerCase().includes(query);
+            const matchEmail = (o.customerEmail || '').toLowerCase().includes(query);
+            const matchAddr = (o.shippingAddress || '').toLowerCase().includes(query);
+            if (!matchRef && !matchName && !matchPhone && !matchEmail && !matchAddr) return false;
+          }
+          return true;
+        });
+
+        countBadge.textContent = `${filtered.length} order${filtered.length === 1 ? '' : 's'}`;
+        renderTable(filtered);
+      }
+
+      function renderTable(list) {
+        if (list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2.5rem; color: #8A7670;">No customer orders found matching your filters.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = list.map(o => {
+          const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent';
+          
+          let fulfillmentBadge = '';
+          switch (o.status) {
+            case 'CONFIRMED':
+              fulfillmentBadge = '<span class="badge order-badge-confirmed">✓ Confirmed</span>';
+              break;
+            case 'PREPARING':
+              fulfillmentBadge = '<span class="badge order-badge-preparing">🧶 Preparing (Stitching)</span>';
+              break;
+            case 'DISPATCHED':
+              fulfillmentBadge = '<span class="badge order-badge-dispatched">🚚 Dispatched</span>';
+              break;
+            case 'DELIVERED':
+              fulfillmentBadge = '<span class="badge order-badge-delivered">🎁 Delivered</span>';
+              break;
+            case 'CANCELLED':
+              fulfillmentBadge = '<span class="badge order-badge-cancelled">❌ Cancelled</span>';
+              break;
+            default:
+              fulfillmentBadge = '<span class="badge order-badge-pending">⏳ Pending Review</span>';
+          }
+
+          let paymentBadge = '';
+          switch (o.paymentStatus) {
+            case 'PAID':
+              paymentBadge = '<span class="badge badge-success">✓ Paid (Verified)</span>';
+              break;
+            case 'FAILED':
+              paymentBadge = '<span class="badge badge-danger">Payment Failed</span>';
+              break;
+            default:
+              paymentBadge = '<span class="badge order-badge-pending">⏳ Unverified UPI</span>';
+          }
+
+          const itemsHtml = (o.items || []).map(i => `
+            <div class="items-pill">
+              <strong>${i.quantity}x</strong> ${i.name}
+            </div>
+          `).join('');
+
+          const waText = encodeURIComponent(`Hi ${o.customerName}! Regarding your Swan Studio crochet order #${o.orderId}: ` + (o.status === 'DISPATCHED' ? `It has been dispatched via ${o.courier || 'courier'}! Tracking ID: ${o.trackingNumber || 'Available shortly'}.` : `Your order status is: ${o.status}. Thank you for choosing Swan Studio!`) );
+          const waLink = `https://wa.me/91${(o.customerPhone || '').replace(/[^0-9]/g, '')}?text=${waText}`;
+
+          return `
+            <tr>
+              <td>
+                <strong style="color: var(--cocoa); font-family: monospace; font-size: 0.95rem;">${o.orderId}</strong>
+                <div style="font-size: 0.75rem; color: #8A7670; margin-top: 0.2rem;">${dateStr}</div>
+              </td>
+              <td>
+                <strong style="color: var(--cocoa);">${o.customerName}</strong>
+                <div style="font-size: 0.78rem; color: #73615A;">${o.customerPhone || '—'}</div>
+                <div style="font-size: 0.75rem; color: #8A7670; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${o.shippingAddress}">${o.shippingAddress}</div>
+              </td>
+              <td style="max-width: 220px;">
+                <div style="line-height: 1.4;">${itemsHtml || 'Crochet Items'}</div>
+              </td>
+              <td>
+                <span style="font-weight: 700; color: var(--cocoa); font-size: 1rem;">₹${(parseFloat(o.totalAmount) || 0).toLocaleString('en-IN')}</span>
+                ${o.discountAmount ? `<div style="font-size: 0.72rem; color: #16A34A;">Saved ₹${o.discountAmount} (${o.couponCode || 'Promo'})</div>` : ''}
+              </td>
+              <td>
+                ${paymentBadge}
+                ${(o.utr || o.transactionRef) ? `<div style="font-size: 0.72rem; color: #73615A; margin-top: 0.2rem;">UTR: <code>${o.utr || o.transactionRef}</code></div>` : ''}
+              </td>
+              <td>
+                ${fulfillmentBadge}
+                ${o.trackingNumber ? `<div style="font-size: 0.72rem; color: #3730A3; margin-top: 0.25rem;">📦 ${o.courier ? o.courier + ': ' : ''}<strong>${o.trackingNumber}</strong></div>` : ''}
+              </td>
+              <td style="text-align: right; white-space: nowrap;">
+                <button class="btn btn-primary btn-sm btn-edit-order" data-id="${o.orderId}" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;">
+                  Manage
+                </button>
+                <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="padding: 0.35rem 0.65rem; font-size: 0.78rem; margin-left: 0.25rem;" title="Message customer on WhatsApp">
+                  💬 WhatsApp
+                </a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        // Wire up modal edit buttons
+        document.querySelectorAll('.btn-edit-order').forEach(btn => {
+          btn.addEventListener('click', () => openModal(btn.dataset.id));
+        });
+      }
+
+      function openModal(orderId) {
+        const order = allOrders.find(o => o.orderId === orderId);
+        if (!order) return;
+
+        document.getElementById('modal-order-id').value = order.orderId;
+        document.getElementById('modal-order-ref').textContent = `Order #${order.orderId}`;
+        document.getElementById('modal-order-amount').textContent = `Total: ₹${(parseFloat(order.totalAmount) || 0).toLocaleString('en-IN')}`;
+        document.getElementById('modal-order-customer').textContent = `${order.customerName} • ${order.customerPhone || ''} • ${order.customerEmail || ''}`;
+        document.getElementById('modal-order-address').textContent = `Shipping to: ${order.shippingAddress}`;
+
+        document.getElementById('modal-fulfillment-status').value = order.status || 'CONFIRMED';
+        document.getElementById('modal-payment-status').value = order.paymentStatus || 'PENDING_VERIFICATION';
+        document.getElementById('modal-utr').value = order.utr || order.transactionRef || '';
+        document.getElementById('modal-courier-name').value = order.courier || '';
+        document.getElementById('modal-tracking-id').value = order.trackingNumber || '';
+        document.getElementById('modal-admin-notes').value = order.notes || '';
+
+        modal.style.display = 'flex';
+      }
+
+      function closeModal() {
+        modal.style.display = 'none';
+        form.reset();
+      }
+
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+
+      // Save status update
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const orderId = document.getElementById('modal-order-id').value;
+        const newStatus = document.getElementById('modal-fulfillment-status').value;
+        const newPaymentStatus = document.getElementById('modal-payment-status').value;
+        const newUtr = document.getElementById('modal-utr').value.trim();
+        const newCourier = document.getElementById('modal-courier-name').value.trim();
+        const newTracking = document.getElementById('modal-tracking-id').value.trim();
+        const newNotes = document.getElementById('modal-admin-notes').value.trim();
+
+        const orderIdx = allOrders.findIndex(o => o.orderId === orderId);
+        if (orderIdx > -1) {
+          allOrders[orderIdx].status = newStatus;
+          allOrders[orderIdx].paymentStatus = newPaymentStatus;
+          allOrders[orderIdx].utr = newUtr;
+          allOrders[orderIdx].transactionRef = newUtr;
+          allOrders[orderIdx].courier = newCourier;
+          allOrders[orderIdx].trackingNumber = newTracking;
+          allOrders[orderIdx].notes = newNotes;
+
+          // If marked dispatched or paid, ensure statuses harmonize
+          if (newStatus === 'DISPATCHED' && allOrders[orderIdx].paymentStatus === 'PENDING_VERIFICATION') {
+            allOrders[orderIdx].paymentStatus = 'PAID';
+          }
+          if (allOrders[orderIdx].paymentStatus === 'PAID' && allOrders[orderIdx].status === 'PENDING') {
+            allOrders[orderIdx].status = 'CONFIRMED';
+          }
+
+          // Persist to local demo storage
+          localStorage.setItem('swan_demo_orders', JSON.stringify(allOrders));
+
+          // Also update Supabase if live
+          const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+          if (client && allOrders[orderIdx].id) {
+            try {
+              await client.from('orders').update({
+                fulfillment_status: newStatus,
+                status: newStatus,
+                courier_partner: newCourier,
+                tracking_number: newTracking,
+                admin_notes: newNotes,
+                updated_at: new Date().toISOString()
+              }).eq('id', allOrders[orderIdx].id);
+            } catch (err) {
+              console.warn('Supabase order update failed:', err);
+            }
+          }
+
+          closeModal();
+          renderStats();
+          applyFilters();
+        }
+      });
+
+      searchInput.addEventListener('input', applyFilters);
+      fulfillmentFilter.addEventListener('change', applyFilters);
+      paymentFilter.addEventListener('change', applyFilters);
+      
+      // Wire both refresh buttons with toast confirmation
+      refreshBtn.addEventListener('click', () => loadOrders(true));
+      if (refreshBarBtn) {
+        refreshBarBtn.addEventListener('click', () => loadOrders(true));
+      }
+
+      // Wire month filter change and input
+      if (monthFilter) {
+        ['change', 'input'].forEach(evt => {
+          monthFilter.addEventListener(evt, (e) => {
+            currentMonthFilter = e.target.value;
+            sessionStorage.setItem('swan_orders_filter_month', currentMonthFilter);
+            populateMonthControls();
+            renderStats(currentMonthFilter);
+            applyFilters();
+          });
+        });
+      }
+
+      // Initial load
+      await loadOrders(false);
+    });
+  </script>
+</body>
+</html>

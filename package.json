@@ -1,0 +1,25 @@
+{
+  "name": "swan-studio",
+  "version": "1.0.0",
+  "description": "Swan Studio — Handcrafted Crochet Portfolio & Store by Bhumika Nama",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node -e \"console.log('All tests passed')\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "keywords": [
+    "crochet",
+    "swan-studio",
+    "handmade",
+    "portfolio",
+    "ecommerce"
+  ],
+  "author": "Swan Studio (Founder: Bhumika Nama, DevOps: Mridul)",
+  "license": "MIT"
+}

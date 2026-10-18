@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: swan-studio-api
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CORS_ORIGIN
+        value: https://swanstudio2604-beep.github.io
+      - key: STORE_UPI_ID
+        value: 9509966512@fam
+      - key: STORE_WHATSAPP
+        value: 9509966512
+      - key: STORE_EMAIL
+        value: swanstudio2604@gmail.com

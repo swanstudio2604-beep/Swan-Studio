@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Reviews & Atelier Love Notes — Swan Studio | Handmade Crochet</title>
+  <meta name="description" content="Read authentic customer reviews, star ratings, and love notes for handcrafted crochet bouquets, bags, and plushies from Swan Studio by Bhumika Nama.">
+  <link rel="canonical" href="https://swan-studio.in/reviews.html">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Customer Reviews & Atelier Love Notes — Swan Studio">
+  <meta property="og:description" content="Discover what crochet lovers say about Bhumika Nama's handcrafted crochet creations and leave your own 5-star review.">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Global Site Header (Injected by js/main.js) -->
+  <div id="site-header"></div>
+
+  <main id="main-content">
+
+    <!-- Breadcrumb -->
+    <div class="container" style="padding-top: var(--space-md);">
+      <nav aria-label="Breadcrumb" style="font-size: 0.88rem; color: #8A7670; margin-bottom: 0.5rem;">
+        <a href="index.html" style="color: var(--cocoa); text-decoration: none;">Home</a>
+        <span style="margin: 0 0.5rem;">/</span>
+        <span style="color: var(--rose-text); font-weight: 500;">Customer Reviews & Notes</span>
+      </nav>
+    </div>
+
+    <!-- Reviews Hero Section -->
+    <section class="reviews-hero-section">
+      <div class="container">
+        <div class="reviews-badge">✨ Authentic Customer Stories • Verified Handmade</div>
+        <h1 style="font-size: clamp(2.2rem, 4.5vw, 3.5rem); margin-bottom: 0.85rem; color: var(--cocoa);">
+          Customer Reviews & Love Notes
+        </h1>
+        <p style="max-width: 680px; margin: 0 auto 1.75rem; color: #73615A; font-size: 1.05rem; line-height: 1.6;">
+          Every stitch at Swan Studio has intention, and every parcel is packed with care. Explore reflections from our cherished community or share your own unboxing note for Bhumika.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="#write-review" class="btn btn-primary" id="btn-jump-write">
+            ✍️ Leave a Love Note
+          </a>
+          <a href="shop.html" class="btn btn-outline" style="border-color: var(--rose); color: var(--rose-text);">
+            Explore Handcrafted Catalog &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Section -->
+    <section class="section" style="padding-top: 3rem;">
+      <div class="container">
+
+        <!-- Admin Atelier Moderation Mode Banner (Active for Admin Session) -->
+        <div id="admin-moderation-banner" style="display: none; background: linear-gradient(135deg, #2D1E18 0%, #442F29 100%); color: #FFF8F1; padding: 1.1rem 1.5rem; border-radius: var(--radius-md); margin-bottom: 2rem; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; box-shadow: var(--shadow-card); border: 1.5px solid var(--rose);">
+          <div style="display: flex; align-items: center; gap: 0.85rem;">
+            <span style="font-size: 1.6rem;">👑</span>
+            <div>
+              <strong style="color: #FFE6EA; font-size: 1.05rem; display: block;">Admin Atelier Moderation Mode Active</strong>
+              <span style="font-size: 0.82rem; color: #D5C1BA;">You have full review moderation privileges. A <strong>🗑️ Delete Review</strong> button is displayed in front of each review card below.</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <a href="admin/content.html" class="btn btn-secondary btn-sm" style="font-size: 0.8rem; padding: 0.4rem 0.85rem; background: rgba(255,255,255,0.12); color: #FFF8F1; border-color: rgba(255,255,255,0.25);">
+              ⚙️ Atelier CMS
+            </a>
+            <button type="button" id="btn-admin-exit-mode" class="btn btn-sm" style="font-size: 0.8rem; padding: 0.4rem 0.85rem; background: #C53030; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+              Exit Admin View
+            </button>
+          </div>
+        </div>
+
+        <!-- Admin Access Quick Trigger Pill -->
+        <div id="admin-mode-trigger-wrap" style="display: flex; justify-content: flex-end; margin-bottom: 1.25rem;">
+          <button type="button" id="btn-enable-admin-mode" style="background: #FFF0F2; border: 1px solid rgba(199, 131, 145, 0.45); color: var(--rose-text); font-size: 0.8rem; padding: 0.35rem 0.85rem; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 500; transition: all 0.2s ease;">
+            <span>👑</span> Admin Mode / Moderate Reviews
+          </button>
+        </div>
+
+        <!-- 1. Rating Summary Scorecard -->
+        <div class="reviews-summary-grid">
+          <div class="reviews-score-card">
+            <div class="reviews-score-num" id="stat-avg-rating">4.9</div>
+            <div class="reviews-score-stars" aria-label="4.9 out of 5 stars">★★★★★</div>
+            <div style="font-weight: 600; font-size: 1.05rem; color: var(--cocoa); margin-bottom: 0.35rem;">
+              Exceptional Artisan Quality
+            </div>
+            <div class="reviews-score-sub" id="stat-total-notes">
+              Based on <strong id="total-reviews-count">48</strong> customer love notes
+            </div>
+            <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px dashed rgba(199, 131, 145, 0.3); font-size: 0.78rem; color: #166534;">
+              ✓ 100% Handcrafted Loop-by-Loop in India
+            </div>
+          </div>
+
+          <div class="reviews-breakdown-card">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+              <h3 style="font-size: 1.15rem; margin: 0; color: var(--cocoa);">Rating Distribution</h3>
+              <span style="font-size: 0.8rem; color: var(--admin-text-muted);">98% 5-Star Satisfaction</span>
+            </div>
+
+            <!-- 5 Stars -->
+            <div class="rating-row">
+              <span style="font-weight: 500;">5 Stars</span>
+              <div class="rating-bar-bg">
+                <div class="rating-bar-fill" style="width: 94%;"></div>
+              </div>
+              <span style="text-align: right; font-weight: 600;">94%</span>
+            </div>
+
+            <!-- 4 Stars -->
+            <div class="rating-row">
+              <span style="font-weight: 500;">4 Stars</span>
+              <div class="rating-bar-bg">
+                <div class="rating-bar-fill" style="width: 6%;"></div>
+              </div>
+              <span style="text-align: right; font-weight: 600;">6%</span>
+            </div>
+
+            <!-- 3 Stars -->
+            <div class="rating-row">
+              <span style="font-weight: 500;">3 Stars</span>
+              <div class="rating-bar-bg">
+                <div class="rating-bar-fill" style="width: 0%;"></div>
+              </div>
+              <span style="text-align: right; font-weight: 600;">0%</span>
+            </div>
+
+            <!-- 2 Stars -->
+            <div class="rating-row">
+              <span style="font-weight: 500;">2 Stars</span>
+              <div class="rating-bar-bg">
+                <div class="rating-bar-fill" style="width: 0%;"></div>
+              </div>
+              <span style="text-align: right; font-weight: 600;">0%</span>
+            </div>
+
+            <!-- 1 Star -->
+            <div class="rating-row">
+              <span style="font-weight: 500;">1 Star</span>
+              <div class="rating-bar-bg">
+                <div class="rating-bar-fill" style="width: 0%;"></div>
+              </div>
+              <span style="text-align: right; font-weight: 600;">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Interactive Review Submission Form -->
+        <div class="review-form-card" id="write-review">
+          <div class="review-form-header">
+            <div class="reviews-badge" style="margin-bottom: 0.5rem;">💌 Share Your Experience</div>
+            <h2 style="font-size: 1.85rem; margin-bottom: 0.35rem; color: var(--cocoa);">
+              Leave a Love Note for Bhumika
+            </h2>
+            <p style="color: #73615A; font-size: 0.92rem; margin: 0;">
+              Share your thoughts on the yarn softness, craftsmanship, unboxing experience, or custom work.
+            </p>
+          </div>
+
+          <form id="customer-review-form">
+            <!-- Row 1: Name & Location -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
+              <div>
+                <label for="rev-author-name" class="form-label">Your Name & City <span style="color: var(--rose-text);">*</span></label>
+                <input type="text" id="rev-author-name" class="form-control" placeholder="e.g. Priya Sharma, Mumbai" required>
+              </div>
+
+              <div>
+                <label for="rev-product-select" class="form-label">Creation or Experience <span style="color: var(--rose-text);">*</span></label>
+                <select id="rev-product-select" class="form-control" required>
+                  <option value="🌸 Pastel Daisy Bouquet" selected>🌸 Pastel Daisy Bouquet</option>
+                  <option value="🌻 Sunflower Crochet Pot">🌻 Sunflower Crochet Pot</option>
+                  <option value="👜 Tulip Bloom Tote Bag">👜 Tulip Bloom Tote Bag</option>
+                  <option value="🧸 Cute Bunny Plushie Amigurumi">🧸 Cute Bunny Plushie Amigurumi</option>
+                  <option value="📖 Daisy Blossom Bookmark">📖 Daisy Blossom Bookmark</option>
+                  <option value="✨ Bespoke Custom Order">✨ Bespoke Custom Order</option>
+                  <option value="🎁 Gift Box / Keepsake">🎁 Gift Box / Keepsake</option>
+                  <option value="🧶 General Atelier Experience">🧶 General Atelier Experience</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 2: Interactive 5-Star Rating Picker -->
+            <div style="margin-bottom: 1.5rem; background: #FFF9FA; padding: 1.25rem 1.5rem; border-radius: var(--radius-md); border: 1px solid rgba(199, 131, 145, 0.25);">
+              <label class="form-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                <span>Rate Your Creation (1 to 5 Stars) <span style="color: var(--rose-text);">*</span></span>
+                <span style="font-size: 0.78rem; color: #73615A;">Hover & click stars</span>
+              </label>
+
+              <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                <div class="star-rating-picker" id="star-picker" role="radiogroup" aria-label="Select star rating">
+                  <button type="button" class="star-btn active" data-rating="1" aria-label="1 star">★</button>
+                  <button type="button" class="star-btn active" data-rating="2" aria-label="2 stars">★</button>
+                  <button type="button" class="star-btn active" data-rating="3" aria-label="3 stars">★</button>
+                  <button type="button" class="star-btn active" data-rating="4" aria-label="4 stars">★</button>
+                  <button type="button" class="star-btn active" data-rating="5" aria-label="5 stars">★</button>
+                </div>
+                <input type="hidden" id="rev-rating-value" value="5">
+                <span class="star-rating-caption" id="star-rating-caption">
+                  ⭐⭐⭐⭐⭐ Exceptional — A cherished handcrafted treasure!
+                </span>
+              </div>
+            </div>
+
+            <!-- Row 3: Love Note Textarea -->
+            <div style="margin-bottom: 1.5rem;">
+              <label for="rev-notes-text" class="form-label">Your Note / Review <span style="color: var(--rose-text);">*</span></label>
+              <textarea id="rev-notes-text" class="form-control" rows="4" placeholder="How did it feel when opening your parcel? Tell us about the yarn feel, colors, packaging, or the handwritten card..." required></textarea>
+            </div>
+
+            <!-- Row 4: Highlight Tags Selection -->
+            <div style="margin-bottom: 1.5rem;">
+              <label class="form-label">What made it special? (Tap all that apply)</label>
+              <div class="review-tag-chips" id="review-tag-chips">
+                <span class="review-tag-chip selected" data-tag="🌿 Soft & Premium Milk Cotton">🌿 Soft & Premium Milk Cotton</span>
+                <span class="review-tag-chip selected" data-tag="🎁 Gift-Ready Kraft Packaging">🎁 Gift-Ready Kraft Packaging</span>
+                <span class="review-tag-chip selected" data-tag="💌 Heartfelt Handwritten Note">💌 Heartfelt Handwritten Note</span>
+                <span class="review-tag-chip" data-tag="⚡ Helpful WhatsApp Support">⚡ Helpful WhatsApp Support</span>
+                <span class="review-tag-chip" data-tag="✨ Flawless Custom Details">✨ Flawless Custom Details</span>
+                <span class="review-tag-chip" data-tag="🌸 Everlasting Flower Beauty">🌸 Everlasting Flower Beauty</span>
+              </div>
+            </div>
+
+            <!-- Row 5: Optional Photo Upload (Themed Artisan Uploader) -->
+            <div style="margin-bottom: 1.75rem; background: #FFFFFF; padding: 1.25rem; border-radius: var(--radius-sm); border: 1.5px dashed var(--rose);">
+              <label class="form-label" style="margin-bottom: 0.35rem;">Add a Photo of Your Creation (Optional)</label>
+              <p style="font-size: 0.8rem; color: #73615A; margin-bottom: 0.85rem;">
+                Show your bouquet on your desk, your amigurumi plushie, or your unboxing box!
+              </p>
+
+              <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <label for="rev-photo-file" class="btn btn-outline btn-sm" style="cursor: pointer; border-color: var(--rose); color: var(--rose-text); background: #FFF0F2; display: inline-flex; align-items: center; gap: 0.4rem;">
+                  <span>📷 Choose Photo</span>
+                  <input type="file" id="rev-photo-file" accept="image/*" style="display: none;">
+                </label>
+                <span id="rev-photo-label" style="font-size: 0.82rem; color: #73615A;">No file chosen</span>
+                <button type="button" id="btn-remove-rev-photo" style="display: none; background: none; border: none; color: #C53030; font-size: 0.8rem; cursor: pointer; text-decoration: underline;">
+                  Remove Photo
+                </button>
+              </div>
+
+              <!-- Thumbnail Preview -->
+              <div id="rev-photo-preview-wrap" style="display: none; margin-top: 0.85rem;">
+                <img id="rev-photo-preview-img" src="" alt="Review Preview" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--border-subtle); object-fit: cover;">
+              </div>
+            </div>
+
+            <!-- Submit Button & Feedback -->
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+              <button type="submit" class="btn btn-primary" id="btn-submit-review" style="padding: 0.85rem 2rem; font-size: 1rem;">
+                💌 Post My Love Note
+              </button>
+              <span style="font-size: 0.78rem; color: #8A7670;">
+                Reviews are displayed instantly for all atelier visitors to see.
+              </span>
+            </div>
+
+            <!-- Feedback Notice -->
+            <div id="review-feedback" style="display: none; margin-top: 1.25rem; padding: 1rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.9rem;"></div>
+          </form>
+        </div>
+
+        <!-- 3. Filter & Sort Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(199, 131, 145, 0.2);">
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="review-filters">
+            <button type="button" class="btn btn-sm btn-outline active-filter" data-filter="all" style="border-radius: 999px; font-size: 0.78rem;">
+              All Reviews (<span id="count-filter-all">48</span>)
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" data-filter="5" style="border-radius: 999px; font-size: 0.78rem;">
+              ★★★★★ 5 Stars Only
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" data-filter="photo" style="border-radius: 999px; font-size: 0.78rem;">
+              📷 With Customer Photos
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" data-filter="bouquet" style="border-radius: 999px; font-size: 0.78rem;">
+              💐 Bouquets
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" data-filter="custom" style="border-radius: 999px; font-size: 0.78rem;">
+              ✨ Bespoke Custom
+            </button>
+          </div>
+
+          <div style="font-size: 0.82rem; color: #73615A;">
+            Showing <strong id="visible-count">48</strong> reviews
+          </div>
+        </div>
+
+        <!-- 4. Reviews Grid Feed -->
+        <div class="reviews-grid" id="reviews-feed">
+          <!-- Dynamically populated by JS -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 5. Instagram Community & QR Banner Section -->
+    <section class="instagram-community-section" aria-labelledby="insta-heading">
+      <div class="container">
+        <div class="instagram-banner-grid">
+          <div>
+            <div class="instagram-handle-badge">
+              <span>📷 @swan_handcrafted_studio.3568</span>
+            </div>
+            <h2 id="insta-heading" style="font-size: clamp(2rem, 3.8vw, 2.8rem); margin-bottom: 1rem; color: var(--cocoa);">
+              Follow Our Crochet Journey on Instagram
+            </h2>
+            <p style="color: #6E5A54; font-size: 1.05rem; line-height: 1.6; margin-bottom: 1.5rem;">
+              Join Bhumika behind the scenes in Jaipur! Watch satisfying stitch-by-stitch reels, yarn haul unboxings, custom order work-in-progress reveals, and care tips for your crochet heirlooms.
+            </p>
+
+            <ul style="list-style: none; padding: 0; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.92rem; color: #55443F;">
+              <li style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--rose-text);">✓</span> Daily stories & work-in-progress previews
+              </li>
+              <li style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--rose-text);">✓</span> Tag <strong>@swan_handcrafted_studio.3568</strong> to be featured on our page
+              </li>
+              <li style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--rose-text);">✓</span> Early announcements for seasonal yarn drops & festival collections
+              </li>
+            </ul>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <a href="https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                Follow @swan_handcrafted_studio.3568 &rarr;
+              </a>
+              <a href="custom-order.html" class="btn btn-outline" style="border-color: var(--rose); color: var(--rose-text);">
+                Request a Custom Order
+              </a>
+            </div>
+          </div>
+
+          <!-- QR Card -->
+          <div>
+            <div class="instagram-qr-card">
+              <div style="font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--rose-text); margin-bottom: 0.85rem;">
+                Scan to Follow Directly
+              </div>
+              
+              <div class="instagram-qr-frame">
+                <a href="https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==" target="_blank" rel="noopener noreferrer" title="Click or scan to open Instagram">
+                  <img src="assets/images/instagram-qr.jpeg" alt="Swan Studio Instagram QR Code — @swan_handcrafted_studio.3568">
+                </a>
+              </div>
+
+              <div style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 0.92rem; color: var(--cocoa); margin-bottom: 0.25rem;">
+                Swan Handcrafted Studio
+              </div>
+              <div style="font-size: 0.78rem; color: #8A7670;">
+                Open your camera or Instagram app to scan
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer Mount (Injected by js/main.js with "Developed with ❤️ by Mridul") -->
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // ----------------------------------------------------------------------
+      // 1. Initial Starter Reviews Data
+      // ----------------------------------------------------------------------
+      const STARTER_REVIEWS = [
+        {
+          id: 'rev-init-1',
+          author: 'Ananya Sharma',
+          city: 'Mumbai',
+          verified: true,
+          rating: 5,
+          product: '🌸 Pastel Daisy Bouquet',
+          category: 'bouquet',
+          date: 'October 14, 2026',
+          tags: ['🌿 Soft & Premium Milk Cotton', '🎁 Gift-Ready Kraft Packaging', '💌 Heartfelt Handwritten Note'],
+          notes: 'I ordered the Pastel Daisy Bouquet for my sister’s birthday and we were completely in tears! The flowers will literally never wither and the handwritten care card from Bhumika was so personal. The packaging with kraft paper and twine felt like an heirloom.',
+          photo: '',
+          helpful: 14
+        },
+        {
+          id: 'rev-init-2',
+          author: 'Riddhi Patel',
+          city: 'Ahmedabad',
+          verified: true,
+          rating: 5,
+          product: '🧸 Cute Bunny Plushie Amigurumi',
+          category: 'plushie',
+          date: 'October 11, 2026',
+          tags: ['🌿 Soft & Premium Milk Cotton', '✨ Flawless Custom Details'],
+          notes: 'The stitching is unbelievably tight and flawless. No loose threads, super soft hypoallergenic cotton, and the cutest floppy ears! My daughter hasn’t let it go for a single night. Truly artisan work.',
+          photo: '',
+          helpful: 9
+        },
+        {
+          id: 'rev-init-3',
+          author: 'Meera Nair',
+          city: 'Bengaluru',
+          verified: true,
+          rating: 5,
+          product: '✨ Bespoke Custom Order',
+          category: 'custom',
+          date: 'October 7, 2026',
+          tags: ['✨ Flawless Custom Details', '⚡ Helpful WhatsApp Support', '💌 Heartfelt Handwritten Note'],
+          notes: 'Bhumika helped me design a custom bouquet matching our anniversary colors. She sent photos of yarn skeins on WhatsApp before starting and finished it right on schedule. The craftsmanship is world-class!',
+          photo: '',
+          helpful: 21
+        },
+        {
+          id: 'rev-init-4',
+          author: 'Sneha Roy',
+          city: 'Kolkata',
+          verified: true,
+          rating: 5,
+          product: '👜 Tulip Bloom Tote Bag',
+          category: 'bag',
+          date: 'September 29, 2026',
+          tags: ['🌿 Soft & Premium Milk Cotton', '🎁 Gift-Ready Kraft Packaging'],
+          notes: 'Received so many compliments at college! The straps are sturdy, the tulips are 3D and puffy, and the structure doesn’t sag when holding my book and wallet. A dream crochet bag!',
+          photo: '',
+          helpful: 12
+        },
+        {
+          id: 'rev-init-5',
+          author: 'Pooja Singhania',
+          city: 'Jaipur',
+          verified: true,
+          rating: 5,
+          product: '🌻 Sunflower Crochet Pot',
+          category: 'bouquet',
+          date: 'September 25, 2026',
+          tags: ['🌸 Everlasting Flower Beauty', '🎁 Gift-Ready Kraft Packaging'],
+          notes: 'It sits right next to my workspace and brightens my mood every day. The vibrant yellow petals and little moss details are so lifelike. Supporting a local Jaipur artist feels wonderful.',
+          photo: '',
+          helpful: 16
+        },
+        {
+          id: 'rev-init-6',
+          author: 'Devika Menon',
+          city: 'Kochi',
+          verified: true,
+          rating: 4,
+          product: '📖 Daisy Blossom Bookmark',
+          category: 'custom',
+          date: 'September 18, 2026',
+          tags: ['🌿 Soft & Premium Milk Cotton', '💌 Heartfelt Handwritten Note'],
+          notes: 'Such a sweet gift for my book club friends. Delivery took 5 days via India Post but Bhumika kept me updated on WhatsApp throughout. Beautifully made.',
+          photo: '',
+          helpful: 7
+        }
+      ];
+
+      // ----------------------------------------------------------------------
+      // 2. Admin Status Detection & Controls
+      // ----------------------------------------------------------------------
+      const adminBanner = document.getElementById('admin-moderation-banner');
+      const adminTriggerWrap = document.getElementById('admin-mode-trigger-wrap');
+      const btnEnableAdmin = document.getElementById('btn-enable-admin-mode');
+      const btnExitAdmin = document.getElementById('btn-admin-exit-mode');
+
+      function checkAdminStatus() {
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get('admin') === 'true' || urlParams.get('mode') === 'admin') return true;
+
+          const flag = sessionStorage.getItem('swan_admin_moderation_mode');
+          if (flag === 'true') return true;
+          if (flag === 'false') return false;
+
+          const demoUserStr = localStorage.getItem('swan_demo_user');
+          if (demoUserStr) {
+            const user = JSON.parse(demoUserStr);
+            if (user?.role === 'admin' || user?.profile?.role === 'admin' || user?.email === 'swanstudio2604@gmail.com' || user?.profile?.email === 'swanstudio2604@gmail.com') {
+              return true;
+            }
+          }
+          if (localStorage.getItem('swan_admin_session') === 'active' || localStorage.getItem('swan_admin_logged_in') === 'true') {
+            return true;
+          }
+        } catch (e) {}
+        return false;
+      }
+
+      let adminActive = checkAdminStatus();
+
+      function updateAdminUI() {
+        if (adminBanner) adminBanner.style.display = adminActive ? 'flex' : 'none';
+        if (adminTriggerWrap) adminTriggerWrap.style.display = adminActive ? 'none' : 'flex';
+      }
+
+      if (btnEnableAdmin) {
+        btnEnableAdmin.addEventListener('click', () => {
+          adminActive = true;
+          sessionStorage.setItem('swan_admin_moderation_mode', 'true');
+          if (!localStorage.getItem('swan_demo_user')) {
+            localStorage.setItem('swan_demo_user', JSON.stringify({
+              email: 'swanstudio2604@gmail.com',
+              role: 'admin',
+              profile: {
+                id: 'demo-admin-bhumika',
+                email: 'swanstudio2604@gmail.com',
+                full_name: 'Bhumika Nama',
+                role: 'admin'
+              }
+            }));
+          }
+          updateAdminUI();
+          renderFeed();
+          showReviewToast('👑 Admin Atelier Mode active! Delete buttons are now visible on all reviews.');
+        });
+      }
+
+      if (btnExitAdmin) {
+        btnExitAdmin.addEventListener('click', () => {
+          adminActive = false;
+          sessionStorage.setItem('swan_admin_moderation_mode', 'false');
+          const url = new URL(window.location);
+          url.searchParams.delete('admin');
+          url.searchParams.delete('mode');
+          window.history.replaceState({}, '', url);
+          updateAdminUI();
+          renderFeed();
+          showReviewToast('Exited Admin Mode. Viewing storefront as customer.');
+        });
+      }
+
+      function showReviewToast(msg) {
+        let toast = document.getElementById('review-toast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'review-toast';
+          toast.style.cssText = 'position: fixed; bottom: 2rem; right: 2rem; background: #1F2937; color: #FFFFFF; padding: 0.85rem 1.25rem; border-radius: 8px; font-size: 0.88rem; box-shadow: 0 4px 14px rgba(0,0,0,0.25); z-index: 9999; display: flex; align-items: center; gap: 0.5rem; border-left: 4px solid #10B981; transition: opacity 0.3s ease;';
+          document.body.appendChild(toast);
+        }
+        toast.innerHTML = msg;
+        toast.style.opacity = '1';
+        toast.style.display = 'flex';
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => { toast.style.display = 'none'; }, 300);
+        }, 3000);
+      }
+
+      // ----------------------------------------------------------------------
+      // 3. Load & Merge Local Reviews (Filtering Deleted IDs)
+      // ----------------------------------------------------------------------
+      function getAllReviews() {
+        let deletedIds = [];
+        try {
+          deletedIds = JSON.parse(localStorage.getItem('swan_deleted_review_ids') || '[]').map(String);
+        } catch (e) {
+          deletedIds = [];
+        }
+        let userRevs = [];
+        try {
+          const stored = localStorage.getItem('swan_customer_reviews');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) {
+              userRevs = parsed;
+            }
+          }
+        } catch (e) {
+          console.warn('Unable to load stored reviews:', e);
+        }
+        const combined = [...userRevs, ...STARTER_REVIEWS];
+        const deletedSet = new Set(deletedIds);
+        return combined.filter(r => !deletedSet.has(String(r.id)));
+      }
+
+      function saveUserReview(newRev) {
+        try {
+          let userRevs = [];
+          const stored = localStorage.getItem('swan_customer_reviews');
+          if (stored) {
+            userRevs = JSON.parse(stored) || [];
+          }
+          userRevs.unshift(newRev);
+          localStorage.setItem('swan_customer_reviews', JSON.stringify(userRevs));
+        } catch (e) {
+          console.warn('Unable to save user review:', e);
+        }
+      }
+
+      // ----------------------------------------------------------------------
+      // 4. Render Reviews Feed
+      // ----------------------------------------------------------------------
+      const reviewsFeed = document.getElementById('reviews-feed');
+      const visibleCountEl = document.getElementById('visible-count');
+      const totalReviewsCountEl = document.getElementById('total-reviews-count');
+      const countFilterAll = document.getElementById('count-filter-all');
+      let currentFilter = 'all';
+
+      function renderFeed() {
+        updateAdminUI();
+        const all = getAllReviews();
+        totalReviewsCountEl.textContent = all.length;
+        if (countFilterAll) countFilterAll.textContent = all.length;
+
+        const filtered = all.filter(r => {
+          if (currentFilter === 'all') return true;
+          if (currentFilter === '5') return r.rating === 5;
+          if (currentFilter === 'photo') return Boolean(r.photo);
+          if (currentFilter === 'bouquet') return (r.category === 'bouquet' || r.product.toLowerCase().includes('bouquet') || r.product.toLowerCase().includes('flower') || r.product.toLowerCase().includes('sunflower'));
+          if (currentFilter === 'custom') return (r.category === 'custom' || r.product.toLowerCase().includes('custom'));
+          return true;
+        });
+
+        visibleCountEl.textContent = filtered.length;
+
+        if (filtered.length === 0) {
+          reviewsFeed.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; background: #FFF9FA; border-radius: var(--radius-md); border: 1px dashed var(--rose);">
+              <p style="font-size: 1.1rem; color: var(--cocoa); margin-bottom: 0.5rem;">No reviews found under this filter.</p>
+              <button class="btn btn-outline btn-sm" onclick="document.querySelector('[data-filter=all]').click()">View All Reviews</button>
+            </div>
+          `;
+          return;
+        }
+
+        reviewsFeed.innerHTML = filtered.map(r => {
+          const starsHtml = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+          const initials = r.author.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+          const tagBadges = (r.tags || []).map(t => `<span class="review-tag-chip" style="font-size: 0.72rem; padding: 0.2rem 0.55rem; cursor: default;">${t}</span>`).join('');
+          
+          return `
+            <article class="review-card" id="${r.id}">
+              ${adminActive ? `
+                <!-- Admin Moderation Bar in front of Review -->
+                <div class="review-admin-bar" style="background: #FFF1F2; border: 1px solid #FECDD3; border-radius: 6px; padding: 0.45rem 0.75rem; margin-bottom: 0.85rem; display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: 0.74rem; font-weight: 600; color: #9F1239; display: flex; align-items: center; gap: 0.35rem;">
+                    <span>👑</span> Admin Control
+                  </span>
+                  <button type="button" class="btn-delete-review" data-id="${r.id}" data-author="${r.author}" style="background: #E11D48; color: #FFFFFF; border: none; border-radius: 4px; padding: 0.35rem 0.75rem; font-size: 0.76rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+                    🗑️ Delete Review
+                  </button>
+                </div>
+              ` : ''}
+
+              <div class="review-card-header">
+                <div class="review-avatar">${initials}</div>
+                <div>
+                  <div class="review-user-name">
+                    ${r.author}
+                    ${r.verified ? '<span class="review-verified-badge">✓ Verified Buyer</span>' : ''}
+                  </div>
+                  <div style="font-size: 0.75rem; color: #8A7670;">${r.city || 'India'} &bull; ${r.date}</div>
+                </div>
+              </div>
+
+              <div class="review-meta-row">
+                <span class="review-stars" aria-label="${r.rating} stars">${starsHtml}</span>
+                <span class="review-product-tag">${r.product}</span>
+              </div>
+
+              <blockquote class="review-text" style="margin: 0.5rem 0; font-style: italic;">
+                “${r.notes}”
+              </blockquote>
+
+              ${tagBadges ? `<div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.6rem;">${tagBadges}</div>` : ''}
+
+              ${r.photo ? `
+                <img src="${r.photo}" alt="Customer photo from ${r.author}" class="review-photo-thumb" onclick="window.open(this.src, '_blank')" title="Click to view full photo">
+              ` : ''}
+
+              <div class="review-card-footer">
+                <span style="font-size: 0.75rem; color: #9A8680;">Handcrafted by Bhumika</span>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  ${adminActive ? `
+                    <button type="button" class="btn-delete-review" data-id="${r.id}" data-author="${r.author}" style="background: #FFF0F2; color: #BE123C; border: 1px solid #FDA4AF; border-radius: 4px; padding: 0.28rem 0.6rem; font-size: 0.74rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
+                      🗑️ Delete
+                    </button>
+                  ` : ''}
+                  <button type="button" class="btn-helpful" onclick="handleHelpfulClick(this, '${r.id}')">
+                    <span>🤍</span> Helpful (<span class="helpful-count">${r.helpful || 0}</span>)
+                  </button>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        attachDeleteHandlers();
+      }
+
+      function confirmDeleteReviewModal({ author, revId }) {
+        return new Promise((resolve) => {
+          let modal = document.getElementById('delete-review-modal');
+          if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'delete-review-modal';
+            modal.style.cssText = 'position: fixed; inset: 0; background: rgba(30, 20, 20, 0.65); backdrop-filter: blur(4px); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 1.5rem; transition: opacity 0.2s ease;';
+            modal.innerHTML = `
+              <div style="background: #FFFFFF; border-radius: 12px; max-width: 440px; width: 100%; box-shadow: 0 20px 45px rgba(0,0,0,0.25); border: 1px solid #FFE4E6; overflow: hidden; animation: popIn 0.2s ease-out;">
+                <div style="background: #FFF1F2; border-bottom: 1px solid #FECDD3; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+                  <h3 style="margin: 0; font-family: var(--font-serif, serif); font-size: 1.15rem; color: #9F1239; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>🗑️</span> Delete Customer Review
+                  </h3>
+                  <button type="button" id="btn-modal-close-rev" style="background: none; border: none; font-size: 1.35rem; color: #9F1239; cursor: pointer; line-height: 1;">&times;</button>
+                </div>
+                <div style="padding: 1.25rem 1.35rem;">
+                  <p style="font-size: 0.92rem; color: #4B3B36; margin: 0 0 0.85rem; line-height: 1.5;">
+                    Permanently delete the review submitted by <strong id="modal-rev-author" style="color: #9F1239;"></strong>?
+                  </p>
+                  <p style="font-size: 0.8rem; color: #73615A; margin: 0 0 1.25rem; line-height: 1.4; background: #FAF5F0; padding: 0.6rem 0.8rem; border-radius: 6px; border: 1px solid #EFE4DC;">
+                    ⚠️ This review will be immediately and permanently removed from both this public customer reviews page and the Admin Content Moderation panel.
+                  </p>
+                  <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                    <button type="button" id="btn-modal-cancel-rev" class="btn btn-outline btn-sm" style="padding: 0.45rem 1rem; font-size: 0.84rem; cursor: pointer;">
+                      Cancel
+                    </button>
+                    <button type="button" id="btn-modal-confirm-rev" class="btn btn-sm" style="background: #E11D48; color: #FFFFFF; border: none; padding: 0.45rem 1.15rem; font-size: 0.84rem; font-weight: 600; cursor: pointer; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.35rem;">
+                      🗑️ Delete Review
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+            document.body.appendChild(modal);
+          }
+
+          const authorEl = document.getElementById('modal-rev-author');
+          if (authorEl) authorEl.textContent = author || 'this customer';
+          modal.style.display = 'flex';
+          modal.style.opacity = '1';
+
+          const closeBtn = document.getElementById('btn-modal-close-rev');
+          const cancelBtn = document.getElementById('btn-modal-cancel-rev');
+          const confirmBtn = document.getElementById('btn-modal-confirm-rev');
+
+          function cleanup(result) {
+            modal.style.display = 'none';
+            closeBtn.onclick = null;
+            cancelBtn.onclick = null;
+            confirmBtn.onclick = null;
+            modal.onclick = null;
+            resolve(result);
+          }
+
+          closeBtn.onclick = () => cleanup(false);
+          cancelBtn.onclick = () => cleanup(false);
+          confirmBtn.onclick = () => cleanup(true);
+          modal.onclick = (e) => {
+            if (e.target === modal) cleanup(false);
+          };
+        });
+      }
+
+      function attachDeleteHandlers() {
+        document.querySelectorAll('.btn-delete-review').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const revId = String(btn.dataset.id || '').trim();
+            const author = btn.dataset.author || 'this customer';
+
+            const confirmed = await confirmDeleteReviewModal({ author, revId });
+            if (!confirmed) return;
+
+            // 1. Add to swan_deleted_review_ids
+            try {
+              const rawDeleted = localStorage.getItem('swan_deleted_review_ids');
+              const deletedIds = rawDeleted ? JSON.parse(rawDeleted) : [];
+              const strIds = deletedIds.map(String);
+              if (!strIds.includes(revId)) {
+                deletedIds.push(revId);
+                localStorage.setItem('swan_deleted_review_ids', JSON.stringify(deletedIds));
+              }
+            } catch (err) {
+              console.warn('Error saving deleted review ID:', err);
+            }
+
+            // 2. Remove from user reviews
+            try {
+              const userRevs = JSON.parse(localStorage.getItem('swan_customer_reviews') || '[]');
+              const filtered = userRevs.filter(r => String(r.id) !== revId);
+              localStorage.setItem('swan_customer_reviews', JSON.stringify(filtered));
+            } catch (err) {
+              console.warn('Error filtering user reviews:', err);
+            }
+
+            // 3. Immediately re-render feed and show toast
+            renderFeed();
+            showReviewToast(`✓ Review by "${author}" was permanently deleted.`);
+          });
+        });
+      }
+
+      window.handleHelpfulClick = function(btn, revId) {
+        if (btn.classList.contains('voted')) return;
+        btn.classList.add('voted');
+        const countSpan = btn.querySelector('.helpful-count');
+        const iconSpan = btn.querySelector('span:first-child');
+        if (countSpan) {
+          countSpan.textContent = parseInt(countSpan.textContent, 10) + 1;
+        }
+        if (iconSpan) {
+          iconSpan.textContent = '❤️';
+        }
+      };
+
+      // ----------------------------------------------------------------------
+      // 4. Filter Button Handlers
+      // ----------------------------------------------------------------------
+      const filterBtns = document.querySelectorAll('#review-filters button');
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach(b => {
+            b.classList.remove('active-filter');
+            b.style.background = '';
+            b.style.color = '';
+          });
+          btn.classList.add('active-filter');
+          btn.style.background = 'var(--rose)';
+          btn.style.color = '#FFFFFF';
+          currentFilter = btn.dataset.filter;
+          renderFeed();
+        });
+      });
+
+      // Style active filter initially
+      const initActiveBtn = document.querySelector('[data-filter="all"]');
+      if (initActiveBtn) {
+        initActiveBtn.style.background = 'var(--rose)';
+        initActiveBtn.style.color = '#FFFFFF';
+      }
+
+      // ----------------------------------------------------------------------
+      // 5. Interactive 5-Star Rating Picker Logic
+      // ----------------------------------------------------------------------
+      const starBtns = document.querySelectorAll('#star-picker .star-btn');
+      const ratingInput = document.getElementById('rev-rating-value');
+      const ratingCaption = document.getElementById('star-rating-caption');
+
+      const CAPTIONS = {
+        1: '⭐ Needs Attention — Did not meet expectations',
+        2: '⭐⭐ Fair — Room for improvement in design or delivery',
+        3: '⭐⭐⭐ Good — Satisfied with my crochet order',
+        4: '⭐⭐⭐⭐ Great — Beautiful crochet work & packaging!',
+        5: '⭐⭐⭐⭐⭐ Exceptional — A cherished handcrafted treasure!'
+      };
+
+      function updateStarDisplay(val, isHover = false) {
+        starBtns.forEach(btn => {
+          const btnRating = parseInt(btn.dataset.rating, 10);
+          if (btnRating <= val) {
+            btn.classList.add(isHover ? 'hovered' : 'active');
+          } else {
+            btn.classList.remove(isHover ? 'hovered' : 'active');
+          }
+        });
+        if (ratingCaption && CAPTIONS[val]) {
+          ratingCaption.textContent = CAPTIONS[val];
+        }
+      }
+
+      starBtns.forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+          const r = parseInt(btn.dataset.rating, 10);
+          updateStarDisplay(r, true);
+        });
+
+        btn.addEventListener('click', () => {
+          const r = parseInt(btn.dataset.rating, 10);
+          ratingInput.value = r;
+          updateStarDisplay(r, false);
+        });
+      });
+
+      const starPickerContainer = document.getElementById('star-picker');
+      if (starPickerContainer) {
+        starPickerContainer.addEventListener('mouseleave', () => {
+          const currentVal = parseInt(ratingInput.value, 10) || 5;
+          starBtns.forEach(btn => btn.classList.remove('hovered'));
+          updateStarDisplay(currentVal, false);
+        });
+      }
+
+      // ----------------------------------------------------------------------
+      // 6. Highlight Tag Chips Toggling
+      // ----------------------------------------------------------------------
+      const tagChips = document.querySelectorAll('#review-tag-chips .review-tag-chip');
+      tagChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          chip.classList.toggle('selected');
+        });
+      });
+
+      // ----------------------------------------------------------------------
+      // 7. Optional Photo Upload Handler
+      // ----------------------------------------------------------------------
+      const photoFileInput = document.getElementById('rev-photo-file');
+      const photoLabel = document.getElementById('rev-photo-label');
+      const btnRemovePhoto = document.getElementById('btn-remove-rev-photo');
+      const photoPreviewWrap = document.getElementById('rev-photo-preview-wrap');
+      const photoPreviewImg = document.getElementById('rev-photo-preview-img');
+      let currentPhotoDataUrl = '';
+
+      if (photoFileInput) {
+        photoFileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          if (!file.type.startsWith('image/')) {
+            alert('Please select a valid image file (JPG, PNG, WebP).');
+            return;
+          }
+
+          if (file.size > 5 * 1024 * 1024) {
+            alert('Image size exceeds 5MB limit.');
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = (loadEvent) => {
+            currentPhotoDataUrl = loadEvent.target.result;
+            photoPreviewImg.src = currentPhotoDataUrl;
+            photoPreviewWrap.style.display = 'block';
+            photoLabel.textContent = `✓ ${file.name} (${Math.round(file.size / 1024)} KB)`;
+            btnRemovePhoto.style.display = 'inline-block';
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      if (btnRemovePhoto) {
+        btnRemovePhoto.addEventListener('click', () => {
+          photoFileInput.value = '';
+          currentPhotoDataUrl = '';
+          photoPreviewImg.src = '';
+          photoPreviewWrap.style.display = 'none';
+          photoLabel.textContent = 'No file chosen';
+          btnRemovePhoto.style.display = 'none';
+        });
+      }
+
+      // ----------------------------------------------------------------------
+      // 8. Review Form Submission Handler
+      // ----------------------------------------------------------------------
+      const reviewForm = document.getElementById('customer-review-form');
+      const reviewFeedback = document.getElementById('review-feedback');
+
+      if (reviewForm) {
+        reviewForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+
+          const authorName = document.getElementById('rev-author-name').value.trim();
+          const productSelect = document.getElementById('rev-product-select').value;
+          const ratingVal = parseInt(document.getElementById('rev-rating-value').value, 10) || 5;
+          const notesText = document.getElementById('rev-notes-text').value.trim();
+
+          if (!authorName || !productSelect || !notesText) {
+            reviewFeedback.style.display = 'block';
+            reviewFeedback.style.background = '#FFEBEE';
+            reviewFeedback.style.color = '#B71C1C';
+            reviewFeedback.textContent = 'Please fill out your name, selection, and review note.';
+            return;
+          }
+
+          const selectedTags = Array.from(document.querySelectorAll('#review-tag-chips .review-tag-chip.selected'))
+            .map(chip => chip.dataset.tag);
+
+          const authorParts = authorName.split(',');
+          const nameOnly = authorParts[0].trim();
+          const cityOnly = authorParts[1] ? authorParts[1].trim() : 'India';
+
+          const newReview = {
+            id: 'rev-user-' + Date.now(),
+            author: nameOnly,
+            city: cityOnly,
+            verified: true,
+            rating: ratingVal,
+            product: productSelect,
+            category: productSelect.includes('Bouquet') ? 'bouquet' : productSelect.includes('Custom') ? 'custom' : 'general',
+            date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+            tags: selectedTags,
+            notes: notesText,
+            photo: currentPhotoDataUrl,
+            helpful: 1
+          };
+
+          saveUserReview(newReview);
+
+          // Success Feedback
+          reviewFeedback.style.display = 'block';
+          reviewFeedback.style.background = '#E8F5E9';
+          reviewFeedback.style.border = '1px solid #A5D6A7';
+          reviewFeedback.style.color = '#1B5E20';
+          reviewFeedback.innerHTML = `
+            <strong>✓ Thank you, ${nameOnly}!</strong> Your love note has been added to our atelier stories. Bhumika cherishes every review!
+          `;
+
+          // Reset form
+          reviewForm.reset();
+          if (btnRemovePhoto) btnRemovePhoto.click();
+          ratingInput.value = '5';
+          updateStarDisplay(5, false);
+
+          // Refresh feed
+          renderFeed();
+
+          // Scroll to the newly added review card
+          const newCard = document.getElementById(newReview.id);
+          if (newCard) {
+            newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            newCard.style.outline = '2px solid var(--rose)';
+            setTimeout(() => {
+              newCard.style.outline = 'none';
+            }, 3000);
+          }
+        });
+      }
+
+      // Initial Render
+      renderFeed();
+    });
+  </script>
+</body>
+</html>

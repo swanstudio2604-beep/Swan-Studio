@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Placed — Swan Studio | Payment Instructions</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Skip Link for Accessibility -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Global Header (Injected by js/main.js) -->
+  <div id="site-header"></div>
+
+  <!-- Main Content -->
+  <main id="main" class="section section-cream">
+    <div class="container" style="max-width: 780px;">
+
+      <!-- Success Header -->
+      <div style="text-align: center; margin-bottom: var(--space-2xl);">
+        <div style="width: 72px; height: 72px; border-radius: 50%; background: #EBF8F0; color: #1E6B39; font-size: 2.2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; border: 2px dashed #A9D5B7;">
+          ✓
+        </div>
+        <h1 class="section-title" style="font-size: 2.4rem; margin-bottom: 0.5rem;">Order Received!</h1>
+        <p class="section-subtitle" style="color: #73615A;">
+          Thank you for supporting slow, handmade crochet artistry.
+        </p>
+      </div>
+
+      <!-- Graphical Order & Payment Lifecycle Stepper -->
+      <div class="customer-order-tracker">
+        <div class="customer-stepper-header">
+          <h3>
+            <span>🧶</span> Order & Fulfillment Lifecycle
+          </h3>
+          <div id="customer-status-badge-wrap">
+            <span class="customer-status-badge pending" id="customer-status-pill">
+              <span class="customer-status-dot pulsing"></span>
+              <span id="customer-status-label">Awaiting Payment Verification</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="customer-timeline-wrapper">
+          <div class="customer-timeline-track">
+            <div class="customer-timeline-progress" id="customer-timeline-bar" style="width: 25%;"></div>
+          </div>
+          <ol class="customer-timeline-steps">
+            <li class="customer-timeline-step completed" id="step-placed">
+              <div class="customer-step-node">✓</div>
+              <span class="customer-step-label">Order Placed</span>
+              <span class="customer-step-sub">Received</span>
+            </li>
+            <li class="customer-timeline-step active" id="step-payment">
+              <div class="customer-step-node" id="step-payment-node">💳</div>
+              <span class="customer-step-label">Payment Verification</span>
+              <span class="customer-step-sub" id="step-payment-sub">Awaiting UPI / UTR</span>
+            </li>
+            <li class="customer-timeline-step upcoming" id="step-crafting">
+              <div class="customer-step-node">🧶</div>
+              <span class="customer-step-label">In Atelier</span>
+              <span class="customer-step-sub">Hand-Crocheting</span>
+            </li>
+            <li class="customer-timeline-step upcoming" id="step-shipped">
+              <div class="customer-step-node">📦</div>
+              <span class="customer-step-label">Dispatched</span>
+              <span class="customer-step-sub">Courier Handover</span>
+            </li>
+            <li class="customer-timeline-step upcoming" id="step-delivered">
+              <div class="customer-step-node">🎁</div>
+              <span class="customer-step-label">Delivered</span>
+              <span class="customer-step-sub">Cherished Keepsake</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Payment Status Notice (Mandatory PRD Section 11 string) -->
+      <div style="background: #FFFDF9; border-radius: var(--radius-lg); border: 2px dashed var(--rose); padding: 2rem; box-shadow: var(--shadow-card); margin-bottom: 2rem;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-bottom: 1.25rem; border-bottom: 1px dashed var(--border-subtle); margin-bottom: 1.5rem;">
+          <div>
+            <span style="font-size: 0.82rem; color: #8A7670; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Reference Number:</span>
+            <div id="display-order-id" style="font-size: 1.25rem; font-weight: 700; color: var(--cocoa);">SWAN-ORD-PENDING</div>
+          </div>
+          <div>
+            <span style="font-size: 0.82rem; color: #8A7670; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Total Payable:</span>
+            <div id="display-order-total" style="font-size: 1.6rem; font-weight: 700; color: var(--cocoa);">₹0.00</div>
+          </div>
+        </div>
+
+        <div style="background: #FFF8F1; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); padding: 1.25rem; margin-bottom: 1.75rem; text-align: center;">
+          <p style="font-size: 1.1rem; font-weight: 600; color: var(--rose-text); margin-bottom: 0.25rem;">
+            "Your order has been placed. Your payment is awaiting verification."
+          </p>
+          <p style="font-size: 0.85rem; color: #73615A; margin: 0;">
+            Please complete the transfer using the UPI ID below to confirm your creation.
+          </p>
+        </div>
+
+        <!-- Manual UPI Details & Copy Button -->
+        <div style="background: var(--white); border-radius: var(--radius-md); border: 1.5px solid var(--border-subtle); padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.15rem; margin-bottom: 1rem;">📱 Manual UPI Transfer Details</h2>
+          
+          <div style="display: flex; align-items: center; justify-content: space-between; background: var(--cream); border-radius: var(--radius-sm); padding: 0.9rem 1.25rem; border: 1px dashed var(--rose);">
+            <div>
+              <span style="font-size: 0.78rem; text-transform: uppercase; color: #8A7670; font-weight: 600; display: block;">Official Swan Studio UPI ID</span>
+              <strong id="display-upi-id" style="font-size: 1.2rem; color: var(--cocoa); font-family: monospace;">9509966512@fam</strong>
+            </div>
+            <button id="btn-copy-upi" class="btn btn-secondary btn-sm" type="button">
+              📋 Copy UPI ID
+            </button>
+          </div>
+
+          <!-- Step-by-Step Instructions -->
+          <div style="margin-top: 1.5rem; font-size: 0.9rem; line-height: 1.7; color: var(--cocoa);">
+            <p><strong>Instructions to finalize your payment:</strong></p>
+            <ol style="margin-left: 1.5rem;">
+              <li>Open any UPI app (Google Pay, PhonePe, Paytm, or BHIM).</li>
+              <li>Transfer the exact total (<strong id="instruction-total">₹0.00</strong>) to UPI ID: <code>9509966512@fam</code>.</li>
+              <li>In the transfer remark / note, add your Order ID: <code id="instruction-order-id">...</code>.</li>
+              <li>Submit your 12-digit UTR and/or upload your payment screenshot below for fast manual verification by Bhumika.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Transaction Reference & Payment Proof Submission Box -->
+        <div style="background: var(--white); border-radius: var(--radius-md); border: 2px dashed var(--rose); padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.15rem; margin-bottom: 0.4rem; color: var(--rose-text); display: flex; align-items: center; gap: 0.4rem;">
+            <span>💳</span> Submit Payment Proof (UTR & Screenshot)
+          </h2>
+          <p style="font-size: 0.85rem; color: #73615A; margin-bottom: 1.25rem;">
+            After completing your transfer in Google Pay, PhonePe, or Paytm, enter your 12-digit UTR reference and optionally upload your transaction screenshot so Bhumika can instantly match and verify it.
+          </p>
+
+          <form id="ref-submit-form">
+            <!-- 12-digit UTR Input -->
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+              <label for="ref-input" class="form-label" style="font-weight: 600; color: var(--cocoa); font-size: 0.88rem;">
+                12-Digit UPI Transaction ID / UTR <span style="color: var(--rose);">*</span>
+              </label>
+              <input type="text" id="ref-input" class="form-control" placeholder="e.g. 429184719234 (12-digit UTR)" required>
+            </div>
+
+            <!-- Artisanal "Upload Photo" File Button -->
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+              <label class="form-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+                <span style="font-weight: 600; color: var(--cocoa); font-size: 0.88rem;">📸 Payment Confirmation Screenshot (Optional)</span>
+                <span style="font-size: 0.74rem; color: #8A7670;">JPG, PNG, WebP up to 5MB</span>
+              </label>
+              
+              <div class="photo-upload-wrap">
+                <label for="payment-screenshot-file" class="photo-upload-trigger" id="screenshot-upload-trigger">
+                  <div class="upload-icon-circle">📷</div>
+                  <div class="upload-text-group">
+                    <span class="upload-title" id="screenshot-upload-title">Choose Payment Receipt Photo</span>
+                    <span class="upload-subtitle" id="screenshot-upload-sub">Click to browse or drag & drop receipt screenshot</span>
+                  </div>
+                  <span class="upload-badge-action">📷 Upload Photo</span>
+                </label>
+                <input type="file" id="payment-screenshot-file" class="photo-upload-input" accept="image/*">
+              </div>
+
+              <!-- Receipt Preview Thumbnail -->
+              <div id="screenshot-preview-container" style="display: none;"></div>
+            </div>
+
+            <button type="submit" id="btn-submit-ref" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.95rem;">
+              ✓ Submit Payment Verification Proof
+            </button>
+          </form>
+
+          <div id="ref-status-msg" style="display: none; margin-top: 1rem; padding: 1rem; border-radius: var(--radius-sm); font-size: 0.88rem;"></div>
+        </div>
+
+        <!-- Action Links -->
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <a id="btn-whatsapp-confirm" href="https://wa.me/919509966512" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="flex: 1; min-width: 240px;">
+            💬 Notify Bhumika on WhatsApp
+          </a>
+          <a href="account.html" class="btn btn-secondary" style="flex: 1; min-width: 200px;">
+            View Order in Account
+          </a>
+        </div>
+
+      </div>
+
+      <div style="text-align: center;">
+        <a href="shop.html" style="font-size: 0.9rem; color: var(--rose-text); text-decoration: underline;">
+          &larr; Continue browsing Swan Studio
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Global Footer (Injected by js/main.js) -->
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/payments.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId = urlParams.get('order_id') || 'SWAN-DEMO-' + Math.floor(1000 + Math.random() * 9000);
+      const totalAmount = parseFloat(urlParams.get('total')) || 899.00;
+      const upiId = urlParams.get('upi') || '9509966512@fam';
+
+      document.getElementById('display-order-id').textContent = orderId;
+      document.getElementById('instruction-order-id').textContent = orderId;
+      document.getElementById('display-order-total').textContent = `₹${totalAmount.toLocaleString('en-IN')}`;
+      document.getElementById('instruction-total').textContent = `₹${totalAmount.toLocaleString('en-IN')}`;
+      document.getElementById('display-upi-id').textContent = upiId;
+
+      // Copy UPI ID button
+      const copyBtn = document.getElementById('btn-copy-upi');
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(upiId);
+          copyBtn.textContent = '✓ Copied!';
+          setTimeout(() => { copyBtn.textContent = '📋 Copy UPI ID'; }, 2500);
+        } catch {
+          alert(`Please copy manually: ${upiId}`);
+        }
+      });
+
+      // Photo upload & preview logic
+      let screenshotBase64 = null;
+      let screenshotName = '';
+      const fileInput = document.getElementById('payment-screenshot-file');
+      const trigger = document.getElementById('screenshot-upload-trigger');
+      const titleEl = document.getElementById('screenshot-upload-title');
+      const subEl = document.getElementById('screenshot-upload-sub');
+      const previewContainer = document.getElementById('screenshot-preview-container');
+
+      function handleScreenshotFile(file) {
+        if (!file || !file.type.startsWith('image/')) {
+          alert('Please select an image file (PNG, JPG, WebP).');
+          return;
+        }
+
+        const fileSizeKB = (file.size / 1024).toFixed(1);
+        screenshotName = file.name;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          screenshotBase64 = e.target.result;
+
+          // Update trigger label
+          titleEl.textContent = '✓ Screenshot Attached';
+          subEl.textContent = `${file.name} (${fileSizeKB} KB)`;
+          subEl.classList.add('has-file');
+
+          // Render Preview Box
+          previewContainer.style.display = 'block';
+          previewContainer.innerHTML = `
+            <div class="receipt-preview-wrap">
+              <img src="${screenshotBase64}" alt="Payment Receipt Preview" class="receipt-preview-thumb" id="receipt-thumb-img" title="Click to view full preview">
+              <div class="receipt-preview-meta">
+                <div class="receipt-preview-name">${file.name}</div>
+                <div class="receipt-preview-size">✓ ${fileSizeKB} KB &bull; Attached for Bhumika</div>
+              </div>
+              <button type="button" class="receipt-preview-remove" id="receipt-remove-btn" title="Remove screenshot">&times;</button>
+            </div>
+          `;
+
+          // Remove handler
+          document.getElementById('receipt-remove-btn').addEventListener('click', () => {
+            screenshotBase64 = null;
+            screenshotName = '';
+            fileInput.value = '';
+            titleEl.textContent = 'Choose Payment Receipt Photo';
+            subEl.textContent = 'Click to browse or drag & drop receipt screenshot';
+            subEl.classList.remove('has-file');
+            previewContainer.style.display = 'none';
+            previewContainer.innerHTML = '';
+            updateWhatsAppLink(refInput.value.trim());
+          });
+
+          // Zoom image preview on click
+          document.getElementById('receipt-thumb-img').addEventListener('click', () => {
+            const w = window.open('');
+            w.document.write(`<img src="${screenshotBase64}" style="max-width: 100%; height: auto; display: block; margin: 2rem auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">`);
+          });
+
+          updateWhatsAppLink(refInput.value.trim());
+        };
+        reader.readAsDataURL(file);
+      }
+
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          handleScreenshotFile(e.target.files[0]);
+        }
+      });
+
+      // Drag & drop support
+      ['dragenter', 'dragover'].forEach(eventName => {
+        trigger.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          trigger.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        trigger.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          trigger.classList.remove('dragover');
+        });
+      });
+
+      trigger.addEventListener('drop', (e) => {
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleScreenshotFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      // WhatsApp link updater
+      function updateWhatsAppLink(refId = '') {
+        const waBtn = document.getElementById('btn-whatsapp-confirm');
+        let text = `Hi Bhumika! I just placed order #${orderId} on Swan Studio for ₹${totalAmount.toLocaleString('en-IN')}.`;
+        if (refId) {
+          text += ` I have transferred the amount to ${upiId}. My 12-digit UTR/Ref ID is: ${refId}.`;
+        } else {
+          text += ` I am transferring to ${upiId} and will share my reference ID shortly.`;
+        }
+        if (screenshotBase64) {
+          text += ` I have also uploaded my payment screenshot on the order confirmation screen.`;
+        }
+        waBtn.href = `https://wa.me/919509966512?text=${encodeURIComponent(text)}`;
+      }
+      updateWhatsAppLink();
+
+      // Check existing order state in demo storage
+      try {
+        const stored = localStorage.getItem('swan_demo_orders');
+        const orders = stored ? JSON.parse(stored) : [];
+        const existing = orders.find(o => o.orderId === orderId);
+        if (existing) {
+          if (existing.transactionRef) {
+            document.getElementById('ref-input').value = existing.transactionRef;
+          }
+          if (existing.paymentStatus === 'PAID') {
+            applyPaidStatusUI();
+          } else if (existing.transactionRef || existing.paymentScreenshot) {
+            applySubmittedStatusUI(existing.transactionRef, !!existing.paymentScreenshot);
+          }
+        }
+      } catch (e) {
+        console.warn('Demo storage read failed', e);
+      }
+
+      function applySubmittedStatusUI(refVal, hasImg) {
+        const statusPill = document.getElementById('customer-status-pill');
+        const statusLabel = document.getElementById('customer-status-label');
+        const progressBar = document.getElementById('customer-timeline-bar');
+        const stepPaymentSub = document.getElementById('step-payment-sub');
+
+        progressBar.style.width = '35%';
+        statusPill.className = 'customer-status-badge pending';
+        statusLabel.textContent = 'UTR Submitted — Verifying With Bank';
+        stepPaymentSub.textContent = 'Proof Submitted (In Review)';
+      }
+
+      function applyPaidStatusUI() {
+        const statusPill = document.getElementById('customer-status-pill');
+        const statusLabel = document.getElementById('customer-status-label');
+        const progressBar = document.getElementById('customer-timeline-bar');
+        const stepPayment = document.getElementById('step-payment');
+        const stepPaymentNode = document.getElementById('step-payment-node');
+        const stepPaymentSub = document.getElementById('step-payment-sub');
+        const stepCrafting = document.getElementById('step-crafting');
+
+        progressBar.style.width = '55%';
+        statusPill.className = 'customer-status-badge verified';
+        statusLabel.textContent = '✓ Payment Verified & Confirmed';
+
+        stepPayment.className = 'customer-timeline-step completed';
+        stepPaymentNode.textContent = '✓';
+        stepPaymentSub.textContent = 'Verified by Bhumika';
+
+        stepCrafting.className = 'customer-timeline-step active';
+      }
+
+      // Submit Transaction Ref Form
+      const refForm = document.getElementById('ref-submit-form');
+      const refInput = document.getElementById('ref-input');
+      const refBtn = document.getElementById('btn-submit-ref');
+      const refStatusMsg = document.getElementById('ref-status-msg');
+
+      refForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const refValue = refInput.value.trim();
+        if (!refValue && !screenshotBase64) {
+          alert('Please enter your 12-digit UTR or upload a payment screenshot.');
+          return;
+        }
+
+        refBtn.disabled = true;
+        refBtn.textContent = 'Submitting Proof...';
+
+        try {
+          await SwanPayments.submitTransactionRef(orderId, refValue, '', screenshotBase64 || '');
+          refStatusMsg.style.display = 'block';
+          refStatusMsg.style.background = '#E8F5E9';
+          refStatusMsg.style.border = '1px solid #A5D6A7';
+          refStatusMsg.style.color = '#1B5E20';
+          
+          let proofDetails = `UTR: <code>${refValue}</code>`;
+          if (screenshotBase64) {
+            proofDetails += ` + 📷 Screenshot attached (${screenshotName || 'receipt'})`;
+          }
+
+          refStatusMsg.innerHTML = `
+            <div style="font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem;">✓ Payment Proof Submitted Successfully!</div>
+            <div>${proofDetails} recorded for Order #${orderId}. Bhumika will verify receipt shortly and begin handcrafting your creation!</div>
+          `;
+          
+          applySubmittedStatusUI(refValue, !!screenshotBase64);
+          updateWhatsAppLink(refValue);
+          refInput.disabled = true;
+          refBtn.textContent = '✓ Proof Submitted';
+        } catch (err) {
+          refStatusMsg.style.display = 'block';
+          refStatusMsg.style.background = '#FFEBEE';
+          refStatusMsg.style.border = '1px solid #FFCDD2';
+          refStatusMsg.style.color = '#B71C1C';
+          refStatusMsg.textContent = 'Submission error: ' + (err.message || 'Please try again.');
+          refBtn.disabled = false;
+          refBtn.textContent = 'Submit Payment Verification Proof';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Account — Swan Studio | Orders & Profile</title>
+  <meta name="description" content="View your order history, delivery details, and manual UPI payment verification status at Swan Studio.">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Skip Link for Accessibility -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Global Header (Injected by js/main.js) -->
+  <div id="site-header"></div>
+
+  <!-- Main Content -->
+  <main id="main" class="section section-cream">
+    <div class="container" style="max-width: 960px;">
+
+      <!-- Breadcrumbs -->
+      <nav aria-label="Breadcrumbs" style="margin-bottom: var(--space-lg); font-size: 0.88rem; color: #8A7670;">
+        <a href="index.html" style="color: var(--cocoa);">Home</a>
+        <span style="margin: 0 0.4rem;">/</span>
+        <span style="color: var(--rose-text); font-weight: 500;">Account</span>
+      </nav>
+
+      <!-- Section Header -->
+      <div class="section-header" style="text-align: left; margin-bottom: var(--space-xl); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1 class="section-title">My Account</h1>
+          <p class="section-subtitle">
+            Manage your contact details, track manual UPI payments, and view past orders.
+          </p>
+        </div>
+        <div id="admin-badge-container" style="display: none;">
+          <a href="admin/index.html" class="btn btn-primary btn-sm" style="background: var(--cocoa); border-color: var(--cocoa);">
+            ⚙️ Open Admin Dashboard
+          </a>
+        </div>
+      </div>
+
+      <!-- Account Dashboard Grid -->
+      <div style="display: grid; grid-template-columns: 280px 1fr; gap: var(--space-2xl); align-items: start;">
+        
+        <!-- Sidebar Navigation -->
+        <div style="background: var(--white); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); padding: 1.5rem; box-shadow: var(--shadow-sm);">
+          <div style="text-align: center; padding-bottom: 1.25rem; border-bottom: 1px dashed var(--border-subtle); margin-bottom: 1.25rem;">
+            <div id="user-avatar-wrap" style="width: 68px; height: 68px; border-radius: 50%; background: #FDE8ED; color: var(--rose-text); font-size: 1.85rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem auto; border: 2px dashed var(--rose); overflow: hidden; box-shadow: 0 2px 8px rgba(199, 131, 145, 0.2);">
+              👤
+            </div>
+            <h3 id="user-display-name" style="font-size: 1.2rem; margin-bottom: 0.2rem;">Loading...</h3>
+            <p id="user-display-email" style="font-size: 0.82rem; color: #73615A; margin-bottom: 0.5rem; word-break: break-all;">...</p>
+            <span id="user-role-badge" style="display: inline-block; font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); background: #FFF4E5; color: #9A6700; text-transform: uppercase;">
+              Customer
+            </span>
+          </div>
+
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.92rem;">
+            <li>
+              <a href="#orders" style="display: block; padding: 0.6rem 0.9rem; border-radius: var(--radius-sm); background: var(--cream); color: var(--rose-text); font-weight: 600;">
+                📦 Order History
+              </a>
+            </li>
+            <li>
+              <a href="#profile" style="display: block; padding: 0.6rem 0.9rem; border-radius: var(--radius-sm); color: var(--cocoa);">
+                👤 Profile Details
+              </a>
+            </li>
+            <li>
+              <a href="custom-order.html" style="display: block; padding: 0.6rem 0.9rem; border-radius: var(--radius-sm); color: var(--cocoa);">
+                ✨ Request Custom Piece
+              </a>
+            </li>
+            <li>
+              <button id="logout-btn" style="width: 100%; text-align: left; padding: 0.6rem 0.9rem; border-radius: var(--radius-sm); color: #9A5565; background: none; border: none; font-size: 0.92rem; cursor: pointer;">
+                🚪 Sign Out
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Main Account Content -->
+        <div>
+          <!-- Orders Tab -->
+          <div style="background: var(--white); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); padding: 1.75rem; box-shadow: var(--shadow-sm); margin-bottom: 1.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+              <div>
+                <h2 style="font-size: 1.35rem; margin: 0;">
+                  Your Order History
+                </h2>
+                <span style="font-size: 0.8rem; color: #8A7670;">Live artisanal fulfillment & payment pipeline tracking</span>
+              </div>
+              <span id="order-count-badge" class="badge badge-accent">Loading orders...</span>
+            </div>
+
+            <!-- Orders Container -->
+            <div id="orders-container" style="display: flex; flex-direction: column; gap: 1.25rem;">
+              <div style="text-align: center; padding: 2rem; color: #8A7670;">Loading your creations...</div>
+            </div>
+          </div>
+
+          <!-- Profile Details Section -->
+          <div style="background: var(--white); border-radius: var(--radius-md); border: 1px solid var(--border-subtle); padding: 1.75rem; box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+              <h2 style="font-size: 1.35rem; margin: 0;">
+                Profile & Delivery Info
+              </h2>
+              <button id="btn-edit-profile" class="btn btn-secondary btn-sm" style="font-size: 0.8rem;">
+                ✏️ Edit Details
+              </button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; font-size: 0.9rem;">
+              <div>
+                <strong style="color: var(--rose-text); display: block; margin-bottom: 0.2rem;">Full Name:</strong>
+                <span id="profile-name" style="color: var(--cocoa); font-weight: 500;">...</span>
+              </div>
+              <div>
+                <strong style="color: var(--rose-text); display: block; margin-bottom: 0.2rem;">Mobile / WhatsApp:</strong>
+                <span id="profile-phone" style="color: var(--cocoa); font-weight: 500;">...</span>
+              </div>
+              <div>
+                <strong style="color: var(--rose-text); display: block; margin-bottom: 0.2rem;">Email Address:</strong>
+                <span id="profile-email" style="color: var(--cocoa); font-weight: 500;">...</span>
+              </div>
+              <div>
+                <strong style="color: var(--rose-text); display: block; margin-bottom: 0.2rem;">Account Type:</strong>
+                <span id="profile-role" style="color: var(--cocoa); font-weight: 500;">...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Edit Profile Modal -->
+  <div id="profile-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.35rem;">Edit Profile Details</h2>
+        <button class="modal-close-btn" id="modal-close-profile">&times;</button>
+      </div>
+
+      <form id="profile-edit-form">
+        <div class="form-group">
+          <label for="edit-name" class="form-label">Full Name</label>
+          <input type="text" id="edit-name" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-phone" class="form-label">Mobile / WhatsApp Number</label>
+          <input type="tel" id="edit-phone" class="form-control" placeholder="10-digit number" required>
+        </div>
+
+        <!-- Artisanal Profile Photo Uploader -->
+        <div class="form-group" style="margin-top: 1rem;">
+          <label class="form-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <span>📸 Customer Profile Avatar (Optional)</span>
+            <span style="font-size: 0.74rem; color: #8A7670;">JPG, PNG up to 3MB</span>
+          </label>
+          <div class="photo-upload-wrap">
+            <label for="edit-avatar-file" class="photo-upload-trigger" id="edit-avatar-trigger">
+              <div class="upload-icon-circle">📷</div>
+              <div class="upload-text-group">
+                <span class="upload-title" id="edit-avatar-title">Choose Profile Photo</span>
+                <span class="upload-subtitle" id="edit-avatar-sub">Click to browse or drag & drop avatar</span>
+              </div>
+              <span class="upload-badge-action">📷 Upload Photo</span>
+            </label>
+            <input type="file" id="edit-avatar-file" class="photo-upload-input" accept="image/*">
+          </div>
+          <div id="avatar-preview-box" style="display: none; margin-top: 0.5rem;"></div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-profile">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btn-save-profile">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Global Footer (Injected by js/main.js) -->
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/products-demo.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/payments.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Require authenticated user
+      let profile = await AUTH.requireAuth({ redirectUrl: 'login.html' });
+      if (!profile) return;
+
+      const userDisplayName = document.getElementById('user-display-name');
+      const userDisplayEmail = document.getElementById('user-display-email');
+      const profileName = document.getElementById('profile-name');
+      const profilePhone = document.getElementById('profile-phone');
+      const profileEmail = document.getElementById('profile-email');
+      const profileRole = document.getElementById('profile-role');
+      const roleBadge = document.getElementById('user-role-badge');
+      const adminContainer = document.getElementById('admin-badge-container');
+      const ordersContainer = document.getElementById('orders-container');
+      const orderCountBadge = document.getElementById('order-count-badge');
+
+      const avatarWrap = document.getElementById('user-avatar-wrap');
+
+      function updateProfileUI(p) {
+        userDisplayName.textContent = p.full_name || 'Customer';
+        userDisplayEmail.textContent = p.email || '';
+        profileName.textContent = p.full_name || 'Not provided';
+        profilePhone.textContent = p.phone || 'Not provided';
+        profileEmail.textContent = p.email || '';
+        profileRole.textContent = (p.role || 'customer').toUpperCase();
+
+        if (p.avatar_url || p.avatar) {
+          avatarWrap.innerHTML = `<img src="${p.avatar_url || p.avatar}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">`;
+        } else {
+          avatarWrap.textContent = '👤';
+        }
+
+        if (p.role === 'admin') {
+          roleBadge.textContent = '👑 Admin';
+          roleBadge.style.background = '#F0E5FF';
+          roleBadge.style.color = '#5B21B6';
+          adminContainer.style.display = 'block';
+        } else {
+          roleBadge.textContent = 'Customer';
+        }
+      }
+      updateProfileUI(profile);
+
+      // Track files selected for each order
+      const orderProofFiles = {};
+
+      // Load Orders
+      async function loadUserOrders() {
+        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        let orders = [];
+
+        if (client) {
+          try {
+            const { data, error } = await client
+              .from('orders')
+              .select(`
+                *,
+                order_items (*),
+                payments (*)
+              `)
+              .order('created_at', { ascending: false });
+
+            if (!error && data) {
+              orders = data.map(o => ({
+                orderId: o.id,
+                createdAt: o.created_at,
+                subtotal: o.subtotal,
+                discountAmount: o.discount_amount || 0,
+                couponCode: o.coupon_code || null,
+                shippingFee: o.shipping_fee,
+                totalAmount: o.total_amount,
+                status: o.status,
+                paymentStatus: o.payments && o.payments[0] ? o.payments[0].status : 'PENDING_VERIFICATION',
+                transactionRef: o.payments && o.payments[0] ? o.payments[0].transaction_ref_id : null,
+                paymentScreenshot: o.payments && o.payments[0] ? o.payments[0].screenshot_path : null,
+                items: (o.order_items || []).map(i => ({
+                  name: i.product_name,
+                  quantity: i.quantity,
+                  unitPrice: i.unit_price,
+                  lineTotal: i.line_total
+                }))
+              }));
+            }
+          } catch (e) {
+            console.warn('Supabase fetch orders failed, falling back:', e);
+          }
+        }
+
+        // Demo Storage Fallback
+        if (orders.length === 0) {
+          try {
+            const stored = localStorage.getItem('swan_demo_orders');
+            orders = stored ? JSON.parse(stored) : [];
+          } catch {
+            orders = [];
+          }
+        }
+
+        orderCountBadge.textContent = `${orders.length} order${orders.length === 1 ? '' : 's'}`;
+
+        if (orders.length === 0) {
+          ordersContainer.innerHTML = `
+            <div style="text-align: center; padding: 2.5rem 1rem; background: var(--cream); border-radius: var(--radius-sm); border: 1px dashed var(--border-subtle);">
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">👜</div>
+              <h3 style="font-size: 1.15rem; margin-bottom: 0.35rem;">No orders placed yet</h3>
+              <p style="font-size: 0.85rem; color: #73615A; margin-bottom: 1rem;">
+                Browse our handmade bouquets, plushies, and bags to place your first order!
+              </p>
+              <a href="shop.html" class="btn btn-primary btn-sm">Explore Creations</a>
+            </div>
+          `;
+          return;
+        }
+
+        // Graphical Metrics Summary Banner
+        const totalOrders = orders.length;
+        const craftingCount = orders.filter(o => o.status === 'CONFIRMED' || o.status === 'IN_PROGRESS' || o.paymentStatus === 'PAID').length;
+        const deliveredCount = orders.filter(o => o.status === 'DELIVERED').length;
+        const verifiedCount = orders.filter(o => o.paymentStatus === 'PAID').length;
+
+        const statsBannerHtml = `
+          <div class="customer-stats-banner">
+            <div class="customer-stat-card">
+              <div class="customer-stat-icon">📦</div>
+              <div>
+                <div class="customer-stat-num">${totalOrders}</div>
+                <div class="customer-stat-name">Total Orders</div>
+              </div>
+            </div>
+            <div class="customer-stat-card">
+              <div class="customer-stat-icon">🧶</div>
+              <div>
+                <div class="customer-stat-num">${craftingCount}</div>
+                <div class="customer-stat-name">In Atelier</div>
+              </div>
+            </div>
+            <div class="customer-stat-card">
+              <div class="customer-stat-icon">🎁</div>
+              <div>
+                <div class="customer-stat-num">${deliveredCount}</div>
+                <div class="customer-stat-name">Delivered</div>
+              </div>
+            </div>
+            <div class="customer-stat-card">
+              <div class="customer-stat-icon">✓</div>
+              <div>
+                <div class="customer-stat-num">${verifiedCount}</div>
+                <div class="customer-stat-name">UPI Verified</div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        const cardsHtml = orders.map(o => {
+          const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent';
+          
+          let paymentBadge = '';
+          if (o.paymentStatus === 'PAID') {
+            paymentBadge = `<span class="customer-status-badge verified">✓ Payment Verified</span>`;
+          } else if (o.paymentStatus === 'REJECTED') {
+            paymentBadge = `<span class="customer-status-badge" style="background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5;">✕ Verification Failed</span>`;
+          } else {
+            paymentBadge = `<span class="customer-status-badge pending"><span class="customer-status-dot pulsing"></span>⏳ Awaiting Bank Verification</span>`;
+          }
+
+          let fulfillmentBadge = `<span class="customer-status-badge" style="background: #FFF0F2; color: var(--rose-text); border: 1px solid rgba(199,131,145,0.4);">${o.status}</span>`;
+          if (o.status === 'CONFIRMED') {
+            fulfillmentBadge = `<span class="customer-status-badge verified">Confirmed & Handcrafting</span>`;
+          } else if (o.status === 'DELIVERED') {
+            fulfillmentBadge = `<span class="customer-status-badge delivered">✓ Keepsake Delivered</span>`;
+          }
+
+          // Calculate Graphical Fulfillment Pipeline Stage
+          let stageIdx = 1;
+          let stagePercent = 20;
+          let stageTitle = 'Order Placed & Recorded';
+
+          if (o.status === 'DELIVERED') {
+            stageIdx = 5;
+            stagePercent = 100;
+            stageTitle = 'Keepsake Delivered';
+          } else if (o.status === 'DISPATCHED') {
+            stageIdx = 4;
+            stagePercent = 80;
+            stageTitle = 'Dispatched With Courier Handover';
+          } else if (o.status === 'IN_PROGRESS' || o.status === 'CONFIRMED' || o.paymentStatus === 'PAID') {
+            stageIdx = 3;
+            stagePercent = 55;
+            stageTitle = 'Handcrafting in Bhumika\'s Atelier';
+          } else if (o.transactionRef || o.paymentScreenshot) {
+            stageIdx = 2;
+            stagePercent = 35;
+            stageTitle = 'Payment In Bank Verification';
+          } else {
+            stageIdx = 1;
+            stagePercent = 20;
+            stageTitle = 'Order Placed (Awaiting UPI Payment)';
+          }
+
+          const pipelineHtml = `
+            <div class="account-order-pipeline">
+              <div class="account-pipeline-header">
+                <span class="account-pipeline-title">
+                  <span>🧶</span> Fulfillment Journey: <strong style="color: var(--rose-text);">${stageTitle}</strong>
+                </span>
+                <span class="account-pipeline-percent">${stagePercent}% Completed</span>
+              </div>
+              <div class="account-pipeline-track">
+                <div class="account-pipeline-bar" style="width: ${stagePercent}%;"></div>
+              </div>
+              <div class="account-pipeline-nodes">
+                <span class="account-pipeline-node ${stageIdx >= 1 ? 'done' : ''} ${stageIdx === 1 ? 'current' : ''}">
+                  <span>${stageIdx >= 1 ? '✓' : '1.'}</span> Placed
+                </span>
+                <span class="account-pipeline-node ${stageIdx >= 2 ? 'done' : ''} ${stageIdx === 2 ? 'current' : ''}">
+                  <span>${stageIdx >= 2 ? '✓' : '2.'}</span> Payment
+                </span>
+                <span class="account-pipeline-node ${stageIdx >= 3 ? 'done' : ''} ${stageIdx === 3 ? 'current' : ''}">
+                  <span>${stageIdx >= 3 ? '✓' : '3.'}</span> In Atelier
+                </span>
+                <span class="account-pipeline-node ${stageIdx >= 4 ? 'done' : ''} ${stageIdx === 4 ? 'current' : ''}">
+                  <span>${stageIdx >= 4 ? '✓' : '4.'}</span> Dispatched
+                </span>
+                <span class="account-pipeline-node ${stageIdx >= 5 ? 'done' : ''} ${stageIdx === 5 ? 'current' : ''}">
+                  <span>${stageIdx >= 5 ? '✓' : '5.'}</span> Delivered
+                </span>
+              </div>
+            </div>
+          `;
+
+          const itemsHtml = (o.items || []).map(i => `
+            <div style="display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--cocoa); margin-bottom: 0.35rem;">
+              <span>${i.quantity} × ${i.name}</span>
+              <span style="font-weight: 500;">₹${parseFloat(i.lineTotal || (i.unitPrice * i.quantity)).toLocaleString('en-IN')}</span>
+            </div>
+          `).join('');
+
+          let screenshotDisplay = '';
+          if (o.paymentScreenshot) {
+            screenshotDisplay = `
+              <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: #F0FDF4; border: 1px solid #BBF7D0; padding: 0.3rem 0.65rem; border-radius: var(--radius-sm); margin-top: 0.4rem; font-size: 0.78rem; color: #166534;">
+                <img src="${o.paymentScreenshot}" alt="Proof" style="width: 28px; height: 28px; border-radius: 4px; object-fit: cover; border: 1px solid #86EFAC; cursor: pointer;" onclick="const w=window.open('');w.document.write('<img src=\\'${o.paymentScreenshot}\\' style=\\'max-width:100%;margin:2rem auto;display:block;\\'>');" title="Click to view full receipt">
+                <span>✓ Payment Screenshot On File</span>
+              </div>
+            `;
+          }
+
+          let refSection = '';
+          if (o.transactionRef) {
+            refSection = `
+              <div style="font-size: 0.82rem; color: #73615A; margin-top: 0.5rem; display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <span>Submitted UTR: <code style="background: var(--cream); border: 1px dashed var(--border-subtle); padding: 0.15rem 0.4rem; border-radius: 3px; font-weight: 700; color: var(--cocoa);">${o.transactionRef}</code></span>
+                ${screenshotDisplay}
+              </div>
+            `;
+          } else if (o.paymentStatus === 'PENDING_VERIFICATION') {
+            refSection = `
+              <div style="margin-top: 0.85rem; padding: 0.85rem 1rem; background: #FFFDF9; border-radius: var(--radius-sm); border: 1.5px dashed var(--rose);">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--rose-text); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.35rem;">
+                  <span>💳</span> Paid via UPI? Submit 12-digit UTR & Proof Screenshot:
+                </div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                  <input type="text" class="form-control acct-ref-input" data-order="${o.orderId}" placeholder="Enter 12-digit UTR" style="flex: 1; min-width: 160px; padding: 0.45rem 0.65rem; font-size: 0.82rem;">
+                  
+                  <!-- Artisanal Photo Upload Button -->
+                  <div style="position: relative;">
+                    <label for="acct-photo-${o.orderId}" class="upload-badge-action" style="cursor: pointer; padding: 0.45rem 0.85rem; font-size: 0.78rem;">
+                      📷 Choose Photo
+                    </label>
+                    <input type="file" id="acct-photo-${o.orderId}" class="acct-photo-input photo-upload-input" data-order="${o.orderId}" accept="image/*">
+                  </div>
+
+                  <button type="button" class="btn btn-primary btn-sm btn-submit-acct-ref" data-order="${o.orderId}" style="padding: 0.45rem 0.95rem; font-size: 0.82rem;">
+                    ✓ Submit Proof
+                  </button>
+                </div>
+                <div class="acct-photo-preview" id="acct-preview-${o.orderId}" style="display: none; margin-top: 0.5rem;"></div>
+              </div>
+            `;
+          }
+
+          const couponRow = o.couponCode ? `
+            <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: #2B7A4B;">
+              <span>Discount (${o.couponCode})</span>
+              <span>-₹${parseFloat(o.discountAmount).toFixed(2)}</span>
+            </div>
+          ` : '';
+
+          return `
+            <div style="border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1.35rem; background: var(--white); box-shadow: 0 2px 8px rgba(0,0,0,0.02); margin-bottom: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem; border-bottom: 1px dashed var(--border-subtle); padding-bottom: 0.75rem;">
+                <div>
+                  <span style="font-weight: 700; font-size: 1.1rem; color: var(--cocoa);">#${o.orderId}</span>
+                  <div style="font-size: 0.78rem; color: #8A7670;">Placed on ${dateStr}</div>
+                </div>
+                <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+                  ${paymentBadge}
+                  ${fulfillmentBadge}
+                </div>
+              </div>
+
+              <!-- Graphical Fulfillment Pipeline Ribbon -->
+              ${pipelineHtml}
+
+              <div style="margin: 0.75rem 0;">
+                ${itemsHtml}
+              </div>
+
+              ${couponRow}
+
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; font-size: 0.95rem;">
+                <span>Total Amount: <strong>₹${parseFloat(o.totalAmount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong></span>
+                <a href="https://wa.me/919509966512?text=${encodeURIComponent(`Hi Bhumika, I have a question regarding my Swan Studio order #${o.orderId}`)}" target="_blank" rel="noopener noreferrer" style="font-size: 0.8rem; color: var(--rose-text); text-decoration: underline;">
+                  💬 WhatsApp Support
+                </a>
+              </div>
+
+              ${refSection}
+            </div>
+          `;
+        }).join('');
+
+        ordersContainer.innerHTML = statsBannerHtml + cardsHtml;
+
+        // Attach listeners for photo selection in account orders
+        document.querySelectorAll('.acct-photo-input').forEach(input => {
+          input.addEventListener('change', (e) => {
+            const orderId = e.currentTarget.dataset.order;
+            const file = e.currentTarget.files && e.currentTarget.files[0];
+            const previewBox = document.getElementById(`acct-preview-${orderId}`);
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              orderProofFiles[orderId] = ev.target.result;
+              if (previewBox) {
+                previewBox.style.display = 'block';
+                previewBox.innerHTML = `
+                  <div class="receipt-preview-wrap" style="margin-top: 0.35rem; padding: 0.4rem 0.65rem;">
+                    <img src="${ev.target.result}" class="receipt-preview-thumb" style="width: 36px; height: 36px;">
+                    <div class="receipt-preview-meta">
+                      <div class="receipt-preview-name">${file.name}</div>
+                      <div class="receipt-preview-size">✓ Photo Attached</div>
+                    </div>
+                    <button type="button" class="receipt-preview-remove" data-order="${orderId}">&times;</button>
+                  </div>
+                `;
+                previewBox.querySelector('.receipt-preview-remove').addEventListener('click', () => {
+                  delete orderProofFiles[orderId];
+                  previewBox.style.display = 'none';
+                  previewBox.innerHTML = '';
+                  input.value = '';
+                });
+              }
+            };
+            reader.readAsDataURL(file);
+          });
+        });
+
+        // Attach listeners for UTR & Screenshot submission from inside account page
+        document.querySelectorAll('.btn-submit-acct-ref').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const orderId = e.currentTarget.dataset.order;
+            const input = document.querySelector(`.acct-ref-input[data-order="${orderId}"]`);
+            const val = input ? input.value.trim() : '';
+            const screenshot = orderProofFiles[orderId] || '';
+
+            if (!val && !screenshot) {
+              alert('Please enter your 12-digit transaction reference (UTR) or choose a screenshot.');
+              return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            try {
+              await SwanPayments.submitTransactionRef(orderId, val, '', screenshot);
+              alert('✓ Payment proof submitted successfully! Bhumika will verify receipt shortly.');
+              delete orderProofFiles[orderId];
+              await loadUserOrders();
+            } catch (err) {
+              alert('Error: ' + err.message);
+              btn.disabled = false;
+              btn.textContent = '✓ Submit Proof';
+            }
+          });
+        });
+      }
+
+      await loadUserOrders();
+
+      // Edit Profile Modal Logic
+      const modal = document.getElementById('profile-modal');
+      const editBtn = document.getElementById('btn-edit-profile');
+      const closeBtn = document.getElementById('modal-close-profile');
+      const cancelBtn = document.getElementById('btn-cancel-profile');
+      const form = document.getElementById('profile-edit-form');
+      const nameInput = document.getElementById('edit-name');
+      const phoneInput = document.getElementById('edit-phone');
+      const avatarFileInput = document.getElementById('edit-avatar-file');
+      const avatarPreviewBox = document.getElementById('avatar-preview-box');
+      const avatarTriggerTitle = document.getElementById('edit-avatar-title');
+      const avatarTriggerSub = document.getElementById('edit-avatar-sub');
+      let newAvatarBase64 = null;
+
+      if (avatarFileInput) {
+        avatarFileInput.addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            newAvatarBase64 = ev.target.result;
+            avatarTriggerTitle.textContent = '✓ Photo Selected';
+            avatarTriggerSub.textContent = file.name;
+            avatarTriggerSub.classList.add('has-file');
+
+            avatarPreviewBox.style.display = 'block';
+            avatarPreviewBox.innerHTML = `
+              <div class="receipt-preview-wrap" style="padding: 0.4rem 0.65rem;">
+                <img src="${newAvatarBase64}" class="receipt-preview-thumb" style="width: 40px; height: 40px; border-radius: 50%;">
+                <div class="receipt-preview-meta">
+                  <div class="receipt-preview-name">${file.name}</div>
+                  <div class="receipt-preview-size">Ready to save as profile photo</div>
+                </div>
+              </div>
+            `;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      editBtn.addEventListener('click', () => {
+        nameInput.value = profile.full_name || '';
+        phoneInput.value = profile.phone || '';
+        newAvatarBase64 = null;
+        if (avatarPreviewBox) {
+          avatarPreviewBox.style.display = 'none';
+          avatarPreviewBox.innerHTML = '';
+        }
+        if (avatarTriggerTitle) avatarTriggerTitle.textContent = 'Choose Profile Photo';
+        if (avatarTriggerSub) {
+          avatarTriggerSub.textContent = 'Click to browse or drag & drop avatar';
+          avatarTriggerSub.classList.remove('has-file');
+        }
+        modal.style.display = 'flex';
+      });
+
+      function closeModal() { modal.style.display = 'none'; }
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const newName = nameInput.value.trim();
+        const newPhone = phoneInput.value.trim();
+
+        const saveBtn = document.getElementById('btn-save-profile');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        try {
+          const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+          const updatePayload = { full_name: newName, phone: newPhone, updated_at: new Date().toISOString() };
+          if (newAvatarBase64) {
+            updatePayload.avatar_url = newAvatarBase64;
+          }
+
+          if (client && profile.id) {
+            const { error } = await client
+              .from('profiles')
+              .update(updatePayload)
+              .eq('id', profile.id);
+            if (error) console.warn('Supabase update profile failed:', error);
+          } else {
+            // Update demo storage
+            const demo = AUTH.getDemoUser();
+            if (demo) {
+              demo.full_name = newName;
+              demo.phone = newPhone;
+              if (newAvatarBase64) demo.avatar = newAvatarBase64;
+              AUTH.saveDemoUser(demo);
+            }
+          }
+
+          profile.full_name = newName;
+          profile.phone = newPhone;
+          if (newAvatarBase64) profile.avatar = newAvatarBase64;
+          updateProfileUI(profile);
+          closeModal();
+        } catch (err) {
+          alert('Failed to update profile: ' + err.message);
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Changes';
+        }
+      });
+
+      // Logout handler
+      document.getElementById('logout-btn').addEventListener('click', async () => {
+        await AUTH.signOut();
+      });
+    });
+  </script>
+</body>
+</html>

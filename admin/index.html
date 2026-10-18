@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Atelier Dashboard — Swan Studio | Bhumika Nama</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Main & Admin Stylesheets -->
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css?v=m1">
+
+  <style>
+    /* KPI Stat Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--admin-surface);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      border: 1px solid var(--admin-border);
+      box-shadow: 0 4px 16px rgba(81, 65, 60, 0.04);
+      position: relative;
+    }
+
+    .kpi-card.highlight {
+      border: 1.5px dashed var(--admin-accent);
+      background: #FFFDF9;
+    }
+
+    .kpi-label {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #8A7670;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .kpi-value {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--admin-text-main);
+      font-family: var(--font-sans);
+    }
+
+    .kpi-subtext {
+      font-size: 0.75rem;
+      color: #9A5565;
+      margin-top: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Application Wrapper -->
+  <div class="admin-container" id="admin-app" style="display: none;">
+    
+    <!-- Sidebar Mount (Injected by admin-shared.js) -->
+    <div id="admin-sidebar-mount"></div>
+
+    <!-- Main Admin Workspace -->
+    <main class="admin-main">
+      <div class="admin-header-row">
+        <div>
+          <h1 class="admin-page-title">Atelier Overview</h1>
+          <p class="admin-page-subtitle">
+            Welcome back, Bhumika. Here is your store's live status.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+          <a href="../shop.html" target="_blank" class="btn btn-secondary btn-sm">
+            👁️ View Public Store
+          </a>
+          <a href="products.html" class="btn btn-primary btn-sm">
+            ➕ Add Product
+          </a>
+        </div>
+      </div>
+
+      <!-- Revenue Month-Wise Filter & Live Refresh Control Bar -->
+      <div class="admin-card" style="margin-bottom: 1.25rem; padding: 0.85rem 1.25rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; background: linear-gradient(135deg, #FFF9F7 0%, #FFFFFF 100%); border-left: 4px solid var(--rose); box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <span style="font-weight: 600; font-size: 0.88rem; color: var(--cocoa); display: flex; align-items: center; gap: 0.4rem;">
+            <span>📅</span> Revenue Period:
+          </span>
+          <select id="revenue-month-filter" class="form-control" style="width: auto; min-width: 220px; font-size: 0.84rem; padding: 0.35rem 0.75rem; background: #FFFFFF; font-weight: 500;">
+            <option value="all">🌐 All Time (Total Revenue)</option>
+          </select>
+          <div id="revenue-quick-pills" style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+            <!-- Populated by JavaScript -->
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span id="revenue-refresh-status" style="font-size: 0.76rem; color: #8A7670;">Live Synced</span>
+          <button type="button" id="btn-refresh-revenue" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0.85rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(199, 131, 145, 0.25);">
+            <span id="refresh-spin-icon" style="display: inline-block;">🔄</span> Refresh Revenue
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Metrics (Revenue calculated ONLY from verified PAID orders per PRD Section 11 & 12) -->
+      <div class="kpi-grid">
+        <div class="kpi-card highlight">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="kpi-label">Verified Revenue</div>
+            <span id="stat-revenue-period-tag" style="font-size: 0.7rem; background: #ECFDF5; color: #047857; padding: 0.1rem 0.45rem; border-radius: 10px; font-weight: 600; border: 1px solid #A7F3D0;">All Time</span>
+          </div>
+          <div class="kpi-value" id="stat-revenue">₹0.00</div>
+          <div class="kpi-subtext" id="stat-revenue-subtext">* Only counts verified PAID orders</div>
+        </div>
+
+        <div class="kpi-card highlight">
+          <div class="kpi-label">Awaiting Verification</div>
+          <div class="kpi-value" id="stat-pending-payments" style="color: #9A6700;">1</div>
+          <div class="kpi-subtext">Manual UPI checks needed</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Awaiting Processing</div>
+          <div class="kpi-value" id="stat-pending-orders">0</div>
+          <div class="kpi-subtext">Confirmed orders to craft</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Active Creations</div>
+          <div class="kpi-value" id="stat-products">...</div>
+          <div class="kpi-subtext">Published in catalog</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Low Stock Items</div>
+          <div class="kpi-value" id="stat-low-stock">...</div>
+          <div class="kpi-subtext">Stock &le; 2 threshold</div>
+        </div>
+      </div>
+
+      <!-- Graphical Status Overview Grid -->
+      <div class="chart-grid" style="margin-bottom: 2rem;">
+        <!-- Orders Graphical Card -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">🧶 Orders Fulfillment Lifecycle</div>
+              <div class="chart-subtitle">Pipeline flow from pending to delivered</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <button type="button" id="btn-orders-refresh" title="Refresh Orders Pipeline" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.55rem; cursor: pointer;">
+                <span id="orders-refresh-spin" style="display: inline-block;">🔄</span>
+              </button>
+              <a href="orders.html" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                Full Orders &rarr;
+              </a>
+            </div>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; font-size: 0.82rem;">
+            <span style="color: var(--admin-text-muted);">Delivery Completion</span>
+            <strong id="overview-delivery-rate" style="color: #16A34A;">0%</strong>
+          </div>
+          <div class="pipeline-bar" id="overview-orders-pipeline" style="height: 10px; margin-bottom: 0.75rem;">
+            <div style="width: 100%; background: #EFE4DC;"></div>
+          </div>
+          <div id="overview-orders-breakdown" style="display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.78rem;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Payments Graphical Card -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">💳 Payments & Revenue Audit</div>
+              <div class="chart-subtitle" id="payments-chart-subtitle">Reconciliation flow & bank check ratio (All Time)</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <button type="button" id="btn-chart-refresh" title="Refresh Payment Audit" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.55rem; cursor: pointer;">
+                🔄
+              </button>
+              <a href="payments.html" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                Audit Log &rarr;
+              </a>
+            </div>
+          </div>
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; font-size: 0.82rem;">
+            <span style="color: var(--admin-text-muted);">Verified Realization</span>
+            <strong id="overview-payment-rate" style="color: #16A34A;">0%</strong>
+          </div>
+          <div class="pipeline-bar" id="overview-payments-pipeline" style="height: 10px; margin-bottom: 0.75rem;">
+            <div style="width: 100%; background: #EFE4DC;"></div>
+          </div>
+          <div id="overview-payments-breakdown" style="display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.78rem; margin-bottom: 0.85rem;">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Month-Wise Revenue Distribution Mini-Ribbon -->
+          <div style="margin-top: 0.5rem; border-top: 1px dashed var(--admin-border); padding-top: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; font-size: 0.78rem;">
+              <span style="font-weight: 600; color: var(--admin-text-main);">📅 Month-Wise Revenue Breakdown</span>
+              <span style="font-size: 0.72rem; color: var(--admin-text-muted);">Click month to filter</span>
+            </div>
+            <div id="overview-month-pills" style="display: flex; flex-wrap: wrap; gap: 0.45rem; font-size: 0.76rem;">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Shortcuts -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        <a href="orders.html" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 52px; height: 52px; border-radius: 8px; background: #EFF6FF; border: 1px dashed #3B82F6; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+            🛒
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Customer Orders</h3>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Fulfillment, shipping & tracking &rarr;</p>
+          </div>
+        </a>
+
+        <a href="products.html" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 52px; height: 52px; border-radius: 8px; background: #FFF6F0; border: 1px dashed var(--rose); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+            🧶
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Manage Products</h3>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Add, edit, or archive creations &rarr;</p>
+          </div>
+        </a>
+
+        <a href="categories.html" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 52px; height: 52px; border-radius: 8px; background: #FFF6F0; border: 1px dashed var(--rose); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+            📁
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Collections</h3>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Organize shop categories &rarr;</p>
+          </div>
+        </a>
+
+        <a href="inventory.html" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 52px; height: 52px; border-radius: 8px; background: #FFF6F0; border: 1px dashed var(--rose); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+            📦
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Inventory & Stock</h3>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Adjust units & fulfillment &rarr;</p>
+          </div>
+        </a>
+
+        <a href="coupons.html" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 52px; height: 52px; border-radius: 8px; background: #FFF6F0; border: 1px dashed var(--rose); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+            🏷️
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Coupons & Promos</h3>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Discounts, caps & limits &rarr;</p>
+          </div>
+        </a>
+
+        <a href="custom-orders.html" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 52px; height: 52px; border-radius: 8px; background: #FFF6F0; border: 1px dashed var(--rose); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+            ✨
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Custom Pipeline</h3>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Quotes, deposits & bespoke &rarr;</p>
+          </div>
+        </a>
+
+        <a href="../reviews.html" target="_blank" rel="noopener noreferrer" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 52px; height: 52px; border-radius: 8px; background: #FFF6F0; border: 1px dashed var(--rose); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+            💌
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Customer Reviews</h3>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">4.9 ★ ratings & customer notes &rarr;</p>
+          </div>
+        </a>
+
+        <a href="content.html" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 52px; height: 52px; border-radius: 8px; background: #FFF6F0; border: 1px dashed var(--rose); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+            📝
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Website Content & Story</h3>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Narratives, portrait, hero & policies &rarr;</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- Verification Queue & Recent Activity -->
+      <div style="background: var(--admin-surface); border-radius: var(--radius-md); border: 1.5px dashed var(--rose); padding: 1.75rem; box-shadow: var(--shadow-sm); margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid var(--admin-border); padding-bottom: 0.75rem;">
+          <h2 style="font-size: 1.35rem; margin: 0;">Payment Verification Queue (Manual UPI)</h2>
+          <a href="payments.html" style="font-size: 0.85rem; color: var(--rose-text); font-weight: 600; text-decoration: underline;">
+            View All Payments &rarr;
+          </a>
+        </div>
+
+        <p style="font-size: 0.88rem; color: #73615A; margin-bottom: 1rem;">
+          Customers submit 12-digit transaction IDs after paying to UPI ID <code>9509966512@fam</code>. Check your bank statement before approving.
+        </p>
+
+        <!-- Pending Items Container -->
+        <div id="overview-pending-queue" style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div style="text-align: center; padding: 1rem; color: #8A7670;">Loading pending payments...</div>
+        </div>
+      </div>
+
+      <!-- Footer Mount (Injected by admin-shared.js) -->
+      <div id="admin-footer-mount"></div>
+
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/products-demo.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/payments.js"></script>
+  <script src="../js/admin/admin-shared.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Strict Security Guard & Sidebar
+      const authorized = await ADMIN.init('overview');
+      if (!authorized) return;
+
+      // 2. Compute dynamic stats from catalog
+      const products = await ADMIN.getProducts();
+      document.getElementById('stat-products').textContent = products.length;
+
+      const lowStock = products.filter(p => (p.stock || 0) <= 2).length;
+      document.getElementById('stat-low-stock').textContent = lowStock;
+
+      // 3. State & Month-Wise Helpers
+      let allPayments = [];
+      let allOrders = [];
+      let currentMonthFilter = sessionStorage.getItem('swan_revenue_filter_month') || 'all';
+
+      function getPaymentMonthKey(p) {
+        const dStr = p.verifiedAt || p.createdAt || p.created_at;
+        if (dStr) {
+          const d = new Date(dStr);
+          if (!isNaN(d.getTime())) {
+            const yr = d.getFullYear();
+            const mo = String(d.getMonth() + 1).padStart(2, '0');
+            return `${yr}-${mo}`;
+          }
+        }
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      }
+
+      function formatMonthLabel(key) {
+        if (!key || key === 'all') return 'All Time';
+        const parts = key.split('-');
+        if (parts.length === 2) {
+          const yr = parseInt(parts[0], 10);
+          const mo = parseInt(parts[1], 10) - 1;
+          const d = new Date(yr, mo, 1);
+          return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        }
+        return key;
+      }
+
+      function getCurrentMonthKey() {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      }
+
+      // Populate Month Selector and Quick Pills
+      function populateMonthControls() {
+        const select = document.getElementById('revenue-month-filter');
+        const quickPills = document.getElementById('revenue-quick-pills');
+        if (!select) return;
+
+        const monthKeysSet = new Set();
+        const thisMonthKey = getCurrentMonthKey();
+        monthKeysSet.add(thisMonthKey);
+
+        allPayments.forEach(p => {
+          monthKeysSet.add(getPaymentMonthKey(p));
+        });
+
+        const sortedMonths = Array.from(monthKeysSet).sort().reverse();
+
+        // Populate dropdown
+        select.innerHTML = `
+          <option value="all" ${currentMonthFilter === 'all' ? 'selected' : ''}>🌐 All Time (Total Revenue)</option>
+          ${sortedMonths.map(mk => {
+            const isCur = mk === thisMonthKey;
+            const label = formatMonthLabel(mk) + (isCur ? ' (Current Month)' : '');
+            return `<option value="${mk}" ${currentMonthFilter === mk ? 'selected' : ''}>${label}</option>`;
+          }).join('')}
+        `;
+
+        // Populate quick pills
+        if (quickPills) {
+          let pillsHtml = `
+            <button type="button" class="btn-month-pill ${currentMonthFilter === 'all' ? 'active' : ''}" data-month="all">
+              All Time
+            </button>
+            <button type="button" class="btn-month-pill ${currentMonthFilter === thisMonthKey ? 'active' : ''}" data-month="${thisMonthKey}">
+              This Month
+            </button>
+          `;
+
+          // Add last month if available
+          const lastMonthKey = sortedMonths.find(m => m !== thisMonthKey);
+          if (lastMonthKey) {
+            pillsHtml += `
+              <button type="button" class="btn-month-pill ${currentMonthFilter === lastMonthKey ? 'active' : ''}" data-month="${lastMonthKey}">
+                ${formatMonthLabel(lastMonthKey)}
+              </button>
+            `;
+          }
+
+          quickPills.innerHTML = pillsHtml;
+
+          quickPills.querySelectorAll('.btn-month-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const target = btn.dataset.month;
+              select.value = target;
+              currentMonthFilter = target;
+              sessionStorage.setItem('swan_revenue_filter_month', target);
+              renderMonthRevenue(target);
+              populateMonthControls();
+            });
+          });
+        }
+      }
+
+      // Render Revenue Metrics & Payments Audit for a specific month
+      function renderMonthRevenue(monthKey) {
+        const isAll = monthKey === 'all';
+        const label = formatMonthLabel(monthKey);
+
+        // Filter payments
+        const filteredPayments = isAll 
+          ? allPayments 
+          : allPayments.filter(p => getPaymentMonthKey(p) === monthKey);
+
+        const paid = filteredPayments.filter(p => p.status === 'PAID');
+        const pending = filteredPayments.filter(p => p.status === 'PENDING_VERIFICATION');
+        const rejected = filteredPayments.filter(p => p.status === 'REJECTED');
+
+        const revenue = paid.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+        const totalVolume = filteredPayments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+
+        // Update Verified Revenue KPI Card
+        const revEl = document.getElementById('stat-revenue');
+        if (revEl) {
+          revEl.textContent = `₹${revenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+        }
+
+        const tagEl = document.getElementById('stat-revenue-period-tag');
+        if (tagEl) {
+          tagEl.textContent = isAll ? 'All Time' : label;
+        }
+
+        const subtextEl = document.getElementById('stat-revenue-subtext');
+        if (subtextEl) {
+          subtextEl.textContent = isAll
+            ? `* Total of ${paid.length} verified PAID orders across all time`
+            : `* ${paid.length} verified PAID order${paid.length === 1 ? '' : 's'} in ${label}`;
+        }
+
+        // Global Awaiting Checks (always show total pending requiring attention)
+        const allPending = allPayments.filter(p => p.status === 'PENDING_VERIFICATION');
+        const pendingEl = document.getElementById('stat-pending-payments');
+        if (pendingEl) {
+          pendingEl.textContent = allPending.length;
+        }
+
+        // Update Payments Chart Subtitle
+        const subtitleEl = document.getElementById('payments-chart-subtitle');
+        if (subtitleEl) {
+          subtitleEl.textContent = `Reconciliation flow & bank check ratio (${isAll ? 'All Time' : label})`;
+        }
+
+        // Render Payments Pipeline Ribbon
+        const paymentStatuses = [
+          { key: 'PAID', label: 'Verified Paid', color: '#16A34A', list: paid },
+          { key: 'PENDING_VERIFICATION', label: 'Awaiting Check', color: '#D97706', list: pending },
+          { key: 'REJECTED', label: 'Rejected', color: '#DC2626', list: rejected }
+        ].map(s => {
+          const count = s.list.length;
+          const sum = s.list.reduce((acc, p) => acc + (parseFloat(p.amount) || 0), 0);
+          const pct = filteredPayments.length > 0 ? (count / filteredPayments.length) * 100 : 0;
+          return { ...s, count, sum, pct };
+        });
+
+        const payPipelineEl = document.getElementById('overview-payments-pipeline');
+        if (payPipelineEl) {
+          payPipelineEl.innerHTML = paymentStatuses.filter(s => s.count > 0).map(s => `
+            <div class="pipeline-segment" style="width: ${s.pct}%; background: ${s.color};" title="${s.label}: ${s.count} transfers (₹${Math.round(s.sum).toLocaleString('en-IN')})"></div>
+          `).join('') || '<div style="width: 100%; background: #EFE4DC;"></div>';
+        }
+
+        const payRateEl = document.getElementById('overview-payment-rate');
+        if (payRateEl) {
+          const realPct = totalVolume > 0 ? Math.round((revenue / totalVolume) * 100) : 0;
+          payRateEl.textContent = `${realPct}% (₹${Math.round(revenue).toLocaleString('en-IN')})`;
+        }
+
+        const paymentsBreakdownEl = document.getElementById('overview-payments-breakdown');
+        if (paymentsBreakdownEl) {
+          paymentsBreakdownEl.innerHTML = paymentStatuses.map(s => `
+            <span style="display: inline-flex; align-items: center; gap: 0.35rem; background: #FAF5F0; padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--admin-border);">
+              <span class="pipeline-dot" style="background: ${s.color}; width: 8px; height: 8px;"></span>
+              <strong>${s.label}:</strong> ${s.count} (₹${Math.round(s.sum).toLocaleString('en-IN')})
+            </span>
+          `).join('');
+        }
+
+        // Render Month-Wise Distribution Pills
+        renderMonthWiseBreakdownPills();
+      }
+
+      // Render Month-Wise Distribution Pills
+      function renderMonthWiseBreakdownPills() {
+        const monthPillsEl = document.getElementById('overview-month-pills');
+        if (!monthPillsEl) return;
+
+        // Group paid payments by month
+        const monthTotals = {};
+        allPayments.forEach(p => {
+          const m = getPaymentMonthKey(p);
+          if (!monthTotals[m]) {
+            monthTotals[m] = { paidSum: 0, paidCount: 0, totalCount: 0 };
+          }
+          monthTotals[m].totalCount++;
+          if (p.status === 'PAID') {
+            monthTotals[m].paidSum += (parseFloat(p.amount) || 0);
+            monthTotals[m].paidCount++;
+          }
+        });
+
+        // Ensure this month is displayed even if 0
+        const thisMonth = getCurrentMonthKey();
+        if (!monthTotals[thisMonth]) {
+          monthTotals[thisMonth] = { paidSum: 0, paidCount: 0, totalCount: 0 };
+        }
+
+        const sorted = Object.keys(monthTotals).sort().reverse();
+
+        monthPillsEl.innerHTML = sorted.map(m => {
+          const d = monthTotals[m];
+          const isSelected = currentMonthFilter === m;
+          const label = formatMonthLabel(m);
+          return `
+            <button type="button" class="btn-month-pill ${isSelected ? 'active' : ''}" data-month="${m}" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.7rem; font-size: 0.76rem;">
+              <span>📅 ${label}:</span>
+              <strong style="${isSelected ? 'color: #FFFFFF;' : 'color: #16A34A;'}">₹${Math.round(d.paidSum).toLocaleString('en-IN')}</strong>
+              <span style="font-size: 0.7rem; opacity: 0.85;">(${d.paidCount} paid)</span>
+            </button>
+          `;
+        }).join('');
+
+        monthPillsEl.querySelectorAll('.btn-month-pill').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const m = btn.dataset.month;
+            const select = document.getElementById('revenue-month-filter');
+            if (select) select.value = m;
+            currentMonthFilter = m;
+            sessionStorage.setItem('swan_revenue_filter_month', m);
+            renderMonthRevenue(m);
+            populateMonthControls();
+          });
+        });
+      }
+
+      // Render Orders Lifecycle Pipeline
+      function renderOrdersPipeline() {
+        const toCraft = allOrders.filter(o => o.status === 'CONFIRMED' || o.status === 'PREPARING').length;
+        const craftingEl = document.getElementById('stat-pending-orders');
+        if (craftingEl) craftingEl.textContent = toCraft;
+
+        const totalOrders = allOrders.length;
+        const orderStages = [
+          { key: 'PENDING', label: 'Pending', color: '#D97706' },
+          { key: 'CONFIRMED', label: 'Confirmed', color: '#2563EB' },
+          { key: 'PREPARING', label: 'Preparing', color: '#7C3AED' },
+          { key: 'DISPATCHED', label: 'Dispatched', color: '#4F46E5' },
+          { key: 'DELIVERED', label: 'Delivered', color: '#16A34A' },
+          { key: 'CANCELLED', label: 'Cancelled', color: '#DC2626' }
+        ].map(s => {
+          const count = allOrders.filter(o => (o.status || 'PENDING') === s.key).length;
+          const pct = totalOrders > 0 ? (count / totalOrders) * 100 : 0;
+          return { ...s, count, pct };
+        });
+
+        const ordersPipelineEl = document.getElementById('overview-orders-pipeline');
+        if (ordersPipelineEl) {
+          ordersPipelineEl.innerHTML = orderStages.filter(s => s.count > 0).map(s => `
+            <div class="pipeline-segment" style="width: ${s.pct}%; background: ${s.color};" title="${s.label}: ${s.count} orders (${s.pct.toFixed(0)}%)"></div>
+          `).join('') || '<div style="width: 100%; background: #EFE4DC;"></div>';
+        }
+
+        const deliveredCount = orderStages.find(s => s.key === 'DELIVERED')?.count || 0;
+        const deliveryRateEl = document.getElementById('overview-delivery-rate');
+        if (deliveryRateEl) {
+          deliveryRateEl.textContent = totalOrders > 0 ? `${Math.round((deliveredCount / totalOrders) * 100)}% (${deliveredCount}/${totalOrders})` : '0%';
+        }
+
+        const ordersBreakdownEl = document.getElementById('overview-orders-breakdown');
+        if (ordersBreakdownEl) {
+          ordersBreakdownEl.innerHTML = orderStages.filter(s => s.count > 0).map(s => `
+            <span style="display: inline-flex; align-items: center; gap: 0.35rem; background: #FAF5F0; padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--admin-border);">
+              <span class="pipeline-dot" style="background: ${s.color}; width: 8px; height: 8px;"></span>
+              <strong>${s.label}:</strong> ${s.count}
+            </span>
+          `).join('');
+        }
+      }
+
+      // Render Pending Payments Queue (Top 3)
+      function renderPendingQueue() {
+        const pending = allPayments.filter(p => p.status === 'PENDING_VERIFICATION');
+        const queueContainer = document.getElementById('overview-pending-queue');
+        if (!queueContainer) return;
+
+        if (pending.length === 0) {
+          queueContainer.innerHTML = `
+            <div style="background: var(--cream); border-radius: var(--radius-sm); border: 1px dashed var(--border-subtle); padding: 1.25rem; text-align: center; color: #2B7A4B;">
+              ✨ All customer UPI payments are currently verified and up to date!
+            </div>
+          `;
+        } else {
+          queueContainer.innerHTML = pending.slice(0, 3).map(p => `
+            <div style="background: var(--cream); border-radius: var(--radius-sm); border: 1px solid var(--admin-border); padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+              <div>
+                <strong>Order #${p.orderId}</strong> • ${p.customerName}
+                <div style="font-size: 0.82rem; color: #73615A; margin-top: 0.2rem;">
+                  Amount: <strong>₹${(parseFloat(p.amount) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</strong> • Ref: <code>${p.transactionRef || 'Waiting for customer UTR'}</code>
+                </div>
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <a href="payments.html" class="btn btn-primary btn-sm">
+                  Review & Verify &rarr;
+                </a>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      // Main Data Loader with Refresh Animation
+      async function refreshAllData(showSuccessToast = false, source = 'revenue') {
+        const spinIcon = document.getElementById('refresh-spin-icon');
+        const ordersSpinIcon = document.getElementById('orders-refresh-spin');
+        const statusEl = document.getElementById('revenue-refresh-status');
+        if (spinIcon) spinIcon.classList.add('spin-anim');
+        if (ordersSpinIcon) ordersSpinIcon.classList.add('spin-anim');
+        if (statusEl) statusEl.textContent = 'Syncing...';
+
+        try {
+          allPayments = await SwanPayments.getAllPayments();
+
+          // Fetch orders
+          allOrders = [];
+          try {
+            const storedOrders = localStorage.getItem('swan_demo_orders');
+            if (storedOrders) allOrders = JSON.parse(storedOrders);
+          } catch (e) {}
+
+          if (allOrders.length === 0 && allPayments.length > 0) {
+            allOrders = allPayments.map(p => ({
+              orderId: p.orderId,
+              status: p.orderStatus || 'PENDING',
+              totalAmount: p.amount,
+              customerName: p.customerName
+            }));
+          }
+
+          populateMonthControls();
+          renderMonthRevenue(currentMonthFilter);
+          renderOrdersPipeline();
+          renderPendingQueue();
+
+          const nowStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          if (statusEl) statusEl.textContent = `Refreshed at ${nowStr}`;
+
+          if (showSuccessToast && window.ADMIN && typeof ADMIN.showToast === 'function') {
+            if (source === 'orders') {
+              ADMIN.showToast('✓ Customer orders and pipeline refreshed', 'success');
+            } else {
+              const label = formatMonthLabel(currentMonthFilter);
+              ADMIN.showToast(`✓ Revenue data refreshed for ${label}`, 'success');
+            }
+          }
+        } catch (err) {
+          console.warn('Overview payment loading error:', err);
+          if (statusEl) statusEl.textContent = 'Sync error';
+        } finally {
+          setTimeout(() => {
+            if (spinIcon) spinIcon.classList.remove('spin-anim');
+            if (ordersSpinIcon) ordersSpinIcon.classList.remove('spin-anim');
+          }, 600);
+        }
+      }
+
+      // Initial Load
+      await refreshAllData(false);
+
+      // Month Filter Dropdown Change
+      const monthFilterSelect = document.getElementById('revenue-month-filter');
+      if (monthFilterSelect) {
+        ['change', 'input'].forEach(evt => {
+          monthFilterSelect.addEventListener(evt, (e) => {
+            currentMonthFilter = e.target.value;
+            sessionStorage.setItem('swan_revenue_filter_month', currentMonthFilter);
+            renderMonthRevenue(currentMonthFilter);
+            populateMonthControls();
+          });
+        });
+      }
+
+      // Refresh Button Click Handlers
+      const btnRefresh = document.getElementById('btn-refresh-revenue');
+      if (btnRefresh) {
+        btnRefresh.addEventListener('click', () => refreshAllData(true, 'revenue'));
+      }
+
+      const btnChartRefresh = document.getElementById('btn-chart-refresh');
+      if (btnChartRefresh) {
+        btnChartRefresh.addEventListener('click', () => refreshAllData(true, 'revenue'));
+      }
+
+      const btnOrdersRefresh = document.getElementById('btn-orders-refresh');
+      if (btnOrdersRefresh) {
+        btnOrdersRefresh.addEventListener('click', () => refreshAllData(true, 'orders'));
+      }
+    });
+  </script>
+</body>
+</html>

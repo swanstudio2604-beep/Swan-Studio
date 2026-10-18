@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Swan Studio | Customer Account</title>
+  <meta name="description" content="Sign in to your Swan Studio customer account to track your orders, view saved custom creations, and manage your delivery details.">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Skip Link for Accessibility -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Global Header (Injected by js/main.js) -->
+  <div id="site-header"></div>
+
+  <!-- Main Content -->
+  <main id="main" class="section section-cream" style="min-height: 80vh; display: flex; align-items: center;">
+    <div class="container" style="max-width: 480px; width: 100%;">
+
+      <!-- Section Header -->
+      <div class="section-header" style="margin-bottom: var(--space-xl);">
+        <h1 class="section-title" style="font-size: 2.3rem;">Welcome Back</h1>
+        <p class="section-subtitle">
+          Sign in to view your orders, payment verification status, and saved details.
+        </p>
+      </div>
+
+      <!-- Context Alert / Security Notice -->
+      <div id="auth-alert" style="display: none; margin-bottom: 1.25rem; padding: 1rem; border-radius: var(--radius-sm); font-size: 0.88rem; line-height: 1.5;"></div>
+
+      <!-- Login Card -->
+      <div style="background: var(--white); border-radius: var(--radius-lg); border: 2px dashed var(--rose); padding: 2.25rem; box-shadow: var(--shadow-card);">
+        
+        <form id="login-form" novalidate>
+          <!-- Email Input -->
+          <div class="form-group">
+            <label for="login-email" class="form-label">Email Address</label>
+            <input 
+              type="email" 
+              id="login-email" 
+              class="form-control" 
+              placeholder="you@example.com" 
+              autocomplete="email"
+              required
+            >
+          </div>
+
+          <!-- Password Input -->
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+              <label for="login-password" class="form-label" style="margin: 0;">Password</label>
+              <a href="#" id="forgot-password-link" style="font-size: 0.8rem; color: var(--rose-text); text-decoration: underline;">
+                Forgot password?
+              </a>
+            </div>
+            <input 
+              type="password" 
+              id="login-password" 
+              class="form-control" 
+              placeholder="Enter your password" 
+              autocomplete="current-password"
+              required
+            >
+          </div>
+
+          <!-- Sign In Button -->
+          <button type="submit" id="login-submit-btn" class="btn btn-primary" style="width: 100%; padding: 0.9rem; margin-top: 0.5rem;">
+            Sign In
+          </button>
+        </form>
+
+        <!-- Feedback / Status Area -->
+        <div id="login-feedback" style="display: none; margin-top: 1rem; padding: 0.85rem; border-radius: var(--radius-sm); font-size: 0.85rem; text-align: center;"></div>
+
+        <!-- Footer Card Link to Sign Up -->
+        <div style="text-align: center; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); font-size: 0.9rem;">
+          <p style="color: #73615A; margin: 0;">
+            New to Swan Studio? 
+            <a href="signup.html" style="color: var(--rose-text); font-weight: 600; text-decoration: underline;">
+              Create an account
+            </a>
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Global Footer (Injected by js/main.js) -->
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/products-demo.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('login-form');
+      const submitBtn = document.getElementById('login-submit-btn');
+      const feedback = document.getElementById('login-feedback');
+      const alertBox = document.getElementById('auth-alert');
+      const forgotLink = document.getElementById('forgot-password-link');
+
+      // Check reason from URL query
+      const urlParams = new URLSearchParams(window.location.search);
+      const reason = urlParams.get('reason');
+      if (reason === 'unauthorized_admin') {
+        alertBox.style.display = 'block';
+        alertBox.style.background = '#FFF0F2';
+        alertBox.style.color = '#9A5565';
+        alertBox.style.border = '1.5px solid var(--rose)';
+        alertBox.innerHTML = '<strong>Access Restricted:</strong> You attempted to view an administrator area that requires verified admin privileges.';
+      } else if (reason === 'login_required') {
+        alertBox.style.display = 'block';
+        alertBox.style.background = '#FFF8F1';
+        alertBox.style.color = 'var(--cocoa)';
+        alertBox.style.border = '1px dashed var(--rose)';
+        alertBox.innerHTML = 'Please sign in to view your customer account and orders.';
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        feedback.style.display = 'none';
+
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        if (!email || !password) {
+          showFeedback('Please enter both your email and password.', 'error');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing in...';
+
+        try {
+          const { profile, isDemo } = await AUTH.signIn({ email, password });
+          
+          showFeedback(
+            `✓ Sign in successful! Redirecting... ${isDemo ? '(Demo Mode)' : ''}`,
+            'success'
+          );
+
+          setTimeout(() => {
+            // Check if admin
+            if (profile && profile.role === 'admin') {
+              window.location.href = 'admin/index.html';
+            } else {
+              const redirect = urlParams.get('redirect') || 'account.html';
+              window.location.href = redirect;
+            }
+          }, 800);
+
+        } catch (err) {
+          showFeedback(err.message || 'Invalid credentials. Please try again.', 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In';
+        }
+      });
+
+      forgotLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value.trim();
+        if (!email) {
+          alert('Please enter your email address in the field above first, then click "Forgot password?".');
+          return;
+        }
+
+        try {
+          await AUTH.resetPassword(email);
+          alert(`Password reset instructions have been dispatched to ${email}.`);
+        } catch (err) {
+          alert(err.message || 'Unable to request password reset.');
+        }
+      });
+
+      function showFeedback(msg, type) {
+        feedback.style.display = 'block';
+        if (type === 'error') {
+          feedback.style.background = '#FFF0F2';
+          feedback.style.color = '#9A5565';
+          feedback.style.border = '1px solid var(--rose)';
+        } else {
+          feedback.style.background = '#EBF8F0';
+          feedback.style.color = '#1E6B39';
+          feedback.style.border = '1px solid #A9D5B7';
+        }
+        feedback.textContent = msg;
+      }
+    });
+  </script>
+</body>
+</html>

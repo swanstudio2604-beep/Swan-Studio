@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Coupons & Discounts — Swan Studio Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css?v=m1">
+</head>
+<body>
+
+  <!-- Admin Application Wrapper -->
+  <div class="admin-container" id="admin-app" style="display: none;">
+    
+    <!-- Sidebar Mount (Injected by admin-shared.js) -->
+    <div id="admin-sidebar-mount"></div>
+
+    <!-- Main Workspace -->
+    <main class="admin-main">
+      <div class="admin-header-row">
+        <div>
+          <h1 class="admin-page-title">Coupons & Promotional Codes</h1>
+          <p class="admin-page-subtitle">Create and oversee discount codes, redemption limits, and seasonal promotional campaigns.</p>
+        </div>
+        <button id="btn-add-coupon" class="btn btn-primary btn-sm">
+          ➕ Create Coupon
+        </button>
+      </div>
+
+      <!-- KPI Stat Cards -->
+      <div class="admin-grid-stats" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;">
+        <div class="admin-stat-card">
+          <div class="admin-stat-label">Total Coupons</div>
+          <div class="admin-stat-value" id="stat-total-coupons">0</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-label">Active Promos</div>
+          <div class="admin-stat-value" id="stat-active-coupons" style="color: #2B7A4B;">0</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-label">Total Redemptions</div>
+          <div class="admin-stat-value" id="stat-total-uses" style="color: var(--rose-text);">0</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-label">Popular Code</div>
+          <div class="admin-stat-value" id="stat-top-coupon" style="font-size: 1.25rem;">—</div>
+        </div>
+      </div>
+
+      <!-- Filters & Search Toolbar -->
+      <div class="admin-card" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 0.75rem; flex: 1; min-width: 260px;">
+            <input type="text" id="coupon-search" class="form-control" placeholder="Search by coupon code..." style="max-width: 300px;">
+            <select id="filter-type" class="form-control" style="max-width: 180px;">
+              <option value="">All Types</option>
+              <option value="PERCENTAGE">Percentage (%)</option>
+              <option value="FIXED">Fixed Amount (₹)</option>
+            </select>
+            <select id="filter-status" class="form-control" style="max-width: 160px;">
+              <option value="">All Statuses</option>
+              <option value="active">Active Only</option>
+              <option value="inactive">Inactive Only</option>
+            </select>
+          </div>
+          <span id="coupon-count-badge" class="badge badge-accent">0 coupons</span>
+        </div>
+      </div>
+
+      <!-- Coupons Table Card -->
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Discount Type & Value</th>
+              <th>Min Order</th>
+              <th>Usage / Limit</th>
+              <th>Per Customer</th>
+              <th>Status</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="coupons-table-body">
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 2rem;">Loading coupons...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer Mount -->
+      <div id="admin-footer-mount"></div>
+    </main>
+
+  </div>
+
+  <!-- Create / Edit Coupon Modal -->
+  <div id="coupon-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog" style="max-width: 540px;">
+      <div class="modal-header">
+        <h2 id="modal-title" style="font-size: 1.4rem;">Create New Coupon</h2>
+        <button class="modal-close-btn" id="modal-close-btn">&times;</button>
+      </div>
+
+      <form id="coupon-form">
+        <!-- Coupon Code + Auto Generate -->
+        <div class="form-group">
+          <label for="c-code" class="form-label">Coupon Code <span style="color: var(--rose);">*</span></label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="c-code" class="form-control" placeholder="e.g. SWANFIRST" style="text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;" required>
+            <button type="button" id="btn-generate-code" class="btn btn-secondary btn-sm" style="white-space: nowrap;">
+              ✨ Generate
+            </button>
+          </div>
+          <small style="color: #8A7670; font-size: 0.75rem;">Uppercase alphanumeric characters only.</small>
+        </div>
+
+        <!-- Discount Type & Value -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="c-type" class="form-label">Discount Type <span style="color: var(--rose);">*</span></label>
+            <select id="c-type" class="form-control" required>
+              <option value="PERCENTAGE">Percentage (%)</option>
+              <option value="FIXED">Fixed Amount (₹)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="c-value" class="form-label">Discount Value <span style="color: var(--rose);">*</span></label>
+            <input type="number" id="c-value" class="form-control" placeholder="e.g. 10 or 100" min="1" step="0.01" required>
+          </div>
+        </div>
+
+        <!-- Min Order & Max Cap -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="c-min-order" class="form-label">Min Bag Value (₹)</label>
+            <input type="number" id="c-min-order" class="form-control" value="0" min="0" step="1">
+            <small style="color: #8A7670; font-size: 0.75rem;">Minimum cart total required to apply.</small>
+          </div>
+
+          <div class="form-group" id="group-max-cap">
+            <label for="c-max-cap" class="form-label">Max Discount Cap (₹)</label>
+            <input type="number" id="c-max-cap" class="form-control" placeholder="e.g. 200" min="1" step="1">
+            <small style="color: #8A7670; font-size: 0.75rem;">Maximum ₹ savings (for percentage).</small>
+          </div>
+        </div>
+
+        <!-- Limits -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="c-total-limit" class="form-label">Total Usage Limit</label>
+            <input type="number" id="c-total-limit" class="form-control" placeholder="Leave empty for unlimited" min="1">
+          </div>
+
+          <div class="form-group">
+            <label for="c-customer-limit" class="form-label">Per Customer Limit</label>
+            <input type="number" id="c-customer-limit" class="form-control" value="1" min="1">
+          </div>
+        </div>
+
+        <!-- Expiry Date -->
+        <div class="form-group">
+          <label for="c-expiry" class="form-label">Expiry Date (Optional)</label>
+          <input type="datetime-local" id="c-expiry" class="form-control">
+          <small style="color: #8A7670; font-size: 0.75rem;">Leave blank for a permanent non-expiring coupon.</small>
+        </div>
+
+        <!-- Active Checkbox -->
+        <div style="margin: 1rem 0;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" id="c-active" checked style="width: 18px; height: 18px; accent-color: var(--rose-accent);">
+            <strong>Enable coupon immediately upon creation</strong>
+          </label>
+        </div>
+
+        <div id="modal-error" style="display: none; padding: 0.75rem; background: #FFF0F2; color: #B33939; border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 1rem;"></div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btn-save-coupon">Save Coupon</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/coupons.js"></script>
+  <script src="../js/admin/admin-shared.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Guard page & mount layout
+      const ok = await ADMIN.init('coupons');
+      if (!ok) return;
+
+      const tbody = document.getElementById('coupons-table-body');
+      const modal = document.getElementById('coupon-modal');
+      const form = document.getElementById('coupon-form');
+      const addBtn = document.getElementById('btn-add-coupon');
+      const closeBtn = document.getElementById('modal-close-btn');
+      const cancelBtn = document.getElementById('btn-cancel-modal');
+      const generateBtn = document.getElementById('btn-generate-code');
+      const modalError = document.getElementById('modal-error');
+      const searchInput = document.getElementById('coupon-search');
+      const filterType = document.getElementById('filter-type');
+      const filterStatus = document.getElementById('filter-status');
+      const countBadge = document.getElementById('coupon-count-badge');
+      const typeSelect = document.getElementById('c-type');
+      const groupMaxCap = document.getElementById('group-max-cap');
+
+      let allCoupons = [];
+
+      // Toggle max cap field based on discount type
+      typeSelect.addEventListener('change', () => {
+        if (typeSelect.value === 'FIXED') {
+          groupMaxCap.style.opacity = '0.4';
+          document.getElementById('c-max-cap').disabled = true;
+          document.getElementById('c-max-cap').value = '';
+        } else {
+          groupMaxCap.style.opacity = '1';
+          document.getElementById('c-max-cap').disabled = false;
+        }
+      });
+
+      // Generate random code button
+      generateBtn.addEventListener('click', () => {
+        document.getElementById('c-code').value = SwanCoupons.generateRandomCode('SWAN');
+      });
+
+      // Load & Render Coupons
+      async function loadCoupons() {
+        try {
+          allCoupons = await SwanCoupons.getAll();
+          renderStats();
+          applyFilters();
+        } catch (err) {
+          tbody.innerHTML = `<tr><td colspan="7" style="color: #B33939; text-align: center; padding: 2rem;">Failed to load coupons: ${err.message}</td></tr>`;
+        }
+      }
+
+      function renderStats() {
+        document.getElementById('stat-total-coupons').textContent = allCoupons.length;
+        const active = allCoupons.filter(c => c.is_active);
+        document.getElementById('stat-active-coupons').textContent = active.length;
+        
+        const totalUses = allCoupons.reduce((sum, c) => sum + (c.times_used || 0), 0);
+        document.getElementById('stat-total-uses').textContent = totalUses;
+
+        let top = allCoupons.slice().sort((a,b) => (b.times_used || 0) - (a.times_used || 0))[0];
+        document.getElementById('stat-top-coupon').textContent = top && top.times_used > 0 ? `${top.code} (${top.times_used})` : 'None yet';
+      }
+
+      function applyFilters() {
+        const query = searchInput.value.trim().toLowerCase();
+        const type = filterType.value;
+        const status = filterStatus.value;
+
+        const filtered = allCoupons.filter(c => {
+          if (query && !c.code.toLowerCase().includes(query)) return false;
+          if (type && c.discount_type !== type) return false;
+          if (status === 'active' && !c.is_active) return false;
+          if (status === 'inactive' && c.is_active) return false;
+          return true;
+        });
+
+        countBadge.textContent = `${filtered.length} coupons`;
+        renderTable(filtered);
+      }
+
+      function renderTable(list) {
+        if (list.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2.5rem; color: #8A7670;">No coupons matching your criteria.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = list.map(c => {
+          const discountDesc = c.discount_type === 'PERCENTAGE'
+            ? `<strong>${c.discount_value}% OFF</strong>${c.max_discount_cap ? `<div style="font-size: 0.75rem; color: #73615A;">Max cap: ₹${c.max_discount_cap}</div>` : ''}`
+            : `<strong>₹${c.discount_value} FLAT</strong>`;
+
+          const usageDesc = `${c.times_used || 0} ${c.total_usage_limit ? `/ ${c.total_usage_limit}` : '(unlimited)'}`;
+          const statusBadge = c.is_active
+            ? `<span class="badge badge-success">Active</span>`
+            : `<span class="badge" style="background: #EFE6E1; color: #73615A;">Inactive</span>`;
+
+          return `
+            <tr>
+              <td>
+                <span style="font-weight: 700; font-family: monospace; font-size: 0.95rem; background: var(--cream); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px dashed var(--border-subtle); color: var(--cocoa);">
+                  ${c.code}
+                </span>
+              </td>
+              <td>${discountDesc}</td>
+              <td>₹${parseFloat(c.min_order_amount || 0).toLocaleString('en-IN')}</td>
+              <td>${usageDesc}</td>
+              <td>${c.per_customer_limit || 1} per user</td>
+              <td>${statusBadge}</td>
+              <td style="text-align: right; white-space: nowrap;">
+                <button class="btn btn-secondary btn-sm btn-toggle-active" data-id="${c.id}" style="padding: 0.3rem 0.6rem; font-size: 0.78rem;">
+                  ${c.is_active ? '⏸ Deactivate' : '▶ Activate'}
+                </button>
+                <button class="btn btn-sm btn-delete-coupon" data-id="${c.id}" data-code="${c.code}" style="padding: 0.3rem 0.6rem; font-size: 0.78rem; background: transparent; color: #B33939; border: 1px solid rgba(179, 57, 57, 0.3); margin-left: 0.3rem;">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        attachActionListeners();
+      }
+
+      function attachActionListeners() {
+        // Toggle Active
+        document.querySelectorAll('.btn-toggle-active').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.currentTarget.dataset.id;
+            try {
+              btn.disabled = true;
+              await SwanCoupons.toggleActive(id);
+              await loadCoupons();
+            } catch (err) {
+              alert('Failed to toggle status: ' + err.message);
+            } finally {
+              btn.disabled = false;
+            }
+          });
+        });
+
+        // Delete
+        document.querySelectorAll('.btn-delete-coupon').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = e.currentTarget.dataset.id;
+            const code = e.currentTarget.dataset.code;
+            if (!confirm(`Are you sure you want to permanently delete coupon "${code}"?`)) return;
+
+            try {
+              btn.disabled = true;
+              await SwanCoupons.delete(id);
+              await loadCoupons();
+            } catch (err) {
+              alert('Failed to delete coupon: ' + err.message);
+            }
+          });
+        });
+      }
+
+      // Open modal
+      addBtn.addEventListener('click', () => {
+        form.reset();
+        modalError.style.display = 'none';
+        typeSelect.value = 'PERCENTAGE';
+        groupMaxCap.style.opacity = '1';
+        document.getElementById('c-max-cap').disabled = false;
+        document.getElementById('c-active').checked = true;
+        document.getElementById('c-customer-limit').value = '1';
+        document.getElementById('c-min-order').value = '0';
+        modal.style.display = 'flex';
+      });
+
+      // Close modal
+      function closeModal() {
+        modal.style.display = 'none';
+      }
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      // Submit Form
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        modalError.style.display = 'none';
+
+        const code = document.getElementById('c-code').value.trim().toUpperCase();
+        const type = document.getElementById('c-type').value;
+        const val = document.getElementById('c-value').value;
+        const minOrder = document.getElementById('c-min-order').value;
+        const maxCap = document.getElementById('c-max-cap').value;
+        const totalLimit = document.getElementById('c-total-limit').value;
+        const custLimit = document.getElementById('c-customer-limit').value;
+        const expiry = document.getElementById('c-expiry').value;
+        const active = document.getElementById('c-active').checked;
+
+        if (!code || !val) {
+          modalError.textContent = 'Please fill out all required fields.';
+          modalError.style.display = 'block';
+          return;
+        }
+
+        const submitBtn = document.getElementById('btn-save-coupon');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+
+        try {
+          await SwanCoupons.create({
+            code: code,
+            discount_type: type,
+            discount_value: val,
+            min_order_amount: minOrder,
+            max_discount_cap: maxCap,
+            total_usage_limit: totalLimit,
+            per_customer_limit: custLimit,
+            expiry_date: expiry ? new Date(expiry).toISOString() : null,
+            is_active: active
+          });
+
+          closeModal();
+          await loadCoupons();
+        } catch (err) {
+          modalError.textContent = err.message || 'Error saving coupon.';
+          modalError.style.display = 'block';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Save Coupon';
+        }
+      });
+
+      // Filter events
+      searchInput.addEventListener('input', applyFilters);
+      filterType.addEventListener('change', applyFilters);
+      filterStatus.addEventListener('change', applyFilters);
+
+      // Initial Load
+      await loadCoupons();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Swan Studio | Delivery & Review</title>
+  <meta name="description" content="Secure checkout for handmade crochet creations at Swan Studio. Enter your delivery address and review order totals.">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Skip Link for Accessibility -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Global Header (Injected by js/main.js) -->
+  <div id="site-header"></div>
+
+  <!-- Main Content -->
+  <main id="main" class="section section-cream">
+    <div class="container" style="max-width: 1040px;">
+
+      <!-- Breadcrumbs -->
+      <nav aria-label="Breadcrumbs" style="margin-bottom: var(--space-lg); font-size: 0.88rem; color: #8A7670;">
+        <a href="index.html" style="color: var(--cocoa);">Home</a>
+        <span style="margin: 0 0.4rem;">/</span>
+        <a href="cart.html" style="color: var(--cocoa);">Shopping Bag</a>
+        <span style="margin: 0 0.4rem;">/</span>
+        <span style="color: var(--rose-text); font-weight: 500;">Checkout</span>
+      </nav>
+
+      <div class="section-header" style="text-align: left; margin-bottom: var(--space-lg);">
+        <h1 class="section-title">Delivery & Checkout</h1>
+        <p class="section-subtitle">
+          Please enter your delivery details. Your order totals and shipping are computed securely.
+        </p>
+      </div>
+
+      <!-- Checkout 3-Stage Journey Ribbon -->
+      <div class="checkout-journey-ribbon">
+        <div class="checkout-step-pill completed">
+          <span>✓</span> 1. Bag Review
+        </div>
+        <div class="checkout-step-divider done"></div>
+        <div class="checkout-step-pill active">
+          <span>📍</span> 2. Delivery Address
+        </div>
+        <div class="checkout-step-divider"></div>
+        <div class="checkout-step-pill">
+          <span>💳</span> 3. Manual UPI Payment
+        </div>
+      </div>
+
+      <!-- Checkout Grid -->
+      <div style="display: grid; grid-template-columns: 1.25fr 0.9fr; gap: var(--space-2xl); align-items: start;">
+        
+        <!-- Left Column: Delivery Form -->
+        <div style="background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); padding: 2rem; box-shadow: var(--shadow-sm);">
+          <h2 style="font-size: 1.4rem; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px dashed var(--border-subtle);">
+            📍 Delivery Details
+          </h2>
+
+          <form id="checkout-form" novalidate>
+            <!-- Full Name -->
+            <div class="form-group">
+              <label for="order-name" class="form-label">Full Name <span style="color: var(--rose);">*</span></label>
+              <input type="text" id="order-name" class="form-control" placeholder="e.g. Priya Sharma" required>
+            </div>
+
+            <!-- Contact Row -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label for="order-phone" class="form-label">WhatsApp / Mobile <span style="color: var(--rose);">*</span></label>
+                <input type="tel" id="order-phone" class="form-control" placeholder="10-digit number" required>
+              </div>
+
+              <div class="form-group">
+                <label for="order-email" class="form-label">Email Address <span style="color: var(--rose);">*</span></label>
+                <input type="email" id="order-email" class="form-control" placeholder="you@example.com" required>
+              </div>
+            </div>
+
+            <!-- Street Address -->
+            <div class="form-group">
+              <label for="order-address" class="form-label">Shipping Street Address <span style="color: var(--rose);">*</span></label>
+              <input type="text" id="order-address" class="form-control" placeholder="House/Flat number, street, landmark" required>
+            </div>
+
+            <!-- City, State, PIN -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label for="order-city" class="form-label">City <span style="color: var(--rose);">*</span></label>
+                <input type="text" id="order-city" class="form-control" placeholder="e.g. Jaipur" required>
+              </div>
+
+              <div class="form-group">
+                <label for="order-state" class="form-label">State <span style="color: var(--rose);">*</span></label>
+                <input type="text" id="order-state" class="form-control" placeholder="e.g. Rajasthan" required>
+              </div>
+
+              <div class="form-group">
+                <label for="order-pin" class="form-label">PIN Code <span style="color: var(--rose);">*</span></label>
+                <input type="text" id="order-pin" class="form-control" placeholder="6-digit PIN" maxlength="6" required>
+              </div>
+            </div>
+
+            <!-- Special Notes -->
+            <div class="form-group">
+              <label for="order-notes" class="form-label">Order / Gift Note (Optional)</label>
+              <textarea id="order-notes" class="form-control" style="min-height: 70px;" placeholder="Any custom notes or gift message for recipient..."></textarea>
+            </div>
+
+            <!-- Payment Policy Callout (PRD Section 11) -->
+            <div style="background: #FFF8F1; border-radius: var(--radius-sm); border: 1.5px dashed var(--rose); padding: 1.25rem; margin-top: 1.5rem;">
+              <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                <span style="font-size: 1.5rem; line-height: 1;">📱</span>
+                <div>
+                  <strong style="color: var(--rose-text); font-size: 0.95rem;">Manual UPI Payment:</strong>
+                  <p id="checkout-upi-callout" style="font-size: 0.85rem; color: #73615A; margin: 0.25rem 0 0 0; line-height: 1.5;">
+                    After clicking "Place Order", you will see our UPI ID (<code>9509966512@fam</code>) to complete payment. Your order enters <em>Pending Verification</em> until Bhumika manually confirms receipt.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div id="checkout-error" style="display: none; margin-top: 1rem; padding: 0.85rem; background: #FFF0F2; border: 1px solid var(--rose); color: #9A5565; border-radius: var(--radius-sm); font-size: 0.88rem;"></div>
+
+            <button type="submit" id="btn-submit-order" class="btn btn-primary" style="width: 100%; padding: 1rem; margin-top: 1.5rem; font-size: 1rem;">
+              Place Order & Proceed to UPI
+            </button>
+          </form>
+        </div>
+
+        <!-- Right Column: Order Summary Review -->
+        <div style="background: var(--white); border-radius: var(--radius-lg); border: 2px dashed var(--rose); padding: 1.75rem; box-shadow: var(--shadow-card);">
+          <h2 style="font-size: 1.35rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
+            Order Summary
+          </h2>
+
+          <div id="summary-items" style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; max-height: 280px; overflow-y: auto; padding-right: 0.5rem;">
+            <!-- Items injected by checkout.js -->
+          </div>
+
+          <div style="border-top: 1px dashed var(--border-subtle); padding-top: 1rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.92rem;">
+              <span style="color: #73615A;">Bag Subtotal</span>
+              <span id="summary-subtotal" style="font-weight: 600;">₹0.00</span>
+            </div>
+
+            <div id="summary-discount-row" style="display: none; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.92rem; color: #2B7A4B;">
+              <span id="summary-discount-label">🏷️ Coupon Discount</span>
+              <span id="summary-discount" style="font-weight: 600;">-₹0.00</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.92rem;">
+              <span style="color: #73615A;">Delivery Fee</span>
+              <span id="summary-shipping" style="font-weight: 600; color: #1E6B39;">Calculating...</span>
+            </div>
+
+            <!-- Checkout Coupon Box -->
+            <div id="checkout-coupon-section" style="margin: 0.85rem 0; padding: 0.75rem; background: var(--cream); border-radius: var(--radius-sm); border: 1px dashed var(--border-subtle);">
+              <div id="co-coupon-input-wrap" style="display: flex; gap: 0.4rem;">
+                <input type="text" id="co-coupon-input" placeholder="Coupon Code" style="flex: 1; padding: 0.4rem 0.6rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 0.82rem; text-transform: uppercase;">
+                <button type="button" id="co-apply-coupon-btn" class="btn btn-secondary btn-sm" style="padding: 0.4rem 0.75rem; font-size: 0.8rem;">Apply</button>
+              </div>
+              <div id="co-coupon-applied-wrap" style="display: none; justify-content: space-between; align-items: center;">
+                <span id="co-applied-tag" style="font-size: 0.82rem; font-weight: 600; color: var(--rose-text);"></span>
+                <button type="button" id="co-remove-coupon-btn" style="background: none; border: none; color: #B33939; font-size: 0.78rem; text-decoration: underline; cursor: pointer;">Remove</button>
+              </div>
+              <div id="co-coupon-msg" style="display: none; font-size: 0.75rem; margin-top: 0.35rem;"></div>
+            </div>
+
+            <p id="checkout-shipping-banner" style="font-size: 0.78rem; color: #8A7670; margin-bottom: 1rem;">
+              🎉 Free delivery on orders ₹1,499 and above pan-India!
+            </p>
+
+            <div style="display: flex; justify-content: space-between; padding-top: 1rem; border-top: 2px dashed var(--border-subtle); font-size: 1.3rem; font-weight: 700; color: var(--cocoa);">
+              <span>Total Payable</span>
+              <span id="summary-total" style="color: var(--cocoa);">₹0.00</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Global Footer (Injected by js/main.js) -->
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/products-demo.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/coupons.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/checkout.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const summaryItems = document.getElementById('summary-items');
+      const subtotalEl = document.getElementById('summary-subtotal');
+      const discountRowEl = document.getElementById('summary-discount-row');
+      const discountLabelEl = document.getElementById('summary-discount-label');
+      const discountEl = document.getElementById('summary-discount');
+      const shippingEl = document.getElementById('summary-shipping');
+      const totalEl = document.getElementById('summary-total');
+      const form = document.getElementById('checkout-form');
+      const submitBtn = document.getElementById('btn-submit-order');
+      const errorBox = document.getElementById('checkout-error');
+
+      const coCouponInput = document.getElementById('co-coupon-input');
+      const coApplyBtn = document.getElementById('co-apply-coupon-btn');
+      const coInputWrap = document.getElementById('co-coupon-input-wrap');
+      const coAppliedWrap = document.getElementById('co-coupon-applied-wrap');
+      const coAppliedTag = document.getElementById('co-applied-tag');
+      const coRemoveBtn = document.getElementById('co-remove-coupon-btn');
+      const coMsg = document.getElementById('co-coupon-msg');
+
+      // Autofill logged-in profile if present
+      const profile = await AUTH.getProfile();
+      if (profile) {
+        if (profile.full_name) document.getElementById('order-name').value = profile.full_name;
+        if (profile.email) document.getElementById('order-email').value = profile.email;
+        if (profile.phone) document.getElementById('order-phone').value = profile.phone;
+      }
+
+      // Dynamic Settings Hydration from Admin
+      const cfg = CHECKOUT.getSettings();
+      const upiCallout = document.getElementById('checkout-upi-callout');
+      if (upiCallout) {
+        upiCallout.innerHTML = `After clicking "Place Order", you will see our UPI ID (<code>${cfg.upiId}</code>) to complete payment. Your order enters <em>Pending Verification</em> until Bhumika manually confirms receipt.`;
+      }
+      const shipBanner = document.getElementById('checkout-shipping-banner');
+      if (shipBanner) {
+        shipBanner.textContent = `🎉 Free delivery on orders ₹${cfg.threshold.toLocaleString('en-IN')} and above pan-India!`;
+      }
+
+      async function refreshSummary() {
+        const { items, subtotal, discount, appliedCoupon, shipping, total, hasBlockedItems, blockedReasons } = await CHECKOUT.loadCartWithDetails();
+
+        if (items.length === 0) {
+          alert('Your shopping bag is empty. Redirecting to shop...');
+          window.location.href = 'shop.html';
+          return;
+        }
+
+        if (hasBlockedItems) {
+          errorBox.style.display = 'block';
+          errorBox.innerHTML = `<strong>🚫 Cannot Complete Checkout:</strong> ${blockedReasons.join(' ')} <br><a href="cart.html" style="color: #991B1B; font-weight: 600; text-decoration: underline; margin-top: 0.35rem; display: inline-block;">Return to Shopping Bag to remove unavailable items</a>`;
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = '0.6';
+          submitBtn.style.cursor = 'not-allowed';
+          submitBtn.style.background = '#991B1B';
+          submitBtn.style.borderColor = '#991B1B';
+          submitBtn.textContent = '🚫 Items Out of Stock — Return to Bag';
+        } else {
+          errorBox.style.display = 'none';
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = '1';
+          submitBtn.style.cursor = 'pointer';
+          submitBtn.style.background = '';
+          submitBtn.style.borderColor = '';
+          submitBtn.textContent = 'Place Order & Proceed to UPI';
+        }
+
+        // Render summary items
+        summaryItems.innerHTML = items.map(item => `
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; font-size: 0.88rem; ${item.isOutOfStock || item.isUnavailable ? 'color: #991B1B; background: #FFF5F5; padding: 0.5rem; border-radius: 4px; border: 1px dashed #F87171;' : ''}">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                <strong>${item.name}</strong>
+                ${item.isOutOfStock ? '<span class="badge-out-of-stock" style="font-size: 0.68rem; padding: 0.15rem 0.4rem; border-radius: 3px;">🚫 Out of Stock</span>' : ''}
+                ${item.isUnavailable ? '<span style="background: #4B5563; color: #FFF; font-size: 0.68rem; padding: 0.15rem 0.4rem; border-radius: 3px;">⚠️ Unavailable</span>' : ''}
+              </div>
+              <div style="font-size: 0.78rem; color: #8A7670;">Qty: ${item.quantity} × ₹${item.unitPrice.toLocaleString('en-IN')}</div>
+            </div>
+            <span style="font-weight: 600;">₹${item.lineTotal.toLocaleString('en-IN')}</span>
+          </div>
+        `).join('');
+
+        subtotalEl.textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+        
+        if (discount > 0 && appliedCoupon) {
+          discountRowEl.style.display = 'flex';
+          discountLabelEl.textContent = `🏷️ Coupon (${appliedCoupon.code})`;
+          discountEl.textContent = `-₹${discount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          coInputWrap.style.display = 'none';
+          coAppliedWrap.style.display = 'flex';
+          coAppliedTag.textContent = `🏷️ ${appliedCoupon.code} (-₹${discount.toFixed(2)})`;
+        } else {
+          discountRowEl.style.display = 'none';
+          coInputWrap.style.display = 'flex';
+          coAppliedWrap.style.display = 'none';
+        }
+
+        shippingEl.textContent = shipping === 0 ? 'FREE' : `₹${shipping.toLocaleString('en-IN')}`;
+        totalEl.textContent = `₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+
+      await refreshSummary();
+
+      // Apply coupon in checkout
+      coApplyBtn.addEventListener('click', async () => {
+        const code = coCouponInput.value.trim();
+        if (!code) return;
+        coApplyBtn.disabled = true;
+        coApplyBtn.textContent = '...';
+        coMsg.style.display = 'none';
+
+        const { subtotal } = await CHECKOUT.loadCartWithDetails();
+        const res = await window.SwanCoupons.apply(code, subtotal);
+        if (res.valid) {
+          coCouponInput.value = '';
+          coMsg.style.display = 'block';
+          coMsg.style.color = '#2B7A4B';
+          coMsg.textContent = res.message;
+        } else {
+          coMsg.style.display = 'block';
+          coMsg.style.color = '#B33939';
+          coMsg.textContent = res.message;
+        }
+        coApplyBtn.disabled = false;
+        coApplyBtn.textContent = 'Apply';
+        await refreshSummary();
+      });
+
+      // Remove coupon in checkout
+      coRemoveBtn.addEventListener('click', async () => {
+        if (window.SwanCoupons) window.SwanCoupons.removeApplied();
+        coMsg.style.display = 'none';
+        await refreshSummary();
+      });
+
+      // Order submission handler
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorBox.style.display = 'none';
+
+        const name = document.getElementById('order-name').value.trim();
+        const phone = document.getElementById('order-phone').value.trim();
+        const email = document.getElementById('order-email').value.trim();
+        const address = document.getElementById('order-address').value.trim();
+        const city = document.getElementById('order-city').value.trim();
+        const state = document.getElementById('order-state').value.trim();
+        const pin = document.getElementById('order-pin').value.trim();
+        const notes = document.getElementById('order-notes').value.trim();
+
+        if (!name || !phone || !email || !address || !city || !state || !pin) {
+          errorBox.style.display = 'block';
+          errorBox.textContent = 'Please complete all required delivery fields.';
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Securing order & reserving items...';
+
+        try {
+          const result = await CHECKOUT.placeOrder({
+            name, phone, email, address, city, state, postalCode: pin, notes
+          });
+
+          // Redirect to payment confirmation instructions
+          window.location.href = `order-confirmation.html?order_id=${encodeURIComponent(result.orderId)}&total=${encodeURIComponent(result.totalAmount)}&upi=${encodeURIComponent(result.upiId)}`;
+        } catch (err) {
+          errorBox.style.display = 'block';
+          errorBox.textContent = err.message || 'Unable to place order. Please verify and try again.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Place Order & Proceed to UPI';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details — Swan Studio | Handmade Crochet</title>
+  <meta name="description" content="Handcrafted crochet creation by Bhumika Nama at Swan Studio. View product details, materials, care instructions, and custom options.">
+  <link rel="canonical" href="https://swanstudio2604-beep.github.io/product.html">
+  
+  <!-- OpenGraph / Social Meta -->
+  <meta property="og:type" content="product">
+  <meta property="og:url" content="https://swanstudio2604-beep.github.io/product.html">
+  <meta property="og:title" content="Product Details — Swan Studio | Handmade Crochet">
+  <meta property="og:description" content="Handcrafted crochet creation by Bhumika Nama at Swan Studio. View product details, materials, care instructions, and custom options.">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Handmade Crochet Creation — Swan Studio">
+  <meta name="twitter:description" content="Artisanal crochet creations handcrafted with love by Bhumika Nama at Swan Studio.">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Global Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Skip Link for Accessibility -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Global Header (Injected by js/main.js) -->
+  <div id="site-header"></div>
+
+  <!-- Main Content -->
+  <main id="main" class="section section-cream">
+    <div class="container">
+
+      <!-- Breadcrumbs -->
+      <nav aria-label="Breadcrumbs" style="margin-bottom: var(--space-lg); font-size: 0.88rem; color: #8A7670;">
+        <a href="index.html" style="color: var(--cocoa);">Home</a>
+        <span style="margin: 0 0.4rem;">/</span>
+        <a href="shop.html" style="color: var(--cocoa);">Shop</a>
+        <span style="margin: 0 0.4rem;">/</span>
+        <span id="breadcrumb-category" style="color: var(--rose-text);">Category</span>
+        <span style="margin: 0 0.4rem;">/</span>
+        <span id="breadcrumb-title" style="color: #51413C; font-weight: 500;">Product</span>
+      </nav>
+
+      <!-- Product Status Banner (Live Supabase vs Demo Fallback) -->
+      <div class="demo-banner" id="product-status-banner" role="status">
+        <span class="demo-banner-icon" id="product-status-icon" aria-hidden="true">💡</span>
+        <div id="product-status-text">
+          <strong>Demonstration View:</strong> Displaying layout and interaction for this product using sample local data. When connected to Supabase in <code>js/supabase.js</code>, live database records are queried directly.
+        </div>
+      </div>
+
+      <!-- Product Detail Main Layout -->
+      <div class="product-detail-grid" id="product-details-container">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Related Creations Section -->
+      <div style="margin-top: var(--space-3xl); padding-top: var(--space-2xl); border-top: 1px dashed var(--border-subtle);">
+        <h2 style="font-size: 2rem; margin-bottom: 0.5rem; text-align: center;">You May Also Adore</h2>
+        <p style="text-align: center; color: #73615A; font-size: 0.95rem; margin-bottom: var(--space-2xl);">
+          Other handcrafted pieces created with the same care and patience.
+        </p>
+
+        <div class="products-grid" id="related-products-grid">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Global Footer (Injected by js/main.js) -->
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/products-demo.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const container = document.getElementById('product-details-container');
+      const relatedGrid = document.getElementById('related-products-grid');
+      const breadcrumbCat = document.getElementById('breadcrumb-category');
+      const breadcrumbTitle = document.getElementById('breadcrumb-title');
+      const bannerIcon = document.getElementById('product-status-icon');
+      const bannerText = document.getElementById('product-status-text');
+
+      // 1. Read ?slug= from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const slug = urlParams.get('slug') || 'daisy-delight-bouquet';
+
+      container.innerHTML = `<p style="text-align: center; padding: 2rem; color: #73615A;">Loading creation details...</p>`;
+
+      const fetchResult = await fetchProductBySlug(slug);
+      const product = fetchResult.data;
+      const isLive = fetchResult.isLive;
+
+      if (!product) {
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 4rem 1.5rem;">
+            <div class="empty-state-icon" style="font-size: 3.5rem; margin-bottom: 1rem;">🧶</div>
+            <h2 style="font-size: 1.85rem; margin-bottom: 0.5rem; color: var(--cocoa);">Creation Unavailable</h2>
+            <p style="color: #73615A; max-width: 500px; margin: 0 auto 1.5rem auto; line-height: 1.6;">
+              This handcrafted crochet piece is currently unpublished, out of catalog, or no longer available in our atelier.
+            </p>
+            <a href="shop.html" class="btn btn-primary">Browse Available Creations</a>
+          </div>
+        `;
+        return;
+      }
+
+      // Update banner status
+      if (isLive) {
+        bannerIcon.textContent = '🟢';
+        bannerText.innerHTML = `<strong>Live Database Connected:</strong> Details for "<strong>${product.name}</strong>" loaded directly from Supabase PostgreSQL.`;
+      } else {
+        bannerIcon.textContent = '💡';
+        bannerText.innerHTML = `<strong>Demonstration View:</strong> Displaying layout using local sample data. Connect your Supabase project in <code>js/supabase.js</code> to load live records.`;
+      }
+
+      // Update page title & breadcrumbs
+      document.title = `${product.name} — Swan Studio`;
+      breadcrumbCat.textContent = product.categoryName;
+      breadcrumbTitle.textContent = product.name;
+
+      // SVG Icon for main visual
+      function getMainVisualSvg(type) {
+        if (type === 'flower') {
+          return `
+            <svg viewBox="0 0 160 160" fill="none" style="width: 220px; height: 220px;" aria-hidden="true">
+              <circle cx="80" cy="80" r="70" fill="#FFF0F3" stroke="#C78391" stroke-dasharray="4 4" stroke-width="2"/>
+              <path d="M80 50 C92 35 108 50 96 66 C112 82 96 98 80 82 C64 98 48 82 64 66 C52 50 68 35 80 50 Z" fill="#E8B7C0" stroke="#C78391" stroke-width="2.5"/>
+              <circle cx="80" cy="66" r="8" fill="#FFF8F1" stroke="#51413C" stroke-width="2"/>
+              <path d="M80 82 L80 125" stroke="#A9B6A0" stroke-width="5" stroke-linecap="round"/>
+              <path d="M80 100 Q100 90 100 105 Q90 110 80 106" fill="#A9B6A0"/>
+              <path d="M80 112 Q60 102 60 117 Q70 122 80 118" fill="#A9B6A0"/>
+            </svg>
+          `;
+        } else if (type === 'bag') {
+          return `
+            <svg viewBox="0 0 160 160" fill="none" style="width: 220px; height: 220px;" aria-hidden="true">
+              <rect x="35" y="60" width="90" height="75" rx="10" fill="#F8F3EC" stroke="#C78391" stroke-dasharray="4 4" stroke-width="2"/>
+              <path d="M55 60 C55 30 105 30 105 60" stroke="#51413C" stroke-width="4" fill="none"/>
+              <rect x="55" y="76" width="50" height="42" rx="4" fill="#E8B7C0" stroke="#C78391" stroke-width="2"/>
+              <circle cx="80" cy="97" r="8" fill="#FFF8F1"/>
+            </svg>
+          `;
+        } else if (type === 'plushie') {
+          return `
+            <svg viewBox="0 0 160 160" fill="none" style="width: 220px; height: 220px;" aria-hidden="true">
+              <circle cx="80" cy="95" r="45" fill="#FBF5F0" stroke="#C78391" stroke-dasharray="4 4" stroke-width="2"/>
+              <ellipse cx="64" cy="42" rx="10" ry="26" fill="#E8B7C0" stroke="#C78391" stroke-width="2"/>
+              <ellipse cx="96" cy="42" rx="10" ry="26" fill="#E8B7C0" stroke="#C78391" stroke-width="2"/>
+              <circle cx="68" cy="88" r="4" fill="#51413C"/>
+              <circle cx="92" cy="88" r="4" fill="#51413C"/>
+              <path d="M76 98 Q80 104 84 98" stroke="#51413C" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          `;
+        } else {
+          return `
+            <svg viewBox="0 0 160 160" fill="none" style="width: 220px; height: 220px;" aria-hidden="true">
+              <rect x="55" y="30" width="50" height="95" rx="6" fill="#F2EBE5" stroke="#C78391" stroke-dasharray="4 4" stroke-width="2"/>
+              <circle cx="80" cy="60" r="14" fill="#E8B7C0" stroke="#C78391" stroke-width="2"/>
+              <line x1="80" y1="74" x2="80" y2="105" stroke="#A9B6A0" stroke-width="3"/>
+              <path d="M80 125 L80 145" stroke="#C78391" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          `;
+        }
+      }
+
+      const stock = (product.stock !== undefined && product.stock !== null) ? parseInt(product.stock, 10) : 0;
+      const isOutOfStock = stock <= 0;
+
+      const whatsappText = isOutOfStock
+        ? encodeURIComponent(`Hi Bhumika! I saw that "${product.name}" on Swan Studio is currently out of stock. Could you let me know if it can be crafted for me or when it will be restocked?`)
+        : encodeURIComponent(`Hi Bhumika! I'm interested in the "${product.name}" from Swan Studio. Could you share more details?`);
+      const whatsappUrl = `${SITE.whatsappUrl}?text=${whatsappText}`;
+
+      // Render Product Layout
+      container.innerHTML = `
+        <!-- Left: Image / Visual Gallery -->
+        <div class="product-gallery-card">
+          <div class="product-main-view" style="overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 280px; background: #FFF6F0; border-radius: var(--radius-md);">
+            ${product.imageUrl ? `<img src="${product.imageUrl}" alt="${product.name}" style="width: 100%; height: 100%; max-height: 400px; object-fit: contain; border-radius: var(--radius-sm);">` : getMainVisualSvg(product.iconType)}
+          </div>
+          <div style="display: flex; gap: 0.75rem; margin-top: 1rem; justify-content: center;">
+            <div style="width: 60px; height: 60px; border-radius: var(--radius-sm); border: 2px solid var(--rose); background: #FFF6F0; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; overflow: hidden;">
+              ${product.imageUrl ? `<img src="${product.imageUrl}" alt="Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">` : '🧶'}
+            </div>
+            <div style="width: 60px; height: 60px; border-radius: var(--radius-sm); border: 1px dashed var(--border-subtle); background: var(--white); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; opacity: 0.7;">
+              ✨
+            </div>
+            <div style="width: 60px; height: 60px; border-radius: var(--radius-sm); border: 1px dashed var(--border-subtle); background: var(--white); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; opacity: 0.7;">
+              🌸
+            </div>
+          </div>
+          <p style="text-align: center; font-size: 0.78rem; color: #8A7670; margin-top: 0.75rem;">
+            📸 Handcrafted with love by Bhumika Nama using premium milk cotton yarn.
+          </p>
+        </div>
+
+        <!-- Right: Information, Specifications & Actions -->
+        <div>
+          <div class="product-meta-badge">
+            <span class="badge-sample">${product.badge}</span>
+            <span>•</span>
+            <span>${product.categoryName}</span>
+          </div>
+
+          <h1 class="product-detail-title">${product.name}</h1>
+
+          <div class="product-detail-price">
+            <span class="current-price">₹${product.price.toLocaleString('en-IN')}</span>
+            ${product.salePrice ? `<span class="original-price">₹${product.salePrice.toLocaleString('en-IN')}</span>` : ''}
+            ${isOutOfStock 
+              ? `<span style="font-size: 0.85rem; color: #991B1B; font-weight: 700; background: #FEE2E2; padding: 0.25rem 0.75rem; border-radius: var(--radius-pill); border: 1px solid #FCA5A5;">🚫 Out of Stock</span>`
+              : `<span style="font-size: 0.85rem; color: #2B7A4B; font-weight: 500; background: #EBF8F0; padding: 0.2rem 0.6rem; border-radius: var(--radius-pill);">${product.madeToOrder ? 'Made to Order' : 'Ready to Ship'}</span>`
+            }
+          </div>
+
+          ${isOutOfStock ? `
+            <div class="out-of-stock-box" style="margin-top: 1.25rem; margin-bottom: 1.25rem; padding: 1rem 1.25rem; background: #FEF2F2; border-radius: var(--radius-sm); border: 1.5px solid #F87171;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; color: #991B1B; font-weight: 700; font-size: 0.96rem;">
+                <span>🚫</span>
+                <span>Currently Out of Stock</span>
+              </div>
+              <p style="margin: 0.35rem 0 0 0; font-size: 0.86rem; color: #7F1D1D; line-height: 1.55;">
+                This piece is currently unavailable for instant purchase. Bhumika individually crochets every item with artisan care. You can request a restock directly on WhatsApp below or place a custom order inquiry!
+              </p>
+            </div>
+          ` : ''}
+
+          <p style="font-size: 1.05rem; line-height: 1.7; color: var(--cocoa); margin-bottom: 1.5rem;">
+            ${product.description}
+          </p>
+
+          <!-- Specifications -->
+          <ul class="product-specs-list">
+            <li>
+              <strong>Materials:</strong>
+              <span>${product.materials}</span>
+            </li>
+            <li>
+              <strong>Dimensions:</strong>
+              <span>${product.dimensions}</span>
+            </li>
+            <li>
+              <strong>Prep Time:</strong>
+              <span>${product.prepTime}</span>
+            </li>
+            <li>
+              <strong>Available Colors:</strong>
+              <span>${product.colors.join(', ')}</span>
+            </li>
+            <li>
+              <strong>Care Note:</strong>
+              <span>Gentle cold hand-wash only. Dry flat in shade. Do not tumble dry.</span>
+            </li>
+          </ul>
+
+          <!-- Quantity & Add to Cart -->
+          <div class="product-purchase-box" style="${isOutOfStock ? 'opacity: 0.7;' : ''}">
+            <div class="qty-selector" aria-label="Select quantity" style="${isOutOfStock ? 'pointer-events: none; opacity: 0.4;' : ''}">
+              <button class="qty-btn" id="qty-minus" aria-label="Decrease quantity" ${isOutOfStock ? 'disabled' : ''}>-</button>
+              <input type="text" id="qty-input" class="qty-input" value="${isOutOfStock ? '0' : '1'}" readonly aria-label="Item quantity">
+              <button class="qty-btn" id="qty-plus" aria-label="Increase quantity" ${isOutOfStock ? 'disabled' : ''}>+</button>
+            </div>
+
+            <button id="add-to-cart-btn" class="btn ${isOutOfStock ? 'btn-secondary' : 'btn-primary'}" ${isOutOfStock ? 'disabled' : ''} style="flex: 1; min-width: 180px; ${isOutOfStock ? 'cursor: not-allowed; opacity: 0.6; background: #E5E7EB; color: #6B7280; border-color: #D1D5DB; font-weight: 600;' : ''}">
+              ${isOutOfStock ? '🚫 Out of Stock' : 'Add to Bag'}
+            </button>
+          </div>
+
+          <!-- Direct WhatsApp Order Inquiry -->
+          <div style="margin-top: 1rem;">
+            <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="width: 100%;">
+              ${isOutOfStock ? '💬 Request Restock on WhatsApp' : '💬 Inquire / Customize on WhatsApp'}
+            </a>
+          </div>
+
+          <p id="cart-feedback-msg" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--rose-text); font-weight: 500; text-align: center; display: none;">
+            ✓ Added to your Bag!
+          </p>
+
+          <!-- Customization Callout -->
+          <div style="margin-top: 1.5rem; padding: 1rem; background: #FFF4F6; border-radius: var(--radius-sm); border-left: 3px solid var(--rose); font-size: 0.88rem;">
+            <strong>Want a custom variation?</strong> Need a different color palette, size, or a personalized name tag? We love custom creations! <a href="custom-order.html" style="color: var(--rose-text); text-decoration: underline; font-weight: 600;">Submit a custom order request here</a>.
+          </div>
+        </div>
+      `;
+
+      // Quantity selector interactions
+      const qtyMinus = document.getElementById('qty-minus');
+      const qtyPlus = document.getElementById('qty-plus');
+      const qtyInput = document.getElementById('qty-input');
+      const addToCartBtn = document.getElementById('add-to-cart-btn');
+      const feedbackMsg = document.getElementById('cart-feedback-msg');
+
+      if (!isOutOfStock) {
+        qtyMinus.addEventListener('click', () => {
+          let val = parseInt(qtyInput.value, 10) || 1;
+          if (val > 1) qtyInput.value = val - 1;
+        });
+
+        qtyPlus.addEventListener('click', () => {
+          let val = parseInt(qtyInput.value, 10) || 1;
+          if (val < Math.min(10, stock)) qtyInput.value = val + 1;
+        });
+      }
+
+      // Add to Cart handler
+      addToCartBtn.addEventListener('click', () => {
+        if (isOutOfStock || stock <= 0) {
+          alert('Sorry, this creation is currently out of stock and cannot be added to your bag.');
+          return;
+        }
+
+        const qty = parseInt(qtyInput.value, 10) || 1;
+        try {
+          const raw = localStorage.getItem('swan_cart');
+          let cart = raw ? JSON.parse(raw) : [];
+          if (!Array.isArray(cart)) cart = [];
+
+          const existingIndex = cart.findIndex(item => item.id === product.id);
+          if (existingIndex > -1) {
+            cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + qty;
+          } else {
+            cart.push({
+              id: product.id,
+              slug: product.slug,
+              name: product.name,
+              price: product.price,
+              quantity: qty
+            });
+          }
+          localStorage.setItem('swan_cart', JSON.stringify(cart));
+
+          // Update header bag count badge
+          const bagCountEl = document.getElementById('bag-count');
+          if (bagCountEl) {
+            const total = cart.reduce((acc, it) => acc + (it.quantity || 0), 0);
+            bagCountEl.textContent = total;
+            bagCountEl.setAttribute('aria-label', `${total} items in bag`);
+          }
+
+          feedbackMsg.style.display = 'block';
+          feedbackMsg.textContent = `✓ Added ${qty} × "${product.name}" to your Bag!`;
+          setTimeout(() => {
+            feedbackMsg.style.display = 'none';
+          }, 3500);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      // Render Related Products (Excluding current)
+      const allResult = await fetchProducts();
+      const allProducts = allResult.data || [];
+      const related = allProducts.filter(p => p.slug !== product.slug).slice(0, 4);
+
+      relatedGrid.innerHTML = related.map(p => {
+        const isRelOutOfStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) <= 0 : false;
+        const tagHtml = isRelOutOfStock
+          ? `<span class="product-tag badge-out-of-stock" style="background: #991B1B; color: #FFFFFF; font-weight: 600;">🚫 Out of Stock</span>`
+          : `<span class="product-tag">${p.badge || (p.madeToOrder ? 'Made to Order' : 'Ready to Ship')}</span>`;
+
+        return `
+          <article class="product-card ${isRelOutOfStock ? 'product-card-out-of-stock' : ''}">
+            <div class="product-thumb" style="overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
+              ${tagHtml}
+              ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width: 100%; height: 100%; object-fit: cover;">` : getMainVisualSvg(p.iconType)}
+            </div>
+            <div class="product-info">
+              <span class="product-category">${p.categoryName}</span>
+              <span class="badge-sample">${isLive ? 'Verified Creation' : 'Sample Product'}</span>
+              <h3 class="product-name">${p.name}</h3>
+              <div class="product-price-row">
+                <span class="product-price">₹${p.price.toLocaleString('en-IN')}</span>
+              </div>
+              <div class="product-actions">
+                <a href="product.html?slug=${p.slug}" class="btn btn-outline btn-sm" style="width: 100%; ${isRelOutOfStock ? 'border-color: #F87171; color: #991B1B;' : ''}">
+                  ${isRelOutOfStock ? 'View (Out of Stock)' : 'View Details'}
+                </a>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    });
+  </script>
+</body>
+</html>

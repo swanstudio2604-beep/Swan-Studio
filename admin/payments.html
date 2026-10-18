@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Verification & Audit Log — Swan Studio Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css?v=m1">
+</head>
+<body>
+
+  <!-- Admin Application Wrapper -->
+  <div class="admin-container" id="admin-app" style="display: none;">
+    
+    <!-- Sidebar Mount (Injected by admin-shared.js) -->
+    <div id="admin-sidebar-mount"></div>
+
+    <!-- Main Workspace -->
+    <main class="admin-main">
+      <div class="admin-header-row">
+        <div>
+          <h1 class="admin-page-title">Manual UPI Payment Verification</h1>
+          <p class="admin-page-subtitle">Verify customer UTR/Reference numbers against your bank account statement (UPI ID: 9509966512@fam) before confirming orders.</p>
+        </div>
+        <button id="btn-refresh-payments" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600;">
+          <span id="pay-refresh-icon">🔄</span> Refresh Revenue & Payments
+        </button>
+      </div>
+
+      <!-- Revenue Period & Live Refresh Control Bar -->
+      <div class="admin-card" style="margin-bottom: 1.25rem; padding: 0.85rem 1.25rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; background: linear-gradient(135deg, #FFF9F7 0%, #FFFFFF 100%); border-left: 4px solid var(--rose); box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <span style="font-weight: 600; font-size: 0.88rem; color: var(--cocoa); display: flex; align-items: center; gap: 0.4rem;">
+            <span>📅</span> Revenue Period:
+          </span>
+          <select id="revenue-month-filter-top" class="form-control" style="width: auto; min-width: 220px; font-size: 0.84rem; padding: 0.35rem 0.75rem; background: #FFFFFF; font-weight: 500;">
+            <option value="">🌐 All Months (Total Revenue)</option>
+          </select>
+          <div id="revenue-quick-pills-top" style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span id="revenue-refresh-status-top" style="font-size: 0.76rem; color: #8A7670;">Live Synced</span>
+          <button type="button" id="btn-refresh-revenue-top" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0.85rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(199, 131, 145, 0.25);">
+            <span id="revenue-spin-icon-top" style="display: inline-block;">🔄</span> Refresh Revenue
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Stat Cards -->
+      <div class="admin-stats-grid" style="margin-bottom: 1.5rem;">
+        <div class="admin-stat-card" style="border-left: 4px solid #D97706;">
+          <div class="admin-stat-label">Pending Verification</div>
+          <div class="admin-stat-value" id="stat-pending-count" style="color: #D97706;">0</div>
+          <div style="font-size: 0.78rem; color: #73615A;" id="stat-pending-sum">₹0.00 awaiting</div>
+        </div>
+
+        <div class="admin-stat-card" style="border-left: 4px solid #16A34A;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="admin-stat-label">Verified Revenue</div>
+            <span id="stat-revenue-month-tag" style="font-size: 0.7rem; background: #ECFDF5; color: #047857; padding: 0.1rem 0.45rem; border-radius: 10px; font-weight: 600; border: 1px solid #A7F3D0;">All Time</span>
+          </div>
+          <div class="admin-stat-value" id="stat-verified-revenue" style="color: #16A34A;">₹0.00</div>
+          <div style="font-size: 0.78rem; color: #73615A;" id="stat-verified-count">0 orders confirmed</div>
+        </div>
+
+        <div class="admin-stat-card" style="border-left: 4px solid #DC2626;">
+          <div class="admin-stat-label">Rejected Transfers</div>
+          <div class="admin-stat-value" id="stat-rejected-count" style="color: #DC2626;">0</div>
+          <div style="font-size: 0.78rem; color: #73615A;">Unverified / Cancelled</div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-label">Total Transactions</div>
+          <div class="admin-stat-value" id="stat-total-tx">0</div>
+          <div style="font-size: 0.78rem; color: #73615A;">All-time attempts</div>
+        </div>
+      </div>
+
+      <!-- Graphical Payment Health Pipeline Ribbon -->
+      <div class="pipeline-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+          <span style="font-weight: 600; font-size: 0.95rem; color: var(--admin-text-main); display: flex; align-items: center; gap: 0.4rem;">
+            💳 UPI Payment Reconciliation Pipeline
+          </span>
+          <span id="payment-realization-rate" style="font-size: 0.82rem; font-weight: 600; color: #16A34A;">0% Realized</span>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--admin-text-muted); margin-bottom: 0.5rem;">Interactive visual breakdown of manual UPI transfers. Click any status pill or segment to filter the table below.</p>
+        
+        <div class="pipeline-bar" id="payments-pipeline-bar">
+          <!-- Injected via JavaScript -->
+        </div>
+
+        <div class="pipeline-legend" id="payments-pipeline-legend">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+      <!-- Graphical Analytics Charts Grid -->
+      <div class="chart-grid">
+        <!-- Chart 1: Donut Breakdown -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">🍩 Payment Status Breakdown</div>
+              <div class="chart-subtitle">Verified vs Pending vs Rejected transfers</div>
+            </div>
+            <span style="font-size: 0.75rem; color: var(--admin-text-muted); background: #FAF5F0; padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid var(--admin-border);">UPI Reconciliation</span>
+          </div>
+          <div class="donut-layout">
+            <div class="donut-svg-wrap">
+              <svg viewBox="0 0 42 42" class="donut-svg" id="donut-svg-payments">
+                <!-- SVG Circles injected dynamically -->
+              </svg>
+              <div class="donut-center-text">
+                <div class="donut-center-val" id="donut-total-payments">0</div>
+                <div class="donut-center-lbl">Transfers</div>
+              </div>
+            </div>
+            <div class="donut-legend-list" id="donut-legend-payments">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 2: Revenue Realization & Settlement Gauges -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title">📊 Revenue Realization & Audit Health</div>
+              <div class="chart-subtitle">Manual UPI settlement ratio & average transfer</div>
+            </div>
+            <div id="chart-payment-aov-badge" style="font-size: 0.8rem; font-weight: 600; background: #FFF6F0; border: 1px solid var(--border-subtle); padding: 0.25rem 0.6rem; border-radius: 4px; color: var(--cocoa);">
+              Avg: ₹0
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 1rem; justify-content: center; height: 160px; padding: 0.5rem 0;">
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.35rem;">
+                <span style="color: var(--admin-text-main); font-weight: 500;">Bank Verification Success Rate</span>
+                <strong id="stat-verification-pct" style="color: #16A34A;">0%</strong>
+              </div>
+              <div style="height: 10px; background: #F0E8E2; border-radius: 5px; overflow: hidden;">
+                <div id="meter-verification-bar" style="height: 100%; width: 0%; background: #16A34A; transition: width 0.6s ease;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.35rem;">
+                <span style="color: var(--admin-text-main); font-weight: 500;">Pending Backlog Ratio</span>
+                <strong id="stat-pending-pct" style="color: #D97706;">0%</strong>
+              </div>
+              <div style="height: 10px; background: #F0E8E2; border-radius: 5px; overflow: hidden;">
+                <div id="meter-pending-bar" style="height: 100%; width: 0%; background: #D97706; transition: width 0.6s ease;"></div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #FFFDFB; border: 1px dashed var(--admin-border); padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.78rem;">
+              <span style="color: var(--admin-text-muted);">Awaiting Bank Check:</span>
+              <strong id="pending-backlog-amount" style="color: #D97706; font-size: 0.88rem;">₹0.00</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Status Filter Card -->
+      <div class="admin-card" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 0.75rem; flex: 1; min-width: 280px; flex-wrap: wrap;">
+            <input type="text" id="payments-search" class="form-control" placeholder="Search order ID, buyer name, or UTR..." style="max-width: 260px;">
+            <select id="filter-payment-month" class="form-control" style="max-width: 220px; font-weight: 500;">
+              <option value="">📅 All Months (Total Revenue)</option>
+            </select>
+            <select id="filter-payment-status" class="form-control" style="max-width: 180px;">
+              <option value="">All Statuses</option>
+              <option value="PENDING_VERIFICATION">Awaiting Verification</option>
+              <option value="PAID">Verified (Paid)</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </div>
+          <span id="payments-count-badge" class="badge badge-accent">0 records</span>
+        </div>
+      </div>
+
+      <!-- Payments Table Card -->
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order ID & Date</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Submitted Reference (UTR)</th>
+              <th>Status</th>
+              <th style="text-align: right;">Verification Action</th>
+            </tr>
+          </thead>
+          <tbody id="payments-table-body">
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 2rem;">Loading payment records...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer Mount -->
+      <div id="admin-footer-mount"></div>
+    </main>
+
+  </div>
+
+  <!-- Verify Payment Modal -->
+  <div id="verify-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.35rem; color: #16A34A;">✓ Verify & Confirm Payment</h2>
+        <button class="modal-close-btn" id="verify-close-btn">&times;</button>
+      </div>
+
+      <form id="verify-form">
+        <input type="hidden" id="verify-payment-id">
+        <p style="font-size: 0.88rem; color: #73615A; margin-bottom: 1rem;">
+          Confirm that the customer UPI transfer for <strong id="verify-order-label"></strong> has been verified against your bank account. This will transition payment to <strong>PAID</strong> and order status to <strong>CONFIRMED</strong>.
+        </p>
+
+        <div class="form-group">
+          <label for="verify-note" class="form-label">Audit Note / Bank Statement Remark</label>
+          <input type="text" id="verify-note" class="form-control" value="Received in ICICI/Fam bank account" required>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-verify">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btn-submit-verify">Confirm & Mark Paid</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reject Reason Modal -->
+  <div id="reject-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog" style="max-width: 480px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.35rem; color: #B33939;">Reject Payment</h2>
+        <button class="modal-close-btn" id="reject-close-btn">&times;</button>
+      </div>
+
+      <form id="reject-form">
+        <input type="hidden" id="reject-payment-id">
+        <p style="font-size: 0.88rem; color: #73615A; margin-bottom: 1rem;">
+          Please specify the reason for rejecting this payment submission. This reason will be logged in the immutable audit trail and order records.
+        </p>
+
+        <div class="form-group">
+          <label for="reject-reason" class="form-label">Rejection Reason <span style="color: var(--rose);">*</span></label>
+          <select id="reject-preset" class="form-control" style="margin-bottom: 0.5rem;">
+            <option value="Payment not reflected in bank account (9509966512@fam)">Payment not reflected in bank account</option>
+            <option value="Transferred amount does not match order total">Transferred amount does not match order total</option>
+            <option value="Invalid or fake 12-digit UTR reference submitted">Invalid or fake 12-digit UTR reference submitted</option>
+            <option value="Other">Custom reason (type below)</option>
+          </select>
+          <textarea id="reject-reason" class="form-control" style="min-height: 70px;" placeholder="Provide details..." required>Payment not reflected in bank account (9509966512@fam)</textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-reject">Cancel</button>
+          <button type="submit" class="btn btn-sm" style="background: #B33939; color: #FFF; border: none; padding: 0.5rem 1rem;">Confirm Rejection</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Audit Trail History Modal -->
+  <div id="audit-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog" style="max-width: 580px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.35rem;">📜 Payment Audit Trail</h2>
+        <button class="modal-close-btn" id="audit-close-btn">&times;</button>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <span style="font-size: 0.88rem; color: #73615A;">Immutable audit log for Order: <strong id="audit-order-id" style="color: var(--cocoa);"></strong></span>
+      </div>
+
+      <div id="audit-timeline" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 340px; overflow-y: auto;">
+        <!-- Injected by JS -->
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-close-audit">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/payments.js"></script>
+  <script src="../js/admin/admin-shared.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Guard & mount layout
+      const ok = await ADMIN.init('payments');
+      if (!ok) return;
+
+      const tbody = document.getElementById('payments-table-body');
+      const refreshBtn = document.getElementById('btn-refresh-payments');
+      const searchInput = document.getElementById('payments-search');
+      const monthFilter = document.getElementById('filter-payment-month');
+      const monthFilterTop = document.getElementById('revenue-month-filter-top');
+      const pillsContainerTop = document.getElementById('revenue-quick-pills-top');
+      const statusTop = document.getElementById('revenue-refresh-status-top');
+      const btnRefreshRevenueTop = document.getElementById('btn-refresh-revenue-top');
+      const spinIconTop = document.getElementById('revenue-spin-icon-top');
+      const statusFilter = document.getElementById('filter-payment-status');
+      const countBadge = document.getElementById('payments-count-badge');
+
+      const verifyModal = document.getElementById('verify-modal');
+      const verifyForm = document.getElementById('verify-form');
+      const verifyIdInput = document.getElementById('verify-payment-id');
+      const verifyOrderLabel = document.getElementById('verify-order-label');
+      const verifyNoteInput = document.getElementById('verify-note');
+      const verifyCloseBtn = document.getElementById('verify-close-btn');
+      const cancelVerifyBtn = document.getElementById('btn-cancel-verify');
+      const submitVerifyBtn = document.getElementById('btn-submit-verify');
+
+      const rejectModal = document.getElementById('reject-modal');
+      const rejectForm = document.getElementById('reject-form');
+      const rejectIdInput = document.getElementById('reject-payment-id');
+      const rejectPreset = document.getElementById('reject-preset');
+      const rejectReason = document.getElementById('reject-reason');
+      const rejectCloseBtn = document.getElementById('reject-close-btn');
+      const cancelRejectBtn = document.getElementById('btn-cancel-reject');
+
+      const auditModal = document.getElementById('audit-modal');
+      const auditOrderId = document.getElementById('audit-order-id');
+      const auditTimeline = document.getElementById('audit-timeline');
+      const auditCloseBtn = document.getElementById('audit-close-btn');
+      const btnCloseAudit = document.getElementById('btn-close-audit');
+
+      let allPayments = [];
+      let currentMonthFilter = sessionStorage.getItem('swan_revenue_filter_month') || '';
+
+      rejectPreset.addEventListener('change', () => {
+        if (rejectPreset.value !== 'Other') {
+          rejectReason.value = rejectPreset.value;
+        } else {
+          rejectReason.value = '';
+          rejectReason.focus();
+        }
+      });
+
+      function getPaymentMonthKey(p) {
+        const dStr = p.verifiedAt || p.createdAt || p.created_at;
+        if (dStr) {
+          const d = new Date(dStr);
+          if (!isNaN(d.getTime())) {
+            const yr = d.getFullYear();
+            const mo = String(d.getMonth() + 1).padStart(2, '0');
+            return `${yr}-${mo}`;
+          }
+        }
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      }
+
+      function formatMonthLabel(key) {
+        if (!key || key === 'all') return 'All Time';
+        const parts = key.split('-');
+        if (parts.length === 2) {
+          const yr = parseInt(parts[0], 10);
+          const mo = parseInt(parts[1], 10) - 1;
+          const d = new Date(yr, mo, 1);
+          return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        }
+        return key;
+      }
+
+      function populateMonthFilter() {
+        const monthKeysSet = new Set();
+        const now = new Date();
+        const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        monthKeysSet.add(thisMonthKey);
+
+        allPayments.forEach(p => {
+          monthKeysSet.add(getPaymentMonthKey(p));
+        });
+
+        const sorted = Array.from(monthKeysSet).sort().reverse();
+        const optionsHtml = `
+          <option value="">🌐 All Months (Total Revenue)</option>
+          ${sorted.map(m => {
+            const isCur = m === thisMonthKey;
+            const label = formatMonthLabel(m) + (isCur ? ' (Current Month)' : '');
+            return `<option value="${m}" ${currentMonthFilter === m ? 'selected' : ''}>📅 ${label}</option>`;
+          }).join('')}
+        `;
+
+        if (monthFilter) monthFilter.innerHTML = optionsHtml;
+        if (monthFilterTop) monthFilterTop.innerHTML = optionsHtml;
+
+        if (pillsContainerTop) {
+          const quickOptions = [
+            { key: '', label: 'All Months' },
+            ...sorted.slice(0, 3).map(m => ({
+              key: m,
+              label: m === thisMonthKey ? `${formatMonthLabel(m)} (Current)` : formatMonthLabel(m)
+            }))
+          ];
+
+          pillsContainerTop.innerHTML = quickOptions.map(opt => `
+            <button type="button" class="btn-month-pill ${currentMonthFilter === opt.key ? 'active' : ''}" data-month="${opt.key}">
+              ${opt.label}
+            </button>
+          `).join('');
+
+          pillsContainerTop.querySelectorAll('.btn-month-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+              currentMonthFilter = pill.dataset.month;
+              sessionStorage.setItem('swan_revenue_filter_month', currentMonthFilter);
+              if (monthFilter) monthFilter.value = currentMonthFilter;
+              if (monthFilterTop) monthFilterTop.value = currentMonthFilter;
+              populateMonthFilter();
+              renderStats();
+              applyFilters();
+            });
+          });
+        }
+      }
+
+      async function loadPayments(showToast = false) {
+        const icon = document.getElementById('pay-refresh-icon');
+        if (icon) icon.classList.add('spin-anim');
+        if (spinIconTop) spinIconTop.classList.add('spin-anim');
+        if (statusTop) statusTop.textContent = 'Syncing...';
+
+        try {
+          allPayments = await SwanPayments.getAllPayments();
+          populateMonthFilter();
+          renderStats();
+          applyFilters();
+
+          const nowTimeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          if (statusTop) statusTop.textContent = `Refreshed at ${nowTimeStr}`;
+
+          if (showToast && window.ADMIN && typeof ADMIN.showToast === 'function') {
+            const label = currentMonthFilter ? formatMonthLabel(currentMonthFilter) : 'All Time';
+            ADMIN.showToast(`✓ Payment records & revenue refreshed (${label})`, 'success');
+          }
+        } catch (err) {
+          tbody.innerHTML = `<tr><td colspan="6" style="color: #B33939; text-align: center; padding: 2rem;">Error loading payments: ${err.message}</td></tr>`;
+          if (statusTop) statusTop.textContent = 'Sync error';
+        } finally {
+          setTimeout(() => {
+            if (icon) icon.classList.remove('spin-anim');
+            if (spinIconTop) spinIconTop.classList.remove('spin-anim');
+          }, 600);
+        }
+      }
+
+      function renderStats() {
+        const selectedMonth = currentMonthFilter;
+        const statsList = selectedMonth ? allPayments.filter(p => getPaymentMonthKey(p) === selectedMonth) : allPayments;
+
+        const total = statsList.length;
+        const pending = statsList.filter(p => p.status === 'PENDING_VERIFICATION');
+        const paid = statsList.filter(p => p.status === 'PAID');
+        const rejected = statsList.filter(p => p.status === 'REJECTED');
+
+        const pendingSum = pending.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+        const verifiedRevenue = paid.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+        const rejectedSum = rejected.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+        const totalVolume = statsList.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+
+        const monthTag = document.getElementById('stat-revenue-month-tag');
+        if (monthTag) {
+          monthTag.textContent = selectedMonth ? formatMonthLabel(selectedMonth) : 'All Time';
+        }
+
+        document.getElementById('stat-pending-count').textContent = pending.length;
+        document.getElementById('stat-pending-sum').textContent = `₹${pendingSum.toLocaleString('en-IN', { minimumFractionDigits: 2 })} awaiting`;
+
+        document.getElementById('stat-verified-revenue').textContent = `₹${verifiedRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+        document.getElementById('stat-verified-count').textContent = `${paid.length} order${paid.length === 1 ? '' : 's'} confirmed`;
+
+        document.getElementById('stat-rejected-count').textContent = rejected.length;
+        document.getElementById('stat-total-tx').textContent = total;
+
+        // Payment Stages Data for Visuals
+        const STATUSES = [
+          { key: 'PAID', label: 'Verified (Paid)', color: '#16A34A', count: paid.length, sum: verifiedRevenue },
+          { key: 'PENDING_VERIFICATION', label: 'Awaiting Verification', color: '#D97706', count: pending.length, sum: pendingSum },
+          { key: 'REJECTED', label: 'Rejected', color: '#DC2626', count: rejected.length, sum: rejectedSum }
+        ].map(s => {
+          const pct = total > 0 ? (s.count / total) * 100 : 0;
+          return { ...s, pct };
+        });
+
+        // 1. Render Multi-Segment Pipeline Ribbon
+        const barEl = document.getElementById('payments-pipeline-bar');
+        const legendEl = document.getElementById('payments-pipeline-legend');
+        if (barEl) {
+          barEl.innerHTML = STATUSES.filter(s => s.count > 0).map(s => `
+            <div class="pipeline-segment" style="width: ${s.pct}%; background: ${s.color};" title="${s.label}: ${s.count} transfers (₹${Math.round(s.sum).toLocaleString('en-IN')})"></div>
+          `).join('') || '<div style="width: 100%; background: #EFE4DC;"></div>';
+        }
+
+        if (legendEl) {
+          legendEl.innerHTML = STATUSES.map(s => `
+            <div class="pipeline-legend-item" data-status="${s.key}" title="Click to filter by ${s.label}">
+              <span class="pipeline-dot" style="background: ${s.color};"></span>
+              <strong>${s.label}:</strong> ${s.count} (${s.pct.toFixed(0)}%) • <span style="color: var(--admin-text-muted);">₹${Math.round(s.sum).toLocaleString('en-IN')}</span>
+            </div>
+          `).join('');
+
+          legendEl.querySelectorAll('.pipeline-legend-item').forEach(item => {
+            item.addEventListener('click', () => {
+              statusFilter.value = item.dataset.status;
+              applyFilters();
+            });
+          });
+        }
+
+        const realizationPct = totalVolume > 0 ? Math.round((verifiedRevenue / totalVolume) * 100) : 0;
+        const realEl = document.getElementById('payment-realization-rate');
+        if (realEl) realEl.textContent = `${realizationPct}% Realized`;
+
+        // 2. Render SVG Donut Chart
+        const donutSvg = document.getElementById('donut-svg-payments');
+        const donutLegend = document.getElementById('donut-legend-payments');
+        const donutTotal = document.getElementById('donut-total-payments');
+        if (donutTotal) donutTotal.textContent = total;
+
+        if (donutSvg) {
+          let cumulativeOffset = 25; // start from top
+          let circles = `<circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#F0E8E2" stroke-width="5"></circle>`;
+          
+          STATUSES.filter(s => s.count > 0).forEach(s => {
+            circles += `
+              <circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="${s.color}" stroke-width="5"
+                stroke-dasharray="${s.pct} ${100 - s.pct}"
+                stroke-dashoffset="${cumulativeOffset}"
+                style="transition: stroke-dasharray 0.5s ease;">
+              </circle>
+            `;
+            cumulativeOffset -= s.pct;
+          });
+          donutSvg.innerHTML = circles;
+        }
+
+        if (donutLegend) {
+          donutLegend.innerHTML = STATUSES.map(s => `
+            <div class="donut-legend-row" style="cursor: pointer;" data-status="${s.key}" title="Click to filter by ${s.label}">
+              <div style="display: flex; align-items: center; gap: 0.45rem;">
+                <span class="pipeline-dot" style="background: ${s.color};"></span>
+                <span style="color: var(--admin-text-main); font-weight: 500;">${s.label}</span>
+              </div>
+              <div style="text-align: right;">
+                <strong>₹${Math.round(s.sum).toLocaleString('en-IN')}</strong>
+                <span style="color: var(--admin-text-muted); font-size: 0.75rem;">(${s.count})</span>
+              </div>
+            </div>
+          `).join('');
+
+          donutLegend.querySelectorAll('.donut-legend-row').forEach(row => {
+            row.addEventListener('click', () => {
+              statusFilter.value = row.dataset.status;
+              applyFilters();
+            });
+          });
+        }
+
+        // 3. Render Realization Gauges & Performance Metrics
+        const aov = total > 0 ? Math.round(totalVolume / total) : 0;
+        const aovBadge = document.getElementById('chart-payment-aov-badge');
+        if (aovBadge) aovBadge.textContent = `Avg: ₹${aov.toLocaleString('en-IN')}`;
+
+        const verifiedPct = total > 0 ? Math.round((paid.length / total) * 100) : 0;
+        const pendingPct = total > 0 ? Math.round((pending.length / total) * 100) : 0;
+
+        const statVerPct = document.getElementById('stat-verification-pct');
+        const meterVerBar = document.getElementById('meter-verification-bar');
+        if (statVerPct) statVerPct.textContent = `${verifiedPct}% (${paid.length}/${total})`;
+        if (meterVerBar) meterVerBar.style.width = `${verifiedPct}%`;
+
+        const statPendPct = document.getElementById('stat-pending-pct');
+        const meterPendBar = document.getElementById('meter-pending-bar');
+        if (statPendPct) statPendPct.textContent = `${pendingPct}% (${pending.length} orders)`;
+        if (meterPendBar) meterPendBar.style.width = `${pendingPct}%`;
+
+        const pendingBacklog = document.getElementById('pending-backlog-amount');
+        if (pendingBacklog) pendingBacklog.textContent = `₹${pendingSum.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      }
+
+      function applyFilters() {
+        const query = searchInput.value.trim().toLowerCase();
+        const status = statusFilter.value;
+        const selectedMonth = monthFilter ? monthFilter.value : '';
+
+        const filtered = allPayments.filter(p => {
+          if (selectedMonth && getPaymentMonthKey(p) !== selectedMonth) return false;
+          if (status && p.status !== status) return false;
+          if (query) {
+            const matchOrder = p.orderId.toLowerCase().includes(query);
+            const matchName = (p.customerName || '').toLowerCase().includes(query);
+            const matchRef = (p.transactionRef || '').toLowerCase().includes(query);
+            if (!matchOrder && !matchName && !matchRef) return false;
+          }
+          return true;
+        });
+
+        countBadge.textContent = `${filtered.length} records`;
+        renderTable(filtered);
+      }
+
+      function renderTable(list) {
+        if (list.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: #8A7670;">No payment records found.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = list.map(p => {
+          const dateStr = p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+          
+          let statusBadge = '';
+          if (p.status === 'PAID') {
+            statusBadge = `<span class="badge badge-success">✓ Verified (Paid)</span>`;
+          } else if (p.status === 'REJECTED') {
+            statusBadge = `<span class="badge" style="background: #FEE2E2; color: #991B1B;">✕ Rejected</span>`;
+          } else {
+            statusBadge = `<span class="badge" style="background: #FEF3C7; color: #92400E; border: 1px solid #F59E0B;">⏳ Awaiting Verification</span>`;
+          }
+
+          let refDisplay = '';
+          const screenshotHtml = p.screenshot ? `
+            <div style="margin-top: 0.35rem;">
+              <a href="#" onclick="const w=window.open('');w.document.write('<img src=\\'${p.screenshot}\\' style=\\'max-width:100%;margin:2rem auto;display:block;\\'>');return false;" style="display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.76rem; color: var(--rose-text); font-weight: 600; text-decoration: underline;">
+                📷 View Receipt Screenshot
+              </a>
+            </div>
+          ` : '';
+
+          if (p.transactionRef) {
+            refDisplay = `
+              <div>
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <code style="background: var(--cream); border: 1px dashed var(--border-subtle); padding: 0.2rem 0.4rem; border-radius: 4px; font-weight: 700; color: var(--cocoa); font-size: 0.85rem;">
+                    ${p.transactionRef}
+                  </code>
+                </div>
+                ${screenshotHtml}
+              </div>
+            `;
+          } else if (p.screenshot) {
+            refDisplay = `<div><span style="font-size: 0.78rem; color: #166534; font-weight: 600;">✓ Screenshot Attached</span>${screenshotHtml}</div>`;
+          } else {
+            refDisplay = `<span style="font-size: 0.78rem; color: #9A5565; font-style: italic;">⚠️ Customer hasn't submitted UTR yet</span>`;
+          }
+
+          let actionCell = '';
+          if (p.status === 'PENDING_VERIFICATION') {
+            actionCell = `
+              <button class="btn btn-primary btn-sm btn-verify" data-id="${p.id}" data-order="${p.orderId}" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+                ✓ Verify & Confirm
+              </button>
+              <button class="btn btn-secondary btn-sm btn-reject" data-id="${p.id}" data-order="${p.orderId}" style="padding: 0.35rem 0.65rem; font-size: 0.78rem; color: #B33939; margin-left: 0.3rem;">
+                ✕ Reject
+              </button>
+            `;
+          } else {
+            actionCell = `
+              <button class="btn btn-secondary btn-sm btn-view-audit" data-id="${p.id}" data-order="${p.orderId}" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;">
+                📜 View Audit Trail
+              </button>
+            `;
+          }
+
+          return `
+            <tr>
+              <td>
+                <strong style="color: var(--cocoa);">${p.orderId}</strong>
+                <div style="font-size: 0.75rem; color: #8A7670;">${dateStr}</div>
+              </td>
+              <td>
+                <strong>${p.customerName}</strong>
+                <div style="font-size: 0.78rem; color: #73615A;">${p.customerPhone}</div>
+              </td>
+              <td>
+                <span style="font-size: 1.05rem; font-weight: 700; color: var(--cocoa);">
+                  ₹${p.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </span>
+              </td>
+              <td>${refDisplay}</td>
+              <td>${statusBadge}</td>
+              <td style="text-align: right; white-space: nowrap;">
+                ${actionCell}
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        attachListeners();
+      }
+
+      function attachListeners() {
+        // Open Verify Modal
+        document.querySelectorAll('.btn-verify').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const paymentId = e.currentTarget.dataset.id;
+            const orderId = e.currentTarget.dataset.order;
+            verifyIdInput.value = paymentId;
+            verifyOrderLabel.textContent = `Order #${orderId}`;
+            verifyNoteInput.value = 'Received in ICICI/Fam bank account';
+            verifyModal.style.display = 'flex';
+          });
+        });
+
+        // Open Reject Modal
+        document.querySelectorAll('.btn-reject').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const paymentId = e.currentTarget.dataset.id;
+            rejectIdInput.value = paymentId;
+            rejectPreset.value = rejectPreset.options[0].value;
+            rejectReason.value = rejectPreset.options[0].value;
+            rejectModal.style.display = 'flex';
+          });
+        });
+
+        // View Audit Trail
+        document.querySelectorAll('.btn-view-audit').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const paymentId = e.currentTarget.dataset.id;
+            const orderId = e.currentTarget.dataset.order;
+            auditOrderId.textContent = `#${orderId}`;
+
+            auditTimeline.innerHTML = '<div style="text-align: center; padding: 1rem;">Loading audit records...</div>';
+            auditModal.style.display = 'flex';
+
+            const logs = await SwanPayments.getAuditLogs(paymentId);
+            if (logs.length === 0) {
+              auditTimeline.innerHTML = '<div style="color: #8A7670; font-size: 0.85rem; padding: 1rem; text-align: center;">No status changes recorded for this payment yet.</div>';
+            } else {
+              auditTimeline.innerHTML = logs.map(l => {
+                const time = l.created_at || l.createdAt;
+                const timeStr = time ? new Date(time).toLocaleString('en-IN') : '—';
+                const changer = l.changed_by || l.changedBy || 'Administrator';
+                const oldS = l.old_status || l.oldStatus;
+                const newS = l.new_status || l.newStatus;
+                const note = l.notes || '';
+
+                return `
+                  <div style="background: var(--cream); border-left: 3px solid var(--rose-accent); padding: 0.75rem 1rem; border-radius: var(--radius-sm);">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #8A7670;">
+                      <span>${changer}</span>
+                      <span>${timeStr}</span>
+                    </div>
+                    <div style="margin: 0.35rem 0; font-size: 0.88rem;">
+                      Status: <code>${oldS}</code> &rarr; <strong><code>${newS}</code></strong>
+                    </div>
+                    ${note ? `<div style="font-size: 0.82rem; color: #73615A;">Note: "${note}"</div>` : ''}
+                  </div>
+                `;
+              }).join('');
+            }
+          });
+        });
+      }
+
+      // Close verify modal
+      function closeVerify() { verifyModal.style.display = 'none'; }
+      verifyCloseBtn.addEventListener('click', closeVerify);
+      cancelVerifyBtn.addEventListener('click', closeVerify);
+
+      // Submit verification
+      verifyForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const paymentId = verifyIdInput.value;
+        const note = verifyNoteInput.value.trim() || 'Verified against bank statement';
+
+        submitVerifyBtn.disabled = true;
+        submitVerifyBtn.textContent = 'Verifying...';
+
+        try {
+          await SwanPayments.verifyPayment(paymentId, note);
+          closeVerify();
+          await loadPayments();
+        } catch (err) {
+          alert('Failed to verify payment: ' + err.message);
+        } finally {
+          submitVerifyBtn.disabled = false;
+          submitVerifyBtn.textContent = 'Confirm & Mark Paid';
+        }
+      });
+
+      // Close reject modal
+      function closeReject() { rejectModal.style.display = 'none'; }
+      rejectCloseBtn.addEventListener('click', closeReject);
+      cancelRejectBtn.addEventListener('click', closeReject);
+
+      // Submit rejection
+      rejectForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const paymentId = rejectIdInput.value;
+        const reason = rejectReason.value.trim() || 'Payment not verified.';
+
+        try {
+          await SwanPayments.rejectPayment(paymentId, reason);
+          closeReject();
+          await loadPayments();
+        } catch (err) {
+          alert('Failed to reject payment: ' + err.message);
+        }
+      });
+
+      // Close audit modal
+      function closeAudit() { auditModal.style.display = 'none'; }
+      auditCloseBtn.addEventListener('click', closeAudit);
+      btnCloseAudit.addEventListener('click', closeAudit);
+
+      // Refresh & search events
+      refreshBtn.addEventListener('click', () => loadPayments(true));
+      if (btnRefreshRevenueTop) {
+        btnRefreshRevenueTop.addEventListener('click', () => loadPayments(true));
+      }
+
+      searchInput.addEventListener('input', applyFilters);
+      statusFilter.addEventListener('change', applyFilters);
+
+      function handleMonthChange(val) {
+        currentMonthFilter = val;
+        sessionStorage.setItem('swan_revenue_filter_month', currentMonthFilter);
+        if (monthFilter) monthFilter.value = currentMonthFilter;
+        if (monthFilterTop) monthFilterTop.value = currentMonthFilter;
+        populateMonthFilter();
+        renderStats();
+        applyFilters();
+      }
+
+      if (monthFilter) {
+        ['change', 'input'].forEach(evt => {
+          monthFilter.addEventListener(evt, (e) => handleMonthChange(e.target.value));
+        });
+      }
+
+      if (monthFilterTop) {
+        ['change', 'input'].forEach(evt => {
+          monthFilterTop.addEventListener(evt, (e) => handleMonthChange(e.target.value));
+        });
+      }
+
+      // Initial load
+      await loadPayments(false);
+    });
+  </script>
+</body>
+</html>
