@@ -27,29 +27,39 @@
     <div class="container" style="max-width: 480px; width: 100%;">
 
       <!-- Section Header -->
-      <div class="section-header" style="margin-bottom: var(--space-xl);">
-        <h1 class="section-title" style="font-size: 2.3rem;">Welcome Back</h1>
-        <p class="section-subtitle">
+      <div class="section-header" style="margin-bottom: var(--space-xl); text-align: center;">
+        <h1 class="section-title" id="login-title" style="font-size: clamp(1.85rem, 4vw, 2.3rem);">Welcome Back</h1>
+        <p class="section-subtitle" id="login-subtitle">
           Sign in to view your orders, payment verification status, and saved details.
         </p>
       </div>
 
       <!-- Context Alert / Security Notice -->
-      <div id="auth-alert" style="display: none; margin-bottom: 1.25rem; padding: 1rem; border-radius: var(--radius-sm); font-size: 0.88rem; line-height: 1.5;"></div>
+      <div id="auth-alert" style="display: none; margin-bottom: 1.25rem; padding: 0.85rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; line-height: 1.5;"></div>
 
       <!-- Login Card -->
-      <div style="background: var(--white); border-radius: var(--radius-lg); border: 2px dashed var(--rose); padding: 2.25rem; box-shadow: var(--shadow-card);">
+      <div class="auth-card">
         
+        <!-- Customer vs Admin Atelier Mode Switcher -->
+        <div class="auth-role-tabs" role="tablist">
+          <button type="button" class="auth-role-tab active" id="tab-cust-mode" role="tab" aria-selected="true">
+            <span>🌸</span> Customer Sign In
+          </button>
+          <button type="button" class="auth-role-tab" id="tab-admin-mode" role="tab" aria-selected="false">
+            <span>👑</span> Admin Atelier
+          </button>
+        </div>
+
         <form id="login-form" novalidate>
-          <!-- Email Input -->
+          <!-- Email / Admin ID Input -->
           <div class="form-group">
-            <label for="login-email" class="form-label">Email Address</label>
+            <label for="login-email" class="form-label" id="login-id-label">Email Address</label>
             <input 
-              type="email" 
+              type="text" 
               id="login-email" 
               class="form-control" 
               placeholder="you@example.com" 
-              autocomplete="email"
+              autocomplete="username"
               required
             >
           </div>
@@ -72,9 +82,14 @@
             >
           </div>
 
+          <!-- Helper hint -->
+          <div id="login-hint-text" style="font-size: 0.78rem; color: #8A7670; margin-bottom: 0.85rem;">
+            ✨ Customers: Use your registered email & password.
+          </div>
+
           <!-- Sign In Button -->
-          <button type="submit" id="login-submit-btn" class="btn btn-primary" style="width: 100%; padding: 0.9rem; margin-top: 0.5rem;">
-            Sign In
+          <button type="submit" id="login-submit-btn" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-weight: 600;">
+            Sign In to Customer Account
           </button>
         </form>
 
@@ -82,11 +97,11 @@
         <div id="login-feedback" style="display: none; margin-top: 1rem; padding: 0.85rem; border-radius: var(--radius-sm); font-size: 0.85rem; text-align: center;"></div>
 
         <!-- Footer Card Link to Sign Up -->
-        <div style="text-align: center; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); font-size: 0.9rem;">
+        <div id="signup-prompt-row" style="text-align: center; margin-top: 1.5rem; padding-top: 1.15rem; border-top: 1px solid var(--border-subtle); font-size: 0.88rem;">
           <p style="color: #73615A; margin: 0;">
             New to Swan Studio? 
             <a href="signup.html" style="color: var(--rose-text); font-weight: 600; text-decoration: underline;">
-              Create an account
+              Create customer account
             </a>
           </p>
         </div>
@@ -112,67 +127,113 @@
       const feedback = document.getElementById('login-feedback');
       const alertBox = document.getElementById('auth-alert');
       const forgotLink = document.getElementById('forgot-password-link');
+      const tabCust = document.getElementById('tab-cust-mode');
+      const tabAdmin = document.getElementById('tab-admin-mode');
+      const idInput = document.getElementById('login-email');
+      const idLabel = document.getElementById('login-id-label');
+      const hintText = document.getElementById('login-hint-text');
+      const signupRow = document.getElementById('signup-prompt-row');
+      const pageTitle = document.getElementById('login-title');
+      const pageSubtitle = document.getElementById('login-subtitle');
+
+      let currentMode = 'customer'; // 'customer' or 'admin'
+
+      function setMode(mode) {
+        currentMode = mode;
+        if (mode === 'admin') {
+          tabAdmin.classList.add('active');
+          tabAdmin.setAttribute('aria-selected', 'true');
+          tabCust.classList.remove('active');
+          tabCust.setAttribute('aria-selected', 'false');
+
+          pageTitle.textContent = 'Admin Atelier';
+          pageSubtitle.textContent = 'Enter verified administrator credentials for Swan Studio.';
+          idLabel.textContent = 'Admin ID or Email';
+          idInput.placeholder = 'admin or swanstudio2604@gmail.com';
+          idInput.value = idInput.value || 'swanstudio2604@gmail.com';
+          submitBtn.textContent = 'Enter Admin Atelier 👑';
+          hintText.textContent = '🔒 Administrator credentials verified against secure atelier access.';
+          if (signupRow) signupRow.style.display = 'none';
+        } else {
+          tabCust.classList.add('active');
+          tabCust.setAttribute('aria-selected', 'true');
+          tabAdmin.classList.remove('active');
+          tabAdmin.setAttribute('aria-selected', 'false');
+
+          pageTitle.textContent = 'Welcome Back';
+          pageSubtitle.textContent = 'Sign in to view your orders, payment verification status, and saved details.';
+          idLabel.textContent = 'Email Address';
+          idInput.placeholder = 'you@example.com';
+          submitBtn.textContent = 'Sign In to Customer Account';
+          hintText.textContent = '✨ Customers: Use your registered email & password.';
+          if (signupRow) signupRow.style.display = 'block';
+        }
+      }
+
+      if (tabCust) tabCust.addEventListener('click', () => setMode('customer'));
+      if (tabAdmin) tabAdmin.addEventListener('click', () => setMode('admin'));
 
       // Check reason from URL query
       const urlParams = new URLSearchParams(window.location.search);
       const reason = urlParams.get('reason');
-      if (reason === 'unauthorized_admin') {
+      const adminReq = urlParams.get('admin');
+
+      if (reason === 'unauthorized_admin' || adminReq === '1') {
+        setMode('admin');
         alertBox.style.display = 'block';
         alertBox.style.background = '#FFF0F2';
         alertBox.style.color = '#9A5565';
         alertBox.style.border = '1.5px solid var(--rose)';
-        alertBox.innerHTML = '<strong>Access Restricted:</strong> You attempted to view an administrator area that requires verified admin privileges.';
+        alertBox.innerHTML = '<strong>Administrator Access:</strong> Please sign in with your verified Admin ID & password to continue.';
       } else if (reason === 'login_required') {
         alertBox.style.display = 'block';
         alertBox.style.background = '#FFF8F1';
         alertBox.style.color = 'var(--cocoa)';
         alertBox.style.border = '1px dashed var(--rose)';
-        alertBox.innerHTML = 'Please sign in to view your customer account and orders.';
+        alertBox.innerHTML = 'Please sign in to view your personal customer account and order history.';
       }
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         feedback.style.display = 'none';
 
-        const email = document.getElementById('login-email').value.trim();
+        const identifier = idInput.value.trim();
         const password = document.getElementById('login-password').value;
 
-        if (!email || !password) {
-          showFeedback('Please enter both your email and password.', 'error');
+        if (!identifier || !password) {
+          showFeedback('Please enter both your identifier and password.', 'error');
           return;
         }
 
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Signing in...';
+        submitBtn.textContent = currentMode === 'admin' ? 'Verifying Admin credentials...' : 'Signing in...';
 
         try {
-          const { profile, isDemo } = await AUTH.signIn({ email, password });
+          const { profile, isDemo } = await AUTH.signIn({ email: identifier, password });
           
-          showFeedback(
-            `✓ Sign in successful! Redirecting... ${isDemo ? '(Demo Mode)' : ''}`,
-            'success'
-          );
-
-          setTimeout(() => {
-            // Check if admin
-            if (profile && profile.role === 'admin') {
+          if (profile && profile.role === 'admin') {
+            showFeedback('✓ Admin credentials verified! Opening Atelier Dashboard...', 'success');
+            setTimeout(() => {
               window.location.href = 'admin/index.html';
-            } else {
+            }, 700);
+          } else {
+            showFeedback(`✓ Welcome back, ${profile.full_name || 'Customer'}! Loading your account...`, 'success');
+            setTimeout(() => {
               const redirect = urlParams.get('redirect') || 'account.html';
               window.location.href = redirect;
-            }
-          }, 800);
+            }, 700);
+          }
 
         } catch (err) {
           showFeedback(err.message || 'Invalid credentials. Please try again.', 'error');
           submitBtn.disabled = false;
-          submitBtn.textContent = 'Sign In';
+          submitBtn.textContent = currentMode === 'admin' ? 'Enter Admin Atelier 👑' : 'Sign In to Customer Account';
         }
       });
 
       forgotLink.addEventListener('click', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('login-email').value.trim();
+        const email = idInput.value.trim();
         if (!email) {
           alert('Please enter your email address in the field above first, then click "Forgot password?".');
           return;

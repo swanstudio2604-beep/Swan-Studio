@@ -33,23 +33,68 @@
         <span style="color: var(--rose-text); font-weight: 500;">Account</span>
       </nav>
 
-      <!-- Section Header -->
-      <div class="section-header" style="text-align: left; margin-bottom: var(--space-xl); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
-        <div>
-          <h1 class="section-title">My Account</h1>
-          <p class="section-subtitle">
-            Manage your contact details, track manual UPI payments, and view past orders.
-          </p>
+      <!-- Unauthenticated Visitor Portal (Shown if not signed in) -->
+      <div id="account-unauth-view" style="display: none; max-width: 520px; margin: 1.5rem auto 3.5rem; background: var(--white); border: 2px dashed var(--rose); border-radius: 24px; padding: 2.25rem 1.5rem; box-shadow: var(--shadow-card); text-align: center;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: #FFF0F3; color: var(--rose-text); font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; border: 1.5px dashed var(--rose);">
+          🌸
         </div>
-        <div id="admin-badge-container" style="display: none;">
-          <a href="admin/index.html" class="btn btn-primary btn-sm" style="background: var(--cocoa); border-color: var(--cocoa);">
-            ⚙️ Open Admin Dashboard
+        <h2 style="font-size: clamp(1.6rem, 3.5vw, 2.1rem); margin-bottom: 0.5rem; color: var(--cocoa);">
+          Customer & Atelier Account
+        </h2>
+        <p style="font-size: 0.92rem; color: #73615A; line-height: 1.6; margin-bottom: 1.75rem;">
+          Please sign in to track your handcrafted crochet orders, check manual UPI payment verification status, or manage your saved delivery details.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; max-width: 320px; margin: 0 auto;">
+          <a href="login.html" class="btn btn-primary" style="padding: 0.85rem; font-weight: 600;">
+            Sign In to Your Account
+          </a>
+          <a href="signup.html" class="btn btn-secondary" style="padding: 0.85rem; font-weight: 500;">
+            Create Customer Account
+          </a>
+        </div>
+        <div style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px dashed rgba(199, 131, 145, 0.3); font-size: 0.84rem; color: #8A7670;">
+          👑 Are you the Store Admin? 
+          <a href="login.html?admin=1" style="color: var(--rose-text); font-weight: 600; text-decoration: underline;">
+            Sign in with Admin ID & Password →
           </a>
         </div>
       </div>
 
-      <!-- Account Dashboard Layout -->
-      <div class="account-dashboard-layout">
+      <!-- Authenticated Dashboard View (Shown once profile loaded) -->
+      <div id="account-auth-view" style="display: none;">
+        
+        <!-- Section Header -->
+        <div class="section-header" style="text-align: left; margin-bottom: var(--space-xl); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 class="section-title" id="account-page-title" style="font-size: clamp(1.85rem, 4vw, 2.5rem);">My Account</h1>
+            <p class="section-subtitle" id="account-page-subtitle">
+              Manage your contact details, track manual UPI payments, and view past orders.
+            </p>
+          </div>
+          <div id="admin-badge-container" style="display: none;">
+            <a href="admin/index.html" class="btn btn-primary btn-sm" style="background: var(--cocoa); border-color: var(--cocoa); font-weight: 600;">
+              ⚙️ Open Admin Dashboard
+            </a>
+          </div>
+        </div>
+
+        <!-- Dedicated Administrator Active Banner -->
+        <div id="admin-top-banner" style="display: none; background: linear-gradient(135deg, #FAF5FF 0%, #F5F3FF 100%); border: 1.5px solid #DDD6FE; border-radius: 16px; padding: 1.15rem 1.35rem; margin-bottom: 1.75rem; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 14px rgba(91, 33, 182, 0.06);">
+          <div>
+            <div style="font-weight: 700; color: #5B21B6; font-size: 1.05rem; display: flex; align-items: center; gap: 0.4rem;">
+              <span>👑</span> Atelier Administrator Active (Founder Bhumika Nama)
+            </div>
+            <div style="font-size: 0.84rem; color: #6D28D9; margin-top: 0.2rem;">
+              Viewing storewide customer orders and live manual UPI payment verification queue.
+            </div>
+          </div>
+          <a href="admin/index.html" class="btn btn-primary btn-sm" style="background: #6D28D9; border-color: #5B21B6; font-weight: 600; padding: 0.6rem 1.15rem;">
+            ⚙️ Enter Admin Atelier Dashboard
+          </a>
+        </div>
+
+        <!-- Account Dashboard Layout -->
+        <div class="account-dashboard-layout">
         
         <!-- Sidebar Profile & Navigation Card -->
         <aside class="account-sidebar-card">
@@ -90,7 +135,7 @@
           <!-- Mobile Segmented Navigation Tabs -->
           <div class="account-mobile-tabs" role="tablist">
             <button type="button" class="account-mobile-tab-btn active" id="mob-tab-orders" role="tab" aria-selected="true">
-              <span>📦</span> Orders (<span id="mob-order-count">0</span>)
+              <span>📦</span> Orders&nbsp;(<span id="mob-order-count">0</span>)
             </button>
             <button type="button" class="account-mobile-tab-btn" id="mob-tab-profile" role="tab" aria-selected="false">
               <span>👤</span> Profile Info
@@ -156,9 +201,11 @@
           </section>
         </div>
 
-      </div>
+        </div> <!-- /account-dashboard-layout -->
 
-    </div>
+      </div> <!-- /#account-auth-view -->
+
+    </div> <!-- /.container -->
   </main>
 
   <!-- Edit Profile Modal -->
@@ -220,9 +267,20 @@
   <script src="js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      // Require authenticated user
-      let profile = await AUTH.requireAuth({ redirectUrl: 'login.html' });
-      if (!profile) return;
+      const unauthView = document.getElementById('account-unauth-view');
+      const authView = document.getElementById('account-auth-view');
+      const adminTopBanner = document.getElementById('admin-top-banner');
+
+      // Check authenticated user
+      let profile = await AUTH.getProfile();
+      if (!profile) {
+        if (unauthView) unauthView.style.display = 'block';
+        if (authView) authView.style.display = 'none';
+        return;
+      }
+
+      if (unauthView) unauthView.style.display = 'none';
+      if (authView) authView.style.display = 'block';
 
       const userDisplayName = document.getElementById('user-display-name');
       const userDisplayEmail = document.getElementById('user-display-email');
@@ -234,13 +292,27 @@
       const adminContainer = document.getElementById('admin-badge-container');
       const ordersContainer = document.getElementById('orders-container');
       const orderCountBadge = document.getElementById('order-count-badge');
+      const mobOrderCount = document.getElementById('mob-order-count');
+      const pageTitle = document.getElementById('account-page-title');
+      const pageSubtitle = document.getElementById('account-page-subtitle');
 
       const avatarWrap = document.getElementById('user-avatar-wrap');
 
       function updateProfileUI(p) {
-        userDisplayName.textContent = p.full_name || 'Customer';
+        let displayName = p.full_name;
+        if (!displayName || displayName === 'Demo Customer') {
+          if (p.email && p.email !== 'swanstudio2604@gmail.com') {
+            const rawPart = p.email.split('@')[0].replace(/[._-]/g, ' ');
+            displayName = rawPart.charAt(0).toUpperCase() + rawPart.slice(1);
+          } else if (p.role === 'admin') {
+            displayName = 'Bhumika Nama';
+          } else {
+            displayName = 'Customer';
+          }
+        }
+        userDisplayName.textContent = displayName;
         userDisplayEmail.textContent = p.email || '';
-        profileName.textContent = p.full_name || 'Not provided';
+        profileName.textContent = displayName;
         profilePhone.textContent = p.phone || 'Not provided';
         profileEmail.textContent = p.email || '';
         profileRole.textContent = (p.role || 'customer').toUpperCase();
@@ -252,12 +324,21 @@
         }
 
         if (p.role === 'admin') {
-          roleBadge.textContent = '👑 Admin';
+          roleBadge.textContent = '👑 Atelier Admin';
           roleBadge.style.background = '#F0E5FF';
           roleBadge.style.color = '#5B21B6';
           adminContainer.style.display = 'block';
+          if (adminTopBanner) adminTopBanner.style.display = 'flex';
+          if (pageTitle) pageTitle.textContent = 'Admin Atelier & Orders';
+          if (pageSubtitle) pageSubtitle.textContent = 'Logged in as Founder Bhumika Nama. Viewing storewide customer orders & verification pipeline.';
         } else {
           roleBadge.textContent = 'Customer';
+          roleBadge.style.background = '#FFF4E5';
+          roleBadge.style.color = '#9A6700';
+          adminContainer.style.display = 'none';
+          if (adminTopBanner) adminTopBanner.style.display = 'none';
+          if (pageTitle) pageTitle.textContent = 'My Account';
+          if (pageSubtitle) pageSubtitle.textContent = 'Manage your contact details, track manual UPI payments, and view your personal order history.';
         }
       }
       updateProfileUI(profile);
@@ -285,6 +366,9 @@
               orders = data.map(o => ({
                 orderId: o.id,
                 createdAt: o.created_at,
+                customerEmail: o.customer_email,
+                customerPhone: o.customer_phone,
+                customerName: o.customer_name,
                 subtotal: o.subtotal,
                 discountAmount: o.discount_amount || 0,
                 couponCode: o.coupon_code || null,
@@ -317,15 +401,28 @@
           }
         }
 
+        // SEPARATION: Filter orders for customer vs admin
+        if (profile.role !== 'admin') {
+          const myEmail = (profile.email || '').toLowerCase().trim();
+          const myPhone = (profile.phone || '').trim();
+          orders = orders.filter(o => {
+            const oEmail = (o.customerEmail || '').toLowerCase().trim();
+            const oPhone = (o.customerPhone || '').trim();
+            return (oEmail && oEmail === myEmail) || (myPhone && oPhone && oPhone === myPhone);
+          });
+        }
+
         orderCountBadge.textContent = `${orders.length} order${orders.length === 1 ? '' : 's'}`;
+        if (mobOrderCount) mobOrderCount.textContent = orders.length;
 
         if (orders.length === 0) {
+          const emptyEmail = profile.email ? `under ${profile.email}` : '';
           ordersContainer.innerHTML = `
             <div style="text-align: center; padding: 2.5rem 1rem; background: var(--cream); border-radius: var(--radius-sm); border: 1px dashed var(--border-subtle);">
               <div style="font-size: 2rem; margin-bottom: 0.5rem;">👜</div>
               <h3 style="font-size: 1.15rem; margin-bottom: 0.35rem;">No orders placed yet</h3>
               <p style="font-size: 0.85rem; color: #73615A; margin-bottom: 1rem;">
-                Browse our handmade bouquets, plushies, and bags to place your first order!
+                No orders found ${emptyEmail}. Browse our handmade bouquets, plushies, and bags to place your first order!
               </p>
               <a href="shop.html" class="btn btn-primary btn-sm">Explore Creations</a>
             </div>
@@ -466,7 +563,6 @@
             `;
           }
 
-          let refSection = '';
           let refSection = '';
           if (o.transactionRef) {
             refSection = `

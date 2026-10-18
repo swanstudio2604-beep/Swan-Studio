@@ -3645,3 +3645,143 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
   }
 }
 
+/* ==========================================================================
+   Auth Card & Role Switcher Tokens
+   ========================================================================== */
+.auth-card {
+  background: var(--white);
+  border-radius: 24px;
+  border: 2px dashed var(--rose);
+  padding: 2.25rem 2rem;
+  box-shadow: 0 10px 30px -5px rgba(81, 65, 60, 0.08);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.auth-role-tabs {
+  display: flex;
+  gap: 0.45rem;
+  background: #FAF2EC;
+  padding: 0.35rem;
+  border-radius: 14px;
+  margin-bottom: 1.35rem;
+  border: 1px solid rgba(199, 131, 145, 0.2);
+}
+
+.auth-role-tab {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #73615A;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.auth-role-tab.active {
+  background: #FFFFFF;
+  color: var(--rose-text);
+  box-shadow: 0 2px 8px rgba(107, 76, 70, 0.08);
+}
+
+/* ==========================================================================
+   Comprehensive Mobile & Phone Screen Harmonization (<= 600px & <= 480px)
+   ========================================================================== */
+@media (max-width: 600px) {
+  /* Fluid typography to prevent text blowout on phone displays */
+  h1, .section-title {
+    font-size: clamp(1.75rem, 5vw, 2.1rem) !important;
+    line-height: 1.25 !important;
+    word-break: break-word !important;
+  }
+
+  h2 {
+    font-size: clamp(1.4rem, 4vw, 1.75rem) !important;
+    line-height: 1.3 !important;
+    word-break: break-word !important;
+  }
+
+  .section-subtitle {
+    font-size: 0.86rem !important;
+    line-height: 1.55 !important;
+  }
+
+  .auth-card {
+    padding: 1.5rem 1.15rem !important;
+    border-radius: 18px !important;
+  }
+
+  /* Account Header on Phone */
+  .account-card-header {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.65rem !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .account-card-header h2 {
+    font-size: 1.18rem !important;
+  }
+
+  #order-count-badge {
+    font-size: 0.74rem !important;
+    padding: 0.25rem 0.65rem !important;
+    white-space: nowrap !important;
+  }
+
+  .account-mobile-tabs {
+    padding: 0.3rem 0.5rem !important;
+    gap: 0.35rem !important;
+  }
+
+  .account-mobile-tab-btn {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.78rem !important;
+    min-width: auto !important;
+  }
+
+  .modal-dialog {
+    width: calc(100% - 1.5rem) !important;
+    max-width: 440px !important;
+    margin: 1.5rem auto !important;
+    padding: 1.35rem 1.15rem !important;
+    border-radius: 18px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .acct-proof-actions-row {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .acct-proof-upload-btn,
+  .acct-proof-submit-btn {
+    width: 100% !important;
+    min-height: 44px !important;
+    font-size: 0.84rem !important;
+    padding: 0.65rem 0.85rem !important;
+  }
+
+  .account-order-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+
+  .account-order-badges {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+}
+

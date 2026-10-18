@@ -71,6 +71,74 @@ const AUTH = {
   },
 
   /**
+   * Checks whether the identifier is recognized as an Admin ID
+   */
+  isAdminIdentifier(identifier) {
+    if (!identifier) return false;
+    const clean = String(identifier).trim().toLowerCase();
+    return clean === 'admin' ||
+           clean === 'swanstudio2604@gmail.com' ||
+           clean === 'admin@swanstudio.com' ||
+           clean === 'swanstudio2604' ||
+           clean === 'bhumika';
+  },
+
+  /**
+   * Retrieves all customer accounts stored locally in demo mode
+   */
+  getDemoAccounts() {
+    try {
+      const raw = localStorage.getItem('swan_customer_accounts');
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  },
+
+  /**
+   * Saves or updates a customer account in demo mode
+   */
+  saveDemoAccount(account) {
+    if (!account || !account.email) return;
+    const accounts = this.getDemoAccounts();
+    accounts[account.email.toLowerCase()] = account;
+    localStorage.setItem('swan_customer_accounts', JSON.stringify(accounts));
+  },
+
+  /**
+   * Returns current demo user profile
+   */
+  getDemoUser() {
+    try {
+      const raw = localStorage.getItem('swan_demo_user');
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed.profile || parsed;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Saves updated profile back to demo session and accounts dictionary
+   */
+  saveDemoUser(updatedProfile) {
+    if (!updatedProfile) return;
+    const currentRaw = localStorage.getItem('swan_demo_user');
+    let session = currentRaw ? JSON.parse(currentRaw) : { isDemo: true, user: {} };
+    session.profile = { ...(session.profile || {}), ...updatedProfile };
+    session.user = { id: updatedProfile.id || session.profile.id, email: updatedProfile.email || session.profile.email };
+    localStorage.setItem('swan_demo_user', JSON.stringify(session));
+
+    if (updatedProfile.email && updatedProfile.role !== 'admin') {
+      this.saveDemoAccount({
+        ...updatedProfile,
+        updated_at: new Date().toISOString()
+      });
+    }
+  },
+
+  /**
    * Customer Registration
    * Note: We NEVER pass role: 'admin' here. Role is enforced strictly in database schema.
    */
@@ -88,15 +156,28 @@ const AUTH = {
       throw new Error('Please enter your full name.');
     }
 
+    const cleanEmail = email.trim().toLowerCase();
+    if (this.isAdminIdentifier(cleanEmail)) {
+      throw new Error('This identifier is reserved for the Atelier Administrator. Please sign in via the Admin portal.');
+    }
+
     if (!client) {
-      // Local Demo Mode Simulation
+      // Local Demo Mode Simulation with Persistent Customer Accounts
+      const accounts = this.getDemoAccounts();
+      const existing = accounts[cleanEmail];
       const demoProfile = {
-        id: 'demo-user-' + Date.now(),
-        email: email.trim().toLowerCase(),
+        id: existing ? existing.id : ('cust-' + Date.now()),
+        email: cleanEmail,
         full_name: fullName.trim(),
         phone: phone ? phone.trim() : '',
-        role: 'customer' // Always customer
+        role: 'customer',
+        avatar: existing?.avatar || null,
+        avatar_url: existing?.avatar_url || null,
+        password: password
       };
+
+      this.saveDemoAccount(demoProfile);
+
       const demoSession = {
         user: { id: demoProfile.id, email: demoProfile.email },
         profile: demoProfile,
@@ -108,7 +189,7 @@ const AUTH = {
 
     // Live Supabase Auth SignUp
     const { data, error } = await client.auth.signUp({
-      email: email.trim().toLowerCase(),
+      email: cleanEmail,
       password: password,
       options: {
         data: {
@@ -132,57 +213,72 @@ const AUTH = {
     const client = getSupabaseClient();
 
     if (!email || !password) {
-      throw new Error('Please enter both email and password.');
+      throw new Error('Please enter both identifier (email or admin ID) and password.');
     }
 
-    if (!client) {
-      // Local / GitHub Pages Demo Login Simulation
-      const cleanEmail = email.trim().toLowerCase();
-      const isDemoAdmin = cleanEmail === 'swanstudio2604@gmail.com';
+    const cleanId = email.trim().toLowerCase();
+    const isAdmin = this.isAdminIdentifier(cleanId);
 
-      if (isDemoAdmin) {
-        // Enforce verified admin password (default: Bhumika26##)
-        const storedAdminPassword = localStorage.getItem('swan_admin_password') || 'Bhumika26##';
-        if (password !== storedAdminPassword) {
-          localStorage.removeItem('swan_demo_user');
-          throw new Error('Invalid email or password.');
-        }
-
-        const demoProfile = {
-          id: 'admin-bhumika-1',
-          email: cleanEmail,
-          full_name: 'Bhumika Nama',
-          phone: '9509966512',
-          role: 'admin'
-        };
-        const demoSession = {
-          user: { id: demoProfile.id, email: demoProfile.email },
-          profile: demoProfile,
-          isDemo: true
-        };
-        localStorage.setItem('swan_demo_user', JSON.stringify(demoSession));
-        return { session: demoSession, profile: demoProfile, isDemo: true };
+    // 1. Admin Login Verification (via admin ID or email)
+    if (isAdmin) {
+      const storedAdminPassword = this.getAdminPassword();
+      if (password !== storedAdminPassword) {
+        localStorage.removeItem('swan_demo_user');
+        throw new Error('Invalid Admin credentials. Please check your admin ID and password.');
       }
 
-      // Customer demo login
-      const demoProfile = {
-        id: 'demo-user-1',
-        email: cleanEmail,
-        full_name: 'Demo Customer',
+      const adminProfile = {
+        id: 'admin-bhumika-1',
+        email: 'swanstudio2604@gmail.com',
+        full_name: 'Bhumika Nama',
         phone: '9509966512',
-        role: 'customer'
+        role: 'admin'
       };
+      const adminSession = {
+        user: { id: adminProfile.id, email: adminProfile.email },
+        profile: adminProfile,
+        isDemo: true
+      };
+      localStorage.setItem('swan_demo_user', JSON.stringify(adminSession));
+      return { session: adminSession, profile: adminProfile, isDemo: true };
+    }
+
+    // 2. Customer Demo Mode Fallback
+    if (!client) {
+      const accounts = this.getDemoAccounts();
+      let customerAcc = accounts[cleanId];
+
+      if (customerAcc) {
+        if (customerAcc.password && customerAcc.password !== password) {
+          throw new Error('Incorrect password. Please try again.');
+        }
+      } else {
+        // Derive clean initial name from email
+        const namePart = cleanId.split('@')[0].replace(/[._-]/g, ' ');
+        const derivedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+        customerAcc = {
+          id: 'cust-' + Date.now(),
+          email: cleanId,
+          full_name: derivedName,
+          phone: '',
+          role: 'customer',
+          password: password
+        };
+        this.saveDemoAccount(customerAcc);
+      }
+
       const demoSession = {
-        user: { id: demoProfile.id, email: demoProfile.email },
-        profile: demoProfile,
+        user: { id: customerAcc.id, email: customerAcc.email },
+        profile: customerAcc,
         isDemo: true
       };
       localStorage.setItem('swan_demo_user', JSON.stringify(demoSession));
-      return { session: demoSession, profile: demoProfile, isDemo: true };
+      return { session: demoSession, profile: customerAcc, isDemo: true };
     }
 
+    // 3. Live Supabase Authentication
     const { data, error } = await client.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
+      email: cleanId,
       password: password
     });
 
