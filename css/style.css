@@ -3420,22 +3420,26 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
 
 /* Global Modal System (Customer Account & Storefront) */
 .modal-overlay {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  background: rgba(66, 53, 49, 0.65) !important;
-  backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(66, 53, 49, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.modal-overlay.active {
   display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 99999 !important;
-  padding: 1rem !important;
-  box-sizing: border-box !important;
 }
 
 .modal-dialog {

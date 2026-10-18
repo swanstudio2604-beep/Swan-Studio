@@ -245,7 +245,7 @@
     <div class="modal-dialog" style="max-width: 480px;">
       <div class="modal-header">
         <h2 style="font-size: 1.35rem;">Edit Profile Details</h2>
-        <button class="modal-close-btn" id="modal-close-profile" type="button" onclick="document.getElementById('profile-modal').style.display='none'">&times;</button>
+        <button class="modal-close-btn" id="modal-close-profile" type="button" onclick="document.getElementById('profile-modal').classList.remove('active'); document.getElementById('profile-modal').style.display='none';">&times;</button>
       </div>
 
       <form id="profile-edit-form">
@@ -280,7 +280,7 @@
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
-          <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-profile" onclick="document.getElementById('profile-modal').style.display='none'">Cancel</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-profile" onclick="document.getElementById('profile-modal').classList.remove('active'); document.getElementById('profile-modal').style.display='none';">Cancel</button>
           <button type="submit" class="btn btn-primary btn-sm" id="btn-save-profile">Save Changes</button>
         </div>
       </form>
@@ -882,6 +882,7 @@
           avatarTriggerSub.textContent = 'Click to browse or drag & drop avatar';
           avatarTriggerSub.classList.remove('has-file');
         }
+        modal.classList.add('active');
         modal.style.display = 'flex';
       }
 
@@ -889,7 +890,10 @@
         btn.addEventListener('click', openEditModal);
       });
 
-      function closeModal() { modal.style.display = 'none'; }
+      function closeModal() {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+      }
       if (closeBtn) closeBtn.addEventListener('click', closeModal);
       if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
       modal.addEventListener('click', (e) => {
