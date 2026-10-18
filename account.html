@@ -117,6 +117,16 @@
                 </span>
               </div>
             </div>
+
+            <!-- Quick Action Buttons on Profile Card (Always visible on mobile) -->
+            <div class="account-profile-actions">
+              <button type="button" class="btn btn-secondary btn-sm btn-open-edit-profile" style="padding: 0.42rem 0.85rem; font-size: 0.8rem; font-weight: 600;">
+                ✏️ Edit Details
+              </button>
+              <button type="button" class="btn btn-sm btn-account-logout" onclick="AUTH.signOut()">
+                🚪 Sign Out
+              </button>
+            </div>
           </div>
 
           <!-- Desktop Navigation List -->
@@ -138,19 +148,13 @@
 
         <!-- Main Account Content Area -->
         <div class="account-main-content">
-          <!-- Mobile Segmented Navigation Tabs -->
+          <!-- Mobile Segmented Navigation Tabs (2 Primary Views: Fits 100% On Screen) -->
           <div class="account-mobile-tabs" role="tablist">
             <button type="button" class="account-mobile-tab-btn active" id="mob-tab-orders" role="tab" aria-selected="true">
-              <span>📦</span> Orders&nbsp;(<span id="mob-order-count">0</span>)
+              <span>📦</span> Orders (<span id="mob-order-count">0</span>)
             </button>
             <button type="button" class="account-mobile-tab-btn" id="mob-tab-profile" role="tab" aria-selected="false">
-              <span>👤</span> Profile Info
-            </button>
-            <a href="custom-order.html" class="account-mobile-tab-btn">
-              <span>✨</span> Custom Order
-            </a>
-            <button type="button" class="account-mobile-tab-btn" id="mob-tab-logout" style="color: #BE123C;" onclick="AUTH.signOut()">
-              <span>🚪</span> Sign Out
+              <span>👤</span> Personal Info
             </button>
           </div>
 
@@ -170,6 +174,17 @@
             <div id="orders-container" style="display: flex; flex-direction: column; gap: 1.25rem;">
               <div style="text-align: center; padding: 2rem; color: #8A7670;">Loading your creations...</div>
             </div>
+
+            <!-- Custom Order Prompt Card -->
+            <div style="margin-top: 1.5rem; padding: 1.15rem 1.25rem; background: #FAF6F4; border-radius: 16px; border: 1px dashed var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+              <div>
+                <div style="font-weight: 600; color: var(--cocoa); font-size: 0.95rem;">Looking for a bespoke creation?</div>
+                <div style="font-size: 0.8rem; color: #8A7670;">Customize yarn shades, bouquet size, or personalized gifts.</div>
+              </div>
+              <a href="custom-order.html" class="btn btn-secondary btn-sm" style="font-weight: 600; font-size: 0.82rem; padding: 0.45rem 0.9rem;">
+                ✨ Custom Order Request →
+              </a>
+            </div>
           </section>
 
           <!-- Profile Details Section -->
@@ -181,28 +196,39 @@
                 </h2>
                 <span style="font-size: 0.8rem; color: #8A7670;">Saved shipping address & contact information</span>
               </div>
-              <button id="btn-edit-profile" class="btn btn-secondary btn-sm" style="font-size: 0.82rem; padding: 0.4rem 0.85rem;">
-                ✏️ Edit Details
+              <button type="button" class="btn btn-secondary btn-sm btn-open-edit-profile" id="btn-edit-profile" style="font-size: 0.84rem; padding: 0.45rem 0.9rem; font-weight: 600;">
+                ✏️ Edit Personal Info
               </button>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; font-size: 0.9rem;">
-              <div>
-                <strong style="color: var(--rose-text); display: block; margin-bottom: 0.2rem;">Full Name:</strong>
-                <span id="profile-name" style="color: var(--cocoa); font-weight: 500;">...</span>
+            <!-- Mobile-Safe Detail Cards -->
+            <div class="account-info-grid">
+              <div class="account-info-card">
+                <span class="account-info-label">Full Name</span>
+                <span class="account-info-value" id="profile-name">...</span>
               </div>
-              <div>
-                <strong style="color: var(--rose-text); display: block; margin-bottom: 0.2rem;">Mobile / WhatsApp:</strong>
-                <span id="profile-phone" style="color: var(--cocoa); font-weight: 500;">...</span>
+              <div class="account-info-card">
+                <span class="account-info-label">Mobile / WhatsApp</span>
+                <span class="account-info-value" id="profile-phone">...</span>
               </div>
-              <div>
-                <strong style="color: var(--rose-text); display: block; margin-bottom: 0.2rem;">Email Address:</strong>
-                <span id="profile-email" style="color: var(--cocoa); font-weight: 500; word-break: break-all;">...</span>
+              <div class="account-info-card">
+                <span class="account-info-label">Email Address</span>
+                <span class="account-info-value" id="profile-email">...</span>
               </div>
-              <div>
-                <strong style="color: var(--rose-text); display: block; margin-bottom: 0.2rem;">Account Type:</strong>
-                <span id="profile-role" style="color: var(--cocoa); font-weight: 500;">...</span>
+              <div class="account-info-card">
+                <span class="account-info-label">Account Role</span>
+                <span class="account-info-value" id="profile-role">...</span>
               </div>
+            </div>
+
+            <!-- Dedicated Mobile Action Footer inside Profile View -->
+            <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px dashed rgba(199, 131, 145, 0.25); display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+              <button type="button" class="btn btn-primary btn-sm btn-open-edit-profile" style="flex: 1; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; font-weight: 600;">
+                ✏️ Edit Personal Info
+              </button>
+              <button type="button" class="btn btn-sm btn-account-logout" onclick="AUTH.signOut()" style="min-height: 44px; padding: 0.65rem 1.15rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                🚪 Sign Out
+              </button>
             </div>
           </section>
         </div>
@@ -219,7 +245,7 @@
     <div class="modal-dialog" style="max-width: 480px;">
       <div class="modal-header">
         <h2 style="font-size: 1.35rem;">Edit Profile Details</h2>
-        <button class="modal-close-btn" id="modal-close-profile">&times;</button>
+        <button class="modal-close-btn" id="modal-close-profile" type="button" onclick="document.getElementById('profile-modal').style.display='none'">&times;</button>
       </div>
 
       <form id="profile-edit-form">
@@ -254,7 +280,7 @@
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
-          <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-profile">Cancel</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-profile" onclick="document.getElementById('profile-modal').style.display='none'">Cancel</button>
           <button type="submit" class="btn btn-primary btn-sm" id="btn-save-profile">Save Changes</button>
         </div>
       </form>
@@ -290,10 +316,9 @@
         if (e) e.preventDefault();
         await AUTH.signOut();
       };
-      const logoutBtn = document.getElementById('logout-btn');
-      const mobTabLogout = document.getElementById('mob-tab-logout');
-      if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-      if (mobTabLogout) mobTabLogout.addEventListener('click', handleLogout);
+      document.querySelectorAll('.btn-account-logout, #logout-btn, #mob-tab-logout').forEach(btn => {
+        btn.addEventListener('click', handleLogout);
+      });
 
       // Tab Switching Logic (Mobile & Desktop)
       const mobTabOrders = document.getElementById('mob-tab-orders');
@@ -843,7 +868,8 @@
         });
       }
 
-      editBtn.addEventListener('click', () => {
+      function openEditModal() {
+        if (!profile) return;
         nameInput.value = profile.full_name || '';
         phoneInput.value = profile.phone || '';
         newAvatarBase64 = null;
@@ -857,11 +883,18 @@
           avatarTriggerSub.classList.remove('has-file');
         }
         modal.style.display = 'flex';
+      }
+
+      document.querySelectorAll('.btn-open-edit-profile, #btn-edit-profile').forEach(btn => {
+        btn.addEventListener('click', openEditModal);
       });
 
       function closeModal() { modal.style.display = 'none'; }
-      closeBtn.addEventListener('click', closeModal);
-      cancelBtn.addEventListener('click', closeModal);
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
