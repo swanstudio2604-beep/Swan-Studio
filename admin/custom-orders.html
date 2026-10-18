@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="../css/admin.css?v=m1">
+  <link rel="stylesheet" href="../css/admin.css?v=m2">
 </head>
 <body>
 
@@ -64,7 +64,7 @@
       <!-- Filters Toolbar -->
       <div class="admin-card" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
         <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
-          <div style="display: flex; gap: 0.75rem; flex: 1; min-width: 280px;">
+          <div style="display: flex; gap: 0.75rem; flex: 1; min-width: 280px; flex-wrap: wrap;">
             <input type="text" id="commissions-search" class="form-control" placeholder="Search customer, ref, or keyword..." style="max-width: 320px;">
             <select id="filter-stage" class="form-control" style="max-width: 190px;">
               <option value="">All Stages</option>
@@ -82,6 +82,7 @@
 
       <!-- Commissions Table Card -->
       <div class="admin-card">
+        <div class="table-scroll-hint"><span>👉</span> <em>Swipe horizontally to view quotes, deposit status, color palette & actions</em></div>
         <table class="admin-table">
           <thead>
             <tr>

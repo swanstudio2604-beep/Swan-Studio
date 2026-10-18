@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="../css/admin.css?v=m1">
+  <link rel="stylesheet" href="../css/admin.css?v=m2">
 </head>
 <body>
 
@@ -39,7 +39,7 @@
           class="admin-search-input" 
           placeholder="Filter creation name..."
         >
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
           <button id="tab-all" class="category-pill active">All Inventory</button>
           <button id="tab-low" class="category-pill" style="border-color: #F87171; color: #DC2626;">⚠️ Low Stock (&le; 2)</button>
           <button id="tab-made" class="category-pill">Made to Order</button>
@@ -49,6 +49,7 @@
 
       <!-- Inventory Table Card -->
       <div class="admin-card">
+        <div class="table-scroll-hint"><span>👉</span> <em>Swipe horizontally to view fulfillment types & quick stock actions</em></div>
         <table class="admin-table">
           <thead>
             <tr>
