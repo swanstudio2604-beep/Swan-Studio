@@ -9,6 +9,10 @@ const SWAN_API = {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return 'http://localhost:4000';
     }
+    try {
+      const custom = localStorage.getItem('swan_backend_url');
+      if (custom && custom.trim()) return custom.trim();
+    } catch (e) {}
     return window.SWAN_BACKEND_URL || 'https://swan-studio-api.onrender.com';
   },
 
