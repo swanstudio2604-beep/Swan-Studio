@@ -916,21 +916,24 @@
             updatePayload.avatar_url = newAvatarBase64;
           }
 
-          if (client && profile.id) {
+          if (client && profile.id && !String(profile.id).startsWith('admin-') && !String(profile.id).startsWith('cust-')) {
             const { error } = await client
               .from('profiles')
               .update(updatePayload)
               .eq('id', profile.id);
             if (error) console.warn('Supabase update profile failed:', error);
-          } else {
-            // Update demo storage
-            const demo = AUTH.getDemoUser();
-            if (demo) {
-              demo.full_name = newName;
-              demo.phone = newPhone;
-              if (newAvatarBase64) demo.avatar = newAvatarBase64;
-              AUTH.saveDemoUser(demo);
+          }
+
+          // Always update local cache & demo storage so UI and session stay in sync
+          const demo = AUTH.getDemoUser();
+          if (demo) {
+            demo.full_name = newName;
+            demo.phone = newPhone;
+            if (newAvatarBase64) {
+              demo.avatar = newAvatarBase64;
+              demo.avatar_url = newAvatarBase64;
             }
+            AUTH.saveDemoUser(demo);
           }
 
           profile.full_name = newName;

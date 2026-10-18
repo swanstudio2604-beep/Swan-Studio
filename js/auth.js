@@ -23,10 +23,16 @@ const AUTH = {
 
     try {
       const { data: { session }, error } = await client.auth.getSession();
-      if (error) throw error;
-      return session;
+      if (!error && session) return session;
     } catch (err) {
       console.warn('Session check failed:', err);
+    }
+
+    // Fallback to local session (e.g. Atelier Admin or local demo user)
+    try {
+      const demoUser = localStorage.getItem('swan_demo_user');
+      return demoUser ? JSON.parse(demoUser) : null;
+    } catch {
       return null;
     }
   },
@@ -37,37 +43,46 @@ const AUTH = {
    */
   async getProfile() {
     const client = getSupabaseClient();
-    if (!client) {
-      const demoUser = localStorage.getItem('swan_demo_user');
-      return demoUser ? JSON.parse(demoUser).profile : null;
-    }
 
-    try {
-      const { data: { user }, error: userError } = await client.auth.getUser();
-      if (userError || !user) return null;
+    // 1. Live Supabase session check
+    if (client) {
+      try {
+        const { data: { user }, error: userError } = await client.auth.getUser();
+        if (!userError && user) {
+          const { data: profile, error: profileError } = await client
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
 
-      const { data: profile, error: profileError } = await client
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError) {
-        console.warn('Profile read error:', profileError);
-        return {
-          id: user.id,
-          email: user.email,
-          full_name: user.user_metadata?.full_name || '',
-          phone: user.user_metadata?.phone || '',
-          role: 'customer'
-        };
+          if (profileError || !profile) {
+            return {
+              id: user.id,
+              email: user.email,
+              full_name: user.user_metadata?.full_name || '',
+              phone: user.user_metadata?.phone || '',
+              role: 'customer'
+            };
+          }
+          return profile;
+        }
+      } catch (err) {
+        console.warn('Live getProfile exception, checking local session:', err);
       }
-
-      return profile;
-    } catch (err) {
-      console.error('getProfile exception:', err);
-      return null;
     }
+
+    // 2. Local session fallback (e.g. Admin ID/Password or local demo accounts)
+    try {
+      const demoRaw = localStorage.getItem('swan_demo_user');
+      if (demoRaw) {
+        const parsed = JSON.parse(demoRaw);
+        return parsed.profile || parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse local demo user:', e);
+    }
+
+    return null;
   },
 
   /**
@@ -203,6 +218,27 @@ const AUTH = {
       throw new Error(error.message || 'Unable to create account. Please try again.');
     }
 
+    // Also persist customer profile locally for smooth instant experience
+    const customerProfile = {
+      id: data?.user?.id || ('cust-' + Date.now()),
+      email: cleanEmail,
+      full_name: fullName.trim(),
+      phone: phone ? phone.trim() : '',
+      role: 'customer',
+      password: password
+    };
+    this.saveDemoAccount(customerProfile);
+
+    // If an active session was established, store in swan_demo_user
+    if (data?.session) {
+      const liveSession = {
+        user: { id: customerProfile.id, email: customerProfile.email },
+        profile: customerProfile,
+        isDemo: false
+      };
+      localStorage.setItem('swan_demo_user', JSON.stringify(liveSession));
+    }
+
     return { data, isDemo: false };
   },
 
@@ -277,23 +313,74 @@ const AUTH = {
     }
 
     // 3. Live Supabase Authentication
-    const { data, error } = await client.auth.signInWithPassword({
-      email: cleanId,
-      password: password
-    });
+    try {
+      const { data, error } = await client.auth.signInWithPassword({
+        email: cleanId,
+        password: password
+      });
 
-    if (error) {
-      throw new Error(error.message || 'Invalid email or password.');
+      if (error) {
+        // Fallback: Check local demo accounts
+        const accounts = this.getDemoAccounts();
+        const localAcc = accounts[cleanId];
+        if (localAcc && (!localAcc.password || localAcc.password === password)) {
+          const demoSession = {
+            user: { id: localAcc.id, email: localAcc.email },
+            profile: localAcc,
+            isDemo: true
+          };
+          localStorage.setItem('swan_demo_user', JSON.stringify(demoSession));
+          return { session: demoSession, profile: localAcc, isDemo: true };
+        }
+        throw new Error(error.message || 'Invalid email or password.');
+      }
+
+      // Fetch verified database profile to determine true role
+      let finalProfile = null;
+      try {
+        const { data: profile } = await client
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+        finalProfile = profile;
+      } catch (pe) {
+        console.warn('Could not read profiles row:', pe);
+      }
+
+      if (!finalProfile) {
+        finalProfile = {
+          id: data.user.id,
+          email: data.user.email,
+          full_name: data.user.user_metadata?.full_name || '',
+          phone: data.user.user_metadata?.phone || '',
+          role: 'customer'
+        };
+      }
+
+      const liveSession = {
+        user: { id: finalProfile.id, email: finalProfile.email },
+        profile: finalProfile,
+        isDemo: false
+      };
+      localStorage.setItem('swan_demo_user', JSON.stringify(liveSession));
+
+      return { session: data.session, profile: finalProfile, isDemo: false };
+    } catch (liveErr) {
+      // Fallback: Check local demo accounts before failing
+      const accounts = this.getDemoAccounts();
+      const localAcc = accounts[cleanId];
+      if (localAcc && (!localAcc.password || localAcc.password === password)) {
+        const demoSession = {
+          user: { id: localAcc.id, email: localAcc.email },
+          profile: localAcc,
+          isDemo: true
+        };
+        localStorage.setItem('swan_demo_user', JSON.stringify(demoSession));
+        return { session: demoSession, profile: localAcc, isDemo: true };
+      }
+      throw liveErr;
     }
-
-    // Fetch verified database profile to determine true role
-    const { data: profile } = await client
-      .from('profiles')
-      .select('*')
-      .eq('id', data.user.id)
-      .single();
-
-    return { session: data.session, profile, isDemo: false };
   },
 
   /**
