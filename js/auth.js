@@ -105,7 +105,8 @@ const AUTH = {
            clean === 'swanstudio2604@gmail.com' ||
            clean === 'admin@swanstudio.com' ||
            clean === 'swanstudio2604' ||
-           clean === 'bhumika';
+           clean === 'bhumika' ||
+           clean === 'bhumika nama';
   },
 
   /**
