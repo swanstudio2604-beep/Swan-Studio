@@ -3831,6 +3831,27 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
   box-shadow: 0 10px 30px -5px rgba(81, 65, 60, 0.08);
   box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.5rem 1rem !important;
+    border-radius: 18px !important;
+  }
+
+  .auth-role-tabs {
+    flex-direction: column !important;
+    gap: 0.35rem !important;
+  }
+
+  .auth-role-tab {
+    width: 100% !important;
+    min-height: 44px !important;
+    font-size: 0.88rem !important;
+    padding: 0.65rem 0.75rem !important;
+    box-sizing: border-box !important;
+  }
 }
 
 .auth-role-tabs {
@@ -3841,6 +3862,8 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
   border-radius: 14px;
   margin-bottom: 1.35rem;
   border: 1px solid rgba(199, 131, 145, 0.2);
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .auth-role-tab {
@@ -3848,6 +3871,7 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
   padding: 0.6rem 0.75rem;
   font-size: 0.84rem;
   font-weight: 600;
+  min-height: 44px;
   color: #73615A;
   background: transparent;
   border: none;
@@ -3857,8 +3881,8 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
-  white-space: nowrap;
+  gap: 0.45rem;
+  touch-action: manipulation;
 }
 
 .auth-role-tab.active {
