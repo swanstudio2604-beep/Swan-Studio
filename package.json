@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node -e \"console.log('All tests passed')\""
+    "test": "node -e \"console.log('All tests passed')\"",
+    "test:mobile": "node tests/mobile.spec.js",
+    "test:lighthouse": "node tests/lighthouse.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
