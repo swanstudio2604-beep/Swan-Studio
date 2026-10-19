@@ -45,7 +45,18 @@ function getSupabaseClient() {
  * Fetches products from Supabase with search, category filter, and sorting.
  * If Supabase is not configured yet, seamlessly returns active demo/admin products with full filtering.
  */
-async function fetchProducts({ category = 'all', search = '', sort = 'featured', featuredOnly = false } = {}) {
+function isProductSoldOut(p) {
+  if (!p) return false;
+  if (p.isSoldOut || p.sold_out) return true;
+  // For made-to-order items, show nothing, since they can always be ordered
+  if (p.madeToOrder || p.made_to_order) return false;
+  const stock = (p.stock !== undefined && p.stock !== null) 
+    ? Number(p.stock) 
+    : ((p.stock_quantity !== undefined && p.stock_quantity !== null) ? Number(p.stock_quantity) : 0);
+  return stock <= 0;
+}
+
+async function fetchProducts({ category = 'all', search = '', sort = 'featured', featuredOnly = false, maxPrice = null, hideSoldOut = false } = {}) {
   const client = getSupabaseClient();
   const deletedIds = JSON.parse(localStorage.getItem('swan_deleted_product_ids') || '[]');
   const archivedIds = JSON.parse(localStorage.getItem('swan_archived_product_ids') || '[]');
@@ -96,22 +107,32 @@ async function fetchProducts({ category = 'all', search = '', sort = 'featured',
         (p.tags && p.tags.some(t => t.toLowerCase().includes(q)))
       );
     }
-
-    if (sort === 'price-asc') {
-      list.sort((a, b) => a.price - b.price);
-    } else if (sort === 'price-desc') {
-      list.sort((a, b) => b.price - a.price);
-    } else if (sort === 'name-asc') {
-      list.sort((a, b) => a.name.localeCompare(b.name));
-    } else {
-      // 'featured' sort: Featured products first!
-      list.sort((a, b) => {
-        const featA = Boolean(a.isFeatured) ? 1 : 0;
-        const featB = Boolean(b.isFeatured) ? 1 : 0;
-        if (featB !== featA) return featB - featA;
-        return (b.id || '').localeCompare(a.id || '');
-      });
+    if (maxPrice !== null && !isNaN(Number(maxPrice))) {
+      const limit = Number(maxPrice);
+      list = list.filter(p => p.price <= limit);
     }
+
+    // Optional: Hide sold-out items toggle
+    if (hideSoldOut) {
+      list = list.filter(p => !isProductSoldOut(p));
+    }
+
+    // Always sort sold-out items to the end of the list by default
+    list.sort((a, b) => {
+      const soA = isProductSoldOut(a) ? 1 : 0;
+      const soB = isProductSoldOut(b) ? 1 : 0;
+      if (soA !== soB) return soA - soB;
+
+      if (sort === 'price-asc') return a.price - b.price;
+      if (sort === 'price-desc') return b.price - a.price;
+      if (sort === 'name-asc') return a.name.localeCompare(b.name);
+
+      // 'featured' sort: Featured products first!
+      const featA = Boolean(a.isFeatured) ? 1 : 0;
+      const featB = Boolean(b.isFeatured) ? 1 : 0;
+      if (featB !== featA) return featB - featA;
+      return (b.id || '').localeCompare(a.id || '');
+    });
 
     return {
       isLive: false,
@@ -140,22 +161,16 @@ async function fetchProducts({ category = 'all', search = '', sort = 'featured',
       query = query.ilike('name', `%${search.trim()}%`);
     }
 
-    // Sorting
-    if (sort === 'price-asc') {
-      query = query.order('price', { ascending: true });
-    } else if (sort === 'price-desc') {
-      query = query.order('price', { ascending: false });
-    } else if (sort === 'name-asc') {
-      query = query.order('name', { ascending: true });
-    } else {
-      query = query.order('is_featured', { ascending: false }).order('created_at', { ascending: false });
+    // Price upper limit filter
+    if (maxPrice !== null && !isNaN(Number(maxPrice))) {
+      query = query.lte('price', Number(maxPrice));
     }
 
     const { data, error } = await query;
     if (error) throw error;
 
     // Normalize format and filter out blacklisted local deletions
-    const normalized = (data || [])
+    let normalized = (data || [])
       .filter(p => {
         const pid = String(p.id);
         const pslug = String(p.slug || '');
@@ -176,14 +191,35 @@ async function fetchProducts({ category = 'all', search = '', sort = 'featured',
         materials: p.materials,
         dimensions: p.dimensions,
         colors: p.colors || [],
+        variants: p.variants || [],
         stock: (p.stock_quantity !== undefined && p.stock_quantity !== null) ? parseInt(p.stock_quantity, 10) : 0,
-        madeToOrder: p.made_to_order,
+        madeToOrder: Boolean(p.made_to_order),
         prepTime: p.prep_time,
         badge: p.badge || (p.made_to_order ? 'Made to Order' : 'Ready to Ship'),
         iconType: p.icon_type || 'flower',
         isFeatured: Boolean(p.is_featured),
         isPublished: Boolean(p.is_published)
       }));
+
+    if (hideSoldOut) {
+      normalized = normalized.filter(p => !isProductSoldOut(p));
+    }
+
+    // Always push sold-out items to the end of the list by default
+    normalized.sort((a, b) => {
+      const soA = isProductSoldOut(a) ? 1 : 0;
+      const soB = isProductSoldOut(b) ? 1 : 0;
+      if (soA !== soB) return soA - soB;
+
+      if (sort === 'price-asc') return a.price - b.price;
+      if (sort === 'price-desc') return b.price - a.price;
+      if (sort === 'name-asc') return a.name.localeCompare(b.name);
+
+      const featA = Boolean(a.isFeatured) ? 1 : 0;
+      const featB = Boolean(b.isFeatured) ? 1 : 0;
+      if (featB !== featA) return featB - featA;
+      return (b.id || '').localeCompare(a.id || '');
+    });
 
     return {
       isLive: true,
@@ -217,6 +253,38 @@ async function fetchProducts({ category = 'all', search = '', sort = 'featured',
     if (featuredOnly) {
       list = list.filter(p => Boolean(p.isFeatured));
     }
+    if (category && category !== 'all') {
+      list = list.filter(p => p.category === category || p.categoryId === category);
+    }
+    if (search && search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter(p => 
+        p.name.toLowerCase().includes(q) || 
+        (p.description && p.description.toLowerCase().includes(q)) ||
+        (p.tags && p.tags.some(t => t.toLowerCase().includes(q)))
+      );
+    }
+    if (maxPrice !== null && !isNaN(Number(maxPrice))) {
+      list = list.filter(p => p.price <= Number(maxPrice));
+    }
+    if (hideSoldOut) {
+      list = list.filter(p => !isProductSoldOut(p));
+    }
+
+    list.sort((a, b) => {
+      const soA = isProductSoldOut(a) ? 1 : 0;
+      const soB = isProductSoldOut(b) ? 1 : 0;
+      if (soA !== soB) return soA - soB;
+
+      if (sort === 'price-asc') return a.price - b.price;
+      if (sort === 'price-desc') return b.price - a.price;
+      if (sort === 'name-asc') return a.name.localeCompare(b.name);
+
+      const featA = Boolean(a.isFeatured) ? 1 : 0;
+      const featB = Boolean(b.isFeatured) ? 1 : 0;
+      if (featB !== featA) return featB - featA;
+      return (b.id || '').localeCompare(a.id || '');
+    });
 
     return {
       isLive: false,
@@ -281,7 +349,7 @@ async function fetchProductBySlug(slug) {
       .is('archived_at', null)
       .single();
 
-    if (error || !data) return { isLive: true, data: null };
+    if (error || !data) throw error || new Error('Product not found in Supabase');
 
     const pid = String(data.id);
     if (deletedIds.includes(pid) || deletedIds.includes(data.slug)) return { isLive: true, data: null };
@@ -302,6 +370,7 @@ async function fetchProductBySlug(slug) {
         materials: data.materials,
         dimensions: data.dimensions,
         colors: data.colors || [],
+        variants: data.variants || [],
         stock: (data.stock_quantity !== undefined && data.stock_quantity !== null) ? parseInt(data.stock_quantity, 10) : 0,
         madeToOrder: data.made_to_order,
         prepTime: data.prep_time,

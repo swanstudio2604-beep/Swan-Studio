@@ -50,9 +50,10 @@ const ADMIN = {
       { key: 'payments', label: '💳 Payments (UPI)', href: 'payments.html' },
       { key: 'coupons', label: '🏷️ Coupons', href: 'coupons.html' },
       { key: 'custom-orders', label: '✨ Custom Orders', href: 'custom-orders.html' },
-      { key: 'reviews', label: '💌 Customer Reviews', href: '../reviews.html' },
-      { key: 'content', label: '📝 Website Content & Story', href: 'content.html' },
-      { key: 'settings', label: '⚙️ Store Settings', href: 'content.html' }
+      { key: 'reviews', label: '💌 Customer Reviews', href: 'reviews.html' },
+      { key: 'customers', label: '👥 Customers', href: 'customers.html' },
+      { key: 'content', label: '📝 Website Content', href: 'content.html' },
+      { key: 'settings', label: '⚙️ Store Settings', href: 'settings.html' }
     ];
 
     mount.innerHTML = `
@@ -65,23 +66,33 @@ const ADMIN = {
           <span class="brand-title">Swan Studio</span>
           <span class="brand-badge">👑 Admin Atelier</span>
         </div>
-        <a href="../index.html" class="admin-mobile-store-link" title="Visit Public Storefront">🛍️ Store</a>
+        <div style="display: flex; align-items: center; gap: 0.4rem;">
+          <button type="button" id="admin-mobile-help-btn" class="btn btn-secondary btn-sm" style="padding: 0.35rem 0.6rem; font-size: 0.78rem; min-height: 38px;" title="Screen Help">
+            💡 Help
+          </button>
+          <a href="../index.html" class="admin-mobile-store-link" title="Visit Public Storefront" target="_blank">🛍️ Store</a>
+        </div>
       </header>
 
       <!-- Drawer Backdrop for mobile -->
       <div id="admin-mobile-overlay" class="admin-mobile-overlay"></div>
 
-      <!-- Main Navigation Sidebar -->
+      <!-- Main Navigation Sidebar (Desktop & Mobile Drawer) -->
       <aside class="admin-sidebar" id="admin-sidebar">
         <div class="admin-sidebar-header-row">
-          <div class="admin-sidebar-brand" style="margin-bottom: 0; padding-bottom: 1.25rem;">
+          <div class="admin-sidebar-brand" style="margin-bottom: 0; padding-bottom: 0.85rem;">
             <h2 class="admin-sidebar-title">Swan Studio</h2>
-            <span class="admin-sidebar-badge">👑 Admin Atelier</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.35rem;">
+              <span class="admin-sidebar-badge">👑 Admin Atelier</span>
+              <button type="button" id="admin-sidebar-help-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #FFF; font-size: 0.75rem; border-radius: 999px; padding: 0.2rem 0.55rem; cursor: pointer;">
+                💡 Screen Guide
+              </button>
+            </div>
           </div>
           <button id="admin-sidebar-close-btn" class="admin-sidebar-close" type="button" aria-label="Close navigation menu">✕</button>
         </div>
 
-        <nav aria-label="Admin Navigation" style="margin-top: 1rem; flex: 1;">
+        <nav aria-label="Admin Navigation" style="margin-top: 0.5rem; flex: 1;">
           <ul class="admin-nav">
             ${navItems.map(item => `
               <li>
@@ -98,15 +109,40 @@ const ADMIN = {
             Signed in as:<br>
             <strong style="color: #FFF8F1;">${this.activeProfile.full_name || this.activeProfile.email}</strong>
           </p>
-          <button id="admin-logout-btn" style="color: #E8B7C0; background: none; border: 1px solid rgba(232, 183, 192, 0.4); padding: 0.5rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; width: 100%; text-align: center;">
+          <button id="admin-logout-btn" style="color: #E8B7C0; background: none; border: 1px solid rgba(232, 183, 192, 0.4); padding: 0.5rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; width: 100%; text-align: center; min-height: 44px;">
             🚪 Log Out
           </button>
         </div>
       </aside>
+
+      <!-- Sticky Mobile Bottom Tab Bar (Thumb-Reachable on phones <= 900px) -->
+      <nav class="admin-bottom-tabbar" aria-label="Mobile Navigation">
+        <a href="index.html" class="admin-tabbar-item ${activeKey === 'overview' ? 'active' : ''}">
+          <span class="tab-icon">📊</span>
+          <span class="tab-label">Overview</span>
+        </a>
+        <a href="orders.html" class="admin-tabbar-item ${activeKey === 'orders' ? 'active' : ''}">
+          <span class="tab-icon">🛒</span>
+          <span class="tab-label">Orders</span>
+        </a>
+        <a href="products.html" class="admin-tabbar-item ${activeKey === 'products' ? 'active' : ''}">
+          <span class="tab-icon">🧶</span>
+          <span class="tab-label">Products</span>
+        </a>
+        <a href="custom-orders.html" class="admin-tabbar-item ${activeKey === 'custom-orders' ? 'active' : ''}">
+          <span class="tab-icon">✨</span>
+          <span class="tab-label">Custom</span>
+        </a>
+        <button type="button" class="admin-tabbar-item" id="admin-tabbar-more-btn" aria-label="Open full menu">
+          <span class="tab-icon">☰</span>
+          <span class="tab-label">More</span>
+        </button>
+      </nav>
     `;
 
     // Mobile Drawer Logic
     const toggleBtn = document.getElementById('admin-mobile-menu-toggle');
+    const tabbarMoreBtn = document.getElementById('admin-tabbar-more-btn');
     const closeBtn = document.getElementById('admin-sidebar-close-btn');
     const overlay = document.getElementById('admin-mobile-overlay');
     const sidebar = document.getElementById('admin-sidebar');
@@ -124,6 +160,7 @@ const ADMIN = {
     };
 
     if (toggleBtn) toggleBtn.addEventListener('click', openDrawer);
+    if (tabbarMoreBtn) tabbarMoreBtn.addEventListener('click', openDrawer);
     if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
     if (overlay) overlay.addEventListener('click', closeDrawer);
 
@@ -135,6 +172,13 @@ const ADMIN = {
     document.getElementById('admin-logout-btn').addEventListener('click', async () => {
       await AUTH.signOut();
     });
+
+    // Wire In-App Help Buttons
+    const openHelp = () => this.showHelpModal(activeKey);
+    const mHelp = document.getElementById('admin-mobile-help-btn');
+    const sHelp = document.getElementById('admin-sidebar-help-btn');
+    if (mHelp) mHelp.addEventListener('click', openHelp);
+    if (sHelp) sHelp.addEventListener('click', openHelp);
   },
 
   /**
@@ -683,5 +727,229 @@ const ADMIN = {
     const updated = cats.filter(c => String(c.id) !== targetId);
     localStorage.setItem('swan_admin_categories', JSON.stringify(updated));
     return true;
+  },
+
+  // --------------------------------------------------------------------------
+  // CLIENT-SIDE IMAGE COMPRESSION (For 5-10MB Phone Camera Photos)
+  // --------------------------------------------------------------------------
+  async compressImage(file, { maxWidth = 1200, maxHeight = 1200, quality = 0.82 } = {}) {
+    if (!file || !file.type.startsWith('image/')) {
+      throw new Error('Please select a valid photo file (JPG, PNG, or WebP).');
+    }
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('Failed to read image file.'));
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('Failed to decode image data.'));
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Compress to JPEG/WebP
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          const compressedBytes = Math.round((dataUrl.length - 22) * 0.75);
+
+          resolve({
+            dataUrl,
+            width,
+            height,
+            name: file.name,
+            originalSize: file.size,
+            compressedSize: compressedBytes,
+            ratio: Math.round((1 - compressedBytes / file.size) * 100)
+          });
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  },
+
+  // --------------------------------------------------------------------------
+  // ORDER CSV EXPORT (Excel / Spreadsheet Compatible)
+  // --------------------------------------------------------------------------
+  exportOrdersCSV(orders) {
+    if (!orders || orders.length === 0) {
+      this.showToast('No orders available to export.', 'warning');
+      return;
+    }
+
+    const headers = ['Order Ref', 'Date', 'Customer Name', 'Phone', 'Email', 'Shipping Address', 'Items Summary', 'Total Amount (₹)', 'Payment Status', 'Fulfillment Stage', 'UPI UTR', 'Courier', 'Tracking Number', 'Notes'];
+
+    const rows = orders.map(o => {
+      const itemsText = (o.items || []).map(i => `${i.quantity}x ${i.name}`).join('; ');
+      const dateText = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN') : '';
+      return [
+        o.orderId || '',
+        dateText,
+        o.customerName || '',
+        o.customerPhone || '',
+        o.customerEmail || '',
+        o.shippingAddress || '',
+        itemsText,
+        o.totalAmount || 0,
+        o.paymentStatus || '',
+        o.status || '',
+        o.utr || '',
+        o.courier || '',
+        o.trackingNumber || '',
+        o.notes || ''
+      ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(',');
+    });
+
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `swan-studio-orders-${Date.now()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    this.showToast('✓ Orders exported to CSV spreadsheet!');
+  },
+
+  // --------------------------------------------------------------------------
+  // IN-APP SCREEN HELP MODAL (Plain Language Guide for Bhumika)
+  // --------------------------------------------------------------------------
+  showHelpModal(screenKey) {
+    let modal = document.getElementById('admin-help-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'admin-help-modal';
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-dialog" style="max-width: 520px;">
+          <div class="modal-header">
+            <h2 id="help-modal-title" style="font-size: 1.35rem; color: var(--cocoa); display: flex; align-items: center; gap: 0.5rem;">
+              <span>💡</span> <span id="help-title-text">Screen Guide</span>
+            </h2>
+            <button class="modal-close-btn" id="help-modal-close">&times;</button>
+          </div>
+          <div id="help-modal-body" style="font-size: 0.9rem; color: var(--cocoa); line-height: 1.6; padding: 0.5rem 0 1rem;">
+            <!-- Injected dynamically -->
+          </div>
+          <div style="display: flex; justify-content: flex-end; padding-top: 0.75rem; border-top: 1px solid var(--admin-border);">
+            <button type="button" class="btn btn-primary btn-sm" id="help-modal-done" style="min-height: 44px; padding: 0.5rem 1.25rem;">
+              Got it, thanks!
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      const closeModal = () => { modal.style.display = 'none'; };
+      document.getElementById('help-modal-close').addEventListener('click', closeModal);
+      document.getElementById('help-modal-done').addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+    }
+
+    const helpContents = {
+      overview: {
+        title: 'Atelier Overview Guide',
+        html: `
+          <p><strong>Welcome, Bhumika!</strong> Here is how to check your shop at a glance:</p>
+          <ul style="padding-left: 1.25rem; margin-top: 0.5rem;">
+            <li><strong>Verified Revenue:</strong> Shows total money received from verified paid orders.</li>
+            <li><strong>Awaiting Verification:</strong> Shows customers who paid via UPI and entered their UTR number. Tap to verify.</li>
+            <li><strong>Awaiting Processing:</strong> Confirmed orders ready for you to crochet loop-by-loop.</li>
+            <li><strong>Low Stock:</strong> Warns you when an item has 2 or fewer units left in inventory.</li>
+          </ul>
+        `
+      },
+      products: {
+        title: 'Creations & Products Guide',
+        html: `
+          <p><strong>Managing your catalog on mobile:</strong></p>
+          <ul style="padding-left: 1.25rem; margin-top: 0.5rem;">
+            <li><strong>Adding Photos:</strong> Take photos straight from your phone camera or gallery! Swan Studio automatically compresses large 5–10MB phone pictures so your pages load fast for buyers.</li>
+            <li><strong>Stock & Sold Out:</strong> Tap "Sold Out" to mark out of stock instantly. Or adjust stock (+/-) right on each card.</li>
+            <li><strong>Hide/Publish:</strong> Toggle "Published" to hide an unfinished draft from public view.</li>
+          </ul>
+        `
+      },
+      orders: {
+        title: 'Customer Orders Guide',
+        html: `
+          <p><strong>Fulfilling orders loop-by-loop:</strong></p>
+          <ul style="padding-left: 1.25rem; margin-top: 0.5rem;">
+            <li><strong>Fulfillment Stages:</strong> Update status from Pending &rarr; Confirmed &rarr; Preparing (crocheting) &rarr; Dispatched (with tracking) &rarr; Delivered.</li>
+            <li><strong>1-Tap WhatsApp:</strong> Tap "💬 WhatsApp" to open WhatsApp with a ready message containing their tracking number!</li>
+            <li><strong>Export CSV:</strong> Tap "📥 Export CSV" to download an Excel-friendly list of orders for courier booking.</li>
+          </ul>
+        `
+      },
+      'custom-orders': {
+        title: 'Custom Commissions Guide',
+        html: `
+          <p><strong>Handling custom crochet requests:</strong></p>
+          <ul style="padding-left: 1.25rem; margin-top: 0.5rem;">
+            <li>Review the customer's idea, reference images, desired colors, and deadline.</li>
+            <li>Update the stage to "Quoted" and enter your quoted price in ₹.</li>
+            <li>Tap "💬 WhatsApp" to share the quote directly with the customer.</li>
+          </ul>
+        `
+      },
+      inventory: {
+        title: 'Quick Inventory Guide',
+        html: `
+          <p>Tap <strong>+</strong> or <strong>-</strong> next to any creation to quickly increment or decrement your available stock. Tap "Mark Sold Out" if you run out of yarn.</p>
+        `
+      },
+      reviews: {
+        title: 'Customer Reviews Guide',
+        html: `
+          <p><strong>Keeping your store authentic:</strong></p>
+          <ul style="padding-left: 1.25rem; margin-top: 0.5rem;">
+            <li>New customer reviews appear under <strong>⏳ Pending</strong>.</li>
+            <li>Tap <strong>✓ Approve & Publish</strong> to make a genuine review live on your public store.</li>
+            <li>Tap <strong>🚫 Hide</strong> if you want to take a review down.</li>
+          </ul>
+        `
+      },
+      customers: {
+        title: 'Customer Directory Guide',
+        html: `
+          <p>Your directory of gift buyers across India. Tap <strong>💬 WhatsApp</strong> or <strong>📞 Call</strong> to speak directly with the customer, or <strong>View Orders</strong> to see their full purchase history.</p>
+        `
+      },
+      settings: {
+        title: 'Store Settings Guide',
+        html: `
+          <p>Update your primary UPI ID (e.g. <code>9509966512@fam</code>), WhatsApp number, delivery fees, and change your administrator password securely.</p>
+        `
+      }
+    };
+
+    const info = helpContents[screenKey] || {
+      title: 'Admin Atelier Guide',
+      html: '<p>Manage your handmade crochet studio smoothly from your phone.</p>'
+    };
+
+    document.getElementById('help-title-text').textContent = info.title;
+    document.getElementById('help-modal-body').innerHTML = info.html;
+    modal.style.display = 'flex';
   }
 };

@@ -1,7 +1,6 @@
 /**
- * SWAN STUDIO — Demonstration Product Catalog (Phase 1 Mockup)
- * NOTE: This is local demo data for Phase 1 layout testing only.
- * In Phase 2, this will be replaced with real Supabase database queries.
+ * SWAN STUDIO — Handcrafted Product Catalog
+ * Brand: Swan Studio | Founder: Bhumika Nama (Jaipur, India)
  */
 
 const DEMO_PRODUCTS = [
@@ -13,17 +12,22 @@ const DEMO_PRODUCTS = [
     categoryName: 'Floral Bouquets',
     price: 899,
     salePrice: 1099,
-    rating: 'Sample Item',
     stock: 5,
     madeToOrder: true,
     prepTime: '2-4 business days',
     materials: '100% Milk Cotton Yarn, Floral Wire, Kraft Paper Wrap',
     dimensions: 'Approx. 28 cm height, 18 cm diameter',
     colors: ['Warm Yellow & Cream', 'Pastel Pink & White', 'Lavender & White'],
-    description: 'An everlasting bouquet of handcrafted crochet daisies that brings warmth to any room without ever wilting. Each petal is individually looped and assembled with floral wire for flexible arrangement. Hand-tied in artisan craft wrap with a dusty-rose ribbon.',
-    badge: 'Bestseller Sample',
-    tags: ['bouquet', 'flower', 'daisy', 'birthday', 'gift', 'everlasting'],
+    variants: [
+      { name: 'Warm Yellow & Cream', inStock: true },
+      { name: 'Pastel Pink & White', inStock: true },
+      { name: 'Lavender & White', inStock: false }
+    ],
+    description: 'An everlasting bouquet of handcrafted crochet daisies and roses that brings warmth to any room without ever wilting. Each petal is individually looped and assembled with floral wire for flexible arrangement. Hand-tied in artisan craft wrap with a dusty-rose ribbon.',
+    badge: 'Popular Choice',
+    tags: ['bouquet', 'flower', 'daisy', 'birthday', 'gift', 'everlasting', 'anniversary'],
     iconType: 'flower',
+    imageUrl: 'assets/images/hero-bouquet.webp',
     isFeatured: true,
     isPublished: true
   },
@@ -35,16 +39,17 @@ const DEMO_PRODUCTS = [
     categoryName: 'Bags & Totes',
     price: 1249,
     salePrice: null,
-    stock: 3,
-    madeToOrder: true,
-    prepTime: '4-6 business days',
+    stock: 2,
+    madeToOrder: false,
+    prepTime: 'Ready to ship',
     materials: 'Sturdy Cotton Yarn with reinforced fabric lining and magnetic clasp',
     dimensions: '32 cm x 35 cm with 25 cm strap drop',
     colors: ['Pastel Patchwork (Cream, Blush, Sage, Cocoa)'],
-    description: 'A charming, bohemian granny square shoulder bag hand-stitched with 13 unique floral blocks. Features reinforced double handles to hold your daily essentials with ease, plus a soft interior lining.',
+    description: 'A charming bohemian granny square shoulder bag hand-stitched with 13 unique floral blocks. Features reinforced double handles to hold your daily essentials with ease, plus a soft interior lining.',
     badge: 'Artisan Pick',
     tags: ['bag', 'tote', 'granny square', 'shoulder bag', 'fashion'],
     iconType: 'bag',
+    imageUrl: 'assets/images/product-tote.webp',
     isFeatured: true,
     isPublished: true
   },
@@ -66,6 +71,7 @@ const DEMO_PRODUCTS = [
     badge: 'Ready to Ship',
     tags: ['plushie', 'bunny', 'amigurumi', 'toy', 'gift', 'birthday'],
     iconType: 'plushie',
+    imageUrl: 'assets/images/product-bunny.webp',
     isFeatured: true,
     isPublished: true
   },
@@ -87,13 +93,14 @@ const DEMO_PRODUCTS = [
     badge: 'Under ₹400',
     tags: ['bookmark', 'accessory', 'keychain', 'lavender', 'budget', 'gift'],
     iconType: 'accessory',
+    imageUrl: 'assets/images/maker-artisan.webp',
     isFeatured: true,
     isPublished: true
   },
   {
     id: 'prod-005',
     slug: 'eternal-tulip-pot',
-    name: 'Single Bloom Eternal Tulip in Mini Pot',
+    name: 'Single Bloom Eternal Tulip in Handcrafted Miniature Wooden Pot Base',
     category: 'bouquets',
     categoryName: 'Floral Bouquets',
     price: 449,
@@ -106,8 +113,9 @@ const DEMO_PRODUCTS = [
     colors: ['Dutch Red', 'Pastel Pink', 'Creamy Peach', 'Sunny Yellow'],
     description: 'A desktop crochet tulip planted securely in a miniature hand-wrapped pot. Adds a cheerful, maintenance-free splash of floral aesthetic to your study table or windowsill.',
     badge: 'Desktop Decor',
-    tags: ['tulip', 'flower', 'pot', 'desk', 'decor', 'budget'],
+    tags: ['tulip', 'flower', 'pot', 'desk', 'decor', 'budget', 'gift'],
     iconType: 'flower',
+    imageUrl: 'assets/images/hero-bouquet-sm.webp',
     isFeatured: false,
     isPublished: true
   },
@@ -119,16 +127,17 @@ const DEMO_PRODUCTS = [
     categoryName: 'Bags & Totes',
     price: 999,
     salePrice: 1199,
-    stock: 4,
-    madeToOrder: true,
-    prepTime: '3-5 business days',
+    stock: 0,
+    madeToOrder: false,
+    prepTime: 'Ready to ship',
     materials: 'T-Shirt Yarn & Cotton Cord with antique brass chain strap',
     dimensions: '24 cm x 15 cm x 5 cm',
     colors: ['Blush Pink', 'Warm Cocoa', 'Off-White'],
     description: 'A tactile, structured evening clutch showcasing delicate shell stitches and an optional detachable chain strap. Holds your phone, keys, and lip balm with vintage elegance.',
-    badge: 'Limited Run',
+    badge: 'Evening Edit',
     tags: ['clutch', 'bag', 'shell stitch', 'evening', 'party'],
     iconType: 'bag',
+    imageUrl: 'assets/images/product-tote-sm.webp',
     isFeatured: false,
     isPublished: true
   },
@@ -147,9 +156,10 @@ const DEMO_PRODUCTS = [
     dimensions: '9 cm x 8 cm',
     colors: ['Sage Green with White Daisy'],
     description: 'A charming little round frog wearing a tiny removable crochet daisy on its head. A delightful desk buddy and conversation starter.',
-    badge: 'Cute Pick',
+    badge: 'Under ₹500',
     tags: ['frog', 'plushie', 'amigurumi', 'cute', 'birthday', 'gift'],
     iconType: 'plushie',
+    imageUrl: 'assets/images/product-bunny-sm.webp',
     isFeatured: false,
     isPublished: true
   },
@@ -168,15 +178,15 @@ const DEMO_PRODUCTS = [
     dimensions: 'Letter height: 7 cm',
     colors: ['Any Custom Letter & Color on request'],
     description: 'Custom-made crochet initial keychains personalized with your chosen letter and color palette. A bespoke, thoughtful keepsake for birthdays or return gifts.',
-    badge: 'Customizable',
+    badge: 'Personalized',
     tags: ['keychain', 'monogram', 'custom', 'personalized', 'budget', 'gift'],
     iconType: 'accessory',
+    imageUrl: 'assets/images/maker-artisan-sm.webp',
     isFeatured: false,
     isPublished: true
   }
 ];
 
-// Helper functions for Phase 1 Demo
 function getDemoProducts() {
   return [...DEMO_PRODUCTS];
 }

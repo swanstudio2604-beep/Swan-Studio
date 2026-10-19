@@ -4,7 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Shopping Bag — Swan Studio | Handmade Crochet</title>
-  <meta name="description" content="Review items in your shopping bag. Handcrafted crochet creations from Swan Studio by Bhumika Nama.">
+  <meta name="description" content="Review items in your shopping bag. Handcrafted crochet creations from Swan Studio by Bhumika Nama in Jaipur.">
+  <link rel="canonical" href="https://swan-studio.onrender.com/cart.html">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="shortcut icon" href="favicon.ico">
+
+  <!-- OpenGraph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://swan-studio.onrender.com/cart.html">
+  <meta property="og:title" content="Your Shopping Bag — Swan Studio">
+  <meta property="og:description" content="Review items in your shopping bag. Handcrafted crochet creations from Swan Studio by Bhumika Nama.">
+  <meta property="og:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Your Shopping Bag — Swan Studio">
+  <meta name="twitter:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
   
   <!-- Google Fonts: Cormorant Garamond & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -287,28 +302,28 @@
 
           if (item.isOutOfStock) {
             return `
-              <div class="cart-item-out-of-stock" style="display: flex; gap: 1.25rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding: 1rem; margin-bottom: 0.5rem;" data-index="${index}">
-                <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #FEE2E2; border: 1px dashed #EF4444; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
-                  🚫
+              <div class="cart-item-sold-out" style="display: flex; gap: 1.25rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding: 1rem; margin-bottom: 0.5rem;" data-index="${index}">
+                <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #F3EAE6; border: 1px solid rgba(115, 97, 90, 0.2); display: flex; align-items: center; justify-content: center; color: #73615A; font-size: 0.76rem; font-weight: 600; text-transform: uppercase;">
+                  Sold out
                 </div>
                 <div style="flex: 1;">
                   <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                    <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">
                       <a href="product.html?slug=${item.slug || ''}" style="color: var(--cocoa);">${item.name}</a>
                     </h3>
-                    <span class="badge-out-of-stock" style="padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem;">🚫 Out of Stock</span>
+                    <span class="sold-out-pill">Sold out</span>
                   </div>
-                  <p style="font-size: 0.82rem; color: #991B1B; font-weight: 500; margin-bottom: 0.4rem;">
-                    This creation is out of stock. Please remove it from your bag to proceed with checkout.
+                  <p style="font-size: 0.82rem; color: #73615A; margin-bottom: 0.4rem;">
+                    This creation is sold out. Please remove it from your bag to proceed with checkout.
                   </p>
                   <div style="display: flex; align-items: center; gap: 1rem;">
-                    <button class="btn-cart-remove" data-index="${index}" style="font-size: 0.85rem; color: #991B1B; font-weight: 600; text-decoration: underline; background: none; border: none; cursor: pointer;">
-                      ✕ Remove from Bag
+                    <button class="btn-cart-remove" data-index="${index}" style="font-size: 0.84rem; color: var(--rose-text); font-weight: 600; text-decoration: underline; background: none; border: none; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center;">
+                      Remove from Bag
                     </button>
                   </div>
                 </div>
                 <div style="text-align: right; min-width: 80px;">
-                  <span style="font-size: 1.1rem; font-weight: 600; color: #991B1B;">
+                  <span style="font-size: 1.05rem; font-weight: 500; color: #8A7670;">
                     ₹${lineTotal.toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -318,23 +333,23 @@
 
           if (item.isUnavailable) {
             return `
-              <div class="cart-item-out-of-stock" style="display: flex; gap: 1.25rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding: 1rem; margin-bottom: 0.5rem;" data-index="${index}">
-                <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #F3F4F6; border: 1px dashed #9CA3AF; display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
-                  ⚠️
+              <div class="cart-item-sold-out" style="display: flex; gap: 1.25rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding: 1rem; margin-bottom: 0.5rem;" data-index="${index}">
+                <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #F3EAE6; border: 1px solid rgba(115, 97, 90, 0.2); display: flex; align-items: center; justify-content: center; color: #73615A; font-size: 0.72rem; font-weight: 600; text-transform: uppercase;">
+                  Unavailable
                 </div>
                 <div style="flex: 1;">
                   <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                    <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem; color: #6B7280;">
+                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem; color: #6B7280;">
                       ${item.name}
                     </h3>
-                    <span style="background: #4B5563; color: #FFF; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.72rem;">⚠️ Unavailable / Draft</span>
+                    <span class="sold-out-pill" style="font-size: 0.7rem;">Unavailable</span>
                   </div>
-                  <p style="font-size: 0.82rem; color: #6B7280; margin-bottom: 0.4rem;">
+                  <p style="font-size: 0.82rem; color: #73615A; margin-bottom: 0.4rem;">
                     This creation is no longer available in the store. Please remove it from your bag.
                   </p>
                   <div style="display: flex; align-items: center; gap: 1rem;">
-                    <button class="btn-cart-remove" data-index="${index}" style="font-size: 0.85rem; color: #991B1B; font-weight: 600; text-decoration: underline; background: none; border: none; cursor: pointer;">
-                      ✕ Remove from Bag
+                    <button class="btn-cart-remove" data-index="${index}" style="font-size: 0.84rem; color: var(--rose-text); font-weight: 600; text-decoration: underline; background: none; border: none; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center;">
+                      Remove from Bag
                     </button>
                   </div>
                 </div>
@@ -380,11 +395,8 @@
         }).join('');
 
         const warningBanner = hasBlockedCartItems ? `
-          <div class="out-of-stock-box" style="margin-bottom: 1.25rem;">
-            <span style="font-size: 1.35rem;">⚠️</span>
-            <div>
-              <strong>Action Required:</strong> ${blockedItemsCount} creation${blockedItemsCount > 1 ? 's are' : ' is'} out of stock or no longer available. Please remove ${blockedItemsCount > 1 ? 'them' : 'it'} from your bag to proceed with checkout.
-            </div>
+          <div style="background: #FAF7F5; border: 1px solid rgba(115, 97, 90, 0.25); border-radius: var(--radius-sm); padding: 0.85rem 1rem; color: var(--cocoa); font-size: 0.88rem; margin-bottom: 1.25rem;">
+            <strong>Notice:</strong> ${blockedItemsCount} creation${blockedItemsCount > 1 ? 's are' : ' is'} sold out or unavailable. Please remove ${blockedItemsCount > 1 ? 'them' : 'it'} from your bag to proceed with checkout.
           </div>
         ` : '';
 
@@ -393,11 +405,11 @@
         // Button state
         if (hasBlockedCartItems) {
           checkoutBtn.disabled = true;
-          checkoutBtn.style.opacity = '0.6';
+          checkoutBtn.style.opacity = '0.7';
           checkoutBtn.style.cursor = 'not-allowed';
-          checkoutBtn.style.background = '#991B1B';
-          checkoutBtn.style.borderColor = '#991B1B';
-          checkoutBtn.textContent = '🚫 Remove Out of Stock Items to Checkout';
+          checkoutBtn.style.background = '#8A7670';
+          checkoutBtn.style.borderColor = '#8A7670';
+          checkoutBtn.textContent = 'Remove Sold Out Items to Checkout';
         } else {
           checkoutBtn.disabled = false;
           checkoutBtn.style.opacity = '1';
@@ -542,7 +554,7 @@
 
       checkoutBtn.addEventListener('click', () => {
         if (hasBlockedCartItems) {
-          alert('Please remove out of stock or unavailable creations from your bag before proceeding to checkout.');
+          alert('Please remove sold out creations from your bag before proceeding to checkout.');
           return;
         }
         const cart = getCartItems();

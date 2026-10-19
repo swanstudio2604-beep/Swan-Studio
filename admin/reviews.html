@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Customer Reviews Moderation — Swan Studio Admin Atelier</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css?v=m3">
+</head>
+<body>
+
+  <!-- Admin Application Wrapper -->
+  <div class="admin-container" id="admin-app" style="display: none;">
+    
+    <!-- Sidebar Mount (Injected by admin-shared.js) -->
+    <div id="admin-sidebar-mount"></div>
+
+    <!-- Main Workspace -->
+    <main class="admin-main">
+      <div class="admin-header-row">
+        <div>
+          <h1 class="admin-page-title">Customer Reviews Moderation</h1>
+          <p class="admin-page-subtitle">
+            Approve genuine love notes before they appear on the public storefront. No fake reviews can be created from admin.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <a href="../reviews.html" target="_blank" class="btn btn-secondary btn-sm">
+            👁️ View Public Wall
+          </a>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card" style="border-left: 4px solid #D97706;">
+          <div class="admin-stat-label">Pending Approval</div>
+          <div class="admin-stat-value" id="stat-pending-reviews" style="color: #D97706;">0</div>
+          <div class="admin-stat-meta">Awaiting your approval</div>
+        </div>
+
+        <div class="admin-stat-card" style="border-left: 4px solid #16A34A;">
+          <div class="admin-stat-label">Approved & Public</div>
+          <div class="admin-stat-value" id="stat-approved-reviews" style="color: #16A34A;">0</div>
+          <div class="admin-stat-meta">Live on public shop</div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-label">Average Rating</div>
+          <div class="admin-stat-value" id="stat-avg-rating">5.0 ★</div>
+          <div class="admin-stat-meta">From verified buyers</div>
+        </div>
+      </div>
+
+      <!-- Moderation Filter Tabs -->
+      <div class="admin-toolbar" style="flex-wrap: wrap; gap: 0.75rem;">
+        <input 
+          type="search" 
+          id="review-search" 
+          class="admin-search-input" 
+          placeholder="Search by buyer name, city, comment..."
+          style="max-width: 320px;"
+        >
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+          <button id="tab-all-reviews" class="category-pill active">All (<span id="count-all">0</span>)</button>
+          <button id="tab-pending-reviews" class="category-pill" style="border-color: #FCD34D; color: #B45309;">⏳ Pending (<span id="count-pending">0</span>)</button>
+          <button id="tab-approved-reviews" class="category-pill" style="border-color: #86EFAC; color: #16A34A;">🟢 Approved (<span id="count-approved">0</span>)</button>
+          <button id="tab-hidden-reviews" class="category-pill">⚪ Hidden (<span id="count-hidden">0</span>)</button>
+        </div>
+      </div>
+
+      <!-- Notice: Integrity Rule -->
+      <div style="background: #FFF9F7; border: 1px dashed var(--rose); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1.5rem; font-size: 0.84rem; color: var(--cocoa); display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 1.25rem;">🔒</span>
+        <div>
+          <strong>Strict Store Integrity Rule:</strong> Admin cannot manufacture or create fake customer reviews. Only genuine customer submissions via the verified purchase flow or public wall appear here for your moderation.
+        </div>
+      </div>
+
+      <!-- Reviews Feed / Stacked Cards Container -->
+      <div id="reviews-list-container" class="admin-stacked-cards" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="text-align: center; padding: 2.5rem; color: #8A7670;">Loading customer reviews...</div>
+      </div>
+
+      <!-- Footer Mount -->
+      <div id="admin-footer-mount"></div>
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/products-demo.js"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin/admin-shared.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const authorized = await ADMIN.init('reviews');
+      if (!authorized) return;
+
+      const listContainer = document.getElementById('reviews-list-container');
+      const searchInput = document.getElementById('review-search');
+      const tabAll = document.getElementById('tab-all-reviews');
+      const tabPending = document.getElementById('tab-pending-reviews');
+      const tabApproved = document.getElementById('tab-approved-reviews');
+      const tabHidden = document.getElementById('tab-hidden-reviews');
+
+      let currentFilter = 'all';
+      let allReviews = [];
+
+      // Initial Default Reviews for Swan Studio (stored in localStorage for demo resilience)
+      const DEFAULT_REVIEWS = [
+        {
+          id: 'rev-101',
+          authorName: 'Sneha Kapur',
+          authorCity: 'Jaipur',
+          rating: 5,
+          title: 'Surpassed all expectations!',
+          comment: 'Ordered the Daisy Bouquet for my sister’s birthday in Vaishali Nagar. The yellow centers and crocheted stems are incredibly sturdy and lifelike. Bhumika even wrote a sweet handwritten note.',
+          productName: 'Daisy Delight Crochet Bouquet',
+          status: 'APPROVED',
+          verifiedPurchase: true,
+          createdAt: new Date(Date.now() - 3600000 * 24 * 3).toISOString()
+        },
+        {
+          id: 'rev-102',
+          authorName: 'Meera Iyer',
+          authorCity: 'Mumbai',
+          rating: 5,
+          title: 'Perfection in every loop',
+          comment: 'The pastel tote bag turned out so soft and spacious. It fits my diary, phone, and kindle effortlessly. Truly made with love!',
+          productName: 'Pastel Granny Square Tote Bag',
+          status: 'APPROVED',
+          verifiedPurchase: true,
+          createdAt: new Date(Date.now() - 3600000 * 24 * 7).toISOString()
+        },
+        {
+          id: 'rev-103',
+          authorName: 'Divya Nair',
+          authorCity: 'Bengaluru',
+          rating: 5,
+          title: 'Adorably soft amigurumi bunny',
+          comment: 'Got this bunny for my niece and she refuses to sleep without it! High quality yarn that does not fray.',
+          productName: 'Sleepy Bunny Amigurumi Plushie',
+          status: 'APPROVED',
+          verifiedPurchase: true,
+          createdAt: new Date(Date.now() - 3600000 * 24 * 12).toISOString()
+        },
+        {
+          id: 'rev-104',
+          authorName: 'Aarav Singhania',
+          authorCity: 'Delhi',
+          rating: 5,
+          title: 'Wonderful custom anniversary bouquet',
+          comment: 'Asked Bhumika for lavender and peach roses. She accommodated my tight deadline and delivered in 4 days. Absolutely wonderful craftswoman.',
+          productName: 'Custom Crochet Bouquet',
+          status: 'PENDING',
+          verifiedPurchase: true,
+          createdAt: new Date(Date.now() - 3600000 * 6).toISOString()
+        }
+      ];
+
+      function loadReviews() {
+        try {
+          const stored = localStorage.getItem('swan_customer_reviews');
+          if (stored) {
+            allReviews = JSON.parse(stored);
+          } else {
+            allReviews = [...DEFAULT_REVIEWS];
+            saveReviews();
+          }
+        } catch (e) {
+          allReviews = [...DEFAULT_REVIEWS];
+        }
+        renderStats();
+        renderFeed();
+      }
+
+      function saveReviews() {
+        localStorage.setItem('swan_customer_reviews', JSON.stringify(allReviews));
+      }
+
+      function renderStats() {
+        const pending = allReviews.filter(r => r.status === 'PENDING').length;
+        const approved = allReviews.filter(r => r.status === 'APPROVED').length;
+        const hidden = allReviews.filter(r => r.status === 'HIDDEN').length;
+
+        document.getElementById('stat-pending-reviews').textContent = pending;
+        document.getElementById('stat-approved-reviews').textContent = approved;
+        document.getElementById('count-all').textContent = allReviews.length;
+        document.getElementById('count-pending').textContent = pending;
+        document.getElementById('count-approved').textContent = approved;
+        document.getElementById('count-hidden').textContent = hidden;
+
+        const approvedReviews = allReviews.filter(r => r.status === 'APPROVED');
+        if (approvedReviews.length > 0) {
+          const avg = (approvedReviews.reduce((sum, r) => sum + (r.rating || 5), 0) / approvedReviews.length).toFixed(1);
+          document.getElementById('stat-avg-rating').textContent = `${avg} ★`;
+        }
+      }
+
+      function renderFeed() {
+        const query = searchInput.value.trim().toLowerCase();
+        const filtered = allReviews.filter(r => {
+          if (currentFilter === 'pending' && r.status !== 'PENDING') return false;
+          if (currentFilter === 'approved' && r.status !== 'APPROVED') return false;
+          if (currentFilter === 'hidden' && r.status !== 'HIDDEN') return false;
+          if (query) {
+            const mName = (r.authorName || '').toLowerCase().includes(query);
+            const mCity = (r.authorCity || '').toLowerCase().includes(query);
+            const mComment = (r.comment || '').toLowerCase().includes(query);
+            const mProd = (r.productName || '').toLowerCase().includes(query);
+            if (!mName && !mCity && !mComment && !mProd) return false;
+          }
+          return true;
+        });
+
+        if (filtered.length === 0) {
+          listContainer.innerHTML = `
+            <div class="admin-card" style="text-align: center; padding: 2.5rem; color: #8A7670;">
+              <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">💌</span>
+              No customer reviews found matching "${currentFilter}" filter.
+            </div>
+          `;
+          return;
+        }
+
+        listContainer.innerHTML = filtered.map(r => {
+          const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
+          const dateStr = r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent';
+          
+          let statusBadge = '';
+          if (r.status === 'APPROVED') {
+            statusBadge = '<span class="badge" style="background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;">🟢 Live on Public Shop</span>';
+          } else if (r.status === 'PENDING') {
+            statusBadge = '<span class="badge" style="background: #FFFBEB; color: #B45309; border: 1px solid #FCD34D;">⏳ Pending Approval</span>';
+          } else {
+            statusBadge = '<span class="badge" style="background: #F3F4F6; color: #4B5563; border: 1px solid #D1D5DB;">⚪ Hidden</span>';
+          }
+
+          return `
+            <div class="admin-card review-admin-card" style="padding: 1.25rem; border-left: 4px solid ${r.status === 'APPROVED' ? '#16A34A' : (r.status === 'PENDING' ? '#F59E0B' : '#9CA3AF')};">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <strong style="font-size: 1rem; color: var(--cocoa);">${r.authorName}</strong>
+                    ${r.authorCity ? `<span style="font-size: 0.78rem; color: #8A7670;">📍 ${r.authorCity}</span>` : ''}
+                    ${r.verifiedPurchase ? '<span class="badge" style="background: #ECFDF5; color: #047857; font-size: 0.72rem; padding: 0.1rem 0.45rem;">✓ Verified Buyer</span>' : ''}
+                  </div>
+                  <div style="font-size: 0.85rem; color: #B45309; letter-spacing: 2px; margin-top: 0.2rem;">${stars}</div>
+                </div>
+                <div style="text-align: right;">
+                  ${statusBadge}
+                  <div style="font-size: 0.75rem; color: #8A7670; margin-top: 0.25rem;">${dateStr}</div>
+                </div>
+              </div>
+
+              ${r.productName ? `<div style="font-size: 0.82rem; color: var(--rose-text); font-weight: 500; margin-bottom: 0.45rem;">🧶 Creation: ${r.productName}</div>` : ''}
+              ${r.title ? `<div style="font-size: 0.92rem; font-weight: 600; color: var(--cocoa); margin-bottom: 0.25rem;">"${r.title}"</div>` : ''}
+              
+              <p style="font-size: 0.88rem; color: #51413C; line-height: 1.5; margin-bottom: 1rem; background: #FFFDFB; padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+                ${r.comment}
+              </p>
+
+              <!-- Moderation Actions (Min 44x44px touch targets on mobile) -->
+              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; justify-content: flex-end; pt: 0.5rem; border-top: 1px dashed var(--admin-border);">
+                ${r.status !== 'APPROVED' ? `
+                  <button type="button" class="btn btn-primary btn-sm btn-approve" data-id="${r.id}" style="min-height: 44px; padding: 0.5rem 1rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+                    <span>✓</span> Approve & Publish
+                  </button>
+                ` : ''}
+
+                ${r.status !== 'HIDDEN' ? `
+                  <button type="button" class="btn btn-secondary btn-sm btn-hide" data-id="${r.id}" style="min-height: 44px; padding: 0.5rem 0.85rem;">
+                    🚫 Hide from Public
+                  </button>
+                ` : ''}
+
+                <button type="button" class="btn btn-secondary btn-sm btn-delete" data-id="${r.id}" style="min-height: 44px; padding: 0.5rem 0.85rem; color: #DC2626; border-color: #FCA5A5;">
+                  🗑️ Delete
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Wire handlers
+        listContainer.querySelectorAll('.btn-approve').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const rev = allReviews.find(r => r.id === id);
+            if (rev) {
+              rev.status = 'APPROVED';
+              saveReviews();
+              renderStats();
+              renderFeed();
+              ADMIN.showToast(`✓ Review by ${rev.authorName} is now live on the public shop!`);
+            }
+          });
+        });
+
+        listContainer.querySelectorAll('.btn-hide').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const rev = allReviews.find(r => r.id === id);
+            if (rev) {
+              rev.status = 'HIDDEN';
+              saveReviews();
+              renderStats();
+              renderFeed();
+              ADMIN.showToast(`Review hidden from public storefront.`);
+            }
+          });
+        });
+
+        listContainer.querySelectorAll('.btn-delete').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const rev = allReviews.find(r => r.id === id);
+            if (!rev) return;
+            ADMIN.confirm({
+              title: 'Delete Customer Review?',
+              message: `Are you sure you want to permanently delete this review from ${rev.authorName}? This action cannot be undone.`,
+              confirmText: 'Delete Review',
+              danger: true,
+              onConfirm: () => {
+                allReviews = allReviews.filter(r => r.id !== id);
+                saveReviews();
+                renderStats();
+                renderFeed();
+                ADMIN.showToast('Review permanently removed.');
+              }
+            });
+          });
+        });
+      }
+
+      function setFilter(filterKey, activeTab) {
+        [tabAll, tabPending, tabApproved, tabHidden].forEach(t => t.classList.remove('active'));
+        activeTab.classList.add('active');
+        currentFilter = filterKey;
+        renderFeed();
+      }
+
+      tabAll.addEventListener('click', () => setFilter('all', tabAll));
+      tabPending.addEventListener('click', () => setFilter('pending', tabPending));
+      tabApproved.addEventListener('click', () => setFilter('approved', tabApproved));
+      tabHidden.addEventListener('click', () => setFilter('hidden', tabHidden));
+
+      searchInput.addEventListener('input', () => renderFeed());
+
+      loadReviews();
+    });
+  </script>
+</body>
+</html>

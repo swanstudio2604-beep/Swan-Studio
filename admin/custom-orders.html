@@ -80,10 +80,9 @@
         </div>
       </div>
 
-      <!-- Commissions Table Card -->
+      <!-- Commissions Table Card (Stacked Cards on Mobile) -->
       <div class="admin-card">
-        <div class="table-scroll-hint"><span>👉</span> <em>Swipe horizontally to view quotes, deposit status, color palette & actions</em></div>
-        <table class="admin-table">
+        <table class="admin-table admin-responsive-cards">
           <thead>
             <tr>
               <th>Ref & Date</th>
@@ -301,13 +300,20 @@
               </td>
               <td>${quoteDisplay}</td>
               <td>${stageBadge}</td>
-              <td style="text-align: right; white-space: nowrap;">
-                <button class="btn btn-primary btn-sm btn-edit-stage" data-id="${c.id}" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;">
-                  Update Stage
-                </button>
-                <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="padding: 0.35rem 0.65rem; font-size: 0.78rem; margin-left: 0.3rem;" title="Chat with buyer on WhatsApp">
-                  💬 Chat
-                </a>
+              <td style="text-align: right;">
+                <div style="display: flex; gap: 0.45rem; justify-content: flex-end; flex-wrap: wrap;">
+                  <button type="button" class="btn btn-primary btn-sm btn-edit-stage" data-id="${c.id}" style="min-height: 44px; padding: 0.45rem 0.85rem; font-weight: 600;">
+                    Update Stage
+                  </button>
+                  ${(c.customerPhone) ? `
+                    <a href="tel:${(c.customerPhone || '').replace(/[^0-9]/g, '')}" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.75rem;" title="Call customer">
+                      📞 Call
+                    </a>
+                    <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.75rem; background: #F0FDF4; border-color: #86EFAC; color: #166534;" title="Chat with buyer on WhatsApp">
+                      💬 WhatsApp
+                    </a>
+                  ` : ''}
+                </div>
               </td>
             </tr>
           `;

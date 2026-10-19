@@ -241,3 +241,24 @@ CREATE POLICY "Admin can update site content"
 CREATE POLICY "Admin can update site settings"
   ON public.site_settings FOR ALL
   USING (public.is_admin());
+
+-- ----------------------------------------------------------------------------
+-- 11. Policies: reviews
+-- Public can view only approved reviews.
+-- Customers can submit reviews (defaulting to PENDING).
+-- Admin has full moderation rights (approve, hide, delete).
+-- ----------------------------------------------------------------------------
+ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public can view approved reviews"
+  ON public.reviews FOR SELECT
+  USING (status = 'APPROVED');
+
+CREATE POLICY "Customers can submit reviews"
+  ON public.reviews FOR INSERT
+  WITH CHECK (status = 'PENDING');
+
+CREATE POLICY "Admin can manage reviews"
+  ON public.reviews FOR ALL
+  USING (public.is_admin());
+

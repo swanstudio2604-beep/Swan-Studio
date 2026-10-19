@@ -115,7 +115,7 @@ const CHECKOUT = {
         });
       } else if (isOutOfStock) {
         hasBlockedItems = true;
-        blockedReasons.push(`"${product.name}" is currently out of stock.`);
+        blockedReasons.push(`"${product.name}" is currently sold out.`);
         const effectivePrice = product.salePrice || product.price;
         itemsWithDetails.push({
           productId: product.id,
@@ -200,7 +200,7 @@ const CHECKOUT = {
     // Verify all items are strictly in-stock and published
     const cartDetails = await this.loadCartWithDetails();
     if (cartDetails.hasBlockedItems) {
-      const firstReason = cartDetails.blockedReasons[0] || 'One or more items in your shopping bag are out of stock or unavailable.';
+      const firstReason = cartDetails.blockedReasons[0] || 'One or more items in your shopping bag are sold out or unavailable.';
       throw new Error(`${firstReason} Please return to your shopping bag and remove it before completing your order.`);
     }
 

@@ -16,7 +16,7 @@
   --rose: #C78391;         /* Accent, borders, stitch details */
   --cocoa: #51413C;        /* Primary body text & dark surfaces */
   --sage: #A9B6A0;         /* Subtle decorative details & greenery accents */
-  --rose-text: #9A5565;    /* High-contrast rose for small text on cream */
+  --rose-text: #893D50;    /* High-contrast rose for small text on cream (WCAG AA compliant 5.1:1 ratio) */
   --border-subtle: #F0E3D8;/* Very light warm border */
 
   /* Typography */
@@ -236,6 +236,10 @@ p:last-child {
 /* --------------------------------------------------------------------------
    4. Announcement Bar & Site Header
    -------------------------------------------------------------------------- */
+#site-header {
+  min-height: 104px;
+}
+
 .announcement-bar {
   background-color: var(--blush);
   color: var(--cocoa);
@@ -495,6 +499,7 @@ p:last-child {
   box-shadow: var(--shadow-card);
   overflow: hidden;
   text-align: center;
+  aspect-ratio: 1 / 1;
 }
 
 .hero-image-placeholder {
@@ -2118,10 +2123,31 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
 
 .reviews-summary-grid {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
   gap: 2rem;
   margin-bottom: 3rem;
   align-items: stretch;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .reviews-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .reviews-score-card,
+  .reviews-breakdown-card {
+    padding: 1.35rem 1rem !important;
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+  }
+
+  .rating-row {
+    grid-template-columns: 50px 1fr 34px !important;
+    gap: 0.5rem !important;
+  }
 }
 
 .reviews-score-card {
@@ -2282,21 +2308,29 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
 /* Reviews Feed & Cards */
 .reviews-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 1.25rem;
   margin-top: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .review-card {
   background: #FFFFFF;
   border-radius: var(--radius-md);
   border: 1px solid rgba(199, 131, 145, 0.22);
-  padding: 1.75rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 15px rgba(66, 53, 49, 0.03);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .review-card:hover {
@@ -2414,298 +2448,285 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
 }
 
 /* ==========================================================================
-   Instagram Atelier Community & QR Showcase
+   Instagram Brand Logo Button Component (Accessible & Touch-Friendly)
    ========================================================================== */
-.instagram-community-section {
-  background: linear-gradient(135deg, #FFF9FA 0%, #FFFFFF 50%, #FFF3F5 100%);
-  padding: 4.5rem 0;
-  border-top: 1px solid rgba(199, 131, 145, 0.2);
-  border-bottom: 1px solid rgba(199, 131, 145, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-.instagram-banner-box {
-  padding: 3rem 2.5rem;
-}
-
-.instagram-banner-grid {
-  display: grid;
-  grid-template-columns: 1.25fr 0.95fr;
-  gap: 3rem;
-  align-items: center;
-}
-
-.instagram-lead-desc {
-  color: #6E5A54;
-  font-size: 1.05rem;
-  line-height: 1.65;
-  margin: 0 auto 1.5rem auto;
-  max-width: 520px;
-  word-break: normal;
-  overflow-wrap: break-word;
-  text-wrap: pretty;
-  hyphens: none;
-  -webkit-hyphens: none;
-}
-
-.instagram-perks-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 auto 2rem auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  width: 100%;
-  max-width: 440px;
-  box-sizing: border-box;
-}
-
-.instagram-perk-item {
-  display: grid;
-  grid-template-columns: 20px 1fr;
-  gap: 0.65rem;
-  align-items: start;
-  text-align: left;
-  line-height: 1.5;
-  font-size: 0.92rem;
-  color: #55443F;
-}
-
-.perk-icon {
-  color: var(--rose-text);
-  font-weight: 700;
-  line-height: 1.5;
-  font-size: 0.95rem;
-  user-select: none;
-}
-
-.perk-text {
-  line-height: 1.5;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-.perk-text strong {
-  color: var(--cocoa);
-  font-weight: 600;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-.instagram-banner-actions {
-  display: flex;
-  gap: 0.85rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.instagram-qr-card {
-  background: #FFFFFF;
-  border: 2px solid rgba(199, 131, 145, 0.35);
-  border-radius: 28px;
-  padding: 2rem 1.75rem;
-  text-align: center;
-  box-shadow: 0 16px 40px rgba(199, 131, 145, 0.12);
-  position: relative;
-  max-width: 340px;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
-.instagram-qr-frame {
-  width: 200px;
-  max-width: 80%;
-  aspect-ratio: 1080 / 1574;
-  height: auto;
-  margin: 0 auto 1.15rem;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 2px dashed var(--rose);
-  padding: 6px;
-  background: #FFF8F9;
-  box-shadow: 0 8px 24px rgba(199, 131, 145, 0.14);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-.instagram-qr-frame:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(199, 131, 145, 0.22);
-}
-
-.instagram-qr-frame a {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.instagram-qr-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  border-radius: 14px;
-}
-
-.instagram-handle-badge {
+.instagram-logo-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  font-family: 'Poppins', sans-serif;
-  font-size: 0.88rem;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  min-height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #FFF0F2 0%, #FFE4E8 100%);
+  border: 1.5px solid var(--rose);
+  color: var(--rose-text);
+  box-shadow: 0 4px 12px rgba(199, 131, 145, 0.2);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.instagram-logo-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+  color: #FFFFFF;
+  box-shadow: 0 6px 18px rgba(199, 131, 145, 0.35);
+  border-color: var(--rose-dark);
+}
+
+.instagram-logo-btn:focus-visible {
+  outline: 3px solid var(--rose);
+  outline-offset: 3px;
+}
+
+.instagram-logo-btn svg.instagram-glyph-svg {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+/* Homepage Clean Centered Instagram Strip */
+.home-instagram-strip {
+  padding: 3rem 1rem;
+  background: linear-gradient(180deg, rgba(255, 248, 249, 0.4) 0%, rgba(255, 255, 255, 1) 100%);
+  text-align: center;
+}
+
+.home-instagram-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  text-decoration: none;
+  padding: 0.65rem 1.35rem 0.65rem 0.75rem;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(199, 131, 145, 0.35);
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(66, 53, 49, 0.06);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.home-instagram-link:hover {
+  border-color: var(--rose);
+  box-shadow: 0 8px 24px rgba(199, 131, 145, 0.2);
+  transform: translateY(-2px);
+}
+
+.home-instagram-link:focus-visible {
+  outline: 3px solid var(--rose);
+  outline-offset: 3px;
+}
+
+.home-instagram-label {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--cocoa);
-  background: #FFF0F2;
-  padding: 0.45rem 1rem;
-  border-radius: 999px;
-  border: 1px solid rgba(199, 131, 145, 0.35);
-  margin-bottom: 0.85rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-  .reviews-summary-grid {
-    grid-template-columns: 1fr;
-  }
-  .instagram-community-section {
-    padding: 3rem 1.25rem !important;
-    box-sizing: border-box !important;
-  }
-  .instagram-community-section .container {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-  }
-  .instagram-banner-box {
-    padding: 1.75rem 1.15rem !important;
-    margin-top: 2rem !important;
-    border-radius: 22px !important;
-    box-sizing: border-box !important;
-  }
-  .instagram-banner-grid {
-    grid-template-columns: 1fr !important;
-    text-align: center !important;
-    gap: 2rem !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 0 !important;
-  }
-  .instagram-banner-grid .instagram-handle-badge {
-    margin: 0 auto 0.85rem auto !important;
-    display: inline-flex !important;
-    max-width: 100% !important;
-    font-size: 0.84rem !important;
-    padding: 0.4rem 0.85rem !important;
-    box-sizing: border-box !important;
-  }
-  .instagram-banner-grid h2 {
-    font-size: clamp(1.65rem, 6vw, 2.2rem) !important;
-    line-height: 1.25 !important;
-    margin-bottom: 0.85rem !important;
-    padding: 0 0.5rem !important;
-  }
-  .instagram-lead-desc {
-    font-size: 0.94rem !important;
-    line-height: 1.6 !important;
-    max-width: 100% !important;
-    padding: 0 0.25rem !important;
-    margin-bottom: 1.25rem !important;
-    box-sizing: border-box !important;
-  }
-  .instagram-perks-list {
-    text-align: left !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 auto 1.5rem auto !important;
-    background: #FFF7F8 !important;
-    border: 1px solid rgba(199, 131, 145, 0.25) !important;
-    border-radius: 16px !important;
-    padding: 1rem 1.15rem !important;
-    box-sizing: border-box !important;
-  }
-  .instagram-perk-item {
-    font-size: 0.86rem !important;
-    gap: 0.55rem !important;
-  }
-  .instagram-banner-actions {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 0.75rem !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 auto !important;
-    box-sizing: border-box !important;
-  }
-  .instagram-banner-actions .btn {
-    width: 100% !important;
-    justify-content: center !important;
-    text-align: center !important;
-    padding: 0.85rem 1.25rem !important;
-    font-size: 0.92rem !important;
-    font-weight: 600 !important;
-    box-sizing: border-box !important;
-    white-space: normal !important;
-  }
-  .instagram-qr-card {
-    padding: 1.5rem 1.15rem !important;
-    max-width: 290px !important;
-    border-radius: 22px !important;
-    margin: 0 auto !important;
-    box-sizing: border-box !important;
-  }
-  .instagram-qr-frame {
-    width: 175px !important;
-    max-width: 75% !important;
-    aspect-ratio: 1080 / 1574 !important;
-    height: auto !important;
-    margin: 0 auto 1rem auto !important;
-    border-radius: 18px !important;
-    padding: 5px !important;
-  }
-  .instagram-qr-frame img {
-    border-radius: 14px !important;
-  }
+.home-instagram-link:hover .home-instagram-label {
+  color: var(--rose-text);
 }
 
-/* Out of Stock & Availability Styling */
-.badge-out-of-stock {
-  background: #991B1B !important;
-  color: #FFFFFF !important;
-  font-weight: 600 !important;
-  border-color: #B91C1C !important;
-  box-shadow: 0 2px 4px rgba(153, 27, 27, 0.25);
-}
-
-.product-card-out-of-stock {
-  border-color: rgba(239, 68, 68, 0.35) !important;
-}
-
-.product-card-out-of-stock .product-thumb img {
-  filter: grayscale(35%) opacity(0.85);
-}
-
-.out-of-stock-box {
-  background: #FEF2F2;
-  border: 1.5px dashed #EF4444;
-  border-radius: var(--radius-sm);
-  padding: 0.85rem 1rem;
-  color: #991B1B;
-  font-size: 0.88rem;
-  display: flex;
+/* Footer Instagram Link Row */
+.footer-instagram-row {
+  display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  text-decoration: none;
+  min-height: 48px;
+  max-width: 100%;
+  border-radius: 12px;
 }
 
-.cart-item-out-of-stock {
-  background: #FFF5F5 !important;
+.footer-instagram-row:focus-visible {
+  outline: 3px solid var(--rose);
+  outline-offset: 3px;
+}
+
+.footer-instagram-row .instagram-logo-btn {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(232, 183, 192, 0.35);
+  color: #FFF8F1;
+  box-shadow: none;
+}
+
+.footer-instagram-row:hover .instagram-logo-btn {
+  background: linear-gradient(135deg, var(--rose) 0%, var(--rose-dark) 100%);
+  border-color: var(--rose);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(199, 131, 145, 0.3);
+}
+
+.footer-instagram-label {
+  color: #FFF8F1;
+  font-size: 0.86rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.footer-instagram-row:hover .footer-instagram-label {
+  color: #E8B7C0;
+}
+
+/* ==========================================================================
+   Minimal & Clean "Sold out" & Low Stock Design System
+   ========================================================================== */
+.sold-out-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.65rem;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #423531;
+  background: #F3EAE6;
+  border: 1px solid rgba(115, 97, 90, 0.25);
+  border-radius: 999px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.product-thumb .sold-out-pill {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.sold-out-text {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #73615A;
+  letter-spacing: 0.02em;
+  display: inline-block;
+  margin-top: 0.25rem;
+}
+
+.low-stock-text {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #8A7670;
+  margin-top: 0.2rem;
+  display: block;
+}
+
+/* Product Card in Sold-Out State */
+.product-card.is-sold-out .product-thumb img {
+  opacity: 0.85;
+}
+
+.product-card.is-sold-out .product-price {
+  color: #8A7670;
+}
+
+/* Two-column mobile grid product name truncation */
+.product-card .product-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 2.4em;
+  line-height: 1.25;
+}
+
+/* Quiet Outlined Button for Sold-Out Action */
+.btn-notify-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--cocoa);
+  background: transparent;
+  border: 1.5px solid rgba(115, 97, 90, 0.35);
   border-radius: var(--radius-sm);
-  border: 1px dashed #F87171 !important;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.btn-notify-outline:hover {
+  background: #F8F4F2;
+  border-color: var(--cocoa);
+  color: var(--cocoa);
+}
+
+.btn-notify-outline:focus-visible {
+  outline: 2px solid var(--rose);
+  outline-offset: 2px;
+}
+
+/* Hide Sold Out Toggle */
+.filter-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--cocoa);
+  cursor: pointer;
+  user-select: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(243, 234, 230, 0.6);
+  border: 1px solid rgba(199, 131, 145, 0.25);
+  transition: all 0.2s ease;
+  min-height: 38px;
+}
+
+.filter-toggle-label:hover {
+  background: #F3EAE6;
+  border-color: var(--rose);
+}
+
+.filter-toggle-label input[type="checkbox"] {
+  accent-color: var(--rose);
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Cart & Checkout Clean Sold-Out Item Styling */
+.cart-item-sold-out {
+  background: #FAF7F5 !important;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(115, 97, 90, 0.2) !important;
   padding: 1rem !important;
+}
+
+/* Variant Strikethrough & Sold-Out Style */
+.variant-option-soldout {
+  color: #9CA3AF !important;
+  text-decoration: line-through;
 }
 
 /* ==========================================================================
@@ -3909,7 +3930,204 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
   }
 }
 
+@media (max-width: 768px) {
+  /* Prevent iOS zoom on input focus */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* Product grid 2 columns on phones */
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.85rem !important;
+  }
+
+  .product-card .product-info {
+    padding: 0.85rem 0.65rem !important;
+  }
+
+  .product-card .product-name {
+    font-size: 0.92rem !important;
+    line-height: 1.3 !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .product-price {
+    font-size: 1.05rem !important;
+  }
+
+  /* Collection grid 2 columns on phones */
+  .collection-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .collection-card {
+    padding: 1.25rem 0.85rem !important;
+  }
+
+  .collection-icon {
+    width: 48px !important;
+    height: 48px !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .collection-title {
+    font-size: 1.15rem !important;
+  }
+
+  .collection-desc {
+    font-size: 0.78rem !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  /* Gift grid on mobile */
+  .gift-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .gift-card {
+    padding: 1rem !important;
+    gap: 0.85rem !important;
+  }
+}
+
 @media (max-width: 480px) {
+  /* Ensure container doesn't exceed screen at narrow phone widths */
+  .container {
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Reviews grid & card overflow fix on <= 480px & 320px */
+  .reviews-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .review-card {
+    padding: 1.15rem 0.9rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
+
+  .review-card-header {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .review-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 0.88rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .review-user-name {
+    font-size: 0.9rem !important;
+    flex-wrap: wrap !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
+
+  .review-stars {
+    font-size: 0.95rem !important;
+    letter-spacing: 1px !important;
+  }
+
+  .review-text {
+    font-size: 0.88rem !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Product details gallery card overflow fix */
+  .product-gallery-card {
+    padding: 0.85rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .product-main-view {
+    padding: 0.85rem !important;
+    min-height: 220px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Cart & Checkout layout mobile stabilization */
+  .cart-content-layout,
+  .checkout-content-layout {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .cart-card-box,
+  #cart-content-layout > div {
+    padding: 1rem 0.85rem !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  #cart-items-list {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .cart-item-row {
+    flex-wrap: wrap !important;
+    gap: 0.75rem !important;
+    padding: 0.85rem 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .cart-item-row .cart-item-thumb {
+    width: 52px !important;
+    height: 52px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .cart-item-row .cart-item-details {
+    flex: 1 1 140px !important;
+    min-width: 0 !important;
+  }
+
+  .cart-item-row .cart-item-price-col {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: 0.4rem !important;
+    text-align: left !important;
+    padding-top: 0.4rem !important;
+    border-top: 1px dashed rgba(199, 131, 145, 0.15) !important;
+  }
+
+  /* Account & auth adjustments */
   .acct-proof-actions-row {
     flex-direction: column !important;
     gap: 0.5rem !important;
@@ -3934,5 +4152,90 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
     width: 100% !important;
     justify-content: flex-start !important;
   }
+
+  /* Hero adjustments for <= 480px */
+  .hero-ctas {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.75rem !important;
+  }
+
+  .hero-ctas .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+    min-height: 48px !important;
+  }
 }
+
+/* Very narrow screen fallback (e.g. 320px - 340px) */
+@media (max-width: 340px) {
+  .products-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .collection-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .container {
+    padding-left: 0.65rem !important;
+    padding-right: 0.65rem !important;
+  }
+}
+
+/* ==========================================================================
+   Floating WhatsApp Button (Accessible & Safe-Area Aware)
+   ========================================================================== */
+.whatsapp-floating-btn {
+  position: fixed;
+  right: 1.25rem;
+  bottom: max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem));
+  z-index: 9990;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #25D366;
+  color: #FFFFFF;
+  padding: 0.75rem 1.15rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 18px rgba(37, 211, 102, 0.4);
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.whatsapp-floating-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 22px rgba(37, 211, 102, 0.5);
+  color: #FFFFFF;
+}
+
+.whatsapp-floating-btn:focus-visible {
+  outline: 3px solid #128C7E;
+  outline-offset: 2px;
+}
+
+body.has-mobile-billing-bar .whatsapp-floating-btn {
+  bottom: calc(75px + max(1rem, env(safe-area-inset-bottom))) !important;
+}
+
+/* Subtle cold start indicator */
+.backend-status-toast {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(81, 65, 60, 0.95);
+  color: #FFF8F1;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  transition: opacity 0.3s ease;
+}
+
 

@@ -5,18 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Details — Swan Studio | Handmade Crochet</title>
   <meta name="description" content="Handcrafted crochet creation by Bhumika Nama at Swan Studio. View product details, materials, care instructions, and custom options.">
-  <link rel="canonical" href="https://swanstudio2604-beep.github.io/product.html">
+  <link rel="canonical" href="https://swan-studio.onrender.com/product.html">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="shortcut icon" href="favicon.ico">
   
   <!-- OpenGraph / Social Meta -->
   <meta property="og:type" content="product">
-  <meta property="og:url" content="https://swanstudio2604-beep.github.io/product.html">
+  <meta property="og:url" content="https://swan-studio.onrender.com/product.html">
   <meta property="og:title" content="Product Details — Swan Studio | Handmade Crochet">
   <meta property="og:description" content="Handcrafted crochet creation by Bhumika Nama at Swan Studio. View product details, materials, care instructions, and custom options.">
+  <meta property="og:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Handmade Crochet Creation — Swan Studio">
   <meta name="twitter:description" content="Artisanal crochet creations handcrafted with love by Bhumika Nama at Swan Studio.">
+  <meta name="twitter:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
   
   <!-- Google Fonts: Cormorant Garamond & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,12 +55,10 @@
         <span id="breadcrumb-title" style="color: #51413C; font-weight: 500;">Product</span>
       </nav>
 
-      <!-- Product Status Banner (Live Supabase vs Demo Fallback) -->
-      <div class="demo-banner" id="product-status-banner" role="status">
+      <!-- Status banner (visible only if debug param ?demo=true is provided) -->
+      <div class="demo-banner" id="product-status-banner" role="status" style="display: none;">
         <span class="demo-banner-icon" id="product-status-icon" aria-hidden="true">💡</span>
-        <div id="product-status-text">
-          <strong>Demonstration View:</strong> Displaying layout and interaction for this product using sample local data. When connected to Supabase in <code>js/supabase.js</code>, live database records are queried directly.
-        </div>
+        <div id="product-status-text"></div>
       </div>
 
       <!-- Product Detail Main Layout -->
@@ -118,19 +122,54 @@
         return;
       }
 
-      // Update banner status
-      if (isLive) {
-        bannerIcon.textContent = '🟢';
-        bannerText.innerHTML = `<strong>Live Database Connected:</strong> Details for "<strong>${product.name}</strong>" loaded directly from Supabase PostgreSQL.`;
-      } else {
-        bannerIcon.textContent = '💡';
-        bannerText.innerHTML = `<strong>Demonstration View:</strong> Displaying layout using local sample data. Connect your Supabase project in <code>js/supabase.js</code> to load live records.`;
+      // Update banner status (only visible if explicit ?demo=true param)
+      const isDemoMode = urlParams.get('demo') === 'true';
+      const statusBanner = document.getElementById('product-status-banner');
+      if (isDemoMode && statusBanner) {
+        statusBanner.style.display = 'flex';
+        if (isLive) {
+          bannerIcon.textContent = '🟢';
+          bannerText.innerHTML = `<strong>Live Database:</strong> Connected to Supabase PostgreSQL. Displaying live catalog item "${product.name}".`;
+        } else {
+          bannerIcon.textContent = '💡';
+          bannerText.innerHTML = `<strong>Demo Catalog:</strong> Displaying local atelier catalog. Connect Supabase in <code>js/supabase.js</code> to stream real-time PostgreSQL updates.`;
+        }
       }
 
       // Update page title & breadcrumbs
-      document.title = `${product.name} — Swan Studio`;
+      document.title = `${product.name} — Swan Studio | Handmade in Jaipur`;
       breadcrumbCat.textContent = product.categoryName;
       breadcrumbTitle.textContent = product.name;
+
+      // Inject Schema.org Product JSON-LD
+      try {
+        const productSchema = {
+          "@context": "https://schema.org/",
+          "@type": "Product",
+          "name": product.name,
+          "image": product.imageUrl ? [`https://swan-studio.onrender.com/${product.imageUrl.replace(/^\//, '')}`] : ["https://swan-studio.onrender.com/assets/images/hero-bouquet.webp"],
+          "description": product.description || "Handcrafted artisanal crochet piece made in Jaipur, India by Bhumika Nama.",
+          "sku": `SWAN-${product.slug}`,
+          "brand": {
+            "@type": "Brand",
+            "name": "Swan Studio"
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": window.location.href,
+            "priceCurrency": "INR",
+            "price": product.price,
+            "availability": (Boolean(product.isSoldOut || product.sold_out) || ((product.stock !== undefined && product.stock !== null ? Number(product.stock) : 0) <= 0 && !product.madeToOrder)) ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+            "itemCondition": "https://schema.org/NewCondition"
+          }
+        };
+        const scriptLd = document.createElement('script');
+        scriptLd.type = 'application/ld+json';
+        scriptLd.textContent = JSON.stringify(productSchema);
+        document.head.appendChild(scriptLd);
+      } catch (err) {
+        console.warn('Schema injection notice:', err);
+      }
 
       // SVG Icon for main visual
       function getMainVisualSvg(type) {
@@ -177,11 +216,13 @@
         }
       }
 
+      const isMadeToOrder = Boolean(product.madeToOrder || product.made_to_order);
       const stock = (product.stock !== undefined && product.stock !== null) ? parseInt(product.stock, 10) : 0;
-      const isOutOfStock = stock <= 0;
+      const isOutOfStock = Boolean(product.isSoldOut || product.sold_out || (!isMadeToOrder && stock <= 0));
+      const isLowStock = !isOutOfStock && !isMadeToOrder && stock > 0 && stock <= 3;
 
       const whatsappText = isOutOfStock
-        ? encodeURIComponent(`Hi Bhumika! I saw that "${product.name}" on Swan Studio is currently out of stock. Could you let me know if it can be crafted for me or when it will be restocked?`)
+        ? encodeURIComponent(`Hi Bhumika! I saw that "${product.name}" on Swan Studio is currently sold out. Could you let me know if it can be crafted for me or when it will be restocked?`)
         : encodeURIComponent(`Hi Bhumika! I'm interested in the "${product.name}" from Swan Studio. Could you share more details?`);
       const whatsappUrl = `${SITE.whatsappUrl}?text=${whatsappText}`;
 
@@ -190,7 +231,7 @@
         <!-- Left: Image / Visual Gallery -->
         <div class="product-gallery-card">
           <div class="product-main-view" style="overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 280px; background: #FFF6F0; border-radius: var(--radius-md);">
-            ${product.imageUrl ? `<img src="${product.imageUrl}" alt="${product.name}" style="width: 100%; height: 100%; max-height: 400px; object-fit: contain; border-radius: var(--radius-sm);">` : getMainVisualSvg(product.iconType)}
+            ${product.imageUrl ? `<img src="${product.imageUrl}" alt="${product.name}" style="width: 100%; height: 100%; max-height: 400px; object-fit: contain; border-radius: var(--radius-sm); ${isOutOfStock ? 'opacity: 0.85;' : ''}">` : getMainVisualSvg(product.iconType)}
           </div>
           <div style="display: flex; gap: 0.75rem; margin-top: 1rem; justify-content: center;">
             <div style="width: 60px; height: 60px; border-radius: var(--radius-sm); border: 2px solid var(--rose); background: #FFF6F0; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; overflow: hidden;">
@@ -211,7 +252,7 @@
         <!-- Right: Information, Specifications & Actions -->
         <div>
           <div class="product-meta-badge">
-            <span class="badge-sample">${product.badge}</span>
+            <span class="product-tag" style="position: static; display: inline-block; padding: 0.2rem 0.6rem; font-size: 0.76rem; border-radius: var(--radius-pill);">${product.badge || 'Handcrafted in Jaipur'}</span>
             <span>•</span>
             <span>${product.categoryName}</span>
           </div>
@@ -219,27 +260,15 @@
           <h1 class="product-detail-title">${product.name}</h1>
 
           <div class="product-detail-price">
-            <span class="current-price">₹${product.price.toLocaleString('en-IN')}</span>
+            <span class="current-price" style="${isOutOfStock ? 'color: #8A7670;' : ''}">₹${product.price.toLocaleString('en-IN')}</span>
             ${product.salePrice ? `<span class="original-price">₹${product.salePrice.toLocaleString('en-IN')}</span>` : ''}
-            ${isOutOfStock 
-              ? `<span style="font-size: 0.85rem; color: #991B1B; font-weight: 700; background: #FEE2E2; padding: 0.25rem 0.75rem; border-radius: var(--radius-pill); border: 1px solid #FCA5A5;">🚫 Out of Stock</span>`
-              : `<span style="font-size: 0.85rem; color: #2B7A4B; font-weight: 500; background: #EBF8F0; padding: 0.2rem 0.6rem; border-radius: var(--radius-pill);">${product.madeToOrder ? 'Made to Order' : 'Ready to Ship'}</span>`
-            }
           </div>
 
-          ${isOutOfStock ? `
-            <div class="out-of-stock-box" style="margin-top: 1.25rem; margin-bottom: 1.25rem; padding: 1rem 1.25rem; background: #FEF2F2; border-radius: var(--radius-sm); border: 1.5px solid #F87171;">
-              <div style="display: flex; align-items: center; gap: 0.5rem; color: #991B1B; font-weight: 700; font-size: 0.96rem;">
-                <span>🚫</span>
-                <span>Currently Out of Stock</span>
-              </div>
-              <p style="margin: 0.35rem 0 0 0; font-size: 0.86rem; color: #7F1D1D; line-height: 1.55;">
-                This piece is currently unavailable for instant purchase. Bhumika individually crochets every item with artisan care. You can request a restock directly on WhatsApp below or place a custom order inquiry!
-              </p>
-            </div>
-          ` : ''}
+          <!-- Minimal Plain Text Sold Out or Low Stock Status -->
+          ${isOutOfStock ? `<div class="sold-out-text" aria-label="Sold out">Sold out</div>` : ''}
+          ${isLowStock ? `<div class="low-stock-text">Only ${stock} left</div>` : ''}
 
-          <p style="font-size: 1.05rem; line-height: 1.7; color: var(--cocoa); margin-bottom: 1.5rem;">
+          <p style="font-size: 1.05rem; line-height: 1.7; color: var(--cocoa); margin: 1.25rem 0;">
             ${product.description}
           </p>
 
@@ -259,7 +288,16 @@
             </li>
             <li>
               <strong>Available Colors:</strong>
-              <span>${product.colors.join(', ')}</span>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.35rem;">
+                ${(product.variants || (product.colors || []).map(c => ({ name: c, inStock: true }))).map(v => {
+                  const isVarSoldOut = isOutOfStock || v.inStock === false || v.name.includes('(Sold out)');
+                  return `
+                    <span class="variant-option ${isVarSoldOut ? 'variant-option-soldout' : ''}" style="font-size: 0.84rem; padding: 0.25rem 0.65rem; border-radius: var(--radius-pill); border: 1px solid ${isVarSoldOut ? 'rgba(115, 97, 90, 0.2)' : 'var(--rose)'}; ${isVarSoldOut ? 'color: #8A7670; background: #FAF7F5;' : 'color: var(--cocoa); background: #FFF;'}" ${isVarSoldOut ? 'aria-disabled="true"' : ''}>
+                      ${isVarSoldOut ? `<s>${v.name.replace('(Sold out)', '').trim()}</s> <small style="color: #73615A; font-weight: 600;">(Sold out)</small>` : v.name}
+                    </span>
+                  `;
+                }).join('')}
+              </div>
             </li>
             <li>
               <strong>Care Note:</strong>
@@ -267,25 +305,33 @@
             </li>
           </ul>
 
-          <!-- Quantity & Add to Cart -->
-          <div class="product-purchase-box" style="${isOutOfStock ? 'opacity: 0.7;' : ''}">
-            <div class="qty-selector" aria-label="Select quantity" style="${isOutOfStock ? 'pointer-events: none; opacity: 0.4;' : ''}">
-              <button class="qty-btn" id="qty-minus" aria-label="Decrease quantity" ${isOutOfStock ? 'disabled' : ''}>-</button>
-              <input type="text" id="qty-input" class="qty-input" value="${isOutOfStock ? '0' : '1'}" readonly aria-label="Item quantity">
-              <button class="qty-btn" id="qty-plus" aria-label="Increase quantity" ${isOutOfStock ? 'disabled' : ''}>+</button>
+          <!-- Single Action Area: Quiet WhatsApp Notify Button for Sold Out, or Add to Bag for In Stock -->
+          ${isOutOfStock ? `
+            <div style="margin-top: 1.5rem;">
+              <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn-notify-outline" style="min-height: 48px; font-size: 0.95rem; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;" aria-label="Ask about restock on WhatsApp for ${product.name}">
+                💬 Ask on WhatsApp about restock &rarr;
+              </a>
+            </div>
+          ` : `
+            <div class="product-purchase-box">
+              <div class="qty-selector" aria-label="Select quantity">
+                <button class="qty-btn" id="qty-minus" aria-label="Decrease quantity">-</button>
+                <input type="text" id="qty-input" class="qty-input" value="1" readonly aria-label="Item quantity">
+                <button class="qty-btn" id="qty-plus" aria-label="Increase quantity">+</button>
+              </div>
+
+              <button id="add-to-cart-btn" class="btn btn-primary" style="flex: 1; min-width: 180px; min-height: 44px;">
+                Add to Bag
+              </button>
             </div>
 
-            <button id="add-to-cart-btn" class="btn ${isOutOfStock ? 'btn-secondary' : 'btn-primary'}" ${isOutOfStock ? 'disabled' : ''} style="flex: 1; min-width: 180px; ${isOutOfStock ? 'cursor: not-allowed; opacity: 0.6; background: #E5E7EB; color: #6B7280; border-color: #D1D5DB; font-weight: 600;' : ''}">
-              ${isOutOfStock ? '🚫 Out of Stock' : 'Add to Bag'}
-            </button>
-          </div>
-
-          <!-- Direct WhatsApp Order Inquiry -->
-          <div style="margin-top: 1rem;">
-            <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="width: 100%;">
-              ${isOutOfStock ? '💬 Request Restock on WhatsApp' : '💬 Inquire / Customize on WhatsApp'}
-            </a>
-          </div>
+            <!-- Direct WhatsApp Order Inquiry -->
+            <div style="margin-top: 1rem;">
+              <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="width: 100%; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                💬 Inquire / Customize on WhatsApp
+              </a>
+            </div>
+          `}
 
           <p id="cart-feedback-msg" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--rose-text); font-weight: 500; text-align: center; display: none;">
             ✓ Added to your Bag!
@@ -298,14 +344,14 @@
         </div>
       `;
 
-      // Quantity selector interactions
+      // Quantity selector interactions (in-stock only)
       const qtyMinus = document.getElementById('qty-minus');
       const qtyPlus = document.getElementById('qty-plus');
       const qtyInput = document.getElementById('qty-input');
       const addToCartBtn = document.getElementById('add-to-cart-btn');
       const feedbackMsg = document.getElementById('cart-feedback-msg');
 
-      if (!isOutOfStock) {
+      if (!isOutOfStock && qtyMinus && qtyPlus && qtyInput) {
         qtyMinus.addEventListener('click', () => {
           let val = parseInt(qtyInput.value, 10) || 1;
           if (val > 1) qtyInput.value = val - 1;
@@ -317,10 +363,11 @@
         });
       }
 
-      // Add to Cart handler
-      addToCartBtn.addEventListener('click', () => {
+      // Add to Cart handler (in-stock only)
+      if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', () => {
         if (isOutOfStock || stock <= 0) {
-          alert('Sorry, this creation is currently out of stock and cannot be added to your bag.');
+          alert('Sorry, this creation is currently sold out and cannot be added to your bag.');
           return;
         }
 
@@ -366,35 +413,40 @@
           console.error(e);
         }
       });
+    }
 
-      // Render Related Products (Excluding current)
+    // Render Related Products (Excluding current)
       const allResult = await fetchProducts();
       const allProducts = allResult.data || [];
       const related = allProducts.filter(p => p.slug !== product.slug).slice(0, 4);
 
       relatedGrid.innerHTML = related.map(p => {
-        const isRelOutOfStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) <= 0 : false;
-        const tagHtml = isRelOutOfStock
-          ? `<span class="product-tag badge-out-of-stock" style="background: #991B1B; color: #FFFFFF; font-weight: 600;">🚫 Out of Stock</span>`
-          : `<span class="product-tag">${p.badge || (p.madeToOrder ? 'Made to Order' : 'Ready to Ship')}</span>`;
+        const isRelMto = Boolean(p.madeToOrder || p.made_to_order);
+        const relStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) : 0;
+        const isRelSoldOut = Boolean(p.isSoldOut || p.sold_out || (!isRelMto && relStock <= 0));
+        const isRelLowStock = !isRelSoldOut && !isRelMto && relStock > 0 && relStock <= 3;
 
         return `
-          <article class="product-card ${isRelOutOfStock ? 'product-card-out-of-stock' : ''}">
+          <article class="product-card ${isRelSoldOut ? 'is-sold-out' : ''}">
             <div class="product-thumb" style="overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
-              ${tagHtml}
+              ${isRelSoldOut 
+                ? `<span class="sold-out-pill" aria-label="Sold out">Sold out</span>`
+                : (!isRelMto && p.badge ? `<span class="product-tag">${p.badge}</span>` : '')
+              }
               ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width: 100%; height: 100%; object-fit: cover;">` : getMainVisualSvg(p.iconType)}
             </div>
             <div class="product-info">
               <span class="product-category">${p.categoryName}</span>
-              <span class="badge-sample">${isLive ? 'Verified Creation' : 'Sample Product'}</span>
-              <h3 class="product-name">${p.name}</h3>
+              <h3 class="product-name" title="${p.name}">${p.name}</h3>
               <div class="product-price-row">
                 <span class="product-price">₹${p.price.toLocaleString('en-IN')}</span>
               </div>
-              <div class="product-actions">
-                <a href="product.html?slug=${p.slug}" class="btn btn-outline btn-sm" style="width: 100%; ${isRelOutOfStock ? 'border-color: #F87171; color: #991B1B;' : ''}">
-                  ${isRelOutOfStock ? 'View (Out of Stock)' : 'View Details'}
-                </a>
+              ${isRelLowStock ? `<span class="low-stock-text">Only ${relStock} left</span>` : ''}
+              <div class="product-actions" style="margin-top: 0.65rem;">
+                ${isRelSoldOut 
+                  ? `<a href="product.html?slug=${p.slug}" class="btn-notify-outline" aria-label="Notify me when ${p.name} is restocked">Notify me</a>`
+                  : `<a href="product.html?slug=${p.slug}" class="btn btn-outline btn-sm" style="width: 100%; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;">View Details</a>`
+                }
               </div>
             </div>
           </article>

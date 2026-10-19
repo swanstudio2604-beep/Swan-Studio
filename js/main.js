@@ -18,9 +18,8 @@ const SITE = {
   email: 'swanstudio2604@gmail.com', // Official atelier support email
   announcement: '✨ Handcrafted with love in India • Custom crochet creations & personalized gifts ✨',
   social: {
-    instagram: 'https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==',
+    instagram: 'https://www.instagram.com/swan_handcrafted_studio.3568',
     instagramHandle: '@swan_handcrafted_studio.3568',
-    instagramQr: 'assets/images/instagram-qr.jpeg',
     youtube: ''
   }
 };
@@ -69,7 +68,7 @@ function renderHeader() {
       }
       if (s.upiId) SITE.upiId = s.upiId;
       if (s.email) SITE.email = s.email;
-      if (s.instagram) SITE.social.instagram = s.instagram;
+      if (s.instagram) SITE.social.instagram = s.instagram.split('?')[0];
     }
   } catch (e) {}
 
@@ -160,6 +159,14 @@ function initMobileNav() {
   }
 
   toggleBtn.addEventListener('click', () => toggleMenu());
+
+  // Close menu when clicking on any nav link
+  navMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      navMenu.classList.remove('is-open');
+    });
+  });
 
   // Close menu on Escape key
   document.addEventListener('keydown', (e) => {
@@ -256,17 +263,18 @@ function renderFooter() {
               </a>
             </p>
 
-            <!-- Instagram Connect Card & QR -->
-            <div style="margin-top: 1rem; padding: 0.75rem 0.85rem; background: rgba(255, 255, 255, 0.07); border-radius: 12px; border: 1px solid rgba(232, 183, 192, 0.25); display: flex; align-items: center; gap: 0.75rem;">
-              <a href="${SITE.social.instagram}" target="_blank" rel="noopener noreferrer" style="flex-shrink: 0;" title="Scan QR or visit Instagram">
-                <img src="${SITE.social.instagramQr}" alt="Swan Studio Instagram QR" style="width: 44px; height: 44px; border-radius: 6px; object-fit: cover; background: #fff; padding: 2px; display: block; border: 1px solid rgba(255,255,255,0.4);">
+            <!-- Official Instagram Logo Button (Spot 1: Site Footer) -->
+            <div style="margin-top: 1rem;">
+              <a href="${SITE.social.instagram}" target="_blank" rel="noopener noreferrer" class="footer-instagram-row" aria-label="Swan Studio on Instagram" title="Follow @swan_handcrafted_studio.3568 on Instagram">
+                <span class="instagram-logo-btn" aria-hidden="true">
+                  <svg class="instagram-glyph-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                </span>
+                <span class="footer-instagram-label">Follow us on Instagram &rarr;</span>
               </a>
-              <div>
-                <a href="${SITE.social.instagram}" target="_blank" rel="noopener noreferrer" style="color: #FFF8F1; font-weight: 600; font-size: 0.82rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem;">
-                  <span>📷 Follow Instagram</span> &rarr;
-                </a>
-                <div style="font-size: 0.72rem; color: #BAA9A0; margin-top: 0.15rem;">${SITE.social.instagramHandle}</div>
-              </div>
             </div>
 
             <p style="margin-top: 0.85rem; font-size: 0.82rem; color: #BAA9A0;">
@@ -376,12 +384,34 @@ function updateMobileBillingBar() {
 window.updateMobileBillingBar = updateMobileBillingBar;
 
 // ---------------------------------------------------------------------------
-// 7. DOM Initialization
+// 7. Floating Accessible WhatsApp Button
+// ---------------------------------------------------------------------------
+function renderFloatingWhatsApp() {
+  if (document.getElementById('swan-floating-whatsapp')) return;
+  const btn = document.createElement('a');
+  btn.id = 'swan-floating-whatsapp';
+  btn.className = 'whatsapp-floating-btn';
+  btn.href = `${SITE.whatsappUrl}?text=${encodeURIComponent("Hi Bhumika! I'm browsing the Swan Studio website and would like to inquire about a crochet creation.")}`;
+  btn.target = '_blank';
+  btn.rel = 'noopener noreferrer';
+  btn.setAttribute('aria-label', 'Chat directly with Bhumika on WhatsApp');
+  btn.innerHTML = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19.01L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67ZM8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7.02 8.48 7.02 9.7C7.02 10.92 7.91 12.1 8.03 12.27C8.16 12.43 9.77 14.91 12.23 15.97C12.82 16.22 13.27 16.37 13.63 16.49C14.22 16.68 14.76 16.65 15.19 16.59C15.67 16.52 16.66 15.99 16.87 15.4C17.07 14.82 17.07 14.32 17.01 14.22C16.95 14.12 16.79 14.06 16.55 13.94C16.31 13.82 15.12 13.24 14.9 13.16C14.68 13.08 14.52 13.04 14.36 13.28C14.2 13.52 13.74 14.06 13.6 14.22C13.46 14.38 13.32 14.4 13.08 14.28C12.84 14.16 11.83 13.83 10.63 12.76C9.7 11.93 9.07 10.91 8.95 10.71C8.83 10.51 8.94 10.4 9.06 10.28C9.17 10.17 9.31 9.99 9.43 9.85C9.55 9.71 9.59 9.61 9.67 9.45C9.75 9.29 9.71 9.15 9.65 9.03C9.59 8.91 9.13 7.78 8.94 7.31C8.75 6.86 8.56 6.92 8.42 6.91L8.03 6.91C7.87 6.91 8.53 7.33 8.53 7.33Z"/>
+    </svg>
+    <span>Chat on WhatsApp</span>
+  `;
+  document.body.appendChild(btn);
+}
+
+// ---------------------------------------------------------------------------
+// 8. DOM Initialization
 // ---------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   renderHeader();
   renderFooter();
   renderMobileBillingBar();
+  renderFloatingWhatsApp();
 });
 
 // Sync cart across browser tabs

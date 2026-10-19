@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Customer Directory & Order History — Swan Studio Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css?v=m3">
+</head>
+<body>
+
+  <!-- Admin Application Wrapper -->
+  <div class="admin-container" id="admin-app" style="display: none;">
+    
+    <!-- Sidebar Mount (Injected by admin-shared.js) -->
+    <div id="admin-sidebar-mount"></div>
+
+    <!-- Main Workspace -->
+    <main class="admin-main">
+      <div class="admin-header-row">
+        <div>
+          <h1 class="admin-page-title">Customer Directory</h1>
+          <p class="admin-page-subtitle">
+            View buyer contact details, total orders placed, delivery addresses, and WhatsApp or call directly from your phone.
+          </p>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-label">Total Buyers</div>
+          <div class="admin-stat-value" id="stat-total-cust">0</div>
+          <div class="admin-stat-meta">Unique patrons</div>
+        </div>
+
+        <div class="admin-stat-card" style="border-left: 4px solid #10B981;">
+          <div class="admin-stat-label">Repeat Customers</div>
+          <div class="admin-stat-value" id="stat-repeat-cust" style="color: #10B981;">0</div>
+          <div class="admin-stat-meta">Placed &ge; 2 orders</div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-label">Top Location</div>
+          <div class="admin-stat-value" id="stat-top-city" style="font-size: 1.35rem;">Jaipur</div>
+          <div class="admin-stat-meta">Local & Pan-India</div>
+        </div>
+      </div>
+
+      <!-- Search & Filters Toolbar -->
+      <div class="admin-toolbar" style="margin-bottom: 1.25rem;">
+        <input 
+          type="search" 
+          id="customer-search" 
+          class="admin-search-input" 
+          placeholder="Search by customer name, phone, email, or city..."
+        >
+        <span class="badge" id="customers-count-badge" style="background: var(--admin-surface); border: 1px solid var(--admin-border); color: #8A7670; padding: 0.5rem 0.8rem;">
+          0 customers
+        </span>
+      </div>
+
+      <!-- Customers Stacked Cards Container -->
+      <div id="customers-list-container" class="admin-stacked-cards" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="text-align: center; padding: 2.5rem; color: #8A7670;">Loading customers...</div>
+      </div>
+
+      <!-- Footer Mount -->
+      <div id="admin-footer-mount"></div>
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin/admin-shared.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const authorized = await ADMIN.init('customers');
+      if (!authorized) return;
+
+      const listContainer = document.getElementById('customers-list-container');
+      const searchInput = document.getElementById('customer-search');
+      const countBadge = document.getElementById('customers-count-badge');
+
+      let customers = [];
+
+      async function loadCustomerData() {
+        // Aggregate unique customers from live orders
+        const orders = await ADMIN.getOrders();
+        const map = new Map();
+
+        orders.forEach(o => {
+          const key = (o.customerPhone || o.customerEmail || o.customerName || 'guest').toLowerCase().trim();
+          if (!map.has(key)) {
+            map.set(key, {
+              id: key,
+              name: o.customerName || 'Guest Buyer',
+              phone: o.customerPhone || '',
+              email: o.customerEmail || '',
+              address: o.shippingAddress || '',
+              orderCount: 0,
+              totalSpent: 0,
+              latestOrderRef: o.orderId,
+              latestDate: o.createdAt
+            });
+          }
+          const c = map.get(key);
+          c.orderCount += 1;
+          if (o.paymentStatus === 'PAID') {
+            c.totalSpent += (o.totalAmount || 0);
+          }
+          if (new Date(o.createdAt) > new Date(c.latestDate)) {
+            c.latestDate = o.createdAt;
+            c.latestOrderRef = o.orderId;
+          }
+        });
+
+        // Add verified registered accounts if any
+        try {
+          const accounts = AUTH.getDemoAccounts ? AUTH.getDemoAccounts() : {};
+          Object.values(accounts).forEach(acc => {
+            const key = (acc.phone || acc.email).toLowerCase().trim();
+            if (!map.has(key)) {
+              map.set(key, {
+                id: key,
+                name: acc.full_name || 'Customer',
+                phone: acc.phone || '',
+                email: acc.email || '',
+                address: '',
+                orderCount: 0,
+                totalSpent: 0,
+                latestOrderRef: '—',
+                latestDate: null
+              });
+            }
+          });
+        } catch (e) {}
+
+        customers = Array.from(map.values()).sort((a, b) => b.totalSpent - a.totalSpent);
+        renderStats();
+        renderCards();
+      }
+
+      function renderStats() {
+        document.getElementById('stat-total-cust').textContent = customers.length;
+        const repeat = customers.filter(c => c.orderCount >= 2).length;
+        document.getElementById('stat-repeat-cust').textContent = repeat;
+      }
+
+      function renderCards() {
+        const query = searchInput.value.trim().toLowerCase();
+        const filtered = customers.filter(c => {
+          if (!query) return true;
+          return (
+            c.name.toLowerCase().includes(query) ||
+            c.phone.toLowerCase().includes(query) ||
+            c.email.toLowerCase().includes(query) ||
+            c.address.toLowerCase().includes(query)
+          );
+        });
+
+        countBadge.textContent = `${filtered.length} customer${filtered.length === 1 ? '' : 's'}`;
+
+        if (filtered.length === 0) {
+          listContainer.innerHTML = `
+            <div class="admin-card" style="text-align: center; padding: 2.5rem; color: #8A7670;">
+              No customers found matching "${query}".
+            </div>
+          `;
+          return;
+        }
+
+        listContainer.innerHTML = filtered.map(c => {
+          const cleanPhone = c.phone.replace(/[^0-9]/g, '');
+          const waText = encodeURIComponent(`Hi ${c.name}! Greetings from Bhumika at Swan Studio 🌸`);
+          const waLink = cleanPhone ? `https://wa.me/91${cleanPhone}?text=${waText}` : '#';
+          const telLink = cleanPhone ? `tel:${cleanPhone}` : '#';
+
+          return `
+            <div class="admin-card customer-card" style="padding: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                    <strong style="font-size: 1.05rem; color: var(--cocoa);">${c.name}</strong>
+                    ${c.orderCount >= 2 ? '<span class="badge" style="background: #ECFDF5; color: #047857; font-size: 0.74rem;">🌟 Loyal Patron</span>' : ''}
+                  </div>
+                  <div style="font-size: 0.82rem; color: #8A7670; margin-top: 0.2rem;">
+                    ${c.email ? `✉️ <a href="mailto:${c.email}" style="color: inherit; text-decoration: underline;">${c.email}</a>` : ''}
+                  </div>
+                </div>
+
+                <div style="text-align: right;">
+                  <div style="font-size: 1.15rem; font-weight: 700; color: #16A34A;">₹${c.totalSpent.toLocaleString('en-IN')}</div>
+                  <div style="font-size: 0.78rem; color: #8A7670;">${c.orderCount} order${c.orderCount === 1 ? '' : 's'} placed</div>
+                </div>
+              </div>
+
+              ${c.address ? `
+                <div style="font-size: 0.82rem; color: #73615A; background: #FFFDFB; padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); margin-bottom: 0.85rem; line-height: 1.4;">
+                  📍 ${c.address}
+                </div>
+              ` : ''}
+
+              <!-- One-Tap Phone & WhatsApp Action Bar (Min 44x44px touch targets) -->
+              <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; justify-content: space-between; padding-top: 0.75rem; border-top: 1px dashed var(--admin-border);">
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  ${cleanPhone ? `
+                    <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.85rem; background: #F0FDF4; border-color: #86EFAC; color: #166534;" title="Chat with customer on WhatsApp">
+                      <span>💬</span> WhatsApp
+                    </a>
+                    <a href="${telLink}" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.85rem;" title="Call customer phone">
+                      <span>📞</span> Call
+                    </a>
+                  ` : ''}
+                </div>
+
+                <a href="orders.html?search=${encodeURIComponent(c.phone || c.name)}" class="btn btn-primary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.95rem;">
+                  🛒 View Orders &rarr;
+                </a>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      searchInput.addEventListener('input', () => renderCards());
+      loadCustomerData();
+    });
+  </script>
+</body>
+</html>

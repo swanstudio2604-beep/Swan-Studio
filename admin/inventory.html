@@ -47,10 +47,9 @@
         </div>
       </div>
 
-      <!-- Inventory Table Card -->
+      <!-- Inventory Table Card (Stacked Cards on Mobile) -->
       <div class="admin-card">
-        <div class="table-scroll-hint"><span>👉</span> <em>Swipe horizontally to view fulfillment types & quick stock actions</em></div>
-        <table class="admin-table">
+        <table class="admin-table admin-responsive-cards">
           <thead>
             <tr>
               <th>Creation</th>
@@ -143,30 +142,31 @@
               </td>
               <td>${p.categoryName || 'General'}</td>
               <td>
-                <button class="btn-action btn-toggle-mto" data-id="${p.id}" data-val="${Boolean(p.madeToOrder)}" title="Click to toggle between Made to Order and Ready to Ship">
+                <button type="button" class="btn-action btn-toggle-mto" data-id="${p.id}" data-val="${Boolean(p.madeToOrder)}" style="min-height: 44px; padding: 0.4rem 0.75rem; border: none; background: none;" title="Click to toggle between Made to Order and Ready to Ship">
                   <span class="badge-status ${p.madeToOrder ? 'badge-made-to-order' : 'badge-ready-to-ship'}">
                     ${p.madeToOrder ? 'Made to Order 🔄' : 'Ready to Ship ⚡'}
                   </span>
                 </button>
               </td>
               <td>
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <button class="btn-action btn-stock-minus" data-id="${p.id}" data-stock="${stock}" style="padding: 0.2rem 0.5rem;">-</button>
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                  <button type="button" class="btn btn-secondary btn-sm btn-stock-minus" data-id="${p.id}" data-stock="${stock}" style="min-width: 44px; min-height: 44px; font-size: 1.15rem; font-weight: 700;">-</button>
                   <input 
                     type="number" 
                     class="input-stock" 
                     data-id="${p.id}" 
                     value="${stock}" 
                     min="0" 
-                    style="width: 55px; text-align: center; padding: 0.25rem; border: 1.5px solid ${isLow ? '#F87171' : 'var(--admin-border)'}; border-radius: 4px; font-weight: 600;"
+                    inputmode="numeric"
+                    style="width: 60px; min-height: 44px; text-align: center; font-size: 16px !important; border: 1px solid var(--admin-border); border-radius: 4px; font-weight: 600;"
                   >
-                  <button class="btn-action btn-stock-plus" data-id="${p.id}" data-stock="${stock}" style="padding: 0.2rem 0.5rem;">+</button>
-                  ${isLow ? '<span style="font-size: 0.75rem; color: #DC2626; font-weight: 600;">⚠️ Low</span>' : ''}
+                  <button type="button" class="btn btn-secondary btn-sm btn-stock-plus" data-id="${p.id}" data-stock="${stock}" style="min-width: 44px; min-height: 44px; font-size: 1.15rem; font-weight: 700;">+</button>
+                  ${stock === 0 && !p.madeToOrder ? '<span class="sold-out-pill" style="font-size: 0.72rem; padding: 0.15rem 0.5rem;">Sold out</span>' : (!p.madeToOrder && stock <= 3 && stock > 0 ? `<span class="low-stock-text" style="font-size: 0.76rem;">Only ${stock} left</span>` : '')}
                 </div>
               </td>
               <td style="text-align: right;">
-                <button class="btn-action btn-zero-stock" data-id="${p.id}">
-                  🚫 Mark Out of Stock
+                <button type="button" class="btn btn-secondary btn-sm btn-soldout" data-id="${p.id}" data-soldout="${stock <= 0}" style="min-height: 44px; color: #73615A; border-color: rgba(115, 97, 90, 0.3);" title="${stock <= 0 ? 'Mark as In Stock' : 'Mark as Sold Out'}">
+                  ${stock <= 0 ? 'Mark In Stock' : 'Mark Sold Out'}
                 </button>
               </td>
             </tr>
@@ -179,6 +179,7 @@
             const current = parseInt(btn.dataset.stock, 10) || 0;
             if (current > 0) {
               await ADMIN.updateStock(btn.dataset.id, current - 1);
+              if (window.ADMIN && ADMIN.showToast) ADMIN.showToast('Saved', 'success');
               await refreshInventory();
             }
           });
@@ -188,6 +189,7 @@
           btn.addEventListener('click', async () => {
             const current = parseInt(btn.dataset.stock, 10) || 0;
             await ADMIN.updateStock(btn.dataset.id, current + 1);
+            if (window.ADMIN && ADMIN.showToast) ADMIN.showToast('Saved', 'success');
             await refreshInventory();
           });
         });
@@ -197,17 +199,19 @@
             const val = parseInt(input.value, 10);
             if (!isNaN(val) && val >= 0) {
               await ADMIN.updateStock(input.dataset.id, val);
+              if (window.ADMIN && ADMIN.showToast) ADMIN.showToast('Saved', 'success');
               await refreshInventory();
             }
           });
         });
 
-        document.querySelectorAll('.btn-zero-stock').forEach(btn => {
+        document.querySelectorAll('.btn-soldout').forEach(btn => {
           btn.addEventListener('click', async () => {
-            if (confirm('Set stock for this creation to 0?')) {
-              await ADMIN.updateStock(btn.dataset.id, 0);
-              await refreshInventory();
-            }
+            const isCurrentlySoldOut = btn.dataset.soldout === 'true';
+            const newStock = isCurrentlySoldOut ? 5 : 0;
+            await ADMIN.updateStock(btn.dataset.id, newStock);
+            if (window.ADMIN && ADMIN.showToast) ADMIN.showToast('Saved', 'success');
+            await refreshInventory();
           });
         });
 

@@ -3,21 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shop All Creations — Swan Studio | Handmade Crochet</title>
-  <meta name="description" content="Browse our complete collection of handmade crochet creations: floral bouquets, plushies, bags, bookmarks, and personalized gifts. Handcrafted in India.">
-  <link rel="canonical" href="https://swanstudio2604-beep.github.io/shop.html">
+  <title>Shop All Handcrafted Crochet Creations — Swan Studio | Jaipur</title>
+  <meta name="description" content="Browse our complete collection of handmade crochet creations: floral bouquets, plushies, bags, bookmarks, and personalized gifts. Handcrafted with milk cotton in Jaipur, India.">
+  <link rel="canonical" href="https://swan-studio.onrender.com/shop.html">
   
   <!-- OpenGraph / Social Meta -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://swanstudio2604-beep.github.io/shop.html">
-  <meta property="og:title" content="Shop All Creations — Swan Studio | Handmade Crochet">
-  <meta property="og:description" content="Browse our complete collection of handmade crochet creations: floral bouquets, plushies, bags, bookmarks, and personalized gifts.">
+  <meta property="og:url" content="https://swan-studio.onrender.com/shop.html">
+  <meta property="og:title" content="Shop All Handcrafted Crochet Creations — Swan Studio">
+  <meta property="og:description" content="Browse handcrafted crochet floral bouquets, totes, plushies, and personalized gifts made with love in Jaipur, India.">
+  <meta property="og:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Shop All Creations — Swan Studio">
-  <meta name="twitter:description" content="Browse our complete collection of handmade crochet creations: floral bouquets, plushies, bags, bookmarks, and personalized gifts.">
+  <meta name="twitter:description" content="Handcrafted crochet floral bouquets, totes, plushies, and personalized gifts made with love in Jaipur, India.">
+  <meta name="twitter:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
   
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="alternate icon" href="favicon.ico">
+
   <!-- Google Fonts: Cormorant Garamond & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,6 +33,18 @@
 
   <!-- Global Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- JSON-LD ItemList Schema for Product Catalog -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Swan Studio Handcrafted Crochet Catalog",
+    "description": "Collection of handmade crochet bouquets, bags, plushies, and gifts crafted in Jaipur, India.",
+    "url": "https://swan-studio.onrender.com/shop.html",
+    "numberOfItems": 8
+  }
+  </script>
 </head>
 <body>
 
@@ -42,15 +62,15 @@
       <div class="section-header" style="margin-bottom: var(--space-xl);">
         <h1 class="section-title">The Crochet Atelier</h1>
         <p class="section-subtitle">
-          Every piece is carefully handcrafted with love and intention. Explore our ready-to-ship pieces and made-to-order creations.
+          Every piece is carefully handcrafted with patience and intention. Explore our ready-to-ship pieces and made-to-order creations.
         </p>
       </div>
 
-      <!-- Catalog Status Banner (Live Supabase vs Demo Fallback) -->
-      <div class="demo-banner" id="catalog-status-banner" role="status">
+      <!-- Catalog Status Banner (Shown only if ?demo=true) -->
+      <div class="demo-banner" id="catalog-status-banner" role="status" style="display: none;">
         <span class="demo-banner-icon" id="catalog-status-icon" aria-hidden="true">💡</span>
         <div id="catalog-status-text">
-          <strong>Demonstration Catalog:</strong> The products below are sample entries for layout, search, and filtering verification. When your Supabase credentials are added to <code>js/supabase.js</code>, live database data will automatically display here.
+          <strong>Catalog Mode:</strong> Displaying local catalog entries.
         </div>
       </div>
 
@@ -59,12 +79,17 @@
         <div class="shop-toolbar-top">
           <!-- Search Form -->
           <div class="shop-search-form">
-            <span class="shop-search-icon" aria-hidden="true">🔍</span>
+            <span class="shop-search-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
             <input 
               type="search" 
               id="shop-search" 
               class="shop-search-input" 
-              placeholder="Search flowers, bags, plushies..." 
+              placeholder="Search bouquets, totes, plushies, gifts..." 
               aria-label="Search products"
             >
           </div>
@@ -84,18 +109,23 @@
         <!-- Category Pills -->
         <div class="shop-categories" role="group" aria-label="Filter by category" id="category-pills">
           <button class="category-pill active" data-category="all">All Creations</button>
-          <button class="category-pill" data-category="bouquets">🌸 Floral Bouquets</button>
-          <button class="category-pill" data-category="bags">👜 Bags & Totes</button>
-          <button class="category-pill" data-category="plushies">🧸 Cute Plushies</button>
-          <button class="category-pill" data-category="accessories">🎁 Personalized Gifts</button>
+          <button class="category-pill" data-category="bouquets">Floral Bouquets</button>
+          <button class="category-pill" data-category="bags">Bags &amp; Totes</button>
+          <button class="category-pill" data-category="plushies">Cute Plushies</button>
+          <button class="category-pill" data-category="accessories">Personalized Gifts</button>
+          <button class="category-pill" data-category="under499" data-maxprice="499">Under ₹499</button>
         </div>
       </div>
 
-      <!-- Products Grid & Results Count -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-        <p id="results-count" style="font-size: 0.9rem; color: #73615A; font-weight: 500;">
-          Showing demonstration products...
+      <!-- Products Grid & Results Count & Hide Sold Out Toggle -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <p id="results-count" style="font-size: 0.9rem; color: #73615A; font-weight: 500; margin: 0;">
+          Loading creations...
         </p>
+        <label class="filter-toggle-label" title="Hide sold-out creations from catalog">
+          <input type="checkbox" id="toggle-hide-soldout">
+          <span>Hide sold out</span>
+        </label>
       </div>
 
       <div class="products-grid" id="products-grid" aria-live="polite">
@@ -104,7 +134,7 @@
 
       <!-- Empty State Container (Hidden by default) -->
       <div id="empty-state" class="empty-state" style="display: none;">
-        <div class="empty-state-icon">🧶</div>
+        <div class="empty-state-icon" aria-hidden="true">🧶</div>
         <h3>No matching crochet creations found</h3>
         <p>
           We couldn't find anything matching your search. Try adjusting your keywords, browsing all creations, or request a custom order tailored to your idea.
@@ -128,7 +158,7 @@
   <script src="js/main.js"></script>
   <script>
     // -------------------------------------------------------------------------
-    // Shop Page Logic (Reads URL params ?category=, ?search=, ?sort=)
+    // Shop Page Logic (Reads URL params ?category=, ?search=, ?sort=, ?maxPrice=)
     // -------------------------------------------------------------------------
     document.addEventListener('DOMContentLoaded', () => {
       const searchInput = document.getElementById('shop-search');
@@ -138,6 +168,7 @@
       const emptyState = document.getElementById('empty-state');
       const resultsCount = document.getElementById('results-count');
       const resetBtn = document.getElementById('reset-filters-btn');
+      const banner = document.getElementById('catalog-status-banner');
       const bannerIcon = document.getElementById('catalog-status-icon');
       const bannerText = document.getElementById('catalog-status-text');
 
@@ -146,54 +177,22 @@
       let currentCategory = urlParams.get('category') || 'all';
       let currentSearch = urlParams.get('search') || '';
       let currentSort = urlParams.get('sort') || 'featured';
+      let currentMaxPrice = urlParams.get('maxPrice') || null;
+
+      // Only show banner if explicitly requested via ?demo=true
+      if (urlParams.get('demo') === 'true') {
+        banner.style.display = 'flex';
+      }
+
+      // If maxPrice=499 is set, activate the under499 pill
+      if (currentMaxPrice === '499') {
+        currentCategory = 'under499';
+      }
 
       // Initialize UI inputs from URL
       searchInput.value = currentSearch;
       sortSelect.value = currentSort;
       updateActivePill(currentCategory);
-
-      // SVG Icon Generator for Product Thumbnails
-      function getProductSvg(type) {
-        if (type === 'flower') {
-          return `
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <circle cx="50" cy="50" r="42" fill="#FFF0F3" stroke="#C78391" stroke-dasharray="3 3"/>
-              <path d="M50 30 C58 20 68 30 60 40 C70 50 60 60 50 50 C40 60 30 50 40 40 C32 30 42 20 50 30 Z" fill="#E8B7C0" stroke="#C78391"/>
-              <circle cx="50" cy="40" r="5" fill="#FFF8F1" stroke="#51413C"/>
-              <path d="M50 50 L50 75" stroke="#A9B6A0" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-          `;
-        } else if (type === 'bag') {
-          return `
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <rect x="25" y="40" width="50" height="42" rx="6" fill="#F8F3EC" stroke="#C78391" stroke-dasharray="3 3"/>
-              <path d="M35 40 C35 22 65 22 65 40" stroke="#51413C" stroke-width="2.5" fill="none"/>
-              <rect x="36" y="50" width="28" height="22" rx="2" fill="#E8B7C0" stroke="#C78391"/>
-              <circle cx="50" cy="61" r="4" fill="#FFF8F1"/>
-            </svg>
-          `;
-        } else if (type === 'plushie') {
-          return `
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <circle cx="50" cy="58" r="28" fill="#FBF5F0" stroke="#C78391" stroke-dasharray="3 3"/>
-              <ellipse cx="40" cy="26" rx="6" ry="16" fill="#E8B7C0" stroke="#C78391"/>
-              <ellipse cx="60" cy="26" rx="6" ry="16" fill="#E8B7C0" stroke="#C78391"/>
-              <circle cx="43" cy="54" r="2" fill="#51413C"/>
-              <circle cx="57" cy="54" r="2" fill="#51413C"/>
-              <path d="M48 60 Q50 63 52 60" stroke="#51413C" stroke-linecap="round"/>
-            </svg>
-          `;
-        } else {
-          return `
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <rect x="35" y="20" width="30" height="58" rx="4" fill="#F2EBE5" stroke="#C78391" stroke-dasharray="3 3"/>
-              <circle cx="50" cy="38" r="8" fill="#E8B7C0" stroke="#C78391"/>
-              <line x1="50" y1="46" x2="50" y2="65" stroke="#A9B6A0" stroke-width="2"/>
-              <path d="M50 78 L50 92" stroke="#C78391" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          `;
-        }
-      }
 
       function updateActivePill(cat) {
         categoryPills.forEach(pill => {
@@ -209,26 +208,38 @@
       async function renderCatalogue() {
         resultsCount.textContent = 'Loading creations...';
 
-        const result = await fetchProducts({
-          category: currentCategory,
+        const toggleHideSoldout = document.getElementById('toggle-hide-soldout');
+        const filterParams = {
           search: currentSearch,
-          sort: currentSort
-        });
+          sort: currentSort,
+          hideSoldOut: toggleHideSoldout ? toggleHideSoldout.checked : false
+        };
 
-        const products = result.data;
-        const isLive = result.isLive;
-
-        // Update banner indicator
-        if (isLive) {
-          bannerIcon.textContent = '🟢';
-          bannerText.innerHTML = `<strong>Live Supabase Database Connected:</strong> Displaying published creations directly from PostgreSQL.`;
+        if (currentCategory === 'under499') {
+          filterParams.category = 'all';
+          filterParams.maxPrice = 499;
         } else {
-          bannerIcon.textContent = '💡';
-          bannerText.innerHTML = `<strong>Demonstration Mode:</strong> Showing sample local entries. Add your Supabase URL & anon key in <code>js/supabase.js</code> to connect live database data.`;
+          filterParams.category = currentCategory;
+          if (currentMaxPrice) filterParams.maxPrice = currentMaxPrice;
         }
 
-        // Update count & URL
-        resultsCount.textContent = `Showing ${products.length} creation${products.length === 1 ? '' : 's'} (${isLive ? 'Live DB' : 'Demo Mode'})`;
+        const result = await fetchProducts(filterParams);
+        const products = result.data || [];
+        const isLive = result.isLive;
+
+        // Update banner indicator if demo mode is enabled
+        if (urlParams.get('demo') === 'true') {
+          if (isLive) {
+            bannerIcon.textContent = '🟢';
+            bannerText.innerHTML = `<strong>Live Database Connected:</strong> Displaying published creations directly from PostgreSQL.`;
+          } else {
+            bannerIcon.textContent = '💡';
+            bannerText.innerHTML = `<strong>Demonstration Mode:</strong> Showing curated studio catalog.`;
+          }
+        }
+
+        // Update count
+        resultsCount.textContent = `Showing ${products.length} handcrafted creation${products.length === 1 ? '' : 's'}`;
 
         // Render Cards
         if (products.length === 0) {
@@ -239,20 +250,23 @@
           productsGrid.style.display = 'grid';
 
           productsGrid.innerHTML = products.map(p => {
-            const isOutOfStock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) <= 0 : false;
+            const isMadeToOrder = Boolean(p.madeToOrder || p.made_to_order);
+            const stock = (p.stock !== undefined && p.stock !== null) ? Number(p.stock) : 0;
+            const isSoldOut = Boolean(p.isSoldOut || p.sold_out || (!isMadeToOrder && stock <= 0));
+            const isLowStock = !isSoldOut && !isMadeToOrder && stock > 0 && stock <= 3;
+
             return `
-            <article class="product-card ${isOutOfStock ? 'product-card-out-of-stock' : ''}">
+            <article class="product-card ${isSoldOut ? 'is-sold-out' : ''}">
               <div class="product-thumb" style="overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
-                ${isOutOfStock 
-                  ? `<span class="product-tag badge-out-of-stock">🚫 Out of Stock</span>`
-                  : `<span class="product-tag">${p.badge || (p.madeToOrder ? 'Made to Order' : 'Ready to Ship')}</span>`
+                ${isSoldOut 
+                  ? `<span class="sold-out-pill" aria-label="Sold out">Sold out</span>`
+                  : (!isMadeToOrder && p.badge ? `<span class="product-tag">${p.badge}</span>` : '')
                 }
-                ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width: 100%; height: 100%; object-fit: cover; ${isOutOfStock ? 'filter: grayscale(35%) opacity(0.85);' : ''}">` : getProductSvg(p.iconType)}
+                <img src="${p.imageUrl || 'assets/images/hero-bouquet.webp'}" alt="${p.name}" width="280" height="280" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
               </div>
               <div class="product-info">
-                <span class="product-category">${p.categoryName}</span>
-                <span class="badge-sample">${isLive ? 'Verified Creation' : 'Sample Product'}</span>
-                <h3 class="product-name">${p.name}</h3>
+                <span class="product-category">${p.categoryName || 'Crochet Creation'}</span>
+                <h3 class="product-name" title="${p.name}">${p.name}</h3>
                 <p style="font-size: 0.85rem; color: #73615A; margin-bottom: 0.5rem; line-height: 1.5;">
                   ${(p.description || '').slice(0, 85)}...
                 </p>
@@ -260,10 +274,12 @@
                   <span class="product-price">₹${p.price.toLocaleString('en-IN')}</span>
                   ${p.salePrice ? `<span class="product-price-old">₹${p.salePrice.toLocaleString('en-IN')}</span>` : ''}
                 </div>
-                <div class="product-actions">
-                  <a href="product.html?slug=${p.slug}" class="btn btn-outline btn-sm" style="width: 100%; ${isOutOfStock ? 'border-color: #F87171; color: #991B1B; font-weight: 600;' : ''}">
-                    ${isOutOfStock ? 'View (Out of Stock)' : 'View Details'}
-                  </a>
+                ${isLowStock ? `<span class="low-stock-text">Only ${stock} left</span>` : ''}
+                <div class="product-actions" style="margin-top: 0.65rem;">
+                  ${isSoldOut 
+                    ? `<a href="product.html?slug=${p.slug}" class="btn-notify-outline" aria-label="Notify me when ${p.name} is restocked">Notify me</a>`
+                    : `<a href="product.html?slug=${p.slug}" class="btn btn-outline btn-sm" style="width: 100%; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;">View Details</a>`
+                  }
                 </div>
               </div>
             </article>
@@ -272,7 +288,11 @@
 
         // Sync URL query without reloading
         const newParams = new URLSearchParams();
-        if (currentCategory !== 'all') newParams.set('category', currentCategory);
+        if (currentCategory === 'under499') {
+          newParams.set('maxPrice', '499');
+        } else if (currentCategory !== 'all') {
+          newParams.set('category', currentCategory);
+        }
         if (currentSearch) newParams.set('search', currentSearch);
         if (currentSort !== 'featured') newParams.set('sort', currentSort);
         const newUrl = `${window.location.pathname}${newParams.toString() ? '?' + newParams.toString() : ''}`;
@@ -283,6 +303,11 @@
       categoryPills.forEach(pill => {
         pill.addEventListener('click', () => {
           currentCategory = pill.dataset.category;
+          if (currentCategory === 'under499') {
+            currentMaxPrice = '499';
+          } else {
+            currentMaxPrice = null;
+          }
           updateActivePill(currentCategory);
           renderCatalogue();
         });
@@ -306,11 +331,19 @@
         currentCategory = 'all';
         currentSearch = '';
         currentSort = 'featured';
+        currentMaxPrice = null;
         searchInput.value = '';
         sortSelect.value = 'featured';
         updateActivePill('all');
         renderCatalogue();
       });
+
+      const toggleHideSoldoutEl = document.getElementById('toggle-hide-soldout');
+      if (toggleHideSoldoutEl) {
+        toggleHideSoldoutEl.addEventListener('change', () => {
+          renderCatalogue();
+        });
+      }
 
       // Initial Render
       renderCatalogue();

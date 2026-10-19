@@ -4,7 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout — Swan Studio | Delivery & Review</title>
-  <meta name="description" content="Secure checkout for handmade crochet creations at Swan Studio. Enter your delivery address and review order totals.">
+  <meta name="description" content="Secure checkout for handmade crochet creations at Swan Studio by Bhumika Nama in Jaipur. Enter your delivery address and review order totals.">
+  <link rel="canonical" href="https://swan-studio.onrender.com/checkout.html">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="shortcut icon" href="favicon.ico">
+
+  <!-- OpenGraph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://swan-studio.onrender.com/checkout.html">
+  <meta property="og:title" content="Checkout — Swan Studio">
+  <meta property="og:description" content="Secure checkout for handmade crochet creations at Swan Studio by Bhumika Nama in Jaipur.">
+  <meta property="og:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Checkout — Swan Studio">
+  <meta name="twitter:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
   
   <!-- Google Fonts: Cormorant Garamond & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -254,13 +269,13 @@
 
         if (hasBlockedItems) {
           errorBox.style.display = 'block';
-          errorBox.innerHTML = `<strong>🚫 Cannot Complete Checkout:</strong> ${blockedReasons.join(' ')} <br><a href="cart.html" style="color: #991B1B; font-weight: 600; text-decoration: underline; margin-top: 0.35rem; display: inline-block;">Return to Shopping Bag to remove unavailable items</a>`;
+          errorBox.innerHTML = `<strong>Notice:</strong> ${blockedReasons.join(' ')} <br><a href="cart.html" style="color: var(--rose-text); font-weight: 600; text-decoration: underline; margin-top: 0.35rem; display: inline-block;">Return to Shopping Bag to remove sold out items</a>`;
           submitBtn.disabled = true;
-          submitBtn.style.opacity = '0.6';
+          submitBtn.style.opacity = '0.7';
           submitBtn.style.cursor = 'not-allowed';
-          submitBtn.style.background = '#991B1B';
-          submitBtn.style.borderColor = '#991B1B';
-          submitBtn.textContent = '🚫 Items Out of Stock — Return to Bag';
+          submitBtn.style.background = '#8A7670';
+          submitBtn.style.borderColor = '#8A7670';
+          submitBtn.textContent = 'Items Sold Out — Return to Bag';
         } else {
           errorBox.style.display = 'none';
           submitBtn.disabled = false;
@@ -273,12 +288,12 @@
 
         // Render summary items
         summaryItems.innerHTML = items.map(item => `
-          <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; font-size: 0.88rem; ${item.isOutOfStock || item.isUnavailable ? 'color: #991B1B; background: #FFF5F5; padding: 0.5rem; border-radius: 4px; border: 1px dashed #F87171;' : ''}">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; font-size: 0.88rem; ${item.isOutOfStock || item.isUnavailable ? 'color: var(--cocoa); background: #FAF7F5; padding: 0.5rem; border-radius: 4px; border: 1px solid rgba(115, 97, 90, 0.2);' : ''}">
             <div>
               <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
                 <strong>${item.name}</strong>
-                ${item.isOutOfStock ? '<span class="badge-out-of-stock" style="font-size: 0.68rem; padding: 0.15rem 0.4rem; border-radius: 3px;">🚫 Out of Stock</span>' : ''}
-                ${item.isUnavailable ? '<span style="background: #4B5563; color: #FFF; font-size: 0.68rem; padding: 0.15rem 0.4rem; border-radius: 3px;">⚠️ Unavailable</span>' : ''}
+                ${item.isOutOfStock ? '<span class="sold-out-pill" style="font-size: 0.68rem; padding: 0.15rem 0.45rem;">Sold out</span>' : ''}
+                ${item.isUnavailable ? '<span style="background: #F3EAE6; color: #423531; font-size: 0.68rem; padding: 0.15rem 0.45rem; border-radius: 999px;">Unavailable</span>' : ''}
               </div>
               <div style="font-size: 0.78rem; color: #8A7670;">Qty: ${item.quantity} × ₹${item.unitPrice.toLocaleString('en-IN')}</div>
             </div>

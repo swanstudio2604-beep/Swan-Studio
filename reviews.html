@@ -4,13 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Customer Reviews & Atelier Love Notes — Swan Studio | Handmade Crochet</title>
-  <meta name="description" content="Read authentic customer reviews, star ratings, and love notes for handcrafted crochet bouquets, bags, and plushies from Swan Studio by Bhumika Nama.">
-  <link rel="canonical" href="https://swan-studio.in/reviews.html">
+  <meta name="description" content="Read authentic customer reviews, star ratings, and love notes for handcrafted crochet bouquets, bags, and plushies from Swan Studio by Bhumika Nama in Jaipur.">
+  <link rel="canonical" href="https://swan-studio.onrender.com/reviews.html">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="shortcut icon" href="favicon.ico">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Customer Reviews & Atelier Love Notes — Swan Studio">
-  <meta property="og:description" content="Discover what crochet lovers say about Bhumika Nama's handcrafted crochet creations and leave your own 5-star review.">
+  <meta property="og:description" content="Discover what crochet lovers say about Bhumika Nama's handcrafted crochet creations and leave your own love note.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://swan-studio.onrender.com/reviews.html">
+  <meta property="og:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Customer Reviews — Swan Studio">
+  <meta name="twitter:description" content="Honest customer notes for artisanal crochet creations by Bhumika Nama in Jaipur.">
+  <meta name="twitter:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
 
   <!-- Fonts: Cormorant Garamond & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -79,78 +91,73 @@
           </div>
         </div>
 
-        <!-- Admin Access Quick Trigger Pill -->
-        <div id="admin-mode-trigger-wrap" style="display: flex; justify-content: flex-end; margin-bottom: 1.25rem;">
-          <button type="button" id="btn-enable-admin-mode" style="background: #FFF0F2; border: 1px solid rgba(199, 131, 145, 0.45); color: var(--rose-text); font-size: 0.8rem; padding: 0.35rem 0.85rem; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 500; transition: all 0.2s ease;">
-            <span>👑</span> Admin Mode / Moderate Reviews
-          </button>
-        </div>
+
 
         <!-- 1. Rating Summary Scorecard -->
         <div class="reviews-summary-grid">
           <div class="reviews-score-card">
-            <div class="reviews-score-num" id="stat-avg-rating">4.9</div>
-            <div class="reviews-score-stars" aria-label="4.9 out of 5 stars">★★★★★</div>
-            <div style="font-weight: 600; font-size: 1.05rem; color: var(--cocoa); margin-bottom: 0.35rem;">
-              Exceptional Artisan Quality
+            <div class="reviews-score-num" id="stat-avg-rating">—</div>
+            <div class="reviews-score-stars" id="stat-avg-stars" aria-label="Customer Rating">★★★★★</div>
+            <div id="stat-headline" style="font-weight: 600; font-size: 1.05rem; color: var(--cocoa); margin-bottom: 0.35rem;">
+              Community Reflections
             </div>
             <div class="reviews-score-sub" id="stat-total-notes">
-              Based on <strong id="total-reviews-count">48</strong> customer love notes
+              Based on <strong id="total-reviews-count">0</strong> verified customer love notes
             </div>
             <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px dashed rgba(199, 131, 145, 0.3); font-size: 0.78rem; color: #166534;">
-              ✓ 100% Handcrafted Loop-by-Loop in India
+              ✓ 100% Handcrafted Loop-by-Loop in Jaipur
             </div>
           </div>
 
           <div class="reviews-breakdown-card">
             <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
               <h3 style="font-size: 1.15rem; margin: 0; color: var(--cocoa);">Rating Distribution</h3>
-              <span style="font-size: 0.8rem; color: var(--admin-text-muted);">98% 5-Star Satisfaction</span>
+              <span style="font-size: 0.8rem; color: var(--admin-text-muted);" id="stat-satisfaction">Awaiting first reviews</span>
             </div>
 
             <!-- 5 Stars -->
             <div class="rating-row">
               <span style="font-weight: 500;">5 Stars</span>
               <div class="rating-bar-bg">
-                <div class="rating-bar-fill" style="width: 94%;"></div>
+                <div class="rating-bar-fill" id="bar-5" style="width: 0%;"></div>
               </div>
-              <span style="text-align: right; font-weight: 600;">94%</span>
+              <span style="text-align: right; font-weight: 600;" id="pct-5">0%</span>
             </div>
 
             <!-- 4 Stars -->
             <div class="rating-row">
               <span style="font-weight: 500;">4 Stars</span>
               <div class="rating-bar-bg">
-                <div class="rating-bar-fill" style="width: 6%;"></div>
+                <div class="rating-bar-fill" id="bar-4" style="width: 0%;"></div>
               </div>
-              <span style="text-align: right; font-weight: 600;">6%</span>
+              <span style="text-align: right; font-weight: 600;" id="pct-4">0%</span>
             </div>
 
             <!-- 3 Stars -->
             <div class="rating-row">
               <span style="font-weight: 500;">3 Stars</span>
               <div class="rating-bar-bg">
-                <div class="rating-bar-fill" style="width: 0%;"></div>
+                <div class="rating-bar-fill" id="bar-3" style="width: 0%;"></div>
               </div>
-              <span style="text-align: right; font-weight: 600;">0%</span>
+              <span style="text-align: right; font-weight: 600;" id="pct-3">0%</span>
             </div>
 
             <!-- 2 Stars -->
             <div class="rating-row">
               <span style="font-weight: 500;">2 Stars</span>
               <div class="rating-bar-bg">
-                <div class="rating-bar-fill" style="width: 0%;"></div>
+                <div class="rating-bar-fill" id="bar-2" style="width: 0%;"></div>
               </div>
-              <span style="text-align: right; font-weight: 600;">0%</span>
+              <span style="text-align: right; font-weight: 600;" id="pct-2">0%</span>
             </div>
 
             <!-- 1 Star -->
             <div class="rating-row">
               <span style="font-weight: 500;">1 Star</span>
               <div class="rating-bar-bg">
-                <div class="rating-bar-fill" style="width: 0%;"></div>
+                <div class="rating-bar-fill" id="bar-1" style="width: 0%;"></div>
               </div>
-              <span style="text-align: right; font-weight: 600;">0%</span>
+              <span style="text-align: right; font-weight: 600;" id="pct-1">0%</span>
             </div>
           </div>
         </div>
@@ -168,6 +175,11 @@
           </div>
 
           <form id="customer-review-form">
+            <!-- Spam Honeypot Protection -->
+            <div style="display: none !important;" aria-hidden="true">
+              <input type="text" name="rev_hp" id="rev-hp" tabindex="-1" autocomplete="off">
+            </div>
+
             <!-- Row 1: Name & Location -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
               <div>
@@ -303,74 +315,6 @@
       </div>
     </section>
 
-    <!-- 5. Instagram Community & QR Banner Section -->
-    <section class="instagram-community-section" aria-labelledby="insta-heading">
-      <div class="container">
-        <div class="instagram-banner-grid">
-          <div>
-            <div class="instagram-handle-badge">
-              <span>📷 @swan_handcrafted_studio.3568</span>
-            </div>
-            <h2 id="insta-heading" style="font-size: clamp(2rem, 3.8vw, 2.8rem); margin-bottom: 1rem; color: var(--cocoa);">
-              Follow Our Crochet Journey on Instagram
-            </h2>
-            <p class="instagram-lead-desc">
-              Join Bhumika behind the scenes in Jaipur! Watch satisfying stitch-by-stitch reels, yarn haul unboxings, custom order work-in-progress reveals, and care tips for your crochet heirlooms.
-            </p>
-
-            <ul class="instagram-perks-list">
-              <li class="instagram-perk-item">
-                <span class="perk-icon">✓</span>
-                <span class="perk-text">Daily stories &amp; work-in-progress previews</span>
-              </li>
-              <li class="instagram-perk-item">
-                <span class="perk-icon">✓</span>
-                <span class="perk-text">Tag <strong>@swan_handcrafted_studio.3568</strong> to be featured on our page</span>
-              </li>
-              <li class="instagram-perk-item">
-                <span class="perk-icon">✓</span>
-                <span class="perk-text">Early announcements for seasonal yarn drops &amp; festival collections</span>
-              </li>
-            </ul>
-
-            <div class="instagram-banner-actions">
-              <a href="https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-                Follow on Instagram &rarr;
-              </a>
-              <a href="custom-order.html" class="btn btn-outline" style="border-color: var(--rose); color: var(--rose-text);">
-                Request a Custom Order
-              </a>
-            </div>
-          </div>
-
-          <!-- QR Card -->
-          <div>
-            <div class="instagram-qr-card">
-              <div style="font-size: 0.76rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--rose-text); margin-bottom: 0.75rem;">
-                Scan or Tap to Connect
-              </div>
-              
-              <div class="instagram-qr-frame">
-                <a href="https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==" target="_blank" rel="noopener noreferrer" title="Click or scan to open Instagram">
-                  <img src="assets/images/instagram-qr.jpeg" alt="Swan Studio Instagram QR Code — @swan_handcrafted_studio.3568">
-                </a>
-              </div>
-
-              <div style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 0.92rem; color: var(--cocoa); margin-bottom: 0.2rem;">
-                Swan Handcrafted Studio
-              </div>
-              <div style="font-size: 0.78rem; color: #8A7670; margin-bottom: 0.75rem;">
-                Scan with phone camera or tap to follow
-              </div>
-              <a href="https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 0.8rem; padding: 0.5rem 0.85rem; border-radius: 999px; justify-content: center; text-align: center;">
-                📷 Open Instagram Profile ↗
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
   </main>
 
   <!-- Global Footer Mount (Injected by js/main.js with "Developed with ❤️ by Mridul") -->
@@ -381,154 +325,31 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // ----------------------------------------------------------------------
-      // 1. Initial Starter Reviews Data
+      // 1. Initial Starter Reviews Data (Authentic only - no fake testimonials)
       // ----------------------------------------------------------------------
-      const STARTER_REVIEWS = [
-        {
-          id: 'rev-init-1',
-          author: 'Ananya Sharma',
-          city: 'Mumbai',
-          verified: true,
-          rating: 5,
-          product: '🌸 Pastel Daisy Bouquet',
-          category: 'bouquet',
-          date: 'October 14, 2026',
-          tags: ['🌿 Soft & Premium Milk Cotton', '🎁 Gift-Ready Kraft Packaging', '💌 Heartfelt Handwritten Note'],
-          notes: 'I ordered the Pastel Daisy Bouquet for my sister’s birthday and we were completely in tears! The flowers will literally never wither and the handwritten care card from Bhumika was so personal. The packaging with kraft paper and twine felt like an heirloom.',
-          photo: '',
-          helpful: 14
-        },
-        {
-          id: 'rev-init-2',
-          author: 'Riddhi Patel',
-          city: 'Ahmedabad',
-          verified: true,
-          rating: 5,
-          product: '🧸 Cute Bunny Plushie Amigurumi',
-          category: 'plushie',
-          date: 'October 11, 2026',
-          tags: ['🌿 Soft & Premium Milk Cotton', '✨ Flawless Custom Details'],
-          notes: 'The stitching is unbelievably tight and flawless. No loose threads, super soft hypoallergenic cotton, and the cutest floppy ears! My daughter hasn’t let it go for a single night. Truly artisan work.',
-          photo: '',
-          helpful: 9
-        },
-        {
-          id: 'rev-init-3',
-          author: 'Meera Nair',
-          city: 'Bengaluru',
-          verified: true,
-          rating: 5,
-          product: '✨ Bespoke Custom Order',
-          category: 'custom',
-          date: 'October 7, 2026',
-          tags: ['✨ Flawless Custom Details', '⚡ Helpful WhatsApp Support', '💌 Heartfelt Handwritten Note'],
-          notes: 'Bhumika helped me design a custom bouquet matching our anniversary colors. She sent photos of yarn skeins on WhatsApp before starting and finished it right on schedule. The craftsmanship is world-class!',
-          photo: '',
-          helpful: 21
-        },
-        {
-          id: 'rev-init-4',
-          author: 'Sneha Roy',
-          city: 'Kolkata',
-          verified: true,
-          rating: 5,
-          product: '👜 Tulip Bloom Tote Bag',
-          category: 'bag',
-          date: 'September 29, 2026',
-          tags: ['🌿 Soft & Premium Milk Cotton', '🎁 Gift-Ready Kraft Packaging'],
-          notes: 'Received so many compliments at college! The straps are sturdy, the tulips are 3D and puffy, and the structure doesn’t sag when holding my book and wallet. A dream crochet bag!',
-          photo: '',
-          helpful: 12
-        },
-        {
-          id: 'rev-init-5',
-          author: 'Pooja Singhania',
-          city: 'Jaipur',
-          verified: true,
-          rating: 5,
-          product: '🌻 Sunflower Crochet Pot',
-          category: 'bouquet',
-          date: 'September 25, 2026',
-          tags: ['🌸 Everlasting Flower Beauty', '🎁 Gift-Ready Kraft Packaging'],
-          notes: 'It sits right next to my workspace and brightens my mood every day. The vibrant yellow petals and little moss details are so lifelike. Supporting a local Jaipur artist feels wonderful.',
-          photo: '',
-          helpful: 16
-        },
-        {
-          id: 'rev-init-6',
-          author: 'Devika Menon',
-          city: 'Kochi',
-          verified: true,
-          rating: 4,
-          product: '📖 Daisy Blossom Bookmark',
-          category: 'custom',
-          date: 'September 18, 2026',
-          tags: ['🌿 Soft & Premium Milk Cotton', '💌 Heartfelt Handwritten Note'],
-          notes: 'Such a sweet gift for my book club friends. Delivery took 5 days via India Post but Bhumika kept me updated on WhatsApp throughout. Beautifully made.',
-          photo: '',
-          helpful: 7
-        }
-      ];
+      const STARTER_REVIEWS = [];
 
       // ----------------------------------------------------------------------
-      // 2. Admin Status Detection & Controls
+      // 2. Admin Moderation Status (Only shown to authenticated admins)
       // ----------------------------------------------------------------------
       const adminBanner = document.getElementById('admin-moderation-banner');
-      const adminTriggerWrap = document.getElementById('admin-mode-trigger-wrap');
-      const btnEnableAdmin = document.getElementById('btn-enable-admin-mode');
       const btnExitAdmin = document.getElementById('btn-admin-exit-mode');
 
-      function checkAdminStatus() {
-        try {
-          const urlParams = new URLSearchParams(window.location.search);
-          if (urlParams.get('admin') === 'true' || urlParams.get('mode') === 'admin') return true;
-
-          const flag = sessionStorage.getItem('swan_admin_moderation_mode');
-          if (flag === 'true') return true;
-          if (flag === 'false') return false;
-
-          const demoUserStr = localStorage.getItem('swan_demo_user');
-          if (demoUserStr) {
-            const user = JSON.parse(demoUserStr);
-            if (user?.role === 'admin' || user?.profile?.role === 'admin' || user?.email === 'swanstudio2604@gmail.com' || user?.profile?.email === 'swanstudio2604@gmail.com') {
-              return true;
-            }
+      let adminActive = false;
+      try {
+        const demoUserStr = localStorage.getItem('swan_demo_user');
+        if (demoUserStr) {
+          const user = JSON.parse(demoUserStr);
+          if (user?.role === 'admin' || user?.profile?.role === 'admin') {
+            adminActive = true;
           }
-          if (localStorage.getItem('swan_admin_session') === 'active' || localStorage.getItem('swan_admin_logged_in') === 'true') {
-            return true;
-          }
-        } catch (e) {}
-        return false;
-      }
-
-      let adminActive = checkAdminStatus();
+        }
+      } catch (e) {}
 
       function updateAdminUI() {
         if (adminBanner) adminBanner.style.display = adminActive ? 'flex' : 'none';
-        if (adminTriggerWrap) adminTriggerWrap.style.display = adminActive ? 'none' : 'flex';
       }
-
-      if (btnEnableAdmin) {
-        btnEnableAdmin.addEventListener('click', () => {
-          adminActive = true;
-          sessionStorage.setItem('swan_admin_moderation_mode', 'true');
-          if (!localStorage.getItem('swan_demo_user')) {
-            localStorage.setItem('swan_demo_user', JSON.stringify({
-              email: 'swanstudio2604@gmail.com',
-              role: 'admin',
-              profile: {
-                id: 'demo-admin-bhumika',
-                email: 'swanstudio2604@gmail.com',
-                full_name: 'Bhumika Nama',
-                role: 'admin'
-              }
-            }));
-          }
-          updateAdminUI();
-          renderFeed();
-          showReviewToast('👑 Admin Atelier Mode active! Delete buttons are now visible on all reviews.');
-        });
-      }
+      updateAdminUI();
 
       if (btnExitAdmin) {
         btnExitAdmin.addEventListener('click', () => {
@@ -611,9 +432,59 @@
       const countFilterAll = document.getElementById('count-filter-all');
       let currentFilter = 'all';
 
+      function updateScorecard(reviews) {
+        const avgEl = document.getElementById('stat-avg-rating');
+        const starsEl = document.getElementById('stat-avg-stars');
+        const totalNotesEl = document.getElementById('stat-total-notes');
+        const satEl = document.getElementById('stat-satisfaction');
+        const headlineEl = document.getElementById('stat-headline');
+
+        if (!reviews || reviews.length === 0) {
+          if (avgEl) avgEl.textContent = '—';
+          if (starsEl) starsEl.textContent = '☆☆☆☆☆';
+          if (headlineEl) headlineEl.textContent = 'Be the First to Review';
+          if (totalNotesEl) totalNotesEl.innerHTML = 'Awaiting customer love notes. Share your experience below!';
+          if (satEl) satEl.textContent = 'Awaiting first reflections';
+          [1, 2, 3, 4, 5].forEach(num => {
+            const bar = document.getElementById(`bar-${num}`);
+            const pct = document.getElementById(`pct-${num}`);
+            if (bar) bar.style.width = '0%';
+            if (pct) pct.textContent = '0%';
+          });
+          return;
+        }
+
+        const total = reviews.length;
+        const sum = reviews.reduce((acc, r) => acc + (Number(r.rating) || 5), 0);
+        const avg = (sum / total).toFixed(1);
+        const roundedStars = Math.round(avg);
+        if (avgEl) avgEl.textContent = avg;
+        if (starsEl) starsEl.textContent = '★'.repeat(roundedStars) + '☆'.repeat(5 - roundedStars);
+        if (headlineEl) headlineEl.textContent = avg >= 4.5 ? 'Exceptional Artisan Quality' : 'Authentic Customer Reviews';
+        if (totalNotesEl) totalNotesEl.innerHTML = `Based on <strong id="total-reviews-count">${total}</strong> customer love notes`;
+
+        const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        reviews.forEach(r => {
+          const star = Math.min(5, Math.max(1, parseInt(r.rating, 10) || 5));
+          counts[star] = (counts[star] || 0) + 1;
+        });
+
+        const fiveStarPct = Math.round((counts[5] / total) * 100);
+        if (satEl) satEl.textContent = `${fiveStarPct}% 5-Star Satisfaction`;
+
+        [1, 2, 3, 4, 5].forEach(num => {
+          const p = Math.round((counts[num] / total) * 100);
+          const bar = document.getElementById(`bar-${num}`);
+          const pct = document.getElementById(`pct-${num}`);
+          if (bar) bar.style.width = `${p}%`;
+          if (pct) pct.textContent = `${p}%`;
+        });
+      }
+
       function renderFeed() {
         updateAdminUI();
         const all = getAllReviews();
+        updateScorecard(all);
         totalReviewsCountEl.textContent = all.length;
         if (countFilterAll) countFilterAll.textContent = all.length;
 
@@ -629,12 +500,27 @@
         visibleCountEl.textContent = filtered.length;
 
         if (filtered.length === 0) {
-          reviewsFeed.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; background: #FFF9FA; border-radius: var(--radius-md); border: 1px dashed var(--rose);">
-              <p style="font-size: 1.1rem; color: var(--cocoa); margin-bottom: 0.5rem;">No reviews found under this filter.</p>
-              <button class="btn btn-outline btn-sm" onclick="document.querySelector('[data-filter=all]').click()">View All Reviews</button>
-            </div>
-          `;
+          if (all.length === 0) {
+            reviewsFeed.innerHTML = `
+              <div style="grid-column: 1 / -1; text-align: center; padding: 3.5rem 1.5rem; background: var(--white); border-radius: var(--radius-md); border: 1.5px dashed var(--rose); box-shadow: var(--shadow-sm);">
+                <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">💌</div>
+                <h3 style="font-size: 1.5rem; color: var(--cocoa); margin-bottom: 0.5rem;">Be the First to Leave a Love Note!</h3>
+                <p style="color: #73615A; max-width: 500px; margin: 0 auto 1.5rem auto; font-size: 0.95rem; line-height: 1.6;">
+                  Swan Studio is an artisanal slow-craft studio founded by Bhumika Nama in Jaipur. If you've received a handcrafted piece, we’d love to feature your reflection below!
+                </p>
+                <a href="#write-review" class="btn btn-primary" onclick="document.getElementById('rev-author-name').focus();">
+                  ✍️ Write the First Review
+                </a>
+              </div>
+            `;
+          } else {
+            reviewsFeed.innerHTML = `
+              <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; background: #FFF9FA; border-radius: var(--radius-md); border: 1px dashed var(--rose);">
+                <p style="font-size: 1.1rem; color: var(--cocoa); margin-bottom: 0.5rem;">No reviews found under this filter.</p>
+                <button class="btn btn-outline btn-sm" onclick="document.querySelector('[data-filter=all]').click()">View All Reviews</button>
+              </div>
+            `;
+          }
           return;
         }
 
@@ -662,7 +548,6 @@
                 <div>
                   <div class="review-user-name">
                     ${r.author}
-                    ${r.verified ? '<span class="review-verified-badge">✓ Verified Buyer</span>' : ''}
                   </div>
                   <div style="font-size: 0.75rem; color: #8A7670;">${r.city || 'India'} &bull; ${r.date}</div>
                 </div>
@@ -684,7 +569,7 @@
               ` : ''}
 
               <div class="review-card-footer">
-                <span style="font-size: 0.75rem; color: #9A8680;">Handcrafted by Bhumika</span>
+                <span style="font-size: 0.75rem; color: #9A8680;"></span>
                 ${adminActive ? `
                   <button type="button" class="btn-delete-review" data-id="${r.id}" data-author="${r.author}" style="background: #FFF0F2; color: #BE123C; border: 1px solid #FDA4AF; border-radius: 4px; padding: 0.28rem 0.6rem; font-size: 0.74rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
                     🗑️ Delete
@@ -972,6 +857,14 @@
             return;
           }
 
+          const hp = document.getElementById('rev-hp');
+          if (hp && hp.value) {
+            console.warn('Bot trapped via review honeypot.');
+            reviewFeedback.style.display = 'block';
+            reviewFeedback.textContent = 'Thank you for your love note!';
+            return;
+          }
+
           const selectedTags = Array.from(document.querySelectorAll('#review-tag-chips .review-tag-chip.selected'))
             .map(chip => chip.dataset.tag);
 
@@ -983,7 +876,7 @@
             id: 'rev-user-' + Date.now(),
             author: nameOnly,
             city: cityOnly,
-            verified: true,
+            verified: false,
             rating: ratingVal,
             product: productSelect,
             category: productSelect.includes('Bouquet') ? 'bouquet' : productSelect.includes('Custom') ? 'custom' : 'general',

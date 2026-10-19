@@ -73,8 +73,11 @@
           <h1 class="admin-page-title">Customer Orders & Fulfillment</h1>
           <p class="admin-page-subtitle">Track incoming orders, monitor handmade crochet production, update dispatch status, and manage courier tracking.</p>
         </div>
-        <div style="display: flex; gap: 0.75rem;">
-          <button id="btn-refresh-orders" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600;">
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button id="btn-export-csv" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600;">
+            📥 Export Orders CSV
+          </button>
+          <button id="btn-refresh-orders" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600;">
             <span id="orders-refresh-icon">🔄</span> Refresh Orders
           </button>
         </div>
@@ -225,10 +228,9 @@
         </div>
       </div>
 
-      <!-- Orders Table -->
+      <!-- Orders Table (Stacked Cards on Phone) -->
       <div class="admin-card admin-table-card">
-        <div class="table-scroll-hint"><span>👉</span> <em>Swipe horizontally to view buyer addresses, totals & fulfillment actions</em></div>
-        <table class="admin-table">
+        <table class="admin-table admin-responsive-cards">
           <thead>
             <tr>
               <th>Order Ref & Date</th>
@@ -838,13 +840,20 @@
                 ${fulfillmentBadge}
                 ${o.trackingNumber ? `<div style="font-size: 0.72rem; color: #3730A3; margin-top: 0.25rem;">📦 ${o.courier ? o.courier + ': ' : ''}<strong>${o.trackingNumber}</strong></div>` : ''}
               </td>
-              <td style="text-align: right; white-space: nowrap;">
-                <button class="btn btn-primary btn-sm btn-edit-order" data-id="${o.orderId}" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;">
-                  Manage
-                </button>
-                <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="padding: 0.35rem 0.65rem; font-size: 0.78rem; margin-left: 0.25rem;" title="Message customer on WhatsApp">
-                  💬 WhatsApp
-                </a>
+              <td style="text-align: right;">
+                <div style="display: flex; gap: 0.45rem; justify-content: flex-end; flex-wrap: wrap;">
+                  <button class="btn btn-primary btn-sm btn-edit-order" data-id="${o.orderId}" style="min-height: 44px; padding: 0.45rem 0.95rem; font-weight: 600;">
+                    📋 Manage
+                  </button>
+                  ${(o.customerPhone) ? `
+                    <a href="tel:${(o.customerPhone || '').replace(/[^0-9]/g, '')}" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.75rem;" title="Call customer phone">
+                      📞 Call
+                    </a>
+                    <a href="${waLink}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.75rem; background: #F0FDF4; border-color: #86EFAC; color: #166534;" title="Message customer on WhatsApp">
+                      💬 WhatsApp
+                    </a>
+                  ` : ''}
+                </div>
               </td>
             </tr>
           `;
@@ -949,21 +958,26 @@
         refreshBarBtn.addEventListener('click', () => loadOrders(true));
       }
 
-      // Wire month filter change and input
-      if (monthFilter) {
-        ['change', 'input'].forEach(evt => {
-          monthFilter.addEventListener(evt, (e) => {
-            currentMonthFilter = e.target.value;
-            sessionStorage.setItem('swan_orders_filter_month', currentMonthFilter);
-            populateMonthControls();
-            renderStats(currentMonthFilter);
-            applyFilters();
-          });
+      // Wire CSV Export
+      const exportBtn = document.getElementById('btn-export-csv');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+          ADMIN.exportOrdersCSV(allOrders);
         });
+      }
+
+      // Check URL query parameters for pre-search (e.g. from Customers directory)
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchParam = urlParams.get('search');
+      if (searchParam) {
+        searchInput.value = searchParam;
       }
 
       // Initial load
       await loadOrders(false);
+      if (searchParam) {
+        applyFilters();
+      }
     });
   </script>
 </body>

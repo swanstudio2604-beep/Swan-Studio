@@ -59,6 +59,32 @@
       color: #9A5565;
       margin-top: 0.25rem;
     }
+
+    @media (max-width: 480px) {
+      .kpi-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.65rem;
+        margin-bottom: 1.25rem;
+      }
+      .kpi-card {
+        padding: 0.85rem;
+      }
+      .kpi-value {
+        font-size: 1.35rem;
+      }
+      .kpi-label {
+        font-size: 0.72rem;
+      }
+      .kpi-subtext {
+        font-size: 0.68rem;
+      }
+    }
+
+    @media (max-width: 340px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -110,6 +136,36 @@
         </div>
       </div>
 
+      <!-- Phone-First Operational Glance (Today & This Week) -->
+      <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem;">
+        <div class="kpi-card" style="border-left: 4px solid var(--rose); padding: 1.15rem;">
+          <div class="kpi-label" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>📅 Today</span>
+            <span style="font-size: 0.68rem; color: #16A34A; background: #DCFCE7; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600;">Live</span>
+          </div>
+          <div class="kpi-value" id="stat-today-revenue" style="font-size: 1.45rem;">₹0</div>
+          <div class="kpi-subtext" id="stat-today-orders-text" style="color: var(--cocoa); font-weight: 500;">0 orders today</div>
+        </div>
+
+        <div class="kpi-card" style="border-left: 4px solid #3B82F6; padding: 1.15rem;">
+          <div class="kpi-label">🗓️ This Week</div>
+          <div class="kpi-value" id="stat-week-revenue" style="font-size: 1.45rem;">₹0</div>
+          <div class="kpi-subtext" id="stat-week-orders-text" style="color: var(--cocoa); font-weight: 500;">0 orders this week</div>
+        </div>
+
+        <a href="custom-orders.html" class="kpi-card" style="border-left: 4px solid #8B5CF6; padding: 1.15rem; text-decoration: none; color: inherit; display: block;">
+          <div class="kpi-label" style="color: #6D28D9;">✨ Pending Custom</div>
+          <div class="kpi-value" id="stat-pending-custom" style="font-size: 1.45rem; color: #7C3AED;">0</div>
+          <div class="kpi-subtext" style="color: #8B5CF6;">Bespoke requests &rarr;</div>
+        </a>
+
+        <a href="#section-low-stock" class="kpi-card" style="border-left: 4px solid #DC2626; padding: 1.15rem; text-decoration: none; color: inherit; display: block;">
+          <div class="kpi-label" style="color: #B91C1C;">⚠️ Low Stock Items</div>
+          <div class="kpi-value" id="stat-low-stock" style="font-size: 1.45rem; color: #DC2626;">0</div>
+          <div class="kpi-subtext" style="color: #EF4444;">Stock &le; 2 units &darr;</div>
+        </a>
+      </div>
+
       <!-- KPI Metrics (Revenue calculated ONLY from verified PAID orders per PRD Section 11 & 12) -->
       <div class="kpi-grid">
         <div class="kpi-card highlight">
@@ -137,12 +193,6 @@
           <div class="kpi-label">Active Creations</div>
           <div class="kpi-value" id="stat-products">...</div>
           <div class="kpi-subtext">Published in catalog</div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-label">Low Stock Items</div>
-          <div class="kpi-value" id="stat-low-stock">...</div>
-          <div class="kpi-subtext">Stock &le; 2 threshold</div>
         </div>
       </div>
 
@@ -280,13 +330,23 @@
           </div>
         </a>
 
-        <a href="../reviews.html" target="_blank" rel="noopener noreferrer" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+        <a href="reviews.html" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
           <div style="width: 52px; height: 52px; border-radius: 8px; background: #FFF6F0; border: 1px dashed var(--rose); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
             💌
           </div>
           <div>
             <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Customer Reviews</h3>
-            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">4.9 ★ ratings & customer notes &rarr;</p>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Moderate & approve buyer ratings &rarr;</p>
+          </div>
+        </a>
+
+        <a href="customers.html" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 52px; height: 52px; border-radius: 8px; background: #FFF6F0; border: 1px dashed var(--rose); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+            👥
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Customer Directory</h3>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Buyer contacts, history & WhatsApp &rarr;</p>
           </div>
         </a>
 
@@ -296,9 +356,40 @@
           </div>
           <div>
             <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Website Content & Story</h3>
-            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Narratives, portrait, hero & policies &rarr;</p>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Hero banner, bio & policies &rarr;</p>
           </div>
         </a>
+
+        <a href="settings.html" class="admin-card" style="padding: 1.5rem; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 52px; height: 52px; border-radius: 8px; background: #FFF6F0; border: 1px dashed var(--rose); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+            ⚙️
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">Store Settings & Security</h3>
+            <p style="font-size: 0.82rem; color: #73615A; margin: 0;">Password, UPI, shipping & thresholds &rarr;</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- Actionable Low-Stock Quick Restock Section -->
+      <div id="section-low-stock" class="admin-card" style="margin-bottom: 2rem; padding: 1.5rem; border: 1.5px solid #FCA5A5; background: linear-gradient(180deg, #FFFDFD 0%, #FFFFFF 100%);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h2 style="font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 0.45rem; color: #991B1B;">
+              <span>⚠️</span> Low Stock Quick Restock
+            </h2>
+            <p style="font-size: 0.8rem; color: #73615A; margin: 0.2rem 0 0 0;">
+              Creations with 2 or fewer units remaining. Quick-tap <strong>+</strong> or <strong>-</strong> to adjust stock directly from your phone.
+            </p>
+          </div>
+          <a href="inventory.html" class="btn btn-secondary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">
+            Full Inventory &rarr;
+          </a>
+        </div>
+
+        <div id="dashboard-low-stock-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.85rem;">
+          <div style="text-align: center; padding: 1.5rem; color: #8A7670;">Checking stock levels...</div>
+        </div>
       </div>
 
       <!-- Verification Queue & Recent Activity -->
@@ -333,6 +424,7 @@
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/payments.js"></script>
+  <script src="../js/custom-orders.js"></script>
   <script src="../js/admin/admin-shared.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -660,6 +752,114 @@
         }
       }
 
+      // 4. Render Today & Week Operations KPIs
+      async function renderTodayAndWeekKPIs() {
+        const now = new Date();
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const weekStart = todayStart - (7 * 24 * 60 * 60 * 1000);
+
+        function parseItemDate(item) {
+          const s = item.createdAt || item.created_at || item.verifiedAt || item.date;
+          if (s) {
+            const t = new Date(s).getTime();
+            if (!isNaN(t)) return t;
+          }
+          return Date.now();
+        }
+
+        const todayOrders = allOrders.filter(o => parseItemDate(o) >= todayStart);
+        const todayPayments = allPayments.filter(p => p.status === 'PAID' && parseItemDate(p) >= todayStart);
+        const todayRev = todayPayments.reduce((acc, p) => acc + (parseFloat(p.amount) || 0), 0);
+
+        const weekOrders = allOrders.filter(o => parseItemDate(o) >= weekStart);
+        const weekPayments = allPayments.filter(p => p.status === 'PAID' && parseItemDate(p) >= weekStart);
+        const weekRev = weekPayments.reduce((acc, p) => acc + (parseFloat(p.amount) || 0), 0);
+
+        const todayRevEl = document.getElementById('stat-today-revenue');
+        if (todayRevEl) todayRevEl.textContent = `₹${Math.round(todayRev).toLocaleString('en-IN')}`;
+
+        const todayOrdersEl = document.getElementById('stat-today-orders-text');
+        if (todayOrdersEl) todayOrdersEl.textContent = `${todayOrders.length} order${todayOrders.length === 1 ? '' : 's'} today`;
+
+        const weekRevEl = document.getElementById('stat-week-revenue');
+        if (weekRevEl) weekRevEl.textContent = `₹${Math.round(weekRev).toLocaleString('en-IN')}`;
+
+        const weekOrdersEl = document.getElementById('stat-week-orders-text');
+        if (weekOrdersEl) weekOrdersEl.textContent = `${weekOrders.length} order${weekOrders.length === 1 ? '' : 's'} this week`;
+
+        // Pending Custom Orders
+        try {
+          if (window.SwanCustomOrders && typeof SwanCustomOrders.getAll === 'function') {
+            const commissions = await SwanCustomOrders.getAll();
+            const pendingCommissions = commissions.filter(c => c.status === 'RECEIVED' || c.status === 'QUOTED' || c.status === 'IN_PROGRESS');
+            const pendingCustomEl = document.getElementById('stat-pending-custom');
+            if (pendingCustomEl) pendingCustomEl.textContent = pendingCommissions.length;
+          }
+        } catch (e) {
+          console.warn('Could not fetch custom commissions for dashboard:', e);
+        }
+      }
+
+      // 5. Render Actionable Dashboard Low-Stock Quick Restock Section
+      let currentProductsList = products;
+      async function renderDashboardLowStock() {
+        const lowStockContainer = document.getElementById('dashboard-low-stock-list');
+        const lowStockKpi = document.getElementById('stat-low-stock');
+        if (!lowStockContainer) return;
+
+        currentProductsList = await ADMIN.getProducts();
+        const lowStockItems = (currentProductsList || []).filter(p => !p.archived_at && (p.stock || 0) <= 2);
+        if (lowStockKpi) lowStockKpi.textContent = lowStockItems.length;
+
+        if (lowStockItems.length === 0) {
+          lowStockContainer.innerHTML = `
+            <div style="grid-column: 1 / -1; padding: 1.5rem; text-align: center; color: #166534; background: #F0FDF4; border-radius: var(--radius-sm); border: 1px dashed #86EFAC;">
+              ✨ All catalog creations are well-stocked! No items are currently at or below the 2-unit threshold.
+            </div>
+          `;
+          return;
+        }
+
+        lowStockContainer.innerHTML = lowStockItems.map(p => {
+          const curStock = p.stock || 0;
+          const isZero = curStock <= 0;
+          return `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; background: #FFFFFF; border: 1px solid var(--admin-border); border-radius: var(--radius-sm); box-shadow: 0 1px 3px rgba(0,0,0,0.03); gap: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
+                <img src="${p.image || p.imageUrl || '../images/placeholder.jpg'}" alt="${p.title}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--admin-border); flex-shrink: 0;" onerror="this.src='../images/logo.png'">
+                <div style="min-width: 0;">
+                  <strong style="display: block; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--admin-text-main);">${p.title}</strong>
+                  <div style="font-size: 0.76rem; color: #8A7670;">₹${p.price} • ${p.category || 'Creations'}</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.45rem; flex-shrink: 0;">
+                <span class="badge ${isZero ? 'badge-danger' : 'badge-warning'}" style="font-weight: 700; font-size: 0.82rem; min-width: 32px; text-align: center;">${curStock}</span>
+                <div style="display: flex; gap: 0.25rem;">
+                  <button type="button" class="btn btn-secondary btn-sm btn-quick-stock" data-id="${p.id}" data-delta="-1" style="width: 44px; height: 44px; padding: 0; font-size: 1.2rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px;" title="Decrease stock by 1">−</button>
+                  <button type="button" class="btn btn-primary btn-sm btn-quick-stock" data-id="${p.id}" data-delta="1" style="width: 44px; height: 44px; padding: 0; font-size: 1.2rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px;" title="Increase stock by 1">+</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        lowStockContainer.querySelectorAll('.btn-quick-stock').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const delta = parseInt(btn.dataset.delta, 10);
+            const prod = currentProductsList.find(p => String(p.id) === String(id));
+            if (!prod) return;
+
+            prod.stock = Math.max(0, (prod.stock || 0) + delta);
+            await ADMIN.saveProducts(currentProductsList);
+            if (window.ADMIN && typeof ADMIN.showToast === 'function') {
+              ADMIN.showToast(`✓ Stock for "${prod.title}" updated to ${prod.stock}`, 'success');
+            }
+            await renderDashboardLowStock();
+          });
+        });
+      }
+
       // Main Data Loader with Refresh Animation
       async function refreshAllData(showSuccessToast = false, source = 'revenue') {
         const spinIcon = document.getElementById('refresh-spin-icon');
@@ -692,6 +892,8 @@
           renderMonthRevenue(currentMonthFilter);
           renderOrdersPipeline();
           renderPendingQueue();
+          await renderTodayAndWeekKPIs();
+          await renderDashboardLowStock();
 
           const nowStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
           if (statusEl) statusEl.textContent = `Refreshed at ${nowStr}`;

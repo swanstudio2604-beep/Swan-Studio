@@ -255,28 +255,45 @@ const AUTH = {
     const cleanId = email.trim().toLowerCase();
     const isAdmin = this.isAdminIdentifier(cleanId);
 
-    // 1. Admin Login Verification (via admin ID or email)
+    // 1. Admin Login Verification (via Server-Side Auth API & Session Cookie)
     if (isAdmin) {
-      const storedAdminPassword = this.getAdminPassword();
-      if (password !== storedAdminPassword) {
-        localStorage.removeItem('swan_demo_user');
-        throw new Error('Invalid Admin credentials. Please check your admin ID and password.');
-      }
+      try {
+        const resp = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: cleanId, password })
+        });
+        const resData = await resp.json();
 
-      const adminProfile = {
-        id: 'admin-bhumika-1',
-        email: 'swanstudio2604@gmail.com',
-        full_name: 'Bhumika Nama',
-        phone: '9509966512',
-        role: 'admin'
-      };
-      const adminSession = {
-        user: { id: adminProfile.id, email: adminProfile.email },
-        profile: adminProfile,
-        isDemo: true
-      };
-      localStorage.setItem('swan_demo_user', JSON.stringify(adminSession));
-      return { session: adminSession, profile: adminProfile, isDemo: true };
+        if (!resp.ok || !resData.success) {
+          localStorage.removeItem('swan_demo_user');
+          throw new Error(resData.error || 'Invalid Admin credentials. Please check your admin ID and password.');
+        }
+
+        const adminProfile = resData.profile || {
+          id: 'admin-bhumika-1',
+          email: 'swanstudio2604@gmail.com',
+          full_name: 'Bhumika Nama',
+          phone: '9509966512',
+          role: 'admin'
+        };
+
+        const adminSession = {
+          user: { id: adminProfile.id, email: adminProfile.email },
+          profile: adminProfile,
+          csrfToken: resData.csrfToken,
+          isDemo: false
+        };
+
+        localStorage.setItem('swan_demo_user', JSON.stringify(adminSession));
+        if (resData.csrfToken) {
+          sessionStorage.setItem('swan_admin_csrf', resData.csrfToken);
+        }
+        return { session: adminSession, profile: adminProfile, isDemo: false };
+      } catch (err) {
+        localStorage.removeItem('swan_demo_user');
+        throw err;
+      }
     }
 
     // 2. Customer Demo Mode Fallback
@@ -410,6 +427,14 @@ const AUTH = {
   async signOut(options = {}) {
     const client = getSupabaseClient();
     localStorage.removeItem('swan_demo_user');
+    sessionStorage.removeItem('swan_admin_csrf');
+
+    // Call server-side admin logout to clear HttpOnly session cookie
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+    } catch (e) {
+      // Ignore network errors on logout
+    }
 
     if (client) {
       try {
@@ -432,6 +457,22 @@ const AUTH = {
    * Guard for Protected Pages (e.g. account.html or admin/)
    */
   async requireAuth({ requireAdmin = false, redirectUrl = 'login.html' } = {}) {
+    if (requireAdmin) {
+      // Verify server session
+      try {
+        const resp = await fetch('/api/admin/session');
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data && data.authenticated && data.profile) {
+            if (data.csrfToken) sessionStorage.setItem('swan_admin_csrf', data.csrfToken);
+            return data.profile;
+          }
+        }
+      } catch (e) {
+        // Fallback to local check if offline
+      }
+    }
+
     const profile = await this.getProfile();
 
     if (!profile) {
@@ -448,20 +489,21 @@ const AUTH = {
   },
 
   /**
-   * Retrieves the current administrator access password
+   * Updates administrator access password via secure server API
    */
-  getAdminPassword() {
-    return localStorage.getItem('swan_admin_password') || 'Bhumika26##';
-  },
-
-  /**
-   * Updates administrator access password
-   */
-  setAdminPassword(newPassword) {
+  async setAdminPassword(currentPassword, newPassword) {
     if (!newPassword || newPassword.length < 8) {
-      throw new Error('Password must be at least 8 characters long.');
+      throw new Error('New password must be at least 8 characters long.');
     }
-    localStorage.setItem('swan_admin_password', newPassword);
+    const resp = await fetch('/api/admin/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.success) {
+      throw new Error(data.error || 'Failed to update administrator password.');
+    }
     return true;
   }
 };

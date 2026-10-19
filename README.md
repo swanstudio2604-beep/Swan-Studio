@@ -98,16 +98,16 @@ npm start
 
 ---
 
-## 👑 Admin Access Credentials (Bhumika Nama)
+## 👑 Admin Access Configuration (Bhumika Nama)
 
-- **Admin Login Page:** `/login.html`
+- **Admin Login Page:** `/login.html` (or direct `/admin` which automatically redirects if not logged in)
 - **Master Admin Email:** `swanstudio2604@gmail.com`
-- **Admin Password:** `Bhumika26##`
+- **Admin Password:** Configured securely via `ADMIN_INITIAL_PASSWORD` environment variable or generated into gitignored `.admin-auth.secret` using PBKDF2 with 100,000 rounds.
 
-Upon signing in with these credentials, the system redirects to `/admin/index.html` with full administrative privileges. Non-admin users and invalid passwords are automatically rejected.
+Upon signing in with the master admin credentials, the system establishes a secure, HttpOnly server session cookie (`swan_admin_session`) and redirects to `/admin/index.html` with full administrative privileges. Non-admin users and invalid passwords are automatically rejected with brute-force rate-limiting (lockout after 5 failed attempts).
 
 When connecting Supabase production database:
-1. Bhumika signs up at `/signup.html` using `swanstudio2604@gmail.com` and `Bhumika26##`.
+1. Bhumika signs up at `/signup.html` using `swanstudio2604@gmail.com` and a secure password.
 2. In the Supabase SQL Editor, run this command to elevate her to administrator:
    ```sql
    UPDATE public.profiles

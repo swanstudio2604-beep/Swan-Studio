@@ -353,3 +353,34 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
 );
 
 COMMENT ON TABLE public.site_settings IS 'Single-row global store configuration for UPI ID, WhatsApp, and shipping rules.';
+
+-- ----------------------------------------------------------------------------
+-- 13. Table: reviews
+-- Customer product reviews and handmade creation testimonials
+-- Moderation stages: PENDING, APPROVED, HIDDEN
+-- Only approved reviews show publicly on the store. No fake reviews creatable from admin.
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.reviews (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
+  order_id UUID REFERENCES public.orders(id) ON DELETE SET NULL,
+  author_name TEXT NOT NULL,
+  author_city TEXT DEFAULT 'India',
+  rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  title TEXT DEFAULT '',
+  comment TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'APPROVED', 'HIDDEN')),
+  verified_purchase BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+COMMENT ON TABLE public.reviews IS 'Real customer reviews requiring admin approval before displaying on the public store.';
+CREATE INDEX IF NOT EXISTS idx_reviews_status ON public.reviews(status);
+CREATE INDEX IF NOT EXISTS idx_reviews_product ON public.reviews(product_id);
+
+CREATE TRIGGER trg_reviews_updated_at
+  BEFORE UPDATE ON public.reviews
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+

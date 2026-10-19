@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Store Settings & Security — Swan Studio Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css?v=m3">
+  <style>
+    @media (max-width: 600px) {
+      .admin-card {
+        padding: 1.15rem 1rem !important;
+      }
+      .admin-card h2 {
+        font-size: 1.15rem !important;
+      }
+      .admin-card form div[style*="justify-content: flex-end"] {
+        justify-content: stretch !important;
+        width: 100% !important;
+      }
+      .admin-card form button[type="submit"] {
+        width: 100% !important;
+        justify-content: center !important;
+        text-align: center !important;
+        display: flex !important;
+      }
+      .admin-main div[style*="max-width: 760px"] {
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Application Wrapper -->
+  <div class="admin-container" id="admin-app" style="display: none;">
+    
+    <!-- Sidebar Mount (Injected by admin-shared.js) -->
+    <div id="admin-sidebar-mount"></div>
+
+    <!-- Main Workspace -->
+    <main class="admin-main">
+      <div class="admin-header-row">
+        <div>
+          <h1 class="admin-page-title">Store Settings</h1>
+          <p class="admin-page-subtitle">
+            Configure payment methods, UPI ID, shipping rates, Cash on Delivery, and administrator password.
+          </p>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 760px;">
+
+        <!-- 1. Payment & UPI Configuration -->
+        <div class="admin-card" style="padding: 1.5rem;">
+          <h2 style="font-size: 1.25rem; color: var(--cocoa); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>💳</span> UPI Payment & WhatsApp Details
+          </h2>
+          <p style="font-size: 0.85rem; color: #8A7670; margin-bottom: 1.25rem;">
+            These details are shown to customers on checkout and payment instructions.
+          </p>
+
+          <form id="settings-payment-form">
+            <div class="form-group">
+              <label for="set-upi-id" class="form-label">Primary UPI ID <span style="color: var(--rose);">*</span></label>
+              <input type="text" id="set-upi-id" class="form-control" value="9509966512@fam" required placeholder="e.g. 9509966512@fam or yourname@okaxis">
+              <small style="color: #8A7670; font-size: 0.78rem;">Shown on customer QR code and manual UPI transfer instructions.</small>
+            </div>
+
+            <div class="form-group">
+              <label for="set-whatsapp" class="form-label">WhatsApp Contact Number <span style="color: var(--rose);">*</span></label>
+              <input type="tel" id="set-whatsapp" class="form-control" value="9509966512" required placeholder="10-digit mobile number" inputmode="tel">
+              <small style="color: #8A7670; font-size: 0.78rem;">Used for customer inquiry and order update links.</small>
+            </div>
+
+            <div class="form-group" style="margin-top: 1.25rem; padding: 0.85rem 1rem; background: #FFF9F7; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+              <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; gap: 1rem;">
+                <div>
+                  <strong style="color: var(--cocoa); font-size: 0.95rem; display: block;">Enable Cash on Delivery (COD)</strong>
+                  <span style="font-size: 0.78rem; color: #73615A;">Allow buyers across India to pay cash upon parcel delivery.</span>
+                </div>
+                <input type="checkbox" id="set-cod-enabled" style="width: 22px; height: 22px; accent-color: var(--rose); cursor: pointer;">
+              </label>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
+              <button type="submit" id="btn-save-payments" class="btn btn-primary btn-sm" style="min-height: 44px; padding: 0.5rem 1.25rem;">
+                Save Payment Settings
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 2. Shipping Charges & Low-Stock Alerts -->
+        <div class="admin-card" style="padding: 1.5rem;">
+          <h2 style="font-size: 1.25rem; color: var(--cocoa); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🚚</span> Shipping Charges & Stock Rules
+          </h2>
+          <p style="font-size: 0.85rem; color: #8A7670; margin-bottom: 1.25rem;">
+            Controls cart delivery fees, free delivery qualifications, and inventory warnings.
+          </p>
+
+          <form id="settings-shipping-form">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label for="set-shipping-fee" class="form-label">Standard Delivery Fee (₹)</label>
+                <input type="number" id="set-shipping-fee" class="form-control" value="99" min="0" step="1" inputmode="numeric">
+              </div>
+
+              <div class="form-group">
+                <label for="set-free-threshold" class="form-label">Free Delivery Threshold (₹)</label>
+                <input type="number" id="set-free-threshold" class="form-control" value="1499" min="0" step="1" inputmode="numeric">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="set-low-stock" class="form-label">Low Stock Alert Threshold (Units)</label>
+              <input type="number" id="set-low-stock" class="form-control" value="2" min="1" step="1" inputmode="numeric">
+              <small style="color: #8A7670; font-size: 0.78rem;">Creations with stock at or below this number trigger a yellow/red warning on dashboard.</small>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
+              <button type="submit" id="btn-save-shipping" class="btn btn-primary btn-sm" style="min-height: 44px; padding: 0.5rem 1.25rem;">
+                Save Shipping Rules
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 3. Change Administrator Password -->
+        <div class="admin-card" style="padding: 1.5rem; border-left: 4px solid var(--rose);">
+          <h2 style="font-size: 1.25rem; color: var(--cocoa); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🔒</span> Administrator Password
+          </h2>
+          <p style="font-size: 0.85rem; color: #8A7670; margin-bottom: 1.25rem;">
+            Update your secret atelier password. Minimum 8 characters.
+          </p>
+
+          <form id="settings-password-form">
+            <div class="form-group">
+              <label for="set-curr-password" class="form-label">Current Password <span style="color: var(--rose);">*</span></label>
+              <input type="password" id="set-curr-password" class="form-control" placeholder="Enter current admin password" required autocomplete="current-password">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label for="set-new-password" class="form-label">New Password <span style="color: var(--rose);">*</span></label>
+                <input type="password" id="set-new-password" class="form-control" placeholder="At least 8 characters" required minlength="8" autocomplete="new-password">
+              </div>
+
+              <div class="form-group">
+                <label for="set-confirm-password" class="form-label">Confirm New Password <span style="color: var(--rose);">*</span></label>
+                <input type="password" id="set-confirm-password" class="form-control" placeholder="Repeat new password" required minlength="8" autocomplete="new-password">
+              </div>
+            </div>
+
+            <div id="password-feedback" style="display: none; padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem; font-size: 0.85rem;"></div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
+              <button type="submit" id="btn-save-password" class="btn btn-primary btn-sm" style="min-height: 44px; padding: 0.5rem 1.25rem;">
+                Update Admin Password
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 4. Render Free Hosting Notice & Performance Fix -->
+        <div class="admin-card" style="padding: 1.5rem; background: #F8FAFC; border: 1px solid #CBD5E1;">
+          <h2 style="font-size: 1.15rem; color: #1E293B; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>⚡</span> Server Hosting & Free Tier Cold-Start Note
+          </h2>
+          <p style="font-size: 0.85rem; color: #475569; line-height: 1.5; margin-bottom: 0.85rem;">
+            Swan Studio is hosted on Render. On Render's Free tier, the web service automatically spins down when inactive for 15 minutes. The very first page load can take <strong>30–50 seconds</strong> while the server wakes up.
+          </p>
+
+          <div style="background: #FFFFFF; padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid #E2E8F0; font-size: 0.82rem; color: #334155; line-height: 1.5;">
+            <strong style="color: var(--cocoa); display: block; margin-bottom: 0.25rem;">Recommended Fixes for Bhumika:</strong>
+            <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
+              <li><strong>Free Uptime Ping (Zero Cost):</strong> Set up a free monitor on <a href="https://uptimerobot.com" target="_blank" rel="noopener noreferrer" style="color: var(--rose-text); text-decoration: underline;">UptimeRobot.com</a> or <a href="https://cron-job.org" target="_blank" rel="noopener noreferrer" style="color: var(--rose-text); text-decoration: underline;">cron-job.org</a> pinging <code>https://swan-studio.onrender.com/health</code> every 10 minutes. This keeps the server permanently awake for 100% free!</li>
+              <li><strong>Render Starter Tier ($7/mo):</strong> Upgrading to a paid Render instance keeps the server always-on with zero cold starts.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Mount -->
+      <div id="admin-footer-mount"></div>
+    </main>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin/admin-shared.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const authorized = await ADMIN.init('settings');
+      if (!authorized) return;
+
+      // Load Settings from LocalStorage / Server
+      const storedSettings = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
+      if (storedSettings.upiId) document.getElementById('set-upi-id').value = storedSettings.upiId;
+      if (storedSettings.whatsapp) document.getElementById('set-whatsapp').value = storedSettings.whatsapp;
+      if (storedSettings.codEnabled !== undefined) document.getElementById('set-cod-enabled').checked = storedSettings.codEnabled;
+      if (storedSettings.shippingFee !== undefined) document.getElementById('set-shipping-fee').value = storedSettings.shippingFee;
+      if (storedSettings.freeThreshold !== undefined) document.getElementById('set-free-threshold').value = storedSettings.freeThreshold;
+      if (storedSettings.lowStock !== undefined) document.getElementById('set-low-stock').value = storedSettings.lowStock;
+
+      // Save Payment Settings
+      document.getElementById('settings-payment-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const upiId = document.getElementById('set-upi-id').value.trim();
+        const whatsapp = document.getElementById('set-whatsapp').value.trim();
+        const codEnabled = document.getElementById('set-cod-enabled').checked;
+
+        const current = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
+        current.upiId = upiId;
+        current.whatsapp = whatsapp;
+        current.codEnabled = codEnabled;
+        localStorage.setItem('swan_site_settings', JSON.stringify(current));
+
+        ADMIN.showToast('✓ Payment & WhatsApp details saved successfully!');
+      });
+
+      // Save Shipping Rules
+      document.getElementById('settings-shipping-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const shippingFee = parseFloat(document.getElementById('set-shipping-fee').value) || 99;
+        const freeThreshold = parseFloat(document.getElementById('set-free-threshold').value) || 1499;
+        const lowStock = parseInt(document.getElementById('set-low-stock').value, 10) || 2;
+
+        const current = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
+        current.shippingFee = shippingFee;
+        current.freeThreshold = freeThreshold;
+        current.lowStock = lowStock;
+        localStorage.setItem('swan_site_settings', JSON.stringify(current));
+
+        ADMIN.showToast('✓ Shipping rules & stock thresholds updated!');
+      });
+
+      // Change Password
+      const passForm = document.getElementById('settings-password-form');
+      const passFeedback = document.getElementById('password-feedback');
+      const passBtn = document.getElementById('btn-save-password');
+
+      passForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        passFeedback.style.display = 'none';
+
+        const curr = document.getElementById('set-curr-password').value;
+        const next = document.getElementById('set-new-password').value;
+        const conf = document.getElementById('set-confirm-password').value;
+
+        if (next !== conf) {
+          passFeedback.style.display = 'block';
+          passFeedback.style.background = '#FEE2E2';
+          passFeedback.style.color = '#991B1B';
+          passFeedback.textContent = 'New passwords do not match. Please verify.';
+          return;
+        }
+
+        if (next.length < 8) {
+          passFeedback.style.display = 'block';
+          passFeedback.style.background = '#FEE2E2';
+          passFeedback.style.color = '#991B1B';
+          passFeedback.textContent = 'Password must be at least 8 characters long.';
+          return;
+        }
+
+        passBtn.disabled = true;
+        passBtn.textContent = 'Updating password...';
+
+        try {
+          await AUTH.setAdminPassword(curr, next);
+          passFeedback.style.display = 'block';
+          passFeedback.style.background = '#ECFDF5';
+          passFeedback.style.color = '#047857';
+          passFeedback.textContent = '✓ Administrator password successfully updated!';
+          passForm.reset();
+          ADMIN.showToast('✓ Administrator password changed successfully!');
+        } catch (err) {
+          passFeedback.style.display = 'block';
+          passFeedback.style.background = '#FEE2E2';
+          passFeedback.style.color = '#991B1B';
+          passFeedback.textContent = err.message || 'Failed to update password.';
+        } finally {
+          passBtn.disabled = false;
+          passBtn.textContent = 'Update Admin Password';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

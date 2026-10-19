@@ -811,9 +811,222 @@ body {
   #admin-shared-toast {
     left: 0.85rem !important;
     right: 0.85rem !important;
-    bottom: 1.25rem !important;
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important;
     justify-content: center;
     text-align: center;
+  }
+}
+
+/* ==========================================================================
+   Mobile Bottom Navigation Tab Bar & Mobile-First Ergonomics
+   ========================================================================== */
+.admin-bottom-tabbar {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .admin-bottom-tabbar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: #FFFFFF;
+    border-top: 1px solid var(--admin-border);
+    box-shadow: 0 -3px 14px rgba(66, 53, 49, 0.08);
+    z-index: 995;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .admin-tabbar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    min-height: 48px;
+    min-width: 44px;
+    color: #73615A;
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.2rem 0;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+
+  .admin-tabbar-item:active {
+    transform: scale(0.95);
+  }
+
+  .admin-tabbar-item.active {
+    color: var(--rose-text);
+    font-weight: 700;
+  }
+
+  .admin-tabbar-item .tab-icon {
+    font-size: 1.25rem;
+    line-height: 1.1;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* Make sure main content is never obstructed by bottom bar */
+  .admin-main {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Touch Targets (at least 44x44px per Section A) */
+  .btn,
+  .btn-sm,
+  .btn-action,
+  .category-pill,
+  button:not(.admin-tabbar-item):not(.btn-month-pill),
+  a.btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  /* Form Inputs (Font-size at least 16px to prevent iOS auto-zoom) */
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea,
+  .form-control,
+  .admin-search-input {
+    font-size: 16px !important;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  /* Internal scrolling dialogs with dynamic viewport height (dvh) */
+  .modal-dialog {
+    max-height: 88dvh !important;
+    max-height: 88vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+  }
+
+  /* Stacked card layouts replacing wide desktop tables */
+  .admin-responsive-cards thead {
+    display: none !important;
+  }
+
+  .admin-responsive-cards,
+  .admin-responsive-cards tbody,
+  .admin-responsive-cards tr,
+  .admin-responsive-cards td {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-table-card:has(.admin-responsive-cards) {
+    overflow-x: visible !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .admin-responsive-cards tr {
+    background: #FFFFFF !important;
+    border: 1px solid var(--admin-border) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+    box-shadow: 0 2px 8px rgba(66, 53, 49, 0.04) !important;
+  }
+
+  .admin-responsive-cards td {
+    border: none !important;
+    padding: 0.35rem 0 !important;
+    text-align: left !important;
+    max-width: 100% !important;
+    word-break: break-word !important;
+  }
+
+  .admin-responsive-cards td:last-child {
+    margin-top: 0.5rem !important;
+    padding-top: 0.75rem !important;
+    border-top: 1px dashed var(--admin-border) !important;
+  }
+
+  .admin-responsive-cards td div[style*="justify-content: flex-end"] {
+    justify-content: flex-start !important;
+    width: 100% !important;
+    flex-wrap: wrap !important;
+    gap: 0.45rem !important;
+  }
+
+  /* Responsive Charts & Donut Breakdowns */
+  .chart-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .chart-card {
+    padding: 1.15rem 0.85rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .donut-layout {
+    flex-direction: column !important;
+    gap: 1rem !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .donut-legend-list {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .bars-container {
+    gap: 0.35rem !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .bar-col {
+    min-width: 36px !important;
+  }
+
+  .bar-lbl {
+    font-size: 0.68rem !important;
+    max-width: 44px !important;
+  }
+
+  /* Sticky primary mobile action button */
+  .sticky-mobile-save {
+    position: sticky;
+    bottom: calc(65px + env(safe-area-inset-bottom, 0px));
+    z-index: 50;
+    background: #FFFFFF;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--admin-border);
   }
 }
 
@@ -882,10 +1095,13 @@ body {
    ========================================================================== */
 .chart-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
   gap: 1.5rem;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .chart-card {
@@ -894,6 +1110,9 @@ body {
   border: 1px solid var(--admin-border);
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(66, 53, 49, 0.04);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .chart-header {

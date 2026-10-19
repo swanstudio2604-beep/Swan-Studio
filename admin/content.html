@@ -487,38 +487,86 @@
       .atelier-header-banner p.admin-page-subtitle {
         font-size: 0.82rem !important;
       }
+      .atelier-header-banner {
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+      }
+      .atelier-header-banner h1.admin-page-title {
+        font-size: 1.35rem !important;
+        line-height: 1.25 !important;
+        margin-bottom: 0.35rem !important;
+      }
+      .atelier-header-banner p.admin-page-subtitle {
+        font-size: 0.8rem !important;
+        margin-bottom: 0.5rem !important;
+      }
+      .atelier-header-banner > div:first-child > div:last-child {
+        display: none !important; /* Hide redundant top buttons on mobile */
+      }
       .atelier-metrics-strip {
-        gap: 0.4rem !important;
-        margin-top: 0.85rem !important;
-        padding-top: 0.75rem !important;
+        display: none !important; /* Hide bulky metric chips on phone */
       }
-      .atelier-metric-chip {
-        font-size: 0.72rem !important;
-        padding: 0.25rem 0.65rem !important;
-      }
+
+      /* Clean Mobile 2x2 Tab Grid so all 4 tabs are 100% visible */
       .content-tab-nav {
-        padding: 0.25rem !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.45rem !important;
+        padding: 0.45rem !important;
         margin-bottom: 1.25rem !important;
-        border-radius: 12px !important;
+        border-radius: var(--radius-md) !important;
+        background: #F4EAE6 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: visible !important;
       }
       .content-tab-btn {
-        padding: 0.55rem 0.85rem !important;
-        font-size: 0.82rem !important;
+        width: 100% !important;
+        padding: 0.65rem 0.5rem !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
         border-radius: 8px !important;
-        gap: 0.35rem !important;
+        justify-content: center !important;
+        text-align: center !important;
+        white-space: normal !important;
+        line-height: 1.25 !important;
+        min-height: 44px !important;
+        box-sizing: border-box !important;
       }
       .content-tab-btn .tab-tag {
         display: none !important;
       }
+
+      /* Store Operations & Shipping Mobile Layout */
+      .store-settings-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.25rem !important;
+        margin-bottom: 2rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .store-settings-grid > div {
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .shipping-rates-grid,
+      .store-settings-grid div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+        gap: 0.85rem !important;
+      }
+
       .admin-card {
         padding: 1.15rem 1rem !important;
         margin-bottom: 1.25rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
       }
       .admin-card-header-styled {
         gap: 0.6rem !important;
       }
       .card-title-styled {
-        font-size: 1.2rem !important;
+        font-size: 1.15rem !important;
       }
       .card-subtitle-styled {
         margin: 0.35rem 0 1rem 0 !important;
@@ -531,7 +579,6 @@
       .admin-card div[style*="grid-template-columns: 1.1fr 0.9fr"],
       .admin-card div[style*="grid-template-columns: 1fr 1fr"],
       .admin-card div[style*="grid-template-columns"],
-      .store-settings-grid,
       .upload-options-grid,
       div[style*="grid-template-columns: 1fr 1fr"] {
         grid-template-columns: 1fr !important;
@@ -611,32 +658,61 @@
         width: 130px !important;
         height: 170px !important;
       }
+
+      .reviews-stat-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.65rem !important;
+      }
+
+      /* Clean Sticky Floating Save Bar Above Bottom Tab Bar */
       .sticky-save-dock {
         position: fixed !important;
-        bottom: 0 !important;
+        bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
         max-width: 100vw !important;
-        border-radius: 16px 16px 0 0 !important;
+        border-radius: 14px 14px 0 0 !important;
         margin: 0 !important;
-        z-index: 9999 !important;
-        padding: 0.75rem 1rem !important;
+        z-index: 850 !important;
+        padding: 0.5rem 0.65rem !important;
         box-sizing: border-box !important;
-        box-shadow: 0 -4px 20px rgba(66, 53, 49, 0.16) !important;
+        box-shadow: 0 -4px 16px rgba(66, 53, 49, 0.12) !important;
         background: rgba(255, 255, 255, 0.98) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border-top: 1.5px solid rgba(199, 131, 145, 0.35) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 0.45rem !important;
       }
-      .sticky-save-dock > div:first-child span:last-child {
+      .sticky-save-dock > div:first-child {
         display: none !important;
       }
+      .sticky-save-dock > div:last-child {
+        width: 100% !important;
+        display: flex !important;
+        gap: 0.45rem !important;
+        box-sizing: border-box !important;
+      }
       .sticky-save-dock .btn {
-        padding: 0.55rem 0.85rem !important;
-        font-size: 0.82rem !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        min-height: 44px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 0.78rem !important;
+        padding: 0.5rem 0.35rem !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        box-sizing: border-box !important;
       }
       .admin-main {
-        padding-bottom: 95px !important;
+        padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px)) !important;
       }
     }
   </style>
@@ -699,23 +775,19 @@
       <!-- Save Feedback Alert -->
       <div id="save-feedback" style="display: none; padding: 1rem 1.25rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; font-size: 0.92rem;"></div>
 
-      <!-- Segmented Navigation Tabs -->
+      <!-- Segmented Navigation Tabs (2x2 Grid on Mobile, Row on Desktop) -->
       <nav class="content-tab-nav" aria-label="Content Management Tabs">
         <button type="button" class="content-tab-btn active" id="tab-btn-story" data-tab="tab-story">
-          <span>📖</span> "Our Story" & Meet the Maker
-          <span class="tab-tag">about.html</span>
+          <span>📖</span> Story & Bio
         </button>
         <button type="button" class="content-tab-btn" id="tab-btn-home" data-tab="tab-home">
-          <span>🏠</span> Homepage Visuals & Hero
-          <span class="tab-tag">index.html</span>
+          <span>🏠</span> Homepage Hero
         </button>
         <button type="button" class="content-tab-btn" id="tab-btn-featured" data-tab="tab-featured">
-          <span>⭐</span> Featured Creations
-          <span class="tab-tag">index.html</span>
+          <span>⭐</span> Featured Items
         </button>
         <button type="button" class="content-tab-btn" id="tab-btn-store" data-tab="tab-store">
-          <span>⚙️</span> Store Operations & Shipping
-          <span class="tab-tag">checkout & policy</span>
+          <span>⚙️</span> Store & Shipping
         </button>
       </nav>
 
@@ -1218,7 +1290,7 @@
         <!-- =================================================================== -->
         <div id="tab-store" class="tab-pane">
 
-          <div class="store-settings-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; margin-bottom: 4rem;">
+          <div class="store-settings-grid">
             
             <!-- Left Column: Payment & Shipping Operations -->
             <div>
@@ -1239,14 +1311,13 @@
                 </div>
 
                 <div class="form-group" style="margin-top: 1rem;">
-                  <label for="cfg-admin-pass" class="form-label">Admin Access Password <span style="color: var(--rose);">*</span></label>
-                  <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-                    <input type="text" id="cfg-admin-pass" class="form-control" value="Bhumika26##" required style="font-family: monospace; font-weight: 600; flex: 1; min-width: 180px;">
-                    <button type="button" id="btn-save-admin-pass" class="btn btn-primary btn-sm" style="white-space: nowrap; padding: 0.55rem 0.95rem;">
-                      💾 Update Password
-                    </button>
-                  </div>
-                  <small style="color: #8A7670; font-size: 0.75rem;">Used at /login.html to authenticate admin access.</small>
+                  <label class="form-label">Admin Security & Password</label>
+                  <p style="font-size: 0.82rem; color: #73615A; margin-bottom: 0.75rem;">
+                    Admin authentication is secured server-side with session cookies and PBKDF2 hashing.
+                  </p>
+                  <a href="settings.html" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.5rem 1rem; width: 100%;">
+                    ⚙️ Manage Password & Store Settings &rarr;
+                  </a>
                 </div>
               </div>
 
@@ -1267,19 +1338,19 @@
                 </div>
 
                 <!-- Live Checkout Preview Simulation -->
-                <div style="background: var(--cream); border-radius: var(--radius-sm); padding: 1rem; border: 1.5px dashed var(--rose); margin-top: 1rem;">
+                <div style="background: var(--cream); border-radius: var(--radius-sm); padding: 0.85rem 1rem; border: 1.5px dashed var(--rose); margin-top: 1rem;">
                   <span style="font-size: 0.74rem; text-transform: uppercase; color: #8A7670; font-weight: 700; display: block; margin-bottom: 0.25rem;">
                     Customer Checkout Preview
                   </span>
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                     <div>
-                      <strong id="sim-upi-display" style="font-size: 1.1rem; color: var(--cocoa); font-family: monospace;">9509966512@fam</strong>
+                      <strong id="sim-upi-display" style="font-size: 1.05rem; color: var(--cocoa); font-family: monospace; word-break: break-all;">9509966512@fam</strong>
                     </div>
-                    <span class="btn btn-secondary btn-sm" style="font-size: 0.75rem; pointer-events: none; padding: 0.3rem 0.65rem;">
+                    <span class="btn btn-secondary btn-sm" style="font-size: 0.75rem; pointer-events: none; padding: 0.3rem 0.65rem; white-space: nowrap;">
                       📋 Copy UPI ID
                     </span>
                   </div>
-                  <div style="font-size: 0.75rem; color: #73615A; margin-top: 0.65rem; border-top: 1px dashed rgba(199, 131, 145, 0.4); padding-top: 0.5rem;">
+                  <div style="font-size: 0.74rem; color: #73615A; margin-top: 0.5rem; border-top: 1px dashed rgba(199, 131, 145, 0.4); padding-top: 0.4rem; line-height: 1.4;">
                     Policy: <em>"Your order has been placed. Your payment is awaiting verification."</em>
                   </div>
                 </div>
@@ -1295,29 +1366,29 @@
                   Values automatically calculate delivery fees in the customer shopping bag.
                 </p>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.15rem;">
+                <div class="shipping-rates-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem;">
                   <div class="form-group">
                     <label for="cfg-free-ship" class="form-label">Free Shipping At (₹) <span style="color: var(--rose);">*</span></label>
-                    <input type="number" id="cfg-free-ship" class="form-control" value="1499" min="0" step="1" required>
+                    <input type="number" id="cfg-free-ship" class="form-control" value="1499" min="0" step="1" required inputmode="numeric">
                     <small style="color: #8A7670; font-size: 0.75rem;">Orders at/above get free delivery.</small>
                   </div>
 
                   <div class="form-group">
                     <label for="cfg-std-ship" class="form-label">Standard Fee (₹) <span style="color: var(--rose);">*</span></label>
-                    <input type="number" id="cfg-std-ship" class="form-control" value="99" min="0" step="1" required>
+                    <input type="number" id="cfg-std-ship" class="form-control" value="99" min="0" step="1" required inputmode="numeric">
                     <small style="color: #8A7670; font-size: 0.75rem;">Applied below free threshold.</small>
                   </div>
                 </div>
 
-                <div class="form-group" style="margin-top: 0.5rem;">
+                <div class="form-group" style="margin-top: 0.75rem;">
                   <label for="cfg-low-stock" class="form-label">Low Stock Threshold (Units) <span style="color: var(--rose);">*</span></label>
-                  <input type="number" id="cfg-low-stock" class="form-control" value="2" min="1" step="1" required>
+                  <input type="number" id="cfg-low-stock" class="form-control" value="2" min="1" step="1" required inputmode="numeric">
                   <small style="color: #8A7670; font-size: 0.75rem;">Triggers urgency badges in catalog when inventory &le; threshold.</small>
                 </div>
 
                 <!-- Live Shipping Meter Simulation -->
                 <div style="background: #FFFDF9; border-radius: var(--radius-sm); padding: 0.85rem 1rem; border: 1px solid var(--border-subtle); margin-top: 1rem;">
-                  <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; margin-bottom: 0.35rem;">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.35rem;">
                     <span>Shopping Bag Progress Meter</span>
                     <span style="color: #2B7A4B;" id="sim-ship-tag">Free Shipping at ₹1,499</span>
                   </div>
@@ -1344,16 +1415,16 @@
 
                 <div class="form-group">
                   <label for="cfg-whatsapp" class="form-label">Official WhatsApp Helpline <span style="color: var(--rose);">*</span></label>
-                  <input type="text" id="cfg-whatsapp" class="form-control" value="9509966512" required>
+                  <input type="tel" id="cfg-whatsapp" class="form-control" value="9509966512" required inputmode="tel">
                   <small style="color: #8A7670; font-size: 0.75rem;">10-digit WhatsApp number for customer care.</small>
                 </div>
 
-                <div style="margin-top: 0.75rem; padding: 0.85rem; background: #F0FBF4; border-radius: var(--radius-sm); border: 1px solid #A5D6A7; display: flex; align-items: center; justify-content: space-between;">
+                <div style="margin-top: 0.75rem; padding: 0.85rem; background: #F0FBF4; border-radius: var(--radius-sm); border: 1px solid #A5D6A7; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem;">
                   <div>
                     <span style="font-size: 0.85rem; font-weight: 600; color: #1B5E20; display: block;">📲 WhatsApp Direct Concierge</span>
                     <span style="font-size: 0.75rem; color: #2E7D32;" id="sim-wa-link">wa.me/919509966512</span>
                   </div>
-                  <a id="btn-test-wa" href="https://wa.me/919509966512" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+                  <a id="btn-test-wa" href="https://wa.me/919509966512" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.35rem 0.75rem; white-space: nowrap;">
                     Test Link ↗
                   </a>
                 </div>
@@ -1379,20 +1450,26 @@
                 </div>
               </div>
 
-              <!-- Card 4: Instagram Community & Official QR -->
-              <div class="admin-card" style="margin-top: 1.75rem;">
+              <!-- Card 4: Instagram Profile Link -->
+              <div class="admin-card" style="margin-top: 1.5rem;">
                 <div class="admin-card-header-styled">
-                  <div class="card-icon-badge">📷</div>
-                  <h2 class="card-title-styled">Instagram Community & Official QR</h2>
+                  <div class="card-icon-badge" style="padding: 0; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: rgba(199, 131, 145, 0.15); color: var(--rose-text);">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                  </div>
+                  <h2 class="card-title-styled">Instagram Profile Link</h2>
                 </div>
                 <p class="card-subtitle-styled">
-                  Connected across the footer, about page, and contact channels.
+                  Direct official link to Bhumika's Instagram profile used across footer and homepage logo buttons.
                 </p>
 
                 <div class="form-group">
                   <label for="cfg-instagram-url" class="form-label">Official Instagram Profile URL <span style="color: var(--rose);">*</span></label>
-                  <input type="url" id="cfg-instagram-url" class="form-control" value="https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==" required>
-                  <small style="color: #8A7670; font-size: 0.75rem;">Direct link to Bhumika's Instagram account.</small>
+                  <input type="url" id="cfg-instagram-url" class="form-control" value="https://www.instagram.com/swan_handcrafted_studio.3568" required>
+                  <small style="color: #8A7670; font-size: 0.75rem;">Clean URL without tracking parameters.</small>
                 </div>
 
                 <div class="form-group">
@@ -1400,57 +1477,53 @@
                   <input type="text" id="cfg-instagram-handle" class="form-control" value="@swan_handcrafted_studio.3568">
                 </div>
 
-                <!-- QR Code Preview Card -->
-                <div style="background: #FFF8F9; border-radius: var(--radius-sm); padding: 1.25rem; border: 1.5px dashed var(--rose); margin-top: 1rem; display: flex; align-items: center; gap: 1.25rem;">
-                  <div style="width: 75px; aspect-ratio: 1080 / 1574; border-radius: 10px; overflow: hidden; background: #fff; border: 1px solid rgba(199, 131, 145, 0.4); padding: 3px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(199, 131, 145, 0.15);">
-                    <img src="../assets/images/instagram-qr.jpeg" alt="Instagram QR Preview" style="width: 100%; height: 100%; object-fit: contain; border-radius: 7px; display: block;">
+                <!-- Instagram Logo Button Preview -->
+                <div style="background: #FFF8F9; border-radius: var(--radius-sm); padding: 1rem; border: 1.5px solid rgba(199, 131, 145, 0.3); margin-top: 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                  <div style="width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, #FFF0F2 0%, #FFE4E8 100%); border: 1.5px solid var(--rose); display: flex; align-items: center; justify-content: center; color: var(--rose-text); flex-shrink: 0; box-shadow: 0 4px 12px rgba(199, 131, 145, 0.2);">
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
                   </div>
-                  <div>
-                    <strong style="color: var(--cocoa); font-size: 0.92rem; display: block;">Official Atelier Instagram QR Code</strong>
-                    <span style="font-size: 0.76rem; color: #73615A; display: block; margin: 0.2rem 0 0.5rem;">Synced with @swan_handcrafted_studio.3568</span>
-                    <a id="btn-test-insta" href="https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.65rem;">
+                  <div style="flex: 1; min-width: 170px;">
+                    <strong style="color: var(--cocoa); font-size: 0.9rem; display: block;">Brand Logo Button Preview</strong>
+                    <span style="font-size: 0.75rem; color: #73615A; display: block; margin: 0.15rem 0 0.45rem;">Directs customers directly to @swan_handcrafted_studio.3568</span>
+                    <a id="btn-test-insta" href="https://www.instagram.com/swan_handcrafted_studio.3568" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.3rem 0.7rem; display: inline-flex; align-items: center; gap: 0.3rem;">
                       Open Profile ↗
                     </a>
                   </div>
                 </div>
               </div>
 
-              <!-- Card 5: Customer Reviews & Love Notes Moderation -->
-              <div class="admin-card" style="margin-top: 1.75rem;">
+              <!-- Card 5: Customer Reviews & Love Notes Link -->
+              <div class="admin-card" style="margin-top: 1.5rem;">
                 <div class="admin-card-header-styled">
                   <div class="card-icon-badge">💌</div>
-                  <h2 class="card-title-styled">Customer Reviews & Love Notes</h2>
+                  <h2 class="card-title-styled">Customer Reviews & Ratings</h2>
                 </div>
                 <p class="card-subtitle-styled">
                   Community feedback, 5-star ratings, and customer unboxing notes.
                 </p>
 
-                <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">
-                  <div style="flex: 1; background: #FFF9FA; border-radius: var(--radius-sm); padding: 1rem; text-align: center; border: 1px solid rgba(199, 131, 145, 0.25);">
-                    <div style="font-size: 1.85rem; font-weight: 700; color: var(--cocoa); font-family: 'Cormorant Garamond', serif;">4.9 ★</div>
-                    <div style="font-size: 0.75rem; color: #73615A;">Average Score</div>
+                <div class="reviews-stat-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 1.25rem;">
+                  <div style="background: #FFF9FA; border-radius: var(--radius-sm); padding: 0.85rem 0.5rem; text-align: center; border: 1px solid rgba(199, 131, 145, 0.25);">
+                    <div style="font-size: 1.75rem; font-weight: 700; color: var(--cocoa); font-family: 'Cormorant Garamond', serif; line-height: 1;">4.9 ★</div>
+                    <div style="font-size: 0.72rem; color: #73615A; margin-top: 0.25rem;">Average Score</div>
                   </div>
-                  <div style="flex: 1; background: #FFF9FA; border-radius: var(--radius-sm); padding: 1rem; text-align: center; border: 1px solid rgba(199, 131, 145, 0.25);">
-                    <div style="font-size: 1.85rem; font-weight: 700; color: var(--cocoa); font-family: 'Cormorant Garamond', serif;" id="admin-reviews-count">48+</div>
-                    <div style="font-size: 0.75rem; color: #73615A;">Total Love Notes</div>
+                  <div style="background: #FFF9FA; border-radius: var(--radius-sm); padding: 0.85rem 0.5rem; text-align: center; border: 1px solid rgba(199, 131, 145, 0.25);">
+                    <div style="font-size: 1.75rem; font-weight: 700; color: var(--cocoa); font-family: 'Cormorant Garamond', serif; line-height: 1;" id="admin-reviews-count">48+</div>
+                    <div style="font-size: 0.72rem; color: #73615A; margin-top: 0.25rem;">Total Love Notes</div>
                   </div>
                 </div>
 
-                <div style="margin-top: 1rem; border-top: 1px dashed var(--admin-border); padding-top: 1rem;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                    <div>
-                      <strong style="font-size: 0.88rem; color: var(--cocoa); display: block;">Reviews Moderation Feed</strong>
-                      <span style="font-size: 0.74rem; color: #8A7670;">Delete individual reviews or manage live storefront love notes</span>
-                    </div>
-                    <a href="../reviews.html?admin=true" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="font-size: 0.75rem; padding: 0.3rem 0.65rem; border-color: var(--rose); color: var(--rose-text);">
-                      Open Live Reviews ↗
-                    </a>
-                  </div>
-
-                  <!-- Dynamic Moderation Items -->
-                  <div id="admin-moderation-list" style="max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem; padding-right: 0.25rem;">
-                    <div style="text-align: center; padding: 1.5rem; color: #8A7670; font-size: 0.82rem;">Loading reviews...</div>
-                  </div>
+                <div style="border-top: 1px dashed var(--admin-border); padding-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                  <p style="font-size: 0.8rem; color: #73615A; margin: 0; line-height: 1.4;">
+                    Moderate customer reviews, approve ratings, or delete spam in the dedicated reviews workspace.
+                  </p>
+                  <a href="reviews.html" class="btn btn-primary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; font-weight: 600; padding: 0.55rem 1rem;">
+                    💌 Open Customer Reviews Workspace &rarr;
+                  </a>
                 </div>
               </div>
             </div>
@@ -1547,11 +1620,11 @@
           </div>
 
           <div style="display: flex; gap: 0.75rem;">
-            <a href="../about.html" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.65rem 1.15rem;">
-              👁️ View "Our Story"
+            <a href="../about.html" id="btn-dock-preview" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.65rem 1.15rem;">
+              <span>👁️</span> <span id="dock-preview-label">Preview Live</span>
             </a>
             <button type="submit" id="btn-save-all-bottom" class="btn btn-primary" style="font-size: 0.92rem; padding: 0.7rem 1.75rem;">
-              💾 Save All Changes
+              <span>💾</span> <span id="dock-save-label">Save Changes</span>
             </button>
           </div>
         </div>
@@ -1579,8 +1652,10 @@
       // 2. Tab Navigation
       const tabBtns = document.querySelectorAll('.content-tab-btn');
       const tabPanes = document.querySelectorAll('.tab-pane');
+      const dockPreview = document.getElementById('btn-dock-preview');
+      const dockPreviewLabel = document.getElementById('dock-preview-label');
 
-      function switchTab(tabId) {
+      function switchTab(tabId, updateHash = true) {
         tabBtns.forEach(b => {
           if (b.dataset.tab === tabId) {
             b.classList.add('active');
@@ -1598,6 +1673,27 @@
         if (tabId === 'tab-featured' && typeof renderFeaturedManager === 'function') {
           renderFeaturedManager();
         }
+
+        // Context-aware dock preview destination
+        if (dockPreview && dockPreviewLabel) {
+          if (tabId === 'tab-story') {
+            dockPreview.href = '../about.html';
+            dockPreviewLabel.textContent = 'View Story';
+          } else if (tabId === 'tab-home') {
+            dockPreview.href = '../index.html';
+            dockPreviewLabel.textContent = 'View Home';
+          } else if (tabId === 'tab-featured') {
+            dockPreview.href = '../shop.html';
+            dockPreviewLabel.textContent = 'View Shop';
+          } else if (tabId === 'tab-store') {
+            dockPreview.href = '../index.html';
+            dockPreviewLabel.textContent = 'View Store';
+          }
+        }
+
+        if (updateHash && window.history && window.history.replaceState) {
+          window.history.replaceState(null, null, '#' + tabId);
+        }
       }
 
       tabBtns.forEach(btn => {
@@ -1606,6 +1702,14 @@
           switchTab(btn.dataset.tab);
         });
       });
+
+      // Handle direct URL hash landing (e.g. content.html#tab-store)
+      if (window.location.hash) {
+        const hashTab = window.location.hash.replace('#', '');
+        if (['tab-story', 'tab-home', 'tab-featured', 'tab-store'].includes(hashTab)) {
+          switchTab(hashTab, false);
+        }
+      }
 
       // Form Elements
       const form = document.getElementById('content-settings-form');
@@ -1670,20 +1774,6 @@
       const instaUrlInput = document.getElementById('cfg-instagram-url');
       const instaHandleInput = document.getElementById('cfg-instagram-handle');
       const btnTestInsta = document.getElementById('btn-test-insta');
-      const adminPassInput = document.getElementById('cfg-admin-pass');
-      const btnSaveAdminPass = document.getElementById('btn-save-admin-pass');
-
-      if (btnSaveAdminPass && adminPassInput) {
-        btnSaveAdminPass.addEventListener('click', () => {
-          const newPass = adminPassInput.value.trim();
-          if (!newPass || newPass.length < 8) {
-            ADMIN.toast('Password must be at least 8 characters.', 'error');
-            return;
-          }
-          localStorage.setItem('swan_admin_password', newPass);
-          ADMIN.toast('✓ Admin password successfully updated!', 'success');
-        });
-      }
 
       // Featured Creations fields
       const featHeadingInput = document.getElementById('cfg-featured-heading');
@@ -1731,9 +1821,9 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.78rem; color: #8A7670; margin-top: 0.25rem;">
                       <span>Stock: <strong>${stock}</strong></span>
-                      ${isZero ? `<span style="color: #991B1B; background: #FEE2E2; padding: 0.05rem 0.35rem; border-radius: 3px; font-weight: 600;">🚫 Out of Stock</span>` : `<span style="color: #16A34A;">🟢 In Stock</span>`}
+                      ${isZero ? `<span class="sold-out-pill" style="font-size: 0.72rem; padding: 0.12rem 0.45rem;">Sold out</span>` : `<span style="color: #166534; font-weight: 500;">In stock</span>`}
                       <span>&bull;</span>
-                      <span>${isPub ? '🟢 Published' : '⚪ Draft (Hidden)'}</span>
+                      <span>${isPub ? 'Published' : 'Draft (Hidden)'}</span>
                     </div>
                   </div>
                 </div>
@@ -1777,7 +1867,7 @@
               const isZero = stock <= 0;
               return `
                 <div style="background: #FFFFFF; border: 1px solid rgba(199, 131, 145, 0.3); border-radius: 8px; padding: 0.6rem; font-size: 0.75rem; text-align: center; position: relative; overflow: hidden;">
-                  ${isZero ? `<span style="position: absolute; top: 4px; left: 4px; background: #991B1B; color: #FFF; font-size: 0.6rem; padding: 1px 4px; border-radius: 3px; font-weight: 700;">Out of Stock</span>` : ''}
+                  ${isZero ? `<span class="sold-out-pill" style="position: absolute; top: 4px; left: 4px; font-size: 0.6rem; padding: 0.1rem 0.35rem; z-index: 2;">Sold out</span>` : ''}
                   <div style="width: 100%; height: 60px; background: #FFF6F0; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 0.35rem; overflow: hidden;">
                     ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width: 100%; height: 100%; object-fit: cover;">` : (p.iconType === 'bag' ? '👜' : p.iconType === 'plushie' ? '🧸' : p.iconType === 'accessory' ? '🎁' : '🌸')}
                   </div>
@@ -1867,7 +1957,7 @@
           if (btnTestWa) btnTestWa.href = `https://wa.me/91${cleanWa}`;
         }
         if (instaUrlInput && btnTestInsta) {
-          btnTestInsta.href = instaUrlInput.value || 'https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==';
+          btnTestInsta.href = (instaUrlInput.value ? instaUrlInput.value.split('?')[0] : 'https://www.instagram.com/swan_handcrafted_studio.3568');
         }
       }
 
@@ -2109,13 +2199,11 @@
             if (s.freeShip) freeShipInput.value = s.freeShip;
             if (s.stdShip) stdShipInput.value = s.stdShip;
             if (s.lowStock) lowStockInput.value = s.lowStock;
-            if (s.instagram && instaUrlInput) instaUrlInput.value = s.instagram;
+            if (s.instagram && instaUrlInput) instaUrlInput.value = s.instagram.split('?')[0];
             if (s.instagramHandle && instaHandleInput) instaHandleInput.value = s.instagramHandle;
           }
 
-          if (adminPassInput) {
-            adminPassInput.value = localStorage.getItem('swan_admin_password') || 'Bhumika26##';
-          }
+
 
           // Hydrate review moderation and count from localStorage
           const STARTER_REVIEWS = [
@@ -2366,7 +2454,7 @@
           freeShip: parseFloat(freeShipInput.value) || 1499,
           stdShip: parseFloat(stdShipInput.value) || 99,
           lowStock: parseInt(lowStockInput.value, 10) || 2,
-          instagram: instaUrlInput ? instaUrlInput.value.trim() : 'https://www.instagram.com/swan_handcrafted_studio.3568?utm_source=qr&rpxt=MXc1azF0eDFkeGw5aw==',
+          instagram: instaUrlInput ? instaUrlInput.value.trim().split('?')[0] : 'https://www.instagram.com/swan_handcrafted_studio.3568',
           instagramHandle: instaHandleInput ? instaHandleInput.value.trim() : '@swan_handcrafted_studio.3568'
         };
 
@@ -2374,9 +2462,7 @@
           // 1. Save to localStorage for instant local reflection
           localStorage.setItem('swan_site_content', JSON.stringify(contentPayload));
           localStorage.setItem('swan_site_settings', JSON.stringify(settingsPayload));
-          if (adminPassInput && adminPassInput.value.trim().length >= 8) {
-            localStorage.setItem('swan_admin_password', adminPassInput.value.trim());
-          }
+
 
           // 2. Also save to Supabase if connected
           const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
