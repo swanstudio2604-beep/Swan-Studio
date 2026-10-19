@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Creations & Products Management — Swan Studio Admin</title>
   <meta name="robots" content="noindex, nofollow">
   
@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="../css/admin.css?v=m3">
+  <link rel="stylesheet" href="../css/admin.css?v=m4">
   <style>
     .gallery-preview-grid {
       display: grid;
@@ -53,6 +53,76 @@
       text-transform: uppercase;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
+    .tab-nav-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 2px solid #EFE8E2;
+      padding-bottom: 0.25rem;
+    }
+    .admin-tab-btn {
+      min-height: 44px;
+      padding: 0.55rem 1.15rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #73615A;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+    .admin-tab-btn.active {
+      color: #FFF;
+      background: var(--rose);
+    }
+    .bulk-action-bar {
+      position: fixed;
+      bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2C221E;
+      color: #FFF;
+      padding: 0.6rem 1rem;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+      z-index: 9999;
+      max-width: 95vw;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .bulk-btn {
+      background: rgba(255,255,255,0.15);
+      color: #FFF;
+      border: none;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .bulk-btn:hover, .bulk-btn:active {
+      background: rgba(255,255,255,0.28);
+    }
+    .bulk-btn-danger {
+      background: #DC2626;
+      color: #FFF;
+    }
+    .badge-hidden {
+      background: #E5E7EB;
+      color: #4B5563;
+      border: 1px solid #D1D5DB;
+    }
   </style>
 </head>
 <body>
@@ -77,8 +147,20 @@
         </div>
       </div>
 
-      <!-- Filters & Search Toolbar -->
-      <div class="admin-toolbar" style="margin-bottom: 1.25rem;">
+      <!-- Tab Navigation (Active vs Trash) -->
+      <div class="tab-nav-bar">
+        <button type="button" class="admin-tab-btn active" id="tab-active">
+          <span>Active Creations</span>
+          <span class="badge" id="badge-active-count" style="background: rgba(255,255,255,0.3); color: inherit;">0</span>
+        </button>
+        <button type="button" class="admin-tab-btn" id="tab-trash">
+          <span>🗑️ Trash</span>
+          <span class="badge" id="badge-trash-count" style="background: #FEE2E2; color: #991B1B;">0</span>
+        </button>
+      </div>
+
+      <!-- Filters & Search Toolbar (Only for active tab) -->
+      <div class="admin-toolbar" id="products-toolbar" style="margin-bottom: 1.25rem;">
         <input 
           type="search" 
           id="prod-search" 
@@ -90,19 +172,22 @@
           <button type="button" class="category-pill" id="pill-featured" style="border-color: #FCD34D; color: #B45309;">⭐ Featured</button>
           <button type="button" class="category-pill" id="pill-out-of-stock" style="border-color: rgba(115, 97, 90, 0.3); color: #73615A;">Sold out</button>
           <button type="button" class="category-pill" id="pill-published" style="border-color: #86EFAC; color: #16A34A;">🟢 Published</button>
-          <button type="button" class="category-pill" id="pill-draft">⚪ Draft / Hidden</button>
+          <button type="button" class="category-pill" id="pill-hidden">⚪ Hidden</button>
         </div>
       </div>
 
       <!-- Products Responsive Cards / Table Card -->
-      <div class="admin-card" style="padding: 1rem;">
+      <div class="admin-card" style="padding: 1rem; overflow-x: auto;">
         <table class="admin-table admin-responsive-cards" style="width: 100%;">
           <thead>
-            <tr>
+            <tr id="table-head-row">
+              <th style="width: 44px; text-align: center;">
+                <input type="checkbox" id="select-all-cb" style="width: 20px; height: 20px; cursor: pointer;" aria-label="Select all creations">
+              </th>
               <th>Creation</th>
               <th>Category</th>
               <th>Price (₹)</th>
-              <th>Stock & Quick Adjust</th>
+              <th>Stock & Adjust</th>
               <th>Homepage</th>
               <th>Status</th>
               <th style="text-align: right;">Actions</th>
@@ -110,7 +195,7 @@
           </thead>
           <tbody id="products-table-body">
             <tr>
-              <td colspan="7" style="text-align: center; padding: 2rem;">Loading creations...</td>
+              <td colspan="8" style="text-align: center; padding: 2rem;">Loading creations...</td>
             </tr>
           </tbody>
         </table>
@@ -122,9 +207,33 @@
 
   </div>
 
+  <!-- Bulk Action Bar (Fixed Mobile-Friendly Bottom Sheet) -->
+  <div id="bulk-action-bar" class="bulk-action-bar" style="display: none;">
+    <span id="bulk-selected-count" style="font-weight: 600; font-size: 0.88rem;">0 selected</span>
+    <button type="button" class="bulk-btn" id="bulk-btn-hide">👁️ Hide</button>
+    <button type="button" class="bulk-btn" id="bulk-btn-unhide">👁️‍🗨️ Unhide</button>
+    <button type="button" class="bulk-btn" id="bulk-btn-move">📁 Move Category</button>
+    <button type="button" class="bulk-btn bulk-btn-danger" id="bulk-btn-delete">🗑️ Delete</button>
+    <button type="button" class="bulk-btn" id="bulk-btn-clear">✕ Clear</button>
+  </div>
+
+  <!-- Move to Category Modal -->
+  <div id="move-category-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog" style="max-width: 420px; font-family: 'Poppins', sans-serif;">
+      <h3 style="margin-top: 0; color: #2C221E; font-size: 1.25rem;">Move Creations to Category</h3>
+      <p style="font-size: 0.88rem; color: #73615A; margin-bottom: 1rem;">Select the destination category for the selected items:</p>
+      <select id="move-category-select" class="form-control" style="min-height: 44px; margin-bottom: 1.25rem; font-size: 0.95rem;">
+      </select>
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button type="button" id="move-category-cancel" class="btn btn-secondary" style="min-height: 44px;">Cancel</button>
+        <button type="button" id="move-category-confirm" class="btn btn-primary" style="min-height: 44px; font-weight: 600;">Move Items</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Product Modal (Add / Edit) -->
   <div id="product-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-dialog" style="max-width: 680px;">
+    <div class="modal-dialog" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
       <div class="modal-header">
         <h2 id="modal-title" style="font-size: 1.4rem;">Add New Creation</h2>
         <button class="modal-close-btn" id="modal-close-btn">&times;</button>
@@ -149,17 +258,20 @@
         <!-- Category & Icon -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
           <div class="form-group">
-            <label for="prod-category" class="form-label">Category <span style="color: var(--rose);">*</span></label>
-            <select id="prod-category" class="form-control" required></select>
+            <label for="prod-category" class="form-label">Category / Collection <span style="color: var(--rose);">*</span></label>
+            <select id="prod-category" class="form-control" required style="min-height: 44px;">
+              <!-- Dynamically populated from live categories -->
+            </select>
           </div>
 
           <div class="form-group">
-            <label for="prod-icon" class="form-label">Creation Type</label>
-            <select id="prod-icon" class="form-control">
+            <label for="prod-icon" class="form-label">Product Icon</label>
+            <select id="prod-icon" class="form-control" style="min-height: 44px;">
               <option value="flower">🌸 Flower / Bouquet</option>
               <option value="bag">👜 Bag / Tote</option>
-              <option value="plushie">🧸 Cute Plushie</option>
-              <option value="accessory">🎁 Accessory / Gift</option>
+              <option value="bunny">🐰 Bunny / Plushie</option>
+              <option value="heart">💖 Heart / Keepsake</option>
+              <option value="leaf">🌿 Leaf / Botanical</option>
             </select>
           </div>
         </div>
@@ -167,36 +279,31 @@
         <!-- Price & Sale Price -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
           <div class="form-group">
-            <label for="prod-price" class="form-label">Price (₹) <span style="color: var(--rose);">*</span></label>
-            <input type="number" id="prod-price" class="form-control" step="1" min="0" placeholder="e.g. 1299" required inputmode="numeric">
+            <label for="prod-price" class="form-label">Regular Price (₹) <span style="color: var(--rose);">*</span></label>
+            <input type="number" id="prod-price" class="form-control" placeholder="e.g. 899" min="0" step="1" required inputmode="numeric">
           </div>
 
           <div class="form-group">
-            <label for="prod-sale-price" class="form-label">Sale Price (₹, optional)</label>
-            <input type="number" id="prod-sale-price" class="form-control" step="1" min="0" placeholder="e.g. 1199" inputmode="numeric">
+            <label for="prod-sale-price" class="form-label">Sale Price (₹) <small style="color: #8A7670;">(Optional)</small></label>
+            <input type="number" id="prod-sale-price" class="form-control" placeholder="Leave empty if not on sale" min="0" step="1" inputmode="numeric">
           </div>
         </div>
 
-        <!-- Tags Field (Section B.2) -->
+        <!-- Tags -->
         <div class="form-group">
-          <label for="prod-tags" class="form-label">Tags (comma-separated)</label>
-          <input type="text" id="prod-tags" class="form-control" placeholder="e.g. gift, daisy, bouquet, handmade, yellow">
-          <small style="color: #8A7670; font-size: 0.75rem;">Helps buyers search and filter creations on your shop.</small>
+          <label for="prod-tags" class="form-label">Search Tags / Keywords</label>
+          <input type="text" id="prod-tags" class="form-control" placeholder="bouquet, flower, daisy, gift, birthday, anniversary">
         </div>
 
         <!-- Description -->
         <div class="form-group">
-          <label for="prod-desc" class="form-label">Description</label>
-          <textarea id="prod-desc" class="form-control" style="min-height: 80px;" placeholder="Tell the handmade story, yarn texture, care tips..."></textarea>
+          <label for="prod-desc" class="form-label">Artisan Story / Description</label>
+          <textarea id="prod-desc" class="form-control" style="min-height: 90px;" placeholder="Describe how it was handcrafted, yarn texture, care instructions..."></textarea>
         </div>
 
-        <!-- MULTIPLE PHOTO UPLOAD DIRECT FROM PHONE (Section B.2) -->
-        <div class="form-group" style="border: 1.5px dashed var(--rose); padding: 1rem; border-radius: var(--radius-sm); background: #FFFDFB; margin-bottom: 1.25rem;">
-          <label class="form-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap;">
-            <span><strong style="color: var(--cocoa);">📸 Photos & Camera Upload</strong></span>
-            <span style="font-size: 0.75rem; color: #16A34A; font-weight: 500;">⚡ Client-Side Auto-Compression</span>
-          </label>
-          
+        <!-- Camera Upload Section -->
+        <div class="form-group">
+          <label class="form-label">Creation Photos <span style="color: var(--rose);">*</span></label>
           <div class="photo-upload-wrap">
             <label for="prod-images-multiple" class="photo-upload-trigger" id="prod-upload-trigger" style="min-height: 48px;">
               <span class="upload-icon-circle">📷</span>
@@ -245,7 +352,7 @@
           <small style="color: #8A7670; font-size: 0.75rem;">Enter 0 or use the "Sold Out" button to mark as sold out.</small>
         </div>
 
-        <!-- Toggles: Made-to-Order, Featured, Published -->
+        <!-- Toggles: Made-to-Order, Featured, Published, Hidden -->
         <div style="display: flex; gap: 1rem; margin-top: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; background: #FFF9F7; padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
           <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; cursor: pointer; min-height: 44px;">
             <input type="checkbox" id="prod-made-to-order" checked style="width: 20px; height: 20px; accent-color: var(--rose);">
@@ -259,19 +366,35 @@
 
           <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; cursor: pointer; min-height: 44px;">
             <input type="checkbox" id="prod-published" checked style="width: 20px; height: 20px; accent-color: var(--rose);">
-            <span>Published (Visible to Store) 🟢</span>
+            <span>Published 🟢</span>
+          </label>
+
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; cursor: pointer; min-height: 44px;">
+            <input type="checkbox" id="prod-hidden" style="width: 20px; height: 20px; accent-color: #6B7280;">
+            <span>Hide from Public Store 👁️</span>
           </label>
         </div>
 
         <div id="modal-feedback" style="display: none; padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 1rem; font-size: 0.85rem;"></div>
 
-        <!-- Sticky Save Button (Thumb-reachable on mobile) -->
-        <div class="sticky-mobile-save" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <!-- Primary Action Buttons: Save & Cancel -->
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-bottom: 1.5rem;">
           <button type="button" class="btn btn-secondary btn-sm" id="modal-cancel-btn" style="min-height: 44px; padding: 0.5rem 1rem;">
             Cancel
           </button>
           <button type="submit" class="btn btn-primary btn-sm" id="modal-save-btn" style="min-height: 44px; padding: 0.5rem 1.35rem; font-weight: 600;">
             Save Creation
+          </button>
+        </div>
+
+        <!-- Separate Danger Zone: Delete Creation (Positioned separately from Save at bottom of edit screen) -->
+        <div id="modal-danger-zone" style="display: none; border-top: 1px dashed #FCA5A5; background: #FFF5F5; padding: 1rem; border-radius: var(--radius-sm); margin-top: 1.5rem; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <strong style="color: #991B1B; font-size: 0.9rem; display: block;">Delete this creation</strong>
+            <span style="font-size: 0.78rem; color: #7F1D1D;">Removes it from your public website and moves it to Trash.</span>
+          </div>
+          <button type="button" id="btn-modal-delete-prod" class="btn btn-secondary btn-sm" style="min-height: 44px; color: #DC2626; border-color: #F87171; font-weight: 600;">
+            🗑️ Delete Creation
           </button>
         </div>
       </form>
@@ -280,7 +403,7 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../js/products-demo.js"></script>
+  <script src="../js/api-config.js"></script>
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/admin/admin-shared.js"></script>
@@ -290,6 +413,7 @@
       if (!authorized) return;
 
       const tableBody = document.getElementById('products-table-body');
+      const tableHeadRow = document.getElementById('table-head-row');
       const addBtn = document.getElementById('btn-add-product');
       const modal = document.getElementById('product-modal');
       const modalTitle = document.getElementById('modal-title');
@@ -298,37 +422,51 @@
       const modalCancel = document.getElementById('modal-cancel-btn');
       const feedback = document.getElementById('modal-feedback');
       const saveBtn = document.getElementById('modal-save-btn');
+      const modalDangerZone = document.getElementById('modal-danger-zone');
+      const modalDeleteBtn = document.getElementById('btn-modal-delete-prod');
 
       const nameInput = document.getElementById('prod-name');
       const slugInput = document.getElementById('prod-slug');
       const categorySelect = document.getElementById('prod-category');
       const searchInput = document.getElementById('prod-search');
 
+      const tabActive = document.getElementById('tab-active');
+      const tabTrash = document.getElementById('tab-trash');
+      const badgeActiveCount = document.getElementById('badge-active-count');
+      const badgeTrashCount = document.getElementById('badge-trash-count');
+      const toolbar = document.getElementById('products-toolbar');
+
       const pillAll = document.getElementById('pill-all');
       const pillFeatured = document.getElementById('pill-featured');
       const pillOutOfStock = document.getElementById('pill-out-of-stock');
       const pillPublished = document.getElementById('pill-published');
-      const pillDraft = document.getElementById('pill-draft');
+      const pillHidden = document.getElementById('pill-hidden');
 
-      const multipleFilesInput = document.getElementById('prod-images-multiple');
-      const imageUrlInput = document.getElementById('prod-image-url');
-      const galleryContainer = document.getElementById('gallery-container');
-      const galleryGrid = document.getElementById('gallery-preview-grid');
-      const galleryCount = document.getElementById('gallery-count');
+      const selectAllCb = document.getElementById('select-all-cb');
+      const bulkBar = document.getElementById('bulk-action-bar');
+      const bulkCountEl = document.getElementById('bulk-selected-count');
+      const bulkHideBtn = document.getElementById('bulk-btn-hide');
+      const bulkUnhideBtn = document.getElementById('bulk-btn-unhide');
+      const bulkMoveBtn = document.getElementById('bulk-btn-move');
+      const bulkDeleteBtn = document.getElementById('bulk-btn-delete');
+      const bulkClearBtn = document.getElementById('bulk-btn-clear');
 
-      let currentProducts = [];
+      const moveModal = document.getElementById('move-category-modal');
+      const moveSelect = document.getElementById('move-category-select');
+      const moveCancel = document.getElementById('move-category-cancel');
+      const moveConfirm = document.getElementById('move-category-confirm');
+
+      let currentTab = 'active'; // 'active' | 'trash'
+      let currentFilter = 'all'; // 'all' | 'featured' | 'out-of-stock' | 'published' | 'hidden'
+      let activeProducts = [];
+      let trashProducts = [];
       let categories = [];
-      let currentFilter = 'all';
-      let attachedImages = []; // Array of { dataUrl, altText, isPrimary }
+      let selectedIds = new Set();
+      let attachedImages = [];
       let isFormDirty = false;
 
-      // Populate Categories
-      categories = await ADMIN.getCategories();
-      categorySelect.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-
-      // Auto slug generation from title
+      // Auto-slugify
       nameInput.addEventListener('input', () => {
-        isFormDirty = true;
         if (!document.getElementById('prod-id').value) {
           slugInput.value = nameInput.value
             .toLowerCase()
@@ -339,43 +477,38 @@
         }
       });
 
-      form.addEventListener('input', () => { isFormDirty = true; });
+      // Camera photo compression & upload
+      const uploadTrigger = document.getElementById('prod-upload-trigger');
+      const multiInput = document.getElementById('prod-images-multiple');
+      const galleryContainer = document.getElementById('gallery-container');
+      const galleryGrid = document.getElementById('gallery-preview-grid');
+      const galleryCount = document.getElementById('gallery-count');
+      const uploadSubtitle = document.getElementById('prod-upload-subtitle');
 
-      // Multiple Images Upload with Canvas Compression
-      multipleFilesInput.addEventListener('change', async (e) => {
+      multiInput.addEventListener('change', async (e) => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
 
-        ADMIN.showToast(`Compressing ${files.length} photo(s)...`);
+        uploadSubtitle.textContent = `Compressing ${files.length} photo(s)...`;
+        uploadTrigger.style.opacity = '0.7';
+
         for (const file of files) {
           try {
-            const compressed = await ADMIN.compressImage(file);
+            const comp = await ADMIN.compressImage(file);
             attachedImages.push({
-              dataUrl: compressed.dataUrl,
-              altText: file.name.replace(/\.[^/.]+$/, ''),
+              dataUrl: comp.dataUrl,
+              altText: nameInput.value || 'Crochet creation photo',
               isPrimary: attachedImages.length === 0
             });
           } catch (err) {
-            ADMIN.showToast(`Could not compress ${file.name}: ${err.message}`, 'danger');
+            console.error('Image compression error:', err);
           }
         }
+
+        uploadTrigger.style.opacity = '1';
+        uploadSubtitle.textContent = 'Choose multiple photos • 5–10MB phone pictures automatically compressed';
         renderGallery();
         isFormDirty = true;
-      });
-
-      // Add image via URL
-      imageUrlInput.addEventListener('change', () => {
-        const val = imageUrlInput.value.trim();
-        if (val) {
-          attachedImages.push({
-            dataUrl: val,
-            altText: nameInput.value || 'Creation photo',
-            isPrimary: attachedImages.length === 0
-          });
-          imageUrlInput.value = '';
-          renderGallery();
-          isFormDirty = true;
-        }
       });
 
       function renderGallery() {
@@ -388,94 +521,251 @@
 
         galleryGrid.innerHTML = attachedImages.map((img, idx) => `
           <div class="gallery-preview-item ${img.isPrimary ? 'is-primary' : ''}">
-            ${img.isPrimary ? '<span class="primary-tag">Primary</span>' : ''}
-            <img src="${img.dataUrl}" class="gallery-thumb" alt="${img.altText || 'Thumbnail'}">
-            <input type="text" value="${img.altText || ''}" placeholder="Alt text..." class="form-control" style="font-size: 0.72rem; min-height: 28px; padding: 0.2rem;" onchange="updateImageAlt(${idx}, this.value)">
-            <div style="display: flex; gap: 0.25rem; justify-content: space-between; margin-top: 0.25rem;">
-              ${!img.isPrimary ? `<button type="button" class="btn btn-secondary btn-sm" style="font-size: 0.68rem; padding: 0.2rem 0.4rem; min-height: 28px;" onclick="makeImagePrimary(${idx})">⭐ Primary</button>` : '<span></span>'}
-              <button type="button" class="btn btn-secondary btn-sm" style="font-size: 0.68rem; padding: 0.2rem 0.4rem; color: #DC2626; min-height: 28px;" onclick="removeImage(${idx})">🗑️</button>
+            ${img.isPrimary ? '<span class="primary-tag">Cover Photo</span>' : ''}
+            <img src="${img.dataUrl}" class="gallery-thumb" alt="Preview">
+            <div style="display: flex; gap: 0.25rem; margin-top: 0.25rem;">
+              <button type="button" class="btn btn-secondary btn-sm btn-make-primary" data-idx="${idx}" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; min-height: 28px; width: 100%;" ${img.isPrimary ? 'disabled' : ''}>
+                ${img.isPrimary ? '★ Cover' : 'Make Cover'}
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm btn-del-img" data-idx="${idx}" style="font-size: 0.75rem; padding: 0.2rem 0.45rem; min-height: 28px; color: #DC2626;" title="Remove photo">
+                ✕
+              </button>
             </div>
           </div>
         `).join('');
+
+        galleryGrid.querySelectorAll('.btn-make-primary').forEach(b => {
+          b.addEventListener('click', () => {
+            const idx = parseInt(b.dataset.idx, 10);
+            attachedImages.forEach((im, i) => { im.isPrimary = (i === idx); });
+            renderGallery();
+          });
+        });
+
+        galleryGrid.querySelectorAll('.btn-del-img').forEach(b => {
+          b.addEventListener('click', () => {
+            const idx = parseInt(b.dataset.idx, 10);
+            attachedImages.splice(idx, 1);
+            if (attachedImages.length && !attachedImages.some(im => im.isPrimary)) {
+              attachedImages[0].isPrimary = true;
+            }
+            renderGallery();
+          });
+        });
       }
 
-      window.makeImagePrimary = (idx) => {
-        attachedImages.forEach((img, i) => { img.isPrimary = (i === idx); });
-        renderGallery();
-        isFormDirty = true;
-      };
+      // Refresh data
+      async function refreshData() {
+        selectedIds.clear();
+        updateBulkBar();
 
-      window.removeImage = (idx) => {
-        attachedImages.splice(idx, 1);
-        if (attachedImages.length > 0 && !attachedImages.some(img => img.isPrimary)) {
-          attachedImages[0].isPrimary = true;
-        }
-        renderGallery();
-        isFormDirty = true;
-      };
+        const [activeList, trashList, catList] = await Promise.all([
+          ADMIN.getProducts({ trash: false }),
+          ADMIN.getProducts({ trash: true }),
+          ADMIN.getCategories()
+        ]);
 
-      window.updateImageAlt = (idx, text) => {
-        if (attachedImages[idx]) attachedImages[idx].altText = text;
-        isFormDirty = true;
-      };
+        activeProducts = activeList || [];
+        trashProducts = trashList || [];
+        categories = catList || [];
 
-      async function refreshTable() {
-        currentProducts = await ADMIN.getProducts();
+        badgeActiveCount.textContent = activeProducts.length;
+        badgeTrashCount.textContent = trashProducts.length;
+
+        // Populate category dropdown in modal
+        categorySelect.innerHTML = categories.map(c => `
+          <option value="${c.id}">${c.name}</option>
+        `).join('');
+
+        // Populate move select
+        moveSelect.innerHTML = categories.map(c => `
+          <option value="${c.id}">${c.name}</option>
+        `).join('');
+
         renderTable();
       }
 
+      function updateBulkBar() {
+        if (selectedIds.size > 0 && currentTab === 'active') {
+          bulkBar.style.display = 'flex';
+          bulkCountEl.textContent = `${selectedIds.size} selected`;
+        } else {
+          bulkBar.style.display = 'none';
+        }
+        if (selectAllCb) {
+          const currentList = currentTab === 'active' ? getFilteredActive() : trashProducts;
+          selectAllCb.checked = currentList.length > 0 && currentList.every(p => selectedIds.has(String(p.id)));
+        }
+      }
+
+      function getFilteredActive() {
+        let list = [...activeProducts];
+        const q = searchInput.value.toLowerCase().trim();
+        if (q) {
+          list = list.filter(p => 
+            (p.name || '').toLowerCase().includes(q) ||
+            (p.categoryName || '').toLowerCase().includes(q) ||
+            (p.materials || '').toLowerCase().includes(q) ||
+            (p.tags || []).some(t => t.toLowerCase().includes(q))
+          );
+        }
+
+        if (currentFilter === 'featured') {
+          list = list.filter(p => Boolean(p.isFeatured));
+        } else if (currentFilter === 'out-of-stock') {
+          list = list.filter(p => (p.stock || 0) <= 0);
+        } else if (currentFilter === 'published') {
+          list = list.filter(p => p.isPublished !== false && !p.isHidden);
+        } else if (currentFilter === 'hidden') {
+          list = list.filter(p => Boolean(p.isHidden) || p.isPublished === false);
+        }
+        return list;
+      }
+
       function renderTable() {
-        const query = searchInput.value.toLowerCase().trim();
+        if (currentTab === 'trash') {
+          toolbar.style.display = 'none';
+          tableHeadRow.innerHTML = `
+            <th style="width: 44px; text-align: center;">#</th>
+            <th>Deleted Creation</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Deleted At</th>
+            <th style="text-align: right;">Actions</th>
+          `;
 
-        const filtered = currentProducts.filter(p => {
-          const matchQuery = !query || 
-            p.name.toLowerCase().includes(query) ||
-            (p.materials && p.materials.toLowerCase().includes(query)) ||
-            (p.description && p.description.toLowerCase().includes(query)) ||
-            (p.tags && p.tags.some(t => t.toLowerCase().includes(query)));
+          if (trashProducts.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: #73615A;">Trash is empty. No deleted creations.</td></tr>`;
+            return;
+          }
 
-          if (!matchQuery) return false;
-          if (currentFilter === 'featured') return Boolean(p.isFeatured);
-          if (currentFilter === 'out-of-stock') return (p.stock || 0) <= 0;
-          if (currentFilter === 'published') return p.isPublished !== false;
-          if (currentFilter === 'draft') return p.isPublished === false;
-          return true;
-        });
+          tableBody.innerHTML = trashProducts.map((p, idx) => {
+            const thumb = p.imageUrl || '../assets/images/hero-bouquet-sm.webp';
+            const delDate = p.deleted_at ? new Date(p.deleted_at).toLocaleString('en-IN') : 'Recently';
 
+            return `
+              <tr class="product-card-row">
+                <td style="text-align: center; color: #8A7670;">${idx + 1}</td>
+                <td>
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <img src="${thumb}" alt="${p.name}" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); flex-shrink: 0;" onerror="this.src='../assets/images/hero-bouquet-sm.webp'">
+                    <div>
+                      <strong style="color: var(--cocoa); font-size: 0.95rem;">${p.name}</strong>
+                      <span style="font-size: 0.76rem; color: #DC2626; display: block;">In Trash (Hidden from public website)</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge badge-accent">${p.categoryName || 'General'}</span></td>
+                <td><strong>₹${Number(p.price).toLocaleString('en-IN')}</strong></td>
+                <td style="font-size: 0.82rem; color: #8A7670;">${delDate}</td>
+                <td style="text-align: right;">
+                  <div style="display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-secondary btn-sm btn-restore-prod" data-id="${p.id}" style="min-height: 44px; color: #166534; border-color: #86EFAC;">
+                      ↩️ Restore
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm btn-perm-del-prod" data-id="${p.id}" style="min-height: 44px; color: #DC2626; border-color: #FCA5A5;">
+                      ❌ Delete Forever
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          // Wire trash actions
+          tableBody.querySelectorAll('.btn-restore-prod').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const id = btn.dataset.id;
+              const p = trashProducts.find(x => String(x.id) === String(id));
+              try {
+                await ADMIN.restoreProduct(id);
+                ADMIN.showToast(`✓ Restored "${p ? p.name : 'Creation'}" to active creations!`);
+                await refreshData();
+              } catch (err) {
+                ADMIN.showToast("Couldn't restore creation. Please try again.", 'danger');
+              }
+            });
+          });
+
+          tableBody.querySelectorAll('.btn-perm-del-prod').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const id = btn.dataset.id;
+              const p = trashProducts.find(x => String(x.id) === String(id));
+              const confirmed = await ADMIN.confirmDialog({
+                title: 'Delete Forever?',
+                message: `Permanently delete "${p ? p.name : 'this creation'}" forever? This action CANNOT be undone.`,
+                confirmText: 'Delete Forever',
+                danger: true
+              });
+              if (!confirmed) return;
+
+              try {
+                await ADMIN.deleteProduct(id, { permanent: true });
+                ADMIN.showToast('✓ Creation permanently deleted.');
+                await refreshData();
+              } catch (err) {
+                ADMIN.showToast("Couldn't delete. Please try again.", 'danger');
+              }
+            });
+          });
+
+          return;
+        }
+
+        // Active Tab
+        toolbar.style.display = 'flex';
+        tableHeadRow.innerHTML = `
+          <th style="width: 44px; text-align: center;">
+            <input type="checkbox" id="select-all-cb" style="width: 20px; height: 20px; cursor: pointer;" aria-label="Select all creations">
+          </th>
+          <th>Creation</th>
+          <th>Category</th>
+          <th>Price (₹)</th>
+          <th>Stock & Adjust</th>
+          <th>Homepage</th>
+          <th>Status</th>
+          <th style="text-align: right;">Actions</th>
+        `;
+
+        const filtered = getFilteredActive();
         if (filtered.length === 0) {
-          tableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2.5rem; color: #8A7670;">No creations found in this view.</td></tr>`;
+          tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 2.5rem; color: #73615A;">No matching active creations found.</td></tr>`;
           return;
         }
 
         tableBody.innerHTML = filtered.map(p => {
           const isFeatured = Boolean(p.isFeatured);
-          const isPublished = p.isPublished !== false;
+          const isHidden = Boolean(p.isHidden);
+          const isPublished = p.isPublished !== false && !isHidden;
           const isSoldOut = (p.stock || 0) <= 0;
-          const thumb = p.imageUrl || (p.images && p.images[0]?.url) || 'assets/images/hero-bouquet-sm.webp';
+          const thumb = p.imageUrl || (p.images && p.images[0]?.url) || '../assets/images/hero-bouquet-sm.webp';
           const stock = p.stock || 0;
+          const isChecked = selectedIds.has(String(p.id));
 
           return `
             <tr class="product-card-row">
-              <td style="min-width: 200px;">
+              <td style="text-align: center;">
+                <input type="checkbox" class="prod-row-cb" data-id="${p.id}" ${isChecked ? 'checked' : ''} style="width: 20px; height: 20px; cursor: pointer;" aria-label="Select ${p.name}">
+              </td>
+              <td style="min-width: 190px;">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <img src="${thumb}" alt="${p.name}" style="width: 54px; height: 54px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); flex-shrink: 0;" onerror="this.src='../assets/images/hero-bouquet-sm.webp'">
+                  <img src="${thumb}" alt="${p.name}" style="width: 52px; height: 52px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); flex-shrink: 0;" onerror="this.src='../assets/images/hero-bouquet-sm.webp'">
                   <div>
-                    <strong style="color: var(--cocoa); font-size: 0.98rem; display: block;">${p.name}</strong>
+                    <strong style="color: var(--cocoa); font-size: 0.96rem; display: block;">${p.name}</strong>
                     <span style="font-size: 0.76rem; color: #8A7670;">${p.categoryName || 'General'}</span>
-                    ${p.madeToOrder ? '<span class="badge" style="background: #F3E8FF; color: #6B21A8; font-size: 0.7rem; margin-left: 0.35rem;">Made to Order</span>' : ''}
+                    ${p.madeToOrder ? '<span class="badge" style="background: #F3E8FF; color: #6B21A8; font-size: 0.68rem; margin-left: 0.35rem;">Made to Order</span>' : ''}
                   </div>
                 </div>
               </td>
               <td><span class="badge badge-accent">${p.categoryName || 'General'}</span></td>
               <td>
                 <div style="font-weight: 700; color: var(--cocoa); font-size: 1.05rem;">
-                  ₹${p.price.toLocaleString('en-IN')}
+                  ₹${Number(p.price).toLocaleString('en-IN')}
                 </div>
-                ${p.salePrice ? `<div style="font-size: 0.78rem; color: #16A34A;">Sale: ₹${p.salePrice.toLocaleString('en-IN')}</div>` : ''}
+                ${p.salePrice ? `<div style="font-size: 0.78rem; color: #16A34A;">Sale: ₹${Number(p.salePrice).toLocaleString('en-IN')}</div>` : ''}
               </td>
-              <!-- Stock & In stock / Sold out Minimal Toggle -->
               <td>
-                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
                   <div style="display: flex; align-items: center; gap: 0.35rem;">
                     <button type="button" class="btn btn-secondary btn-sm btn-stock-minus" data-id="${p.id}" data-stock="${stock}" style="min-width: 38px; min-height: 44px; font-size: 1.1rem; font-weight: 700; padding: 0 0.5rem;" title="Decrement stock">-</button>
                     <input type="number" class="admin-stock-field" data-id="${p.id}" value="${stock}" min="0" style="width: 52px; min-height: 44px; text-align: center; font-size: 16px; font-weight: 700; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--cocoa); background: #FFF;" aria-label="Stock quantity">
@@ -492,9 +782,9 @@
                 </button>
               </td>
               <td>
-                <button type="button" class="btn-action btn-toggle-pub" data-id="${p.id}" data-pub="${isPublished}" style="min-height: 44px; border: none; background: none; padding: 0;">
-                  <span class="badge-status ${isPublished ? 'badge-published' : 'badge-draft'}">
-                    ${isPublished ? 'Published 🟢' : 'Draft / Hidden ⚪'}
+                <button type="button" class="btn-action btn-toggle-hide" data-id="${p.id}" data-hidden="${isHidden}" style="min-height: 44px; border: none; background: none; padding: 0; cursor: pointer;" title="Tap to toggle Hide / Unhide">
+                  <span class="badge-status ${isHidden ? 'badge-hidden' : (isPublished ? 'badge-published' : 'badge-draft')}">
+                    ${isHidden ? '⚪ Hidden' : (isPublished ? 'Published 🟢' : 'Draft ⚪')}
                   </span>
                 </button>
               </td>
@@ -502,9 +792,6 @@
                 <div style="display: flex; gap: 0.45rem; justify-content: flex-end; flex-wrap: wrap;">
                   <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${p.id}" style="min-height: 44px;">
                     ✏️ Edit
-                  </button>
-                  <button type="button" class="btn btn-secondary btn-sm btn-soldout" data-id="${p.id}" data-soldout="${isSoldOut}" style="min-height: 44px; color: #73615A; border-color: rgba(115, 97, 90, 0.3);" title="${isSoldOut ? 'Mark as In Stock' : 'Mark as Sold Out'}">
-                    ${isSoldOut ? 'Mark In Stock' : 'Mark Sold Out'}
                   </button>
                   <button type="button" class="btn btn-secondary btn-sm btn-delete-prod" data-id="${p.id}" style="min-height: 44px; color: #DC2626; border-color: #FCA5A5;">
                     🗑️ Delete
@@ -515,89 +802,246 @@
           `;
         }).join('');
 
-        // Wire handlers
-        document.querySelectorAll('.btn-stock-minus').forEach(btn => {
+        // Wire active table events
+        const selectAll = document.getElementById('select-all-cb');
+        if (selectAll) {
+          selectAll.addEventListener('change', () => {
+            if (selectAll.checked) {
+              filtered.forEach(p => selectedIds.add(String(p.id)));
+            } else {
+              filtered.forEach(p => selectedIds.delete(String(p.id)));
+            }
+            renderTable();
+            updateBulkBar();
+          });
+        }
+
+        tableBody.querySelectorAll('.prod-row-cb').forEach(cb => {
+          cb.addEventListener('change', () => {
+            const id = cb.dataset.id;
+            if (cb.checked) selectedIds.add(id);
+            else selectedIds.delete(id);
+            updateBulkBar();
+          });
+        });
+
+        tableBody.querySelectorAll('.btn-stock-minus').forEach(btn => {
           btn.addEventListener('click', async () => {
             const cur = parseInt(btn.dataset.stock, 10) || 0;
             if (cur > 0) {
               await ADMIN.updateStock(btn.dataset.id, cur - 1);
-              ADMIN.showToast('Saved');
-              await refreshTable();
+              ADMIN.showToast('✓ Saved');
+              await refreshData();
             }
           });
         });
 
-        document.querySelectorAll('.btn-stock-plus').forEach(btn => {
+        tableBody.querySelectorAll('.btn-stock-plus').forEach(btn => {
           btn.addEventListener('click', async () => {
             const cur = parseInt(btn.dataset.stock, 10) || 0;
             await ADMIN.updateStock(btn.dataset.id, cur + 1);
-            ADMIN.showToast('Saved');
-            await refreshTable();
+            ADMIN.showToast('✓ Saved');
+            await refreshData();
           });
         });
 
-        document.querySelectorAll('.admin-stock-field').forEach(input => {
+        tableBody.querySelectorAll('.admin-stock-field').forEach(input => {
           input.addEventListener('change', async () => {
             const val = parseInt(input.value, 10);
             if (!isNaN(val) && val >= 0) {
               await ADMIN.updateStock(input.dataset.id, val);
-              ADMIN.showToast('Saved');
-              await refreshTable();
+              ADMIN.showToast('✓ Saved');
+              await refreshData();
             }
           });
         });
 
-        document.querySelectorAll('.btn-stock-toggle, .btn-soldout').forEach(btn => {
+        tableBody.querySelectorAll('.btn-stock-toggle').forEach(btn => {
           btn.addEventListener('click', async () => {
             const isCurrentlySoldOut = btn.dataset.soldout === 'true';
             const newQty = isCurrentlySoldOut ? 5 : 0;
             await ADMIN.updateStock(btn.dataset.id, newQty);
-            ADMIN.showToast('Saved');
-            await refreshTable();
+            ADMIN.showToast('✓ Saved');
+            await refreshData();
           });
         });
 
-        document.querySelectorAll('.btn-toggle-featured').forEach(btn => {
+        tableBody.querySelectorAll('.btn-toggle-featured').forEach(btn => {
           btn.addEventListener('click', async () => {
             const cur = btn.dataset.featured === 'true';
             const newVal = await ADMIN.toggleFeatured(btn.dataset.id, cur);
             ADMIN.showToast(newVal ? '⭐ Featured on store homepage!' : '✓ Removed from featured homepage.');
-            await refreshTable();
+            await refreshData();
           });
         });
 
-        document.querySelectorAll('.btn-toggle-pub').forEach(btn => {
+        tableBody.querySelectorAll('.btn-toggle-hide').forEach(btn => {
           btn.addEventListener('click', async () => {
-            const cur = btn.dataset.pub === 'true';
-            const newVal = await ADMIN.togglePublished(btn.dataset.id, cur);
-            ADMIN.showToast(newVal ? '🟢 Creation published and live on shop!' : '⚪ Creation hidden as draft.');
-            await refreshTable();
+            const isHidden = btn.dataset.hidden === 'true';
+            const nextHidden = !isHidden;
+            await ADMIN.toggleHideProduct(btn.dataset.id, nextHidden);
+            ADMIN.showToast(nextHidden ? '⚪ Creation hidden from website.' : '🟢 Creation visible on website.');
+            await refreshData();
           });
         });
 
-        document.querySelectorAll('.btn-edit').forEach(btn => {
+        tableBody.querySelectorAll('.btn-edit').forEach(btn => {
           btn.addEventListener('click', () => openEditModal(btn.dataset.id));
         });
 
-        document.querySelectorAll('.btn-delete-prod').forEach(btn => {
+        // 2-Tap Delete Flow for Active Products
+        tableBody.querySelectorAll('.btn-delete-prod').forEach(btn => {
           btn.addEventListener('click', () => {
             const id = btn.dataset.id;
-            const p = currentProducts.find(x => String(x.id) === String(id));
+            const p = activeProducts.find(x => String(x.id) === String(id));
+            const name = p ? p.name : 'this item';
+
+            // Tap 1: Phone-fitting Confirm Dialog
             ADMIN.confirm({
               title: 'Delete Creation?',
-              message: `Permanently delete "${p?.name || 'this item'}"? Existing order histories will remain preserved.`,
-              confirmText: 'Delete Creation',
+              message: `Delete "${name}"? It will disappear from your website.`,
+              confirmText: 'Delete',
               danger: true,
+              // Tap 2: Confirmation confirmed
               onConfirm: async () => {
-                await ADMIN.deleteProduct(id);
-                ADMIN.showToast('✓ Creation deleted.');
-                await refreshTable();
+                try {
+                  const res = await ADMIN.deleteProduct(id);
+                  if (!res || !res.success) throw new Error("Couldn't delete.");
+                  
+                  // Show "Deleted" toast with 10-second Undo
+                  ADMIN.showToast(`Deleted "${name}"`, 'success', {
+                    duration: 10000,
+                    undoCallback: async () => {
+                      try {
+                        await ADMIN.restoreProduct(id);
+                        ADMIN.showToast(`✓ Restored "${name}"`);
+                        await refreshData();
+                      } catch (err) {
+                        ADMIN.showToast("Couldn't undo. Please try again.", 'danger');
+                      }
+                    }
+                  });
+                  await refreshData();
+                } catch (err) {
+                  ADMIN.showToast("Couldn't delete. Please try again.", 'danger');
+                }
               }
             });
           });
         });
       }
 
+      // Tabs switching
+      tabActive.addEventListener('click', () => {
+        tabActive.classList.add('active');
+        tabTrash.classList.remove('active');
+        currentTab = 'active';
+        selectedIds.clear();
+        updateBulkBar();
+        renderTable();
+      });
+
+      tabTrash.addEventListener('click', () => {
+        tabTrash.classList.add('active');
+        tabActive.classList.remove('active');
+        currentTab = 'trash';
+        selectedIds.clear();
+        updateBulkBar();
+        renderTable();
+      });
+
+      // Filter tabs
+      const setFilter = (key, pill) => {
+        [pillAll, pillFeatured, pillOutOfStock, pillPublished, pillHidden].forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentFilter = key;
+        renderTable();
+      };
+
+      pillAll.addEventListener('click', () => setFilter('all', pillAll));
+      pillFeatured.addEventListener('click', () => setFilter('featured', pillFeatured));
+      pillOutOfStock.addEventListener('click', () => setFilter('out-of-stock', pillOutOfStock));
+      pillPublished.addEventListener('click', () => setFilter('published', pillPublished));
+      pillHidden.addEventListener('click', () => setFilter('hidden', pillHidden));
+
+      searchInput.addEventListener('input', () => renderTable());
+
+      // Bulk Action Listeners
+      bulkClearBtn.addEventListener('click', () => {
+        selectedIds.clear();
+        renderTable();
+        updateBulkBar();
+      });
+
+      bulkHideBtn.addEventListener('click', async () => {
+        if (!selectedIds.size) return;
+        await ADMIN.bulkProductAction('hide', Array.from(selectedIds));
+        ADMIN.showToast(`✓ ${selectedIds.size} creations hidden from store.`);
+        selectedIds.clear();
+        await refreshData();
+      });
+
+      bulkUnhideBtn.addEventListener('click', async () => {
+        if (!selectedIds.size) return;
+        await ADMIN.bulkProductAction('unhide', Array.from(selectedIds));
+        ADMIN.showToast(`✓ ${selectedIds.size} creations made visible.`);
+        selectedIds.clear();
+        await refreshData();
+      });
+
+      bulkMoveBtn.addEventListener('click', () => {
+        if (!selectedIds.size) return;
+        moveModal.style.display = 'flex';
+      });
+
+      moveCancel.addEventListener('click', () => {
+        moveModal.style.display = 'none';
+      });
+
+      moveConfirm.addEventListener('click', async () => {
+        const targetCatId = moveSelect.value;
+        if (!targetCatId) return;
+        await ADMIN.bulkProductAction('move_category', Array.from(selectedIds), { targetCategoryId: targetCatId });
+        moveModal.style.display = 'none';
+        ADMIN.showToast(`✓ Moved ${selectedIds.size} creations to new collection.`);
+        selectedIds.clear();
+        await refreshData();
+      });
+
+      bulkDeleteBtn.addEventListener('click', () => {
+        if (!selectedIds.size) return;
+        const count = selectedIds.size;
+        ADMIN.confirm({
+          title: 'Delete Selected?',
+          message: `Delete ${count} creations? They will disappear from your website.`,
+          confirmText: `Delete ${count}`,
+          danger: true,
+          onConfirm: async () => {
+            const idsToDelete = Array.from(selectedIds);
+            try {
+              await ADMIN.bulkProductAction('delete', idsToDelete);
+              selectedIds.clear();
+              ADMIN.showToast(`Deleted ${count} creations`, 'success', {
+                duration: 10000,
+                undoCallback: async () => {
+                  try {
+                    await ADMIN.bulkProductAction('restore', idsToDelete);
+                    ADMIN.showToast(`✓ Restored ${count} creations!`);
+                    await refreshData();
+                  } catch (e) {
+                    ADMIN.showToast("Couldn't undo. Please try again.", 'danger');
+                  }
+                }
+              });
+              await refreshData();
+            } catch (err) {
+              ADMIN.showToast("Couldn't delete. Please try again.", 'danger');
+            }
+          }
+        });
+      });
+
+      // Edit Modal Logic
       function openEditModal(id = null) {
         form.reset();
         feedback.style.display = 'none';
@@ -605,7 +1049,7 @@
         isFormDirty = false;
 
         if (id) {
-          const p = currentProducts.find(x => String(x.id) === String(id));
+          const p = activeProducts.find(x => String(x.id) === String(id));
           if (!p) return;
           modalTitle.textContent = 'Edit Creation: ' + p.name;
           document.getElementById('prod-id').value = p.id;
@@ -623,6 +1067,7 @@
           document.getElementById('prod-made-to-order').checked = Boolean(p.madeToOrder);
           document.getElementById('prod-featured').checked = Boolean(p.isFeatured);
           document.getElementById('prod-published').checked = p.isPublished !== false;
+          document.getElementById('prod-hidden').checked = Boolean(p.isHidden);
 
           // Attached Images
           if (p.imageUrl) {
@@ -635,12 +1080,41 @@
               }
             });
           }
+
+          modalDangerZone.style.display = 'flex';
+          modalDeleteBtn.onclick = () => {
+            closeModal();
+            ADMIN.confirm({
+              title: 'Delete Creation?',
+              message: `Delete "${p.name}"? It will disappear from your website.`,
+              confirmText: 'Delete',
+              danger: true,
+              onConfirm: async () => {
+                try {
+                  await ADMIN.deleteProduct(p.id);
+                  ADMIN.showToast(`Deleted "${p.name}"`, 'success', {
+                    duration: 10000,
+                    undoCallback: async () => {
+                      await ADMIN.restoreProduct(p.id);
+                      ADMIN.showToast(`✓ Restored "${p.name}"`);
+                      await refreshData();
+                    }
+                  });
+                  await refreshData();
+                } catch (e) {
+                  ADMIN.showToast("Couldn't delete. Please try again.", 'danger');
+                }
+              }
+            });
+          };
         } else {
           modalTitle.textContent = 'Add New Creation';
           document.getElementById('prod-id').value = '';
           document.getElementById('prod-stock').value = 5;
           document.getElementById('prod-made-to-order').checked = true;
           document.getElementById('prod-published').checked = true;
+          document.getElementById('prod-hidden').checked = false;
+          modalDangerZone.style.display = 'none';
         }
 
         renderGallery();
@@ -648,9 +1122,6 @@
       }
 
       function closeModal() {
-        if (isFormDirty) {
-          if (!confirm('You have unsaved changes. Are you sure you want to exit?')) return;
-        }
         modal.style.display = 'none';
         isFormDirty = false;
       }
@@ -680,6 +1151,7 @@
         const madeToOrder = document.getElementById('prod-made-to-order').checked;
         const isFeatured = document.getElementById('prod-featured').checked;
         const isPublished = document.getElementById('prod-published').checked;
+        const isHidden = document.getElementById('prod-hidden').checked;
         const existingId = document.getElementById('prod-id').value;
 
         if (!name || isNaN(price)) {
@@ -690,7 +1162,6 @@
           return;
         }
 
-        // Primary Image determination
         const primaryImgObj = attachedImages.find(i => i.isPrimary) || attachedImages[0];
         const primaryUrl = primaryImgObj ? primaryImgObj.dataUrl : '../assets/images/hero-bouquet-sm.webp';
 
@@ -711,6 +1182,7 @@
           madeToOrder,
           isFeatured,
           isPublished,
+          isHidden,
           imageUrl: primaryUrl,
           images: attachedImages.map(img => ({ url: img.dataUrl, alt: img.altText }))
         };
@@ -723,7 +1195,7 @@
           isFormDirty = false;
           modal.style.display = 'none';
           ADMIN.showToast(`✓ "${name}" saved successfully!`);
-          await refreshTable();
+          await refreshData();
         } catch (err) {
           feedback.style.display = 'block';
           feedback.style.background = '#FEE2E2';
@@ -735,23 +1207,7 @@
         }
       });
 
-      // Filter tabs
-      const setFilter = (key, pill) => {
-        [pillAll, pillFeatured, pillOutOfStock, pillPublished, pillDraft].forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        currentFilter = key;
-        renderTable();
-      };
-
-      pillAll.addEventListener('click', () => setFilter('all', pillAll));
-      pillFeatured.addEventListener('click', () => setFilter('featured', pillFeatured));
-      pillOutOfStock.addEventListener('click', () => setFilter('out-of-stock', pillOutOfStock));
-      pillPublished.addEventListener('click', () => setFilter('published', pillPublished));
-      pillDraft.addEventListener('click', () => setFilter('draft', pillDraft));
-
-      searchInput.addEventListener('input', () => renderTable());
-
-      await refreshTable();
+      await refreshData();
     });
   </script>
 </body>

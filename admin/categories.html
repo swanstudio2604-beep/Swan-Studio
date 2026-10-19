@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Collections & Categories — Swan Studio Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Collections Management — Swan Studio Admin</title>
   <meta name="robots" content="noindex, nofollow">
   
   <!-- Google Fonts: Cormorant Garamond & Poppins -->
@@ -12,7 +12,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="../css/admin.css?v=m2">
+  <link rel="stylesheet" href="../css/admin.css?v=m4">
+  <style>
+    .tab-nav-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 2px solid #EFE8E2;
+      padding-bottom: 0.25rem;
+    }
+    .admin-tab-btn {
+      min-height: 44px;
+      padding: 0.55rem 1.15rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #73615A;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+    .admin-tab-btn.active {
+      color: #FFF;
+      background: var(--rose);
+    }
+  </style>
 </head>
 <body>
 
@@ -26,30 +54,45 @@
     <main class="admin-main">
       <div class="admin-header-row">
         <div>
-          <h1 class="admin-page-title">Collections & Categories</h1>
-          <p class="admin-page-subtitle">Organize your crochet creations into collections that shoppers browse.</p>
+          <h1 class="admin-page-title">Shop Collections</h1>
+          <p class="admin-page-subtitle">Organize and curate categories for your public storefront and collection cards.</p>
         </div>
-        <button id="btn-add-category" class="btn btn-primary btn-sm">
-          ➕ Add Collection
+        <div>
+          <button id="btn-add-category" class="btn btn-primary" style="min-height: 44px; font-weight: 600;">
+            ➕ Add Collection
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Navigation (Active vs Trash) -->
+      <div class="tab-nav-bar">
+        <button type="button" class="admin-tab-btn active" id="tab-active-cat">
+          <span>Active Collections</span>
+          <span class="badge" id="badge-active-count" style="background: rgba(255,255,255,0.3); color: inherit;">0</span>
+        </button>
+        <button type="button" class="admin-tab-btn" id="tab-trash-cat">
+          <span>🗑️ Trash</span>
+          <span class="badge" id="badge-trash-count" style="background: #FEE2E2; color: #991B1B;">0</span>
         </button>
       </div>
 
-      <!-- Categories Table Card (Stacked Cards on Phone) -->
-      <div class="admin-card">
-        <table class="admin-table admin-responsive-cards">
+      <!-- Categories Table Card -->
+      <div class="admin-card" style="padding: 1rem; overflow-x: auto;">
+        <table class="admin-table admin-responsive-cards" style="width: 100%;">
           <thead>
-            <tr>
-              <th>Icon</th>
+            <tr id="categories-head-row">
+              <th style="width: 60px; text-align: center;">Icon</th>
               <th>Collection Name</th>
               <th>URL Slug</th>
               <th>Description</th>
               <th>Sort Order</th>
+              <th>Status</th>
               <th style="text-align: right;">Actions</th>
             </tr>
           </thead>
           <tbody id="categories-table-body">
             <tr>
-              <td colspan="6" style="text-align: center; padding: 2rem;">Loading collections...</td>
+              <td colspan="7" style="text-align: center; padding: 2rem;">Loading collections...</td>
             </tr>
           </tbody>
         </table>
@@ -63,9 +106,9 @@
 
   <!-- Category Modal (Add / Edit) -->
   <div id="category-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-dialog" style="max-width: 520px;">
+    <div class="modal-dialog" style="max-width: 500px;">
       <div class="modal-header">
-        <h2 id="modal-title" style="font-size: 1.5rem;">Add Collection</h2>
+        <h2 id="modal-title" style="font-size: 1.3rem;">Add Collection</h2>
         <button class="modal-close-btn" id="modal-close-btn">&times;</button>
       </div>
 
@@ -99,29 +142,71 @@
           <input type="number" id="cat-sort" class="form-control" value="1" min="1">
         </div>
 
+        <div class="form-group" style="margin-top: 0.5rem; margin-bottom: 1.25rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; min-height: 44px;">
+            <input type="checkbox" id="cat-hidden" style="width: 20px; height: 20px; accent-color: #6B7280;">
+            <span>Hide from Public Store 👁️</span>
+          </label>
+        </div>
+
         <div id="modal-feedback" style="display: none; padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 1rem; font-size: 0.85rem;"></div>
 
         <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-          <button type="button" class="btn btn-secondary btn-sm" id="modal-cancel-btn">Cancel</button>
-          <button type="submit" class="btn btn-primary btn-sm" id="modal-save-btn">Save Collection</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="modal-cancel-btn" style="min-height: 44px; padding: 0.5rem 1rem;">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="modal-save-btn" style="min-height: 44px; padding: 0.5rem 1.25rem; font-weight: 600;">Save Collection</button>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- Resolution Modal: Category Has Products Resolution -->
+  <div id="resolution-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog" style="max-width: 480px; font-family: 'Poppins', sans-serif;">
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: #FEF3C7; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+          ⚠️
+        </div>
+        <h3 id="res-modal-title" style="margin: 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.4rem; color: #2C221E; font-weight: 700;">
+          Category Has Products
+        </h3>
+      </div>
+      <p id="res-modal-msg" style="margin: 0 0 1.25rem 0; font-size: 0.92rem; color: #5D4037; line-height: 1.55;">
+        This category has 4 products. Move them to another category, or delete them too?
+      </p>
+
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label for="res-move-select" class="form-label" style="font-weight: 600;">Destination Category:</label>
+        <select id="res-move-select" class="form-control" style="min-height: 44px;">
+        </select>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+        <button type="button" id="btn-res-move" class="btn btn-primary" style="min-height: 44px; font-weight: 600;">
+          📁 Move Products & Delete Category
+        </button>
+        <button type="button" id="btn-res-delete-both" class="btn btn-secondary" style="min-height: 44px; color: #DC2626; border-color: #F87171; font-weight: 600;">
+          🗑️ Delete Category and All Products Too
+        </button>
+        <button type="button" id="btn-res-cancel" class="btn btn-secondary" style="min-height: 44px;">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../js/products-demo.js"></script>
+  <script src="../js/api-config.js"></script>
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/admin/admin-shared.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      // 1. Initialize Admin Layout
       const authorized = await ADMIN.init('categories');
       if (!authorized) return;
 
       const tableBody = document.getElementById('categories-table-body');
+      const tableHeadRow = document.getElementById('categories-head-row');
       const addBtn = document.getElementById('btn-add-category');
       const modal = document.getElementById('category-modal');
       const modalTitle = document.getElementById('modal-title');
@@ -132,7 +217,22 @@
       const nameInput = document.getElementById('cat-name');
       const slugInput = document.getElementById('cat-slug');
 
-      let categories = [];
+      const tabActive = document.getElementById('tab-active-cat');
+      const tabTrash = document.getElementById('tab-trash-cat');
+      const badgeActiveCount = document.getElementById('badge-active-count');
+      const badgeTrashCount = document.getElementById('badge-trash-count');
+
+      const resModal = document.getElementById('resolution-modal');
+      const resMsg = document.getElementById('res-modal-msg');
+      const resMoveSelect = document.getElementById('res-move-select');
+      const btnResMove = document.getElementById('btn-res-move');
+      const btnResDeleteBoth = document.getElementById('btn-res-delete-both');
+      const btnResCancel = document.getElementById('btn-res-cancel');
+
+      let currentTab = 'active'; // 'active' | 'trash'
+      let activeCategories = [];
+      let trashCategories = [];
+      let pendingDeleteCat = null;
 
       nameInput.addEventListener('input', () => {
         if (!document.getElementById('cat-id').value) {
@@ -146,35 +246,160 @@
       });
 
       async function refreshTable() {
-        categories = await ADMIN.getCategories();
+        const [activeList, trashList] = await Promise.all([
+          ADMIN.getCategories({ trash: false }),
+          ADMIN.getCategories({ trash: true })
+        ]);
+
+        activeCategories = activeList || [];
+        trashCategories = trashList || [];
+
+        badgeActiveCount.textContent = activeCategories.length;
+        badgeTrashCount.textContent = trashCategories.length;
+
         renderTable();
       }
 
       function renderTable() {
-        if (categories.length === 0) {
-          tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem;">No collections found.</td></tr>`;
+        if (currentTab === 'trash') {
+          tableHeadRow.innerHTML = `
+            <th style="width: 60px; text-align: center;">Icon</th>
+            <th>Deleted Collection</th>
+            <th>Slug</th>
+            <th>Deleted At</th>
+            <th style="text-align: right;">Actions</th>
+          `;
+
+          if (trashCategories.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2.5rem; color: #73615A;">Trash is empty. No deleted collections.</td></tr>`;
+            return;
+          }
+
+          tableBody.innerHTML = trashCategories.map(c => {
+            const delDate = c.deleted_at ? new Date(c.deleted_at).toLocaleString('en-IN') : 'Recently';
+
+            return `
+              <tr>
+                <td style="font-size: 1.5rem; text-align: center; width: 60px;">${c.icon_emoji || '🧶'}</td>
+                <td>
+                  <strong>${c.name}</strong>
+                  <span style="font-size: 0.76rem; color: #DC2626; display: block;">In Trash (Hidden from public website)</span>
+                </td>
+                <td><code>${c.slug}</code></td>
+                <td style="font-size: 0.82rem; color: #8A7670;">${delDate}</td>
+                <td style="text-align: right;">
+                  <div style="display: flex; gap: 0.45rem; justify-content: flex-end; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-secondary btn-sm btn-restore-cat" data-id="${c.id}" style="min-height: 44px; color: #166534; border-color: #86EFAC;">
+                      ↩️ Restore
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm btn-perm-del-cat" data-id="${c.id}" style="min-height: 44px; color: #DC2626; border-color: #FCA5A5;">
+                      ❌ Delete Forever
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          tableBody.querySelectorAll('.btn-restore-cat').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const id = btn.dataset.id;
+              const cat = trashCategories.find(c => String(c.id) === String(id));
+              try {
+                await ADMIN.restoreCategory(id);
+                ADMIN.showToast(`✓ Restored collection "${cat ? cat.name : 'Collection'}"!`);
+                await refreshTable();
+              } catch (err) {
+                ADMIN.showToast("Couldn't restore collection.", 'danger');
+              }
+            });
+          });
+
+          tableBody.querySelectorAll('.btn-perm-del-cat').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const id = btn.dataset.id;
+              const cat = trashCategories.find(c => String(c.id) === String(id));
+              const confirmed = await ADMIN.confirmDialog({
+                title: 'Delete Forever?',
+                message: `Permanently delete collection "${cat ? cat.name : 'this collection'}" forever? This action cannot be undone.`,
+                confirmText: 'Delete Forever',
+                danger: true
+              });
+              if (!confirmed) return;
+
+              try {
+                await ADMIN.deleteCategory(id, { permanent: true });
+                ADMIN.showToast('✓ Collection permanently deleted.');
+                await refreshTable();
+              } catch (err) {
+                ADMIN.showToast("Couldn't delete collection.", 'danger');
+              }
+            });
+          });
+
           return;
         }
 
-        tableBody.innerHTML = categories.map(c => `
-          <tr>
-            <td style="font-size: 1.5rem; text-align: center; width: 60px;">${c.icon_emoji || '🧶'}</td>
-            <td><strong>${c.name}</strong></td>
-            <td><code>${c.slug}</code></td>
-            <td style="color: #73615A; max-width: 280px;">${c.description || '—'}</td>
-            <td>${c.sort_order || 1}</td>
-            <td style="text-align: right;">
-              <div style="display: flex; gap: 0.45rem; justify-content: flex-end; flex-wrap: wrap;">
-                <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${c.id}" style="min-height: 44px; padding: 0.45rem 0.85rem;">✏️ Edit</button>
-                <button type="button" class="btn btn-secondary btn-sm btn-delete-cat" data-id="${c.id}" style="min-height: 44px; padding: 0.45rem 0.85rem; color: #DC2626; border-color: #FCA5A5;">🗑️ Delete</button>
-              </div>
-            </td>
-          </tr>
-        `).join('');
+        // Active Tab
+        tableHeadRow.innerHTML = `
+          <th style="width: 60px; text-align: center;">Icon</th>
+          <th>Collection Name</th>
+          <th>URL Slug</th>
+          <th>Description</th>
+          <th>Sort Order</th>
+          <th>Status</th>
+          <th style="text-align: right;">Actions</th>
+        `;
 
-        document.querySelectorAll('.btn-edit').forEach(btn => {
+        if (activeCategories.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #73615A;">No collections found. Tap "Add Collection" to create one.</td></tr>`;
+          return;
+        }
+
+        tableBody.innerHTML = activeCategories.map(c => {
+          const isHidden = Boolean(c.is_hidden || c.isHidden);
+          return `
+            <tr>
+              <td style="font-size: 1.5rem; text-align: center; width: 60px;">${c.icon_emoji || '🧶'}</td>
+              <td><strong>${c.name}</strong></td>
+              <td><code>${c.slug}</code></td>
+              <td style="color: #73615A; max-width: 260px;">${c.description || '—'}</td>
+              <td>${c.sort_order || 1}</td>
+              <td>
+                <button type="button" class="btn-action btn-toggle-cat-hide" data-id="${c.id}" data-hidden="${isHidden}" style="min-height: 44px; border: none; background: none; padding: 0; cursor: pointer;">
+                  <span class="badge-status ${isHidden ? 'badge-draft' : 'badge-published'}">
+                    ${isHidden ? '⚪ Hidden' : '🟢 Visible'}
+                  </span>
+                </button>
+              </td>
+              <td style="text-align: right;">
+                <div style="display: flex; gap: 0.45rem; justify-content: flex-end; flex-wrap: wrap;">
+                  <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${c.id}" style="min-height: 44px; padding: 0.45rem 0.85rem;">✏️ Edit</button>
+                  <button type="button" class="btn btn-secondary btn-sm btn-delete-cat" data-id="${c.id}" style="min-height: 44px; padding: 0.45rem 0.85rem; color: #DC2626; border-color: #FCA5A5;">🗑️ Delete</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        tableBody.querySelectorAll('.btn-toggle-cat-hide').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const isHidden = btn.dataset.hidden === 'true';
+            const cat = activeCategories.find(c => String(c.id) === String(btn.dataset.id));
+            if (!cat) return;
+            try {
+              await ADMIN.saveCategory({ ...cat, is_hidden: !isHidden });
+              ADMIN.showToast(!isHidden ? '⚪ Collection hidden from website.' : '🟢 Collection visible on website.');
+              await refreshTable();
+            } catch (err) {
+              ADMIN.showToast("Couldn't update collection.", 'danger');
+            }
+          });
+        });
+
+        tableBody.querySelectorAll('.btn-edit').forEach(btn => {
           btn.addEventListener('click', () => {
-            const cat = categories.find(c => c.id === btn.dataset.id);
+            const cat = activeCategories.find(c => String(c.id) === String(btn.dataset.id));
             if (!cat) return;
             openModal(true);
             document.getElementById('cat-id').value = cat.id;
@@ -183,42 +408,133 @@
             document.getElementById('cat-desc').value = cat.description || '';
             document.getElementById('cat-icon').value = cat.icon_emoji || '🌸';
             document.getElementById('cat-sort').value = cat.sort_order || 1;
+            document.getElementById('cat-hidden').checked = Boolean(cat.is_hidden || cat.isHidden);
           });
         });
 
-        document.querySelectorAll('.btn-delete-cat').forEach(btn => {
+        tableBody.querySelectorAll('.btn-delete-cat').forEach(btn => {
           btn.addEventListener('click', async () => {
             const catId = btn.dataset.id;
-            const cat = categories.find(c => String(c.id) === String(catId));
+            const cat = activeCategories.find(c => String(c.id) === String(catId));
             const name = cat ? cat.name : 'this collection';
 
-            const confirmed = await ADMIN.confirmDialog({
+            // 2-Tap Delete Flow
+            ADMIN.confirm({
               title: 'Delete Collection?',
-              message: `Permanently delete collection "${name}"? Products under this collection will remain safe in inventory.`,
-              confirmText: '🗑️ Delete Collection',
-              danger: true
+              message: `Delete "${name}"? It will disappear from your website.`,
+              confirmText: 'Delete',
+              danger: true,
+              onConfirm: async () => {
+                try {
+                  const res = await ADMIN.deleteCategory(catId);
+                  if (res && res.requiresResolution) {
+                    // Category has products -> prompt with category picker
+                    pendingDeleteCat = { id: catId, name, count: res.productCount };
+                    resMsg.textContent = `This category has ${res.productCount} product${res.productCount === 1 ? '' : 's'}. Move them to another category, or delete them too?`;
+
+                    // Populate other active categories
+                    const otherCats = activeCategories.filter(c => String(c.id) !== String(catId));
+                    if (otherCats.length > 0) {
+                      resMoveSelect.innerHTML = otherCats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                      btnResMove.disabled = false;
+                    } else {
+                      resMoveSelect.innerHTML = `<option value="">No other categories available</option>`;
+                      btnResMove.disabled = true;
+                    }
+
+                    resModal.style.display = 'flex';
+                    return;
+                  }
+
+                  // Successfully deleted empty category
+                  ADMIN.showToast(`Deleted "${name}"`, 'success', {
+                    duration: 10000,
+                    undoCallback: async () => {
+                      try {
+                        await ADMIN.restoreCategory(catId);
+                        ADMIN.showToast(`✓ Restored "${name}"`);
+                        await refreshTable();
+                      } catch (e) {
+                        ADMIN.showToast("Couldn't undo. Please try again.", 'danger');
+                      }
+                    }
+                  });
+                  await refreshTable();
+                } catch (err) {
+                  ADMIN.showToast("Couldn't delete. Please try again.", 'danger');
+                }
+              }
             });
-
-            if (!confirmed) return;
-
-            const origText = btn.textContent;
-            btn.disabled = true;
-            btn.textContent = 'Deleting...';
-
-            try {
-              await ADMIN.deleteCategory(catId);
-              ADMIN.showToast(`✓ Collection "${name}" was permanently deleted.`);
-              await refreshTable();
-            } catch (err) {
-              console.error('Error deleting collection:', err);
-              ADMIN.showToast(`Failed to delete collection: ${err.message || 'Unknown error'}`, 'danger');
-            } finally {
-              btn.disabled = false;
-              btn.textContent = origText;
-            }
           });
         });
       }
+
+      // Tab listeners
+      tabActive.addEventListener('click', () => {
+        tabActive.classList.add('active');
+        tabTrash.classList.remove('active');
+        currentTab = 'active';
+        renderTable();
+      });
+
+      tabTrash.addEventListener('click', () => {
+        tabTrash.classList.add('active');
+        tabActive.classList.remove('active');
+        currentTab = 'trash';
+        renderTable();
+      });
+
+      // Resolution Modal Actions
+      btnResCancel.addEventListener('click', () => {
+        resModal.style.display = 'none';
+        pendingDeleteCat = null;
+      });
+
+      btnResMove.addEventListener('click', async () => {
+        if (!pendingDeleteCat) return;
+        const targetId = resMoveSelect.value;
+        if (!targetId) return;
+
+        const catName = pendingDeleteCat.name;
+        const catId = pendingDeleteCat.id;
+        try {
+          await ADMIN.deleteCategory(catId, { moveToCategoryId: targetId });
+          resModal.style.display = 'none';
+          ADMIN.showToast(`✓ Moved products and deleted collection "${catName}".`, 'success', {
+            duration: 10000,
+            undoCallback: async () => {
+              await ADMIN.restoreCategory(catId);
+              ADMIN.showToast(`✓ Restored "${catName}"`);
+              await refreshTable();
+            }
+          });
+          await refreshTable();
+        } catch (err) {
+          ADMIN.showToast("Couldn't delete. Please try again.", 'danger');
+        }
+      });
+
+      btnResDeleteBoth.addEventListener('click', async () => {
+        if (!pendingDeleteCat) return;
+        const catName = pendingDeleteCat.name;
+        const catId = pendingDeleteCat.id;
+
+        try {
+          await ADMIN.deleteCategory(catId, { deleteProducts: true });
+          resModal.style.display = 'none';
+          ADMIN.showToast(`✓ Deleted collection "${catName}" and its products.`, 'success', {
+            duration: 10000,
+            undoCallback: async () => {
+              await ADMIN.restoreCategory(catId);
+              ADMIN.showToast(`✓ Restored "${catName}"`);
+              await refreshTable();
+            }
+          });
+          await refreshTable();
+        } catch (err) {
+          ADMIN.showToast("Couldn't delete. Please try again.", 'danger');
+        }
+      });
 
       function openModal(isEdit = false) {
         modal.style.display = 'flex';
@@ -246,6 +562,7 @@
         const desc = document.getElementById('cat-desc').value.trim();
         const icon = document.getElementById('cat-icon').value.trim();
         const sort = parseInt(document.getElementById('cat-sort').value, 10);
+        const isHidden = document.getElementById('cat-hidden').checked;
 
         try {
           await ADMIN.saveCategory({
@@ -254,9 +571,11 @@
             slug,
             description: desc,
             icon_emoji: icon,
-            sort_order: sort
+            sort_order: sort,
+            is_hidden: isHidden
           });
           closeModal();
+          ADMIN.showToast(`✓ Collection "${name}" saved!`);
           await refreshTable();
         } catch (err) {
           feedback.style.display = 'block';

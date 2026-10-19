@@ -280,17 +280,30 @@ const ADMIN = {
   },
 
   /**
-   * Displays an elegant feedback toast notification
+   * Alias for confirmDialog supporting onConfirm callback or Promise
    */
-  showToast(message, type = 'success') {
+  confirm(options) {
+    if (typeof options.onConfirm === 'function') {
+      return this.confirmDialog(options).then(confirmed => {
+        if (confirmed) options.onConfirm();
+        return confirmed;
+      });
+    }
+    return this.confirmDialog(options);
+  },
+
+  /**
+   * Displays an elegant feedback toast notification with optional 10-second Undo button
+   */
+  showToast(message, type = 'success', { undoCallback = null, duration = 4000 } = {}) {
     let toast = document.getElementById('admin-shared-toast');
     if (!toast) {
       toast = document.createElement('div');
       toast.id = 'admin-shared-toast';
       toast.style.cssText = `
-        position: fixed; bottom: 2rem; right: 2rem; z-index: 10001;
-        padding: 0.85rem 1.25rem; border-radius: 8px; font-size: 0.88rem; font-weight: 500;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.22); display: flex; align-items: center; gap: 0.6rem;
+        position: fixed; bottom: calc(2rem + env(safe-area-inset-bottom, 0px)); right: 1.5rem; z-index: 10001;
+        max-width: 90vw; padding: 0.85rem 1.25rem; border-radius: 8px; font-size: 0.88rem; font-weight: 500;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.22); display: flex; align-items: center; justify-content: space-between; gap: 0.85rem;
         transition: opacity 0.3s ease, transform 0.3s ease; opacity: 0; transform: translateY(10px);
         font-family: 'Poppins', sans-serif;
       `;
@@ -311,7 +324,23 @@ const ADMIN = {
       toast.style.borderLeft = '4px solid #10B981';
     }
 
-    toast.innerHTML = message;
+    toast.innerHTML = `
+      <span style="display: flex; align-items: center; gap: 0.5rem;">${message}</span>
+      ${undoCallback ? `<button id="admin-toast-undo-btn" type="button" style="background: #FFFFFF; color: #1E293B; border: none; padding: 0.4rem 0.85rem; border-radius: 6px; font-weight: 600; font-size: 0.82rem; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; gap: 0.3rem;">↩️ Undo</button>` : ''}
+    `;
+
+    if (undoCallback) {
+      const undoBtn = toast.querySelector('#admin-toast-undo-btn');
+      if (undoBtn) {
+        undoBtn.onclick = () => {
+          clearTimeout(this._toastTimeout);
+          toast.style.opacity = '0';
+          setTimeout(() => { toast.style.display = 'none'; }, 200);
+          undoCallback();
+        };
+      }
+    }
+
     toast.style.display = 'flex';
     requestAnimationFrame(() => {
       toast.style.opacity = '1';
@@ -323,254 +352,115 @@ const ADMIN = {
       toast.style.opacity = '0';
       toast.style.transform = 'translateY(10px)';
       setTimeout(() => { toast.style.display = 'none'; }, 300);
-    }, 3500);
+    }, undoCallback ? 10000 : duration);
   },
 
   // --------------------------------------------------------------------------
-  // PRODUCTS CRUD
+  // PRODUCTS CRUD (Single Source of Truth Database API)
   // --------------------------------------------------------------------------
-  async getProducts() {
-    const deletedIds = JSON.parse(localStorage.getItem('swan_deleted_product_ids') || '[]');
-    const archivedIds = JSON.parse(localStorage.getItem('swan_archived_product_ids') || '[]');
-
-    const client = getSupabaseClient();
-    if (client) {
-      try {
-        const { data, error } = await client
-          .from('products')
-          .select('*, categories(id, name, slug)')
-          .is('archived_at', null)
-          .order('created_at', { ascending: false });
-        if (!error && data) {
-          return data
-            .filter(p => !deletedIds.includes(String(p.id)) && !archivedIds.includes(String(p.id)))
-            .map(p => ({
-              id: p.id,
-              name: p.name,
-              slug: p.slug,
-              categoryId: p.category_id,
-              categoryName: p.categories?.name || 'Uncategorized',
-              price: parseFloat(p.price),
-              salePrice: p.sale_price ? parseFloat(p.sale_price) : null,
-              materials: p.materials,
-              dimensions: p.dimensions,
-              colors: p.colors || [],
-              stock: p.stock_quantity,
-              madeToOrder: p.made_to_order,
-              prepTime: p.prep_time,
-              isFeatured: p.is_featured,
-              isPublished: p.is_published,
-              imageUrl: p.image_url || null,
-              iconType: p.icon_type || 'flower'
-            }));
+  async getProducts({ trash = false } = {}) {
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    try {
+      const res = await fetch(`${baseUrl}/api/admin/products${trash ? '?trash=1' : ''}`, {
+        credentials: 'include'
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          return json.data;
         }
-      } catch (err) {
-        console.warn('Supabase getProducts error, falling back to local storage:', err);
       }
+    } catch (err) {
+      console.warn('Backend API getProducts error:', err);
     }
-
-    // Demo / LocalStore persistence
-    const stored = localStorage.getItem('swan_admin_products');
-    let list = [];
-    if (stored) {
-      try { list = JSON.parse(stored); } catch (e) { list = []; }
-    } else {
-      list = typeof getDemoProducts === 'function' ? getDemoProducts() : [];
-      localStorage.setItem('swan_admin_products', JSON.stringify(list));
-    }
-
-    return (list || [])
-      .filter(p => 
-        !p.archived_at && 
-        !deletedIds.includes(String(p.id)) && 
-        !deletedIds.includes(String(p.slug || '')) &&
-        !archivedIds.includes(String(p.id)) &&
-        !archivedIds.includes(String(p.slug || ''))
-      )
-      .map(p => ({
-        ...p,
-        isFeatured: p.isFeatured !== undefined ? Boolean(p.isFeatured) : (['prod-001', 'prod-002', 'prod-003', 'prod-004'].includes(String(p.id))),
-        isPublished: p.isPublished !== undefined ? Boolean(p.isPublished) : true,
-        stock: (p.stock !== undefined && p.stock !== null) ? parseInt(p.stock, 10) : 0
-      }));
+    return [];
   },
 
   async saveProduct(product) {
-    // 1. Validation per PRD Section 12
     if (!product.name || !product.name.trim()) throw new Error('Product name is required.');
     if (isNaN(product.price) || product.price < 0) throw new Error('Price must be a non-negative number.');
-    if (product.salePrice !== null && (isNaN(product.salePrice) || product.salePrice < 0 || product.salePrice >= product.price)) {
-      throw new Error('Sale price must be non-negative and less than the regular price.');
-    }
-    if (isNaN(product.stock) || product.stock < 0) throw new Error('Stock must be a non-negative integer.');
-
-    const client = getSupabaseClient();
-    if (client) {
-      try {
-        const payload = {
-          name: product.name.trim(),
-          slug: product.slug.trim(),
-          category_id: product.categoryId || null,
-          description: product.description || '',
-          image_url: product.imageUrl || null,
-          price: product.price,
-          sale_price: product.salePrice,
-          materials: product.materials || '100% Milk Cotton Yarn',
-          dimensions: product.dimensions || '',
-          colors: Array.isArray(product.colors) ? product.colors : [],
-          stock_quantity: parseInt(product.stock, 10),
-          made_to_order: Boolean(product.madeToOrder),
-          prep_time: product.prepTime || '3-5 business days',
-          is_featured: Boolean(product.isFeatured),
-          is_published: product.isPublished !== undefined ? Boolean(product.isPublished) : true,
-          icon_type: product.iconType || 'flower'
-        };
-
-        if (product.id && !String(product.id).startsWith('prod-')) {
-          const { error } = await client.from('products').update(payload).eq('id', product.id);
-          if (!error) return true;
-        } else {
-          const { error } = await client.from('products').insert([payload]);
-          if (!error) return true;
-        }
-      } catch (err) {
-        console.warn('Supabase saveProduct warning, persisting locally:', err);
+    if (product.salePrice !== null && product.salePrice !== undefined && product.salePrice !== '') {
+      const saleP = parseFloat(product.salePrice);
+      if (isNaN(saleP) || saleP < 0 || saleP >= parseFloat(product.price)) {
+        throw new Error('Sale price must be non-negative and less than regular price.');
       }
     }
 
-    // Local Demo Persistence
-    const products = await this.getProducts();
-    if (product.id) {
-      const idx = products.findIndex(p => String(p.id) === String(product.id));
-      if (idx > -1) {
-        products[idx] = { ...products[idx], ...product };
-      } else {
-        products.unshift(product);
-      }
-    } else {
-      product.id = 'prod-' + Date.now();
-      products.unshift(product);
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const isEdit = Boolean(product.id);
+    const url = isEdit ? `${baseUrl}/api/admin/products/${encodeURIComponent(product.id)}` : `${baseUrl}/api/admin/products`;
+    const method = isEdit ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(product)
+    });
+
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      throw new Error(errJson.error || "Couldn't save product. Please try again.");
     }
-    localStorage.setItem('swan_admin_products', JSON.stringify(products));
-    return true;
+    const json = await res.json();
+    return json.data;
+  },
+
+  async deleteProduct(id, { permanent = false } = {}) {
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const url = `${baseUrl}/api/admin/products/${encodeURIComponent(id)}${permanent ? '?permanent=1' : ''}`;
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || "Couldn't delete product. Please try again.");
+    }
+    return data;
+  },
+
+  async restoreProduct(id) {
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const res = await fetch(`${baseUrl}/api/admin/products/${encodeURIComponent(id)}/restore`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    if (!res.ok) throw new Error("Couldn't restore product.");
+    return await res.json();
+  },
+
+  async bulkProductAction(action, ids, extra = {}) {
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const res = await fetch(`${baseUrl}/api/admin/products/bulk`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ action, ids, ...extra })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || "Failed to execute bulk action.");
+    }
+    return data;
   },
 
   async toggleFeatured(productId, currentVal) {
     const nextVal = !currentVal;
-    const client = getSupabaseClient();
-    if (client) {
-      try {
-        const { error } = await client
-          .from('products')
-          .update({ is_featured: nextVal })
-          .eq('id', productId);
-        if (!error) return nextVal;
-      } catch (err) {
-        console.warn('Supabase toggleFeatured error:', err);
-      }
-    }
-
-    const products = await this.getProducts();
-    const target = products.find(p => String(p.id) === String(productId));
-    if (target) {
-      target.isFeatured = nextVal;
-      localStorage.setItem('swan_admin_products', JSON.stringify(products));
-    }
+    await this.saveProduct({ id: productId, isFeatured: nextVal });
     return nextVal;
   },
 
   async togglePublished(productId, currentVal) {
     const nextVal = !currentVal;
-    const client = getSupabaseClient();
-    if (client) {
-      try {
-        const { error } = await client
-          .from('products')
-          .update({ is_published: nextVal })
-          .eq('id', productId);
-        if (!error) return nextVal;
-      } catch (err) {
-        console.warn('Supabase togglePublished error:', err);
-      }
-    }
-
-    const products = await this.getProducts();
-    const target = products.find(p => String(p.id) === String(productId));
-    if (target) {
-      target.isPublished = nextVal;
-      localStorage.setItem('swan_admin_products', JSON.stringify(products));
-    }
+    await this.saveProduct({ id: productId, isPublished: nextVal });
     return nextVal;
   },
 
-  async archiveProduct(id) {
-    const targetId = String(id);
-    const products = await this.getProducts();
-    const currentProd = products.find(p => String(p.id) === targetId);
-    const targetSlug = currentProd ? String(currentProd.slug) : '';
-
-    const client = getSupabaseClient();
-    if (client) {
-      try {
-        const { error } = await client
-          .from('products')
-          .update({ archived_at: new Date().toISOString(), is_published: false })
-          .eq('id', id);
-        if (error) {
-          console.warn('Supabase archive warning (falling back to local):', error);
-        }
-      } catch (err) {
-        console.warn('Supabase archive exception (falling back to local):', err);
-      }
-    }
-
-    // Persistent blacklist of archived IDs & Slugs
-    const archivedIds = JSON.parse(localStorage.getItem('swan_archived_product_ids') || '[]');
-    if (!archivedIds.includes(targetId)) archivedIds.push(targetId);
-    if (targetSlug && !archivedIds.includes(targetSlug)) archivedIds.push(targetSlug);
-    localStorage.setItem('swan_archived_product_ids', JSON.stringify(archivedIds));
-
-    // Remove from local active products
-    const stored = localStorage.getItem('swan_admin_products');
-    let prodList = stored ? JSON.parse(stored) : (typeof getDemoProducts === 'function' ? getDemoProducts() : []);
-    const updated = prodList.filter(p => String(p.id) !== targetId && (!targetSlug || String(p.slug) !== targetSlug));
-    localStorage.setItem('swan_admin_products', JSON.stringify(updated));
-
-    return true;
-  },
-
-  async deleteProduct(id) {
-    const targetId = String(id);
-    const products = await this.getProducts();
-    const currentProd = products.find(p => String(p.id) === targetId);
-    const targetSlug = currentProd ? String(currentProd.slug) : '';
-
-    const client = getSupabaseClient();
-    if (client) {
-      try {
-        const { error } = await client.from('products').delete().eq('id', id);
-        if (error) {
-          console.warn('Foreign key or RLS prevented hard delete, attempting archive:', error);
-          await this.archiveProduct(id);
-        }
-      } catch (err) {
-        console.warn('Supabase delete exception, falling back to local delete:', err);
-      }
-    }
-
-    // Persistent blacklist of deleted IDs & Slugs
-    const deletedIds = JSON.parse(localStorage.getItem('swan_deleted_product_ids') || '[]');
-    if (!deletedIds.includes(targetId)) deletedIds.push(targetId);
-    if (targetSlug && !deletedIds.includes(targetSlug)) deletedIds.push(targetSlug);
-    localStorage.setItem('swan_deleted_product_ids', JSON.stringify(deletedIds));
-
-    // Remove from local active products
-    const stored = localStorage.getItem('swan_admin_products');
-    let prodList = stored ? JSON.parse(stored) : (typeof getDemoProducts === 'function' ? getDemoProducts() : []);
-    const updated = prodList.filter(p => String(p.id) !== targetId && (!targetSlug || String(p.slug) !== targetSlug));
-    localStorage.setItem('swan_admin_products', JSON.stringify(updated));
-
-    return true;
+  async toggleHideProduct(productId, isHidden) {
+    return await this.saveProduct({ id: productId, isHidden: Boolean(isHidden) });
   },
 
   // --------------------------------------------------------------------------
@@ -579,154 +469,89 @@ const ADMIN = {
   async updateStock(productId, newStock) {
     const qty = parseInt(newStock, 10);
     if (isNaN(qty) || qty < 0) throw new Error('Stock quantity must be 0 or greater.');
-
-    const client = getSupabaseClient();
-    if (client) {
-      try {
-        const { error } = await client
-          .from('products')
-          .update({ stock_quantity: qty })
-          .eq('id', productId);
-        if (!error) return true;
-      } catch (err) {
-        console.warn('Supabase updateStock error:', err);
-      }
-    }
-
-    const products = await this.getProducts();
-    const target = products.find(p => String(p.id) === String(productId));
-    if (target) {
-      target.stock = qty;
-      localStorage.setItem('swan_admin_products', JSON.stringify(products));
-    }
-    return true;
+    return await this.saveProduct({ id: productId, stock: qty });
   },
 
   async toggleMadeToOrder(productId, currentVal) {
     const nextVal = !currentVal;
-    const client = getSupabaseClient();
-    if (client) {
-      try {
-        const { error } = await client
-          .from('products')
-          .update({ made_to_order: nextVal })
-          .eq('id', productId);
-        if (!error) return nextVal;
-      } catch (err) {
-        console.warn('Supabase toggleMadeToOrder error:', err);
-      }
-    }
-
-    const products = await this.getProducts();
-    const target = products.find(p => String(p.id) === String(productId));
-    if (target) {
-      target.madeToOrder = nextVal;
-      localStorage.setItem('swan_admin_products', JSON.stringify(products));
-    }
-    return nextVal;
+    return await this.saveProduct({ id: productId, madeToOrder: nextVal });
   },
 
   // --------------------------------------------------------------------------
-  // CATEGORIES CRUD
+  // CATEGORIES CRUD (Single Source of Truth Database API)
   // --------------------------------------------------------------------------
-  async getCategories() {
-    const deletedCatIds = JSON.parse(localStorage.getItem('swan_deleted_category_ids') || '[]');
-
-    const client = getSupabaseClient();
-    if (client) {
-      try {
-        const { data, error } = await client
-          .from('categories')
-          .select('*')
-          .order('sort_order', { ascending: true });
-        if (!error && data) {
-          return data.filter(c => !deletedCatIds.includes(String(c.id)));
+  async getCategories({ trash = false } = {}) {
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    try {
+      const res = await fetch(`${baseUrl}/api/admin/categories${trash ? '?trash=1' : ''}`, {
+        credentials: 'include'
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          return json.data;
         }
-      } catch (err) {
-        console.warn('Supabase getCategories error:', err);
       }
+    } catch (err) {
+      console.warn('Backend API getCategories error:', err);
     }
-
-    const stored = localStorage.getItem('swan_admin_categories');
-    let cats = [];
-    if (stored) {
-      try { cats = JSON.parse(stored); } catch (e) { cats = []; }
-    } else {
-      cats = [
-        { id: 'cat-1', name: 'Floral Bouquets', slug: 'bouquets', description: 'Everlasting flowers that never wilt.', icon_emoji: '🌸', sort_order: 1 },
-        { id: 'cat-2', name: 'Bags & Totes', slug: 'bags', description: 'Handcrafted granny square bags.', icon_emoji: '👜', sort_order: 2 },
-        { id: 'cat-3', name: 'Cute Plushies', slug: 'plushies', description: 'Amigurumi handmade companions.', icon_emoji: '🧸', sort_order: 3 },
-        { id: 'cat-4', name: 'Personalized Gifts', slug: 'accessories', description: 'Keychains and bookmarks.', icon_emoji: '🎁', sort_order: 4 }
-      ];
-      localStorage.setItem('swan_admin_categories', JSON.stringify(cats));
-    }
-    return (cats || []).filter(c => !deletedCatIds.includes(String(c.id)));
+    return [];
   },
 
   async saveCategory(cat) {
     if (!cat.name || !cat.name.trim()) throw new Error('Category name is required.');
-    if (!cat.slug || !cat.slug.trim()) throw new Error('Category slug is required.');
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const isEdit = Boolean(cat.id);
+    const url = isEdit ? `${baseUrl}/api/admin/categories/${encodeURIComponent(cat.id)}` : `${baseUrl}/api/admin/categories`;
+    const method = isEdit ? 'PUT' : 'POST';
 
-    const client = getSupabaseClient();
-    if (client) {
-      try {
-        const payload = {
-          name: cat.name.trim(),
-          slug: cat.slug.trim(),
-          description: cat.description || '',
-          icon_emoji: cat.icon_emoji || '🧶',
-          sort_order: parseInt(cat.sort_order, 10) || 0
-        };
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(cat)
+    });
 
-        if (cat.id && !String(cat.id).startsWith('cat-')) {
-          const { error } = await client.from('categories').update(payload).eq('id', cat.id);
-          if (!error) return true;
-        } else {
-          const { error } = await client.from('categories').insert([payload]);
-          if (!error) return true;
-        }
-      } catch (err) {
-        console.warn('Supabase saveCategory error:', err);
-      }
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      throw new Error(errJson.error || "Couldn't save collection. Please try again.");
     }
-
-    const cats = await this.getCategories();
-    if (cat.id) {
-      const idx = cats.findIndex(c => String(c.id) === String(cat.id));
-      if (idx > -1) cats[idx] = { ...cats[idx], ...cat };
-      else cats.push(cat);
-    } else {
-      cat.id = 'cat-' + Date.now();
-      cats.push(cat);
-    }
-    localStorage.setItem('swan_admin_categories', JSON.stringify(cats));
-    return true;
+    const json = await res.json();
+    return json.data;
   },
 
-  async deleteCategory(id) {
-    const targetId = String(id);
-    const client = getSupabaseClient();
-    if (client) {
-      try {
-        const { error } = await client.from('categories').delete().eq('id', id);
-        if (error) console.warn('Supabase category delete warning:', error);
-      } catch (err) {
-        console.warn('Supabase category delete warning:', err);
-      }
-    }
+  async deleteCategory(id, { permanent = false, moveToCategoryId = null, deleteProducts = false } = {}) {
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const params = new URLSearchParams();
+    if (permanent) params.set('permanent', '1');
+    if (moveToCategoryId) params.set('move_to', moveToCategoryId);
+    if (deleteProducts) params.set('delete_products', '1');
 
-    // Blacklist deleted category ID
-    const deletedCatIds = JSON.parse(localStorage.getItem('swan_deleted_category_ids') || '[]');
-    if (!deletedCatIds.includes(targetId)) {
-      deletedCatIds.push(targetId);
-      localStorage.setItem('swan_deleted_category_ids', JSON.stringify(deletedCatIds));
-    }
+    const res = await fetch(`${baseUrl}/api/admin/categories/${encodeURIComponent(id)}?${params.toString()}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ moveToCategoryId, deleteProducts })
+    });
 
-    const stored = localStorage.getItem('swan_admin_categories');
-    let cats = stored ? JSON.parse(stored) : await this.getCategories();
-    const updated = cats.filter(c => String(c.id) !== targetId);
-    localStorage.setItem('swan_admin_categories', JSON.stringify(updated));
-    return true;
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 409) {
+      return { success: false, requiresResolution: true, productCount: data.productCount, message: data.message };
+    }
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || "Couldn't delete collection. Please try again.");
+    }
+    return data;
+  },
+
+  async restoreCategory(id) {
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const res = await fetch(`${baseUrl}/api/admin/categories/${encodeURIComponent(id)}/restore`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+    if (!res.ok) throw new Error("Couldn't restore collection.");
+    return await res.json();
   },
 
   // --------------------------------------------------------------------------
