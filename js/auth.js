@@ -10,6 +10,16 @@
  */
 
 const AUTH = {
+  getAdminApiBase() {
+    if (typeof SWAN_API !== 'undefined' && typeof SWAN_API.getBaseUrl === 'function') {
+      return SWAN_API.getBaseUrl();
+    }
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:4000';
+    }
+    return 'https://swan-studio.onrender.com';
+  },
+
   /**
    * Returns current active Supabase session or null.
    */
@@ -258,9 +268,11 @@ const AUTH = {
     // 1. Admin Login Verification (via Server-Side Auth API & Session Cookie)
     if (isAdmin) {
       try {
-        const resp = await fetch('/api/admin/login', {
+        const apiBase = this.getAdminApiBase();
+        const resp = await fetch(`${apiBase}/api/admin/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ identifier: cleanId, password })
         });
         const resData = await resp.json();
@@ -431,7 +443,8 @@ const AUTH = {
 
     // Call server-side admin logout to clear HttpOnly session cookie
     try {
-      await fetch('/api/admin/logout', { method: 'POST' });
+      const apiBase = this.getAdminApiBase();
+      await fetch(`${apiBase}/api/admin/logout`, { method: 'POST', credentials: 'include' });
     } catch (e) {
       // Ignore network errors on logout
     }
@@ -460,7 +473,8 @@ const AUTH = {
     if (requireAdmin) {
       // Verify server session
       try {
-        const resp = await fetch('/api/admin/session');
+        const apiBase = this.getAdminApiBase();
+        const resp = await fetch(`${apiBase}/api/admin/session`, { credentials: 'include' });
         if (resp.ok) {
           const data = await resp.json();
           if (data && data.authenticated && data.profile) {
@@ -495,9 +509,11 @@ const AUTH = {
     if (!newPassword || newPassword.length < 8) {
       throw new Error('New password must be at least 8 characters long.');
     }
-    const resp = await fetch('/api/admin/change-password', {
+    const apiBase = this.getAdminApiBase();
+    const resp = await fetch(`${apiBase}/api/admin/change-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ currentPassword, newPassword })
     });
     const data = await resp.json();
