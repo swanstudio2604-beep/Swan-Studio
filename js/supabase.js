@@ -56,360 +56,189 @@ function isProductSoldOut(p) {
   return stock <= 0;
 }
 
+/**
+ * Fetches products from database (via SWAN_API backend or Supabase if configured).
+ * The database is the single source of truth. Never uses hardcoded demo products.
+ */
 async function fetchProducts({ category = 'all', search = '', sort = 'featured', featuredOnly = false, maxPrice = null, hideSoldOut = false } = {}) {
   const client = getSupabaseClient();
-  const deletedIds = JSON.parse(localStorage.getItem('swan_deleted_product_ids') || '[]');
-  const archivedIds = JSON.parse(localStorage.getItem('swan_archived_product_ids') || '[]');
 
-  if (!client) {
-    // Graceful fallback to demo / admin catalog for local testing
-    let list = [];
-    const stored = localStorage.getItem('swan_admin_products');
-    if (stored) {
-      try { list = JSON.parse(stored); } catch (e) { list = []; }
+  // 1. Try Supabase if configured
+  if (client) {
+    try {
+      let query = client
+        .from('products')
+        .select('*, categories(name, slug)')
+        .eq('is_published', true)
+        .eq('is_hidden', false)
+        .is('deleted_at', null)
+        .is('archived_at', null);
+
+      if (featuredOnly) query = query.eq('is_featured', true);
+      if (category && category !== 'all') query = query.eq('categories.slug', category);
+      if (search && search.trim()) query = query.ilike('name', `%${search.trim()}%`);
+      if (maxPrice !== null && !isNaN(Number(maxPrice))) query = query.lte('price', Number(maxPrice));
+
+      const { data, error } = await query;
+      if (!error && data) {
+        let normalized = data.map(p => ({
+          id: p.id,
+          slug: p.slug,
+          name: p.name,
+          imageUrl: p.image_url || null,
+          category: p.categories?.slug || 'other',
+          categoryName: p.categories?.name || 'Crochet Creation',
+          price: parseFloat(p.price),
+          salePrice: p.sale_price ? parseFloat(p.sale_price) : null,
+          description: p.description,
+          materials: p.materials,
+          dimensions: p.dimensions,
+          colors: p.colors || [],
+          variants: p.variants || [],
+          stock: (p.stock_quantity !== undefined && p.stock_quantity !== null) ? parseInt(p.stock_quantity, 10) : 0,
+          madeToOrder: Boolean(p.made_to_order),
+          prepTime: p.prep_time,
+          badge: p.badge || (p.made_to_order ? 'Made to Order' : 'Ready to Ship'),
+          iconType: p.icon_type || 'flower',
+          isFeatured: Boolean(p.is_featured),
+          isPublished: Boolean(p.is_published)
+        }));
+        if (hideSoldOut) normalized = normalized.filter(p => !isProductSoldOut(p));
+        return { isLive: true, data: normalized };
+      }
+    } catch (err) {
+      console.warn('Supabase fetch products error:', err);
     }
-    if (!list || list.length === 0) {
-      list = typeof getDemoProducts === 'function' ? getDemoProducts() : [];
-    }
-
-    // Exclude deleted, archived, and disabled/unpublished items
-    list = list.filter(p => {
-      const pid = String(p.id);
-      const pslug = String(p.slug || '');
-      if (deletedIds.includes(pid) || (pslug && deletedIds.includes(pslug))) return false;
-      if (archivedIds.includes(pid) || (pslug && archivedIds.includes(pslug))) return false;
-      if (p.archived_at) return false;
-      // Must be published! If disabled (isPublished === false), omit from storefront
-      if (p.isPublished === false || p.is_published === false) return false;
-      return true;
-    });
-
-    // Populate defaults for isFeatured & stock
-    list = list.map(p => ({
-      ...p,
-      isFeatured: p.isFeatured !== undefined ? Boolean(p.isFeatured) : (['prod-001', 'prod-002', 'prod-003', 'prod-004'].includes(String(p.id))),
-      isPublished: true,
-      stock: (p.stock !== undefined && p.stock !== null) ? parseInt(p.stock, 10) : 0
-    }));
-
-    if (featuredOnly) {
-      list = list.filter(p => Boolean(p.isFeatured));
-    }
-
-    if (category && category !== 'all') {
-      list = list.filter(p => p.category === category || p.categoryId === category);
-    }
-    if (search && search.trim()) {
-      const q = search.trim().toLowerCase();
-      list = list.filter(p => 
-        p.name.toLowerCase().includes(q) || 
-        (p.description && p.description.toLowerCase().includes(q)) ||
-        (p.tags && p.tags.some(t => t.toLowerCase().includes(q)))
-      );
-    }
-    if (maxPrice !== null && !isNaN(Number(maxPrice))) {
-      const limit = Number(maxPrice);
-      list = list.filter(p => p.price <= limit);
-    }
-
-    // Optional: Hide sold-out items toggle
-    if (hideSoldOut) {
-      list = list.filter(p => !isProductSoldOut(p));
-    }
-
-    // Always sort sold-out items to the end of the list by default
-    list.sort((a, b) => {
-      const soA = isProductSoldOut(a) ? 1 : 0;
-      const soB = isProductSoldOut(b) ? 1 : 0;
-      if (soA !== soB) return soA - soB;
-
-      if (sort === 'price-asc') return a.price - b.price;
-      if (sort === 'price-desc') return b.price - a.price;
-      if (sort === 'name-asc') return a.name.localeCompare(b.name);
-
-      // 'featured' sort: Featured products first!
-      const featA = Boolean(a.isFeatured) ? 1 : 0;
-      const featB = Boolean(b.isFeatured) ? 1 : 0;
-      if (featB !== featA) return featB - featA;
-      return (b.id || '').localeCompare(a.id || '');
-    });
-
-    return {
-      isLive: false,
-      data: list
-    };
   }
 
+  // 2. Primary / Connected Backend API (Single Source of Truth)
   try {
-    let query = client
-      .from('products')
-      .select('*, categories(name, slug)')
-      .eq('is_published', true)
-      .is('archived_at', null);
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const params = new URLSearchParams();
+    if (category && category !== 'all') params.set('category', category);
+    if (search && search.trim()) params.set('search', search.trim());
+    if (sort) params.set('sort', sort);
+    if (maxPrice) params.set('maxPrice', maxPrice);
+    if (hideSoldOut) params.set('hideSoldOut', '1');
+    if (featuredOnly) params.set('featured', '1');
 
-    if (featuredOnly) {
-      query = query.eq('is_featured', true);
+    const res = await fetch(`${baseUrl}/api/products?${params.toString()}`);
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        return { isLive: true, data: json.data };
+      }
     }
-
-    // Category filter
-    if (category && category !== 'all') {
-      query = query.eq('categories.slug', category);
-    }
-
-    // Search query
-    if (search && search.trim()) {
-      query = query.ilike('name', `%${search.trim()}%`);
-    }
-
-    // Price upper limit filter
-    if (maxPrice !== null && !isNaN(Number(maxPrice))) {
-      query = query.lte('price', Number(maxPrice));
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-
-    // Normalize format and filter out blacklisted local deletions
-    let normalized = (data || [])
-      .filter(p => {
-        const pid = String(p.id);
-        const pslug = String(p.slug || '');
-        if (deletedIds.includes(pid) || (pslug && deletedIds.includes(pslug))) return false;
-        if (archivedIds.includes(pid) || (pslug && archivedIds.includes(pslug))) return false;
-        return true;
-      })
-      .map(p => ({
-        id: p.id,
-        slug: p.slug,
-        name: p.name,
-        imageUrl: p.image_url || null,
-        category: p.categories?.slug || 'other',
-        categoryName: p.categories?.name || 'Crochet Creation',
-        price: parseFloat(p.price),
-        salePrice: p.sale_price ? parseFloat(p.sale_price) : null,
-        description: p.description,
-        materials: p.materials,
-        dimensions: p.dimensions,
-        colors: p.colors || [],
-        variants: p.variants || [],
-        stock: (p.stock_quantity !== undefined && p.stock_quantity !== null) ? parseInt(p.stock_quantity, 10) : 0,
-        madeToOrder: Boolean(p.made_to_order),
-        prepTime: p.prep_time,
-        badge: p.badge || (p.made_to_order ? 'Made to Order' : 'Ready to Ship'),
-        iconType: p.icon_type || 'flower',
-        isFeatured: Boolean(p.is_featured),
-        isPublished: Boolean(p.is_published)
-      }));
-
-    if (hideSoldOut) {
-      normalized = normalized.filter(p => !isProductSoldOut(p));
-    }
-
-    // Always push sold-out items to the end of the list by default
-    normalized.sort((a, b) => {
-      const soA = isProductSoldOut(a) ? 1 : 0;
-      const soB = isProductSoldOut(b) ? 1 : 0;
-      if (soA !== soB) return soA - soB;
-
-      if (sort === 'price-asc') return a.price - b.price;
-      if (sort === 'price-desc') return b.price - a.price;
-      if (sort === 'name-asc') return a.name.localeCompare(b.name);
-
-      const featA = Boolean(a.isFeatured) ? 1 : 0;
-      const featB = Boolean(b.isFeatured) ? 1 : 0;
-      if (featB !== featA) return featB - featA;
-      return (b.id || '').localeCompare(a.id || '');
-    });
-
-    return {
-      isLive: true,
-      data: normalized
-    };
   } catch (err) {
-    console.warn('Supabase fetch failed; falling back to demo data:', err);
-    let list = [];
-    const stored = localStorage.getItem('swan_admin_products');
-    if (stored) {
-      try { list = JSON.parse(stored); } catch (e) { list = []; }
-    }
-    if (!list || list.length === 0) {
-      list = typeof getDemoProducts === 'function' ? getDemoProducts() : [];
-    }
-    list = list.filter(p => {
-      const pid = String(p.id);
-      const pslug = String(p.slug || '');
-      if (deletedIds.includes(pid) || (pslug && deletedIds.includes(pslug))) return false;
-      if (archivedIds.includes(pid) || (pslug && archivedIds.includes(pslug))) return false;
-      if (p.archived_at) return false;
-      if (p.isPublished === false || p.is_published === false) return false;
-      return true;
-    }).map(p => ({
-      ...p,
-      isFeatured: p.isFeatured !== undefined ? Boolean(p.isFeatured) : (['prod-001', 'prod-002', 'prod-003', 'prod-004'].includes(String(p.id))),
-      isPublished: true,
-      stock: (p.stock !== undefined && p.stock !== null) ? parseInt(p.stock, 10) : 0
-    }));
-
-    if (featuredOnly) {
-      list = list.filter(p => Boolean(p.isFeatured));
-    }
-    if (category && category !== 'all') {
-      list = list.filter(p => p.category === category || p.categoryId === category);
-    }
-    if (search && search.trim()) {
-      const q = search.trim().toLowerCase();
-      list = list.filter(p => 
-        p.name.toLowerCase().includes(q) || 
-        (p.description && p.description.toLowerCase().includes(q)) ||
-        (p.tags && p.tags.some(t => t.toLowerCase().includes(q)))
-      );
-    }
-    if (maxPrice !== null && !isNaN(Number(maxPrice))) {
-      list = list.filter(p => p.price <= Number(maxPrice));
-    }
-    if (hideSoldOut) {
-      list = list.filter(p => !isProductSoldOut(p));
-    }
-
-    list.sort((a, b) => {
-      const soA = isProductSoldOut(a) ? 1 : 0;
-      const soB = isProductSoldOut(b) ? 1 : 0;
-      if (soA !== soB) return soA - soB;
-
-      if (sort === 'price-asc') return a.price - b.price;
-      if (sort === 'price-desc') return b.price - a.price;
-      if (sort === 'name-asc') return a.name.localeCompare(b.name);
-
-      const featA = Boolean(a.isFeatured) ? 1 : 0;
-      const featB = Boolean(b.isFeatured) ? 1 : 0;
-      if (featB !== featA) return featB - featA;
-      return (b.id || '').localeCompare(a.id || '');
-    });
-
-    return {
-      isLive: false,
-      data: list
-    };
+    console.warn('Backend API fetch products error:', err);
   }
+
+  return { isLive: false, data: [] };
 }
 
 /**
- * Fetches a single product by slug.
- * Returns { isLive, data: null } if the product is deleted, archived, disabled, or not found.
+ * Fetches a single product by slug from the database.
+ * Returns { isLive, data: null } if the product is deleted, archived, hidden, or not found.
  */
 async function fetchProductBySlug(slug) {
-  const deletedIds = JSON.parse(localStorage.getItem('swan_deleted_product_ids') || '[]');
-  const archivedIds = JSON.parse(localStorage.getItem('swan_archived_product_ids') || '[]');
-
-  if (deletedIds.includes(slug) || archivedIds.includes(slug)) {
-    return { isLive: false, data: null };
-  }
-
   const client = getSupabaseClient();
-
-  if (!client) {
-    let list = [];
-    const stored = localStorage.getItem('swan_admin_products');
-    if (stored) {
-      try { list = JSON.parse(stored); } catch (e) { list = []; }
-    }
-    let item = list.find(p => p.slug === slug);
-    if (!item && typeof getDemoProductBySlug === 'function') {
-      const demoCandidate = getDemoProductBySlug(slug);
-      if (demoCandidate && !deletedIds.includes(String(demoCandidate.id)) && !archivedIds.includes(String(demoCandidate.id))) {
-        item = demoCandidate;
+  if (client) {
+    try {
+      const { data, error } = await client
+        .from('products')
+        .select('*, categories(name, slug)')
+        .eq('slug', slug)
+        .eq('is_published', true)
+        .eq('is_hidden', false)
+        .is('deleted_at', null)
+        .is('archived_at', null)
+        .single();
+      if (!error && data) {
+        return {
+          isLive: true,
+          data: {
+            id: data.id,
+            slug: data.slug,
+            name: data.name,
+            imageUrl: data.image_url || null,
+            category: data.categories?.slug || 'other',
+            categoryName: data.categories?.name || 'Crochet Creation',
+            price: parseFloat(data.price),
+            salePrice: data.sale_price ? parseFloat(data.sale_price) : null,
+            description: data.description,
+            materials: data.materials,
+            dimensions: data.dimensions,
+            colors: data.colors || [],
+            stock: (data.stock_quantity !== undefined && data.stock_quantity !== null) ? parseInt(data.stock_quantity, 10) : 0,
+            madeToOrder: Boolean(data.made_to_order),
+            prepTime: data.prep_time,
+            badge: data.badge,
+            iconType: data.icon_type,
+            isFeatured: Boolean(data.is_featured),
+            isPublished: Boolean(data.is_published)
+          }
+        };
       }
-    }
-
-    if (!item) return { isLive: false, data: null };
-
-    const pid = String(item.id);
-    if (deletedIds.includes(pid) || (item.slug && deletedIds.includes(item.slug))) return { isLive: false, data: null };
-    if (archivedIds.includes(pid) || (item.slug && archivedIds.includes(item.slug))) return { isLive: false, data: null };
-    if (item.archived_at) return { isLive: false, data: null };
-    if (item.isPublished === false || item.is_published === false) return { isLive: false, data: null };
-
-    return {
-      isLive: false,
-      data: {
-        ...item,
-        isFeatured: item.isFeatured !== undefined ? Boolean(item.isFeatured) : (['prod-001', 'prod-002', 'prod-003', 'prod-004'].includes(String(item.id))),
-        isPublished: true,
-        stock: (item.stock !== undefined && item.stock !== null) ? parseInt(item.stock, 10) : 0
-      }
-    };
+    } catch (e) {}
   }
 
   try {
-    const { data, error } = await client
-      .from('products')
-      .select('*, categories(name, slug)')
-      .eq('slug', slug)
-      .eq('is_published', true)
-      .is('archived_at', null)
-      .single();
-
-    if (error || !data) throw error || new Error('Product not found in Supabase');
-
-    const pid = String(data.id);
-    if (deletedIds.includes(pid) || deletedIds.includes(data.slug)) return { isLive: true, data: null };
-    if (archivedIds.includes(pid) || archivedIds.includes(data.slug)) return { isLive: true, data: null };
-
-    return {
-      isLive: true,
-      data: {
-        id: data.id,
-        slug: data.slug,
-        name: data.name,
-        imageUrl: data.image_url || null,
-        category: data.categories?.slug || 'other',
-        categoryName: data.categories?.name || 'Crochet Creation',
-        price: parseFloat(data.price),
-        salePrice: data.sale_price ? parseFloat(data.sale_price) : null,
-        description: data.description,
-        materials: data.materials,
-        dimensions: data.dimensions,
-        colors: data.colors || [],
-        variants: data.variants || [],
-        stock: (data.stock_quantity !== undefined && data.stock_quantity !== null) ? parseInt(data.stock_quantity, 10) : 0,
-        madeToOrder: data.made_to_order,
-        prepTime: data.prep_time,
-        badge: data.badge || (data.made_to_order ? 'Made to Order' : 'Ready to Ship'),
-        iconType: data.icon_type || 'flower',
-        isFeatured: Boolean(data.is_featured),
-        isPublished: Boolean(data.is_published)
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const res = await fetch(`${baseUrl}/api/products/${encodeURIComponent(slug)}`);
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.data) {
+        return { isLive: true, data: json.data };
       }
-    };
+    }
   } catch (err) {
-    console.warn('Supabase product fetch failed; checking demo data:', err);
-    let list = [];
-    const stored = localStorage.getItem('swan_admin_products');
-    if (stored) {
-      try { list = JSON.parse(stored); } catch (e) { list = []; }
-    }
-    let item = list.find(p => p.slug === slug);
-    if (!item && typeof getDemoProductBySlug === 'function') {
-      const demo = getDemoProductBySlug(slug);
-      if (demo && !deletedIds.includes(String(demo.id)) && !archivedIds.includes(String(demo.id))) {
-        item = demo;
-      }
-    }
-
-    if (!item) return { isLive: false, data: null };
-    const pid = String(item.id);
-    if (deletedIds.includes(pid) || (item.slug && deletedIds.includes(item.slug))) return { isLive: false, data: null };
-    if (archivedIds.includes(pid) || (item.slug && archivedIds.includes(item.slug))) return { isLive: false, data: null };
-    if (item.archived_at) return { isLive: false, data: null };
-    if (item.isPublished === false || item.is_published === false) return { isLive: false, data: null };
-
-    return {
-      isLive: false,
-      data: {
-        ...item,
-        isFeatured: item.isFeatured !== undefined ? Boolean(item.isFeatured) : (['prod-001', 'prod-002', 'prod-003', 'prod-004'].includes(String(item.id))),
-        isPublished: true,
-        stock: (item.stock !== undefined && item.stock !== null) ? parseInt(item.stock, 10) : 0
-      }
-    };
+    console.warn('Backend API fetchProductBySlug error:', err);
   }
+
+  return { isLive: false, data: null };
 }
+
+/**
+ * Fetches active categories from database:
+ * Only returns categories that exist, are visible, not deleted, and have >= 1 visible product.
+ */
+async function fetchCategories() {
+  const client = getSupabaseClient();
+  let list = [];
+  let isLive = false;
+
+  if (client) {
+    try {
+      const { data, error } = await client
+        .from('active_categories')
+        .select('*')
+        .order('sort_order', { ascending: true });
+      if (!error && Array.isArray(data) && data.length > 0) {
+        list = data;
+        isLive = true;
+      }
+    } catch (e) {}
+  }
+
+  if (!isLive) {
+    try {
+      const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+      const res = await fetch(`${baseUrl}/api/categories`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          list = json.data;
+          isLive = true;
+        }
+      }
+    } catch (err) {
+      console.warn('Backend API fetchCategories error:', err);
+    }
+  }
+
+  list.isLive = isLive;
+  list.data = list;
+  return list;
+}
+
+

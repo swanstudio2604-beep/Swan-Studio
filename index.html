@@ -222,63 +222,8 @@
           </p>
         </div>
 
-        <div class="collection-grid">
-          <a href="shop.html?category=bouquets" class="collection-card">
-            <div class="collection-icon" aria-hidden="true">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-text);">
-                <path d="M12 2a4 4 0 0 0-4 4c0 3 4 7 4 7s4-4 4-7a4 4 0 0 0-4-4z"/>
-                <path d="M12 13v9"/>
-                <path d="M8 17c1.5-1 3.5-.5 4 .5"/>
-                <path d="M16 17c-1.5-1-3.5-.5-4 .5"/>
-              </svg>
-            </div>
-            <h3 class="collection-title">Floral Bouquets</h3>
-            <p class="collection-desc">Everlasting roses, tulips, and daisies that never wilt.</p>
-            <span class="btn btn-outline btn-sm">Explore Bouquets</span>
-          </a>
-
-          <a href="shop.html?category=bags" class="collection-card">
-            <div class="collection-icon" aria-hidden="true">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-text);">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <path d="M16 10a4 4 0 0 1-8 0"/>
-              </svg>
-            </div>
-            <h3 class="collection-title">Bags &amp; Totes</h3>
-            <p class="collection-desc">Granny square totes, clutches, and shoulder bags.</p>
-            <span class="btn btn-outline btn-sm">Explore Bags</span>
-          </a>
-
-          <a href="shop.html?category=plushies" class="collection-card">
-            <div class="collection-icon" aria-hidden="true">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-text);">
-                <path d="M12 11c3.5 0 6 2 6 5.5 0 3-2.5 5.5-6 5.5s-6-2.5-6-5.5c0-3.5 2.5-5.5 6-5.5z"/>
-                <path d="M9 11V4a2 2 0 0 1 4 0v2"/>
-                <path d="M15 11V4a2 2 0 0 0-4 0v2"/>
-                <circle cx="10" cy="15" r="1" fill="currentColor"/>
-                <circle cx="14" cy="15" r="1" fill="currentColor"/>
-              </svg>
-            </div>
-            <h3 class="collection-title">Cute Plushies</h3>
-            <p class="collection-desc">Amigurumi companions crafted with soft milk cotton.</p>
-            <span class="btn btn-outline btn-sm">Explore Plushies</span>
-          </a>
-
-          <a href="shop.html?category=accessories" class="collection-card">
-            <div class="collection-icon" aria-hidden="true">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-text);">
-                <polyline points="20 12 20 22 4 22 4 12"/>
-                <rect x="2" y="7" width="20" height="5"/>
-                <line x1="12" y1="22" x2="12" y2="7"/>
-                <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
-                <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
-              </svg>
-            </div>
-            <h3 class="collection-title">Personalized Gifts</h3>
-            <p class="collection-desc">Custom keychains, bookmarks, coasters, and keepsakes.</p>
-            <span class="btn btn-outline btn-sm">Explore Gifts</span>
-          </a>
+        <div class="collection-grid" id="home-collection-grid">
+          <!-- Dynamically populated from active database collections -->
         </div>
       </div>
     </section>
@@ -460,11 +405,42 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/api-config.js"></script>
-  <script src="js/products-demo.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
+      // Dynamic Home Collections Loader
+      async function loadHomeCollections() {
+        const container = document.getElementById('home-collection-grid');
+        const section = document.getElementById('collections');
+        if (!container) return;
+
+        try {
+          const catsData = await fetchCategories();
+          const categories = Array.isArray(catsData) ? catsData : (catsData.data || []);
+          if (!categories.length) {
+            if (section) section.style.display = 'none';
+            return;
+          }
+
+          if (section) section.style.display = 'block';
+          container.innerHTML = categories.map(c => `
+            <a href="shop.html?category=${encodeURIComponent(c.slug)}" class="collection-card">
+              <div class="collection-icon" aria-hidden="true" style="font-size: 2rem; display: flex; align-items: center; justify-content: center;">
+                ${c.icon_emoji || '🌸'}
+              </div>
+              <h3 class="collection-title">${c.name}</h3>
+              <p class="collection-desc">${c.description || 'Handcrafted crochet pieces made with care.'}</p>
+              <span class="btn btn-outline btn-sm">Explore ${c.name}</span>
+            </a>
+          `).join('');
+        } catch (err) {
+          console.error('Failed to load collections:', err);
+        }
+      }
+
+      await loadHomeCollections();
+
       // 1. Dynamic Featured Creations Loader
       async function loadFeaturedCreations() {
         const grid = document.getElementById('featured-products-grid');

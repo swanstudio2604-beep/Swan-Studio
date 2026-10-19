@@ -153,17 +153,17 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/products-demo.js"></script>
+  <script src="js/api-config.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/main.js"></script>
   <script>
     // -------------------------------------------------------------------------
     // Shop Page Logic (Reads URL params ?category=, ?search=, ?sort=, ?maxPrice=)
     // -------------------------------------------------------------------------
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const searchInput = document.getElementById('shop-search');
       const sortSelect = document.getElementById('shop-sort');
-      const categoryPills = document.querySelectorAll('.category-pill');
+      const categoryPillsContainer = document.getElementById('category-pills');
       const productsGrid = document.getElementById('products-grid');
       const emptyState = document.getElementById('empty-state');
       const resultsCount = document.getElementById('results-count');
@@ -189,13 +189,52 @@
         currentCategory = 'under499';
       }
 
+      // 2. Fetch Active Categories dynamically from Database
+      const catsData = await fetchCategories();
+      const validCategories = Array.isArray(catsData) ? catsData : (catsData.data || []);
+
+      // If ?category= is specified but is deleted or not found, redirect to shop
+      if (currentCategory !== 'all' && currentCategory !== 'under499') {
+        const found = validCategories.some(c => c.slug === currentCategory);
+        if (!found) {
+          window.location.replace('shop.html');
+          return;
+        }
+      }
+
+      // Render Category Pills
+      function renderCategoryPills() {
+        let html = `<button class="category-pill ${currentCategory === 'all' ? 'active' : ''}" data-category="all">All Creations</button>`;
+        validCategories.forEach(c => {
+          const isActive = currentCategory === c.slug;
+          html += `<button class="category-pill ${isActive ? 'active' : ''}" data-category="${c.slug}">${c.name}</button>`;
+        });
+        html += `<button class="category-pill ${currentCategory === 'under499' ? 'active' : ''}" data-category="under499" data-maxprice="499">Under ₹499</button>`;
+        categoryPillsContainer.innerHTML = html;
+
+        // Attach listeners to newly rendered pills
+        categoryPillsContainer.querySelectorAll('.category-pill').forEach(pill => {
+          pill.addEventListener('click', () => {
+            currentCategory = pill.dataset.category;
+            if (currentCategory === 'under499') {
+              currentMaxPrice = '499';
+            } else {
+              currentMaxPrice = null;
+            }
+            updateActivePill(currentCategory);
+            renderCatalogue();
+          });
+        });
+      }
+
+      renderCategoryPills();
+
       // Initialize UI inputs from URL
       searchInput.value = currentSearch;
       sortSelect.value = currentSort;
-      updateActivePill(currentCategory);
 
       function updateActivePill(cat) {
-        categoryPills.forEach(pill => {
+        categoryPillsContainer.querySelectorAll('.category-pill').forEach(pill => {
           if (pill.dataset.category === cat) {
             pill.classList.add('active');
           } else {
@@ -299,19 +338,7 @@
         window.history.replaceState({}, '', newUrl);
       }
 
-      // Event Listeners
-      categoryPills.forEach(pill => {
-        pill.addEventListener('click', () => {
-          currentCategory = pill.dataset.category;
-          if (currentCategory === 'under499') {
-            currentMaxPrice = '499';
-          } else {
-            currentMaxPrice = null;
-          }
-          updateActivePill(currentCategory);
-          renderCatalogue();
-        });
-      });
+      // Search debounce
 
       let searchDebounce;
       searchInput.addEventListener('input', (e) => {

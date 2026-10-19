@@ -251,12 +251,8 @@ function renderFooter() {
           <!-- Col 2: Shop & Collections -->
           <div>
             <h4 class="footer-heading">Shop</h4>
-            <ul class="footer-links">
+            <ul class="footer-links" id="footer-shop-links">
               <li><a href="shop.html">All Creations</a></li>
-              <li><a href="shop.html?category=bouquets">Crochet Bouquets</a></li>
-              <li><a href="shop.html?category=bags">Bags & Totes</a></li>
-              <li><a href="shop.html?category=plushies">Cute Plushies</a></li>
-              <li><a href="shop.html?category=accessories">Personalized Gifts</a></li>
             </ul>
           </div>
 
@@ -324,6 +320,18 @@ function renderFooter() {
       </div>
     </footer>
   `;
+
+  // Dynamically populate active collections in footer
+  if (typeof fetchCategories === 'function') {
+    fetchCategories().then(cats => {
+      const linksContainer = document.getElementById('footer-shop-links');
+      const list = Array.isArray(cats) ? cats : (cats && cats.data ? cats.data : []);
+      if (linksContainer && list.length > 0) {
+        linksContainer.innerHTML = `<li><a href="shop.html">All Creations</a></li>` +
+          list.map(c => `<li><a href="shop.html?category=${encodeURIComponent(c.slug)}">${c.name}</a></li>`).join('');
+      }
+    }).catch(() => {});
+  }
 }
 
 // ---------------------------------------------------------------------------
