@@ -520,6 +520,14 @@ app.get('/sitemap.xml', (req, res) => {
   res.send(xml);
 });
 
+app.get('/api/version', (req, res) => {
+  res.status(200).json({
+    version: '1.0.0',
+    service: 'swan-studio-api',
+    status: 'healthy'
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Public Products & Categories Endpoints (Database Single Source of Truth)
 // ---------------------------------------------------------------------------

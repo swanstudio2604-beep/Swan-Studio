@@ -15,17 +15,20 @@ const path = require('path');
 
 const STORE_PATH = path.join(__dirname, 'data', 'store.json');
 
+let BASELINE_STORE = { categories: [], products: [] };
+try {
+  BASELINE_STORE = require('./data/store.json');
+} catch (e) {
+  // Fallback
+}
+
 function ensureStoreExists() {
   const dir = path.dirname(STORE_PATH);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
   if (!fs.existsSync(STORE_PATH)) {
-    const initial = {
-      categories: [],
-      products: []
-    };
-    fs.writeFileSync(STORE_PATH, JSON.stringify(initial, null, 2), 'utf8');
+    fs.writeFileSync(STORE_PATH, JSON.stringify(BASELINE_STORE, null, 2), 'utf8');
   }
 }
 
@@ -33,9 +36,17 @@ function readStore() {
   ensureStoreExists();
   try {
     const raw = fs.readFileSync(STORE_PATH, 'utf8');
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    if ((!parsed.categories || parsed.categories.length === 0) && BASELINE_STORE.categories && BASELINE_STORE.categories.length > 0) {
+      writeStore(BASELINE_STORE);
+      return JSON.parse(JSON.stringify(BASELINE_STORE));
+    }
+    return parsed;
   } catch (err) {
     console.error('Error reading store.json:', err);
+    if (BASELINE_STORE.categories && BASELINE_STORE.categories.length > 0) {
+      return JSON.parse(JSON.stringify(BASELINE_STORE));
+    }
     return { categories: [], products: [] };
   }
 }
