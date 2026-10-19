@@ -74,41 +74,68 @@ CREATE POLICY "Admin can update all profiles"
 -- ----------------------------------------------------------------------------
 -- 4. Policies: categories
 -- ----------------------------------------------------------------------------
--- Anyone can view categories
-CREATE POLICY "Public can view categories"
+-- Public can view only active, non-hidden, non-deleted categories
+CREATE POLICY "Public can view active categories"
   ON public.categories FOR SELECT
-  USING (true);
+  USING (deleted_at IS NULL AND is_hidden = false);
 
--- Admin has full category management
-CREATE POLICY "Admin can manage categories"
-  ON public.categories FOR ALL
+-- Admin can view all categories (including drafts, hidden and soft-deleted/trash)
+CREATE POLICY "Admin can view all categories"
+  ON public.categories FOR SELECT
+  USING (public.is_admin());
+
+-- Admin can insert, update, and delete categories
+CREATE POLICY "Admin can insert categories"
+  ON public.categories FOR INSERT
+  WITH CHECK (public.is_admin());
+
+CREATE POLICY "Admin can update categories"
+  ON public.categories FOR UPDATE
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
+
+CREATE POLICY "Admin can delete categories"
+  ON public.categories FOR DELETE
   USING (public.is_admin());
 
 -- ----------------------------------------------------------------------------
 -- 5. Policies: products & product_images
 -- ----------------------------------------------------------------------------
--- Public can view only published, non-archived products
+-- Public can view only published, non-hidden, non-deleted, non-archived products
 CREATE POLICY "Public can view active products"
   ON public.products FOR SELECT
-  USING (is_published = true AND archived_at IS NULL);
+  USING (is_published = true AND is_hidden = false AND deleted_at IS NULL AND archived_at IS NULL);
 
--- Admin can view all products (including drafts and archived)
+-- Admin can view all products (including drafts, hidden, and trash)
 CREATE POLICY "Admin can view all products"
   ON public.products FOR SELECT
   USING (public.is_admin());
 
--- Admin can manage products (insert, update, delete/archive)
-CREATE POLICY "Admin can manage products"
-  ON public.products FOR ALL
+-- Admin has full product management
+CREATE POLICY "Admin can insert products"
+  ON public.products FOR INSERT
+  WITH CHECK (public.is_admin());
+
+CREATE POLICY "Admin can update products"
+  ON public.products FOR UPDATE
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
+
+CREATE POLICY "Admin can delete products"
+  ON public.products FOR DELETE
   USING (public.is_admin());
 
--- Public can view images of published products
+-- Public can view images of published, active products
 CREATE POLICY "Public can view product images"
   ON public.product_images FOR SELECT
   USING (
     EXISTS (
       SELECT 1 FROM public.products p
-      WHERE p.id = product_id AND p.is_published = true AND p.archived_at IS NULL
+      WHERE p.id = product_id 
+        AND p.is_published = true 
+        AND p.is_hidden = false 
+        AND p.deleted_at IS NULL 
+        AND p.archived_at IS NULL
     )
   );
 

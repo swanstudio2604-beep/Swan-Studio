@@ -97,11 +97,14 @@ CREATE TABLE IF NOT EXISTS public.categories (
   description TEXT DEFAULT '',
   icon_emoji TEXT DEFAULT '🧶',
   sort_order INT NOT NULL DEFAULT 0,
+  is_hidden BOOLEAN NOT NULL DEFAULT false,
+  deleted_at TIMESTAMPTZ DEFAULT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 COMMENT ON TABLE public.categories IS 'Categories for grouping crochet creations (e.g. bouquets, plushies, bags).';
 CREATE INDEX IF NOT EXISTS idx_categories_slug ON public.categories(slug);
+CREATE INDEX IF NOT EXISTS idx_categories_visibility ON public.categories(is_hidden, deleted_at);
 
 -- ----------------------------------------------------------------------------
 -- 4. Table: products
@@ -126,7 +129,9 @@ CREATE TABLE IF NOT EXISTS public.products (
   image_url TEXT DEFAULT NULL,
   is_featured BOOLEAN NOT NULL DEFAULT false,
   is_published BOOLEAN NOT NULL DEFAULT true,
-  archived_at TIMESTAMPTZ DEFAULT NULL, -- Soft delete: prefer archiving over hard delete
+  is_hidden BOOLEAN NOT NULL DEFAULT false,
+  deleted_at TIMESTAMPTZ DEFAULT NULL, -- Soft delete: items move to Trash
+  archived_at TIMESTAMPTZ DEFAULT NULL, -- Legacy archive
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -134,7 +139,7 @@ CREATE TABLE IF NOT EXISTS public.products (
 COMMENT ON TABLE public.products IS 'Handmade crochet catalog with inventory count, prices in INR, and made-to-order flags.';
 CREATE INDEX IF NOT EXISTS idx_products_slug ON public.products(slug);
 CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category_id);
-CREATE INDEX IF NOT EXISTS idx_products_published ON public.products(is_published, archived_at);
+CREATE INDEX IF NOT EXISTS idx_products_published ON public.products(is_published, is_hidden, deleted_at, archived_at);
 
 CREATE TRIGGER trg_products_updated_at
   BEFORE UPDATE ON public.products

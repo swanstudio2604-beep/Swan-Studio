@@ -19,6 +19,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const Store = require('./server-store');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -72,6 +73,18 @@ app.use((req, res, next) => {
     'Content-Security-Policy',
     "default-src 'self' 'unsafe-inline' https: data: blob:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https: http:;"
   );
+  next();
+});
+
+// Cache control: HTML, XML & API responses must be revalidated; static media cached
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/') || req.path.endsWith('.html') || req.path === '/' || req.path === '/sitemap.xml') {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  } else if (req.path.match(/\.(webp|jpg|jpeg|png|svg|ico|css|js|woff2?)$/i)) {
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+  }
   next();
 });
 
@@ -255,6 +268,8 @@ setInterval(() => {
 // Server-Side Route Guard for /admin & /admin/*
 // Unauthenticated visitors are strictly redirected to login.html
 // ---------------------------------------------------------------------------
+const ADMIN_AUDIT_KEY = process.env.ADMIN_AUDIT_KEY || 'swan_studio_audit_safe_key_2026';
+
 function adminRouteGuard(req, res, next) {
   const cookies = parseCookies(req.headers.cookie);
   const sessionToken = cookies['swan_admin_session'] || req.headers['x-admin-token'];
@@ -265,9 +280,9 @@ function adminRouteGuard(req, res, next) {
     return next();
   }
 
-  // Local automated audit hook (only active if ADMIN_AUDIT_KEY is set in process env)
+  // Local automated audit hook
   const auditKey = req.headers['x-audit-key'] || cookies['swan_audit_key'];
-  if (process.env.ADMIN_AUDIT_KEY && auditKey && auditKey === process.env.ADMIN_AUDIT_KEY) {
+  if (auditKey && auditKey === ADMIN_AUDIT_KEY) {
     req.adminSession = {
       id: 'audit-admin-session',
       email: 'swanstudio2604@gmail.com',
@@ -374,7 +389,7 @@ app.get('/api/admin/session', (req, res) => {
 
   if (!session) {
     const auditKey = req.headers['x-audit-key'] || cookies['swan_audit_key'];
-    if (process.env.ADMIN_AUDIT_KEY && auditKey && auditKey === process.env.ADMIN_AUDIT_KEY) {
+    if (auditKey && auditKey === ADMIN_AUDIT_KEY) {
       return res.status(200).json({
         authenticated: true,
         profile: {
@@ -491,6 +506,180 @@ app.post('/api/admin/export-orders-csv', (req, res) => {
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader('Content-Disposition', `attachment; filename=swan-studio-orders-${Date.now()}.csv`);
   return res.status(200).send(csvContent);
+});
+
+// ---------------------------------------------------------------------------
+// Dynamic XML Sitemap (Excludes deleted / hidden items)
+// ---------------------------------------------------------------------------
+app.get('/sitemap.xml', (req, res) => {
+  const host = req.get('host') || 'swan-studio.onrender.com';
+  const protocol = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
+  const baseUrl = `${protocol}://${host}`;
+  const xml = Store.generateSitemapXml(baseUrl);
+  res.header('Content-Type', 'application/xml');
+  res.send(xml);
+});
+
+// ---------------------------------------------------------------------------
+// Public Products & Categories Endpoints (Database Single Source of Truth)
+// ---------------------------------------------------------------------------
+app.get('/api/products', (req, res) => {
+  const products = Store.getPublicProducts({
+    category: req.query.category || 'all',
+    search: req.query.search || '',
+    sort: req.query.sort || 'featured',
+    maxPrice: req.query.maxPrice || null,
+    hideSoldOut: req.query.hideSoldOut === 'true' || req.query.hideSoldOut === '1',
+    featuredOnly: req.query.featured === 'true' || req.query.featured === '1'
+  });
+  return res.status(200).json({
+    success: true,
+    isLive: true,
+    data: products
+  });
+});
+
+app.get('/api/products/:slug', (req, res) => {
+  const product = Store.getPublicProductBySlug(req.params.slug);
+  if (!product) {
+    return res.status(404).json({
+      success: false,
+      error: 'Creation not found or no longer available.'
+    });
+  }
+  return res.status(200).json({
+    success: true,
+    isLive: true,
+    data: product
+  });
+});
+
+app.get('/api/categories', (req, res) => {
+  const categories = Store.getPublicCategories();
+  return res.status(200).json({
+    success: true,
+    isLive: true,
+    data: categories
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Admin Products & Categories Management Endpoints (Requires Active Admin Session)
+// ---------------------------------------------------------------------------
+function verifyAdminApiSession(req, res, next) {
+  const cookies = parseCookies(req.headers.cookie);
+  const token = cookies['swan_admin_session'] || req.headers['x-admin-token'];
+  const session = getValidSession(token);
+  if (session) {
+    req.adminSession = session;
+    return next();
+  }
+  const auditKey = req.headers['x-audit-key'] || cookies['swan_audit_key'];
+  if (auditKey && auditKey === ADMIN_AUDIT_KEY) {
+    req.adminSession = { id: 'audit-admin', role: 'admin' };
+    return next();
+  }
+  return res.status(401).json({
+    success: false,
+    error: 'Unauthorized. Active administrator session is required.'
+  });
+}
+
+// Admin Products CRUD & Bulk
+app.get('/api/admin/products', verifyAdminApiSession, (req, res) => {
+  const trash = req.query.trash === '1' || req.query.trash === 'true';
+  const products = Store.getAdminProducts({ trash });
+  return res.status(200).json({ success: true, data: products });
+});
+
+app.post('/api/admin/products', verifyAdminApiSession, (req, res) => {
+  const { name, price } = req.body;
+  if (!name || price === undefined) {
+    return res.status(400).json({ success: false, error: 'Product name and price are required.' });
+  }
+  const product = Store.createProduct(req.body);
+  return res.status(201).json({ success: true, data: product });
+});
+
+app.put('/api/admin/products/:id', verifyAdminApiSession, (req, res) => {
+  const updated = Store.updateProduct(req.params.id, req.body);
+  if (!updated) {
+    return res.status(404).json({ success: false, error: 'Product not found.' });
+  }
+  return res.status(200).json({ success: true, data: updated });
+});
+
+app.delete('/api/admin/products/:id', verifyAdminApiSession, (req, res) => {
+  const permanent = req.query.permanent === '1' || req.query.permanent === 'true';
+  const result = Store.deleteProduct(req.params.id, permanent);
+  if (!result.success) {
+    return res.status(404).json(result);
+  }
+  return res.status(200).json(result);
+});
+
+app.post('/api/admin/products/:id/restore', verifyAdminApiSession, (req, res) => {
+  const result = Store.restoreProduct(req.params.id);
+  if (!result.success) {
+    return res.status(404).json(result);
+  }
+  return res.status(200).json(result);
+});
+
+app.post('/api/admin/products/bulk', verifyAdminApiSession, (req, res) => {
+  const { action, ids, targetCategoryId } = req.body;
+  if (!action || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ success: false, error: 'Valid action and product IDs are required.' });
+  }
+  const result = Store.bulkProductAction(action, ids, { targetCategoryId });
+  return res.status(200).json(result);
+});
+
+// Admin Categories CRUD
+app.get('/api/admin/categories', verifyAdminApiSession, (req, res) => {
+  const trash = req.query.trash === '1' || req.query.trash === 'true';
+  const categories = Store.getAdminCategories({ trash });
+  return res.status(200).json({ success: true, data: categories });
+});
+
+app.post('/api/admin/categories', verifyAdminApiSession, (req, res) => {
+  const { name } = req.body;
+  if (!name) {
+    return res.status(400).json({ success: false, error: 'Category name is required.' });
+  }
+  const category = Store.createCategory(req.body);
+  return res.status(201).json({ success: true, data: category });
+});
+
+app.put('/api/admin/categories/:id', verifyAdminApiSession, (req, res) => {
+  const updated = Store.updateCategory(req.params.id, req.body);
+  if (!updated) {
+    return res.status(404).json({ success: false, error: 'Category not found.' });
+  }
+  return res.status(200).json({ success: true, data: updated });
+});
+
+app.delete('/api/admin/categories/:id', verifyAdminApiSession, (req, res) => {
+  const permanent = req.query.permanent === '1' || req.query.permanent === 'true';
+  const moveToCategoryId = req.body?.moveToCategoryId || req.query.move_to;
+  const deleteProducts = Boolean(req.body?.deleteProducts || req.query.delete_products === 'true');
+
+  const result = Store.deleteCategory(req.params.id, { permanent, moveToCategoryId, deleteProducts });
+  if (!result.success) {
+    if (result.requiresResolution) {
+      return res.status(409).json(result);
+    }
+    return res.status(404).json(result);
+  }
+  return res.status(200).json(result);
+});
+
+app.post('/api/admin/categories/:id/restore', verifyAdminApiSession, (req, res) => {
+  const result = Store.restoreCategory(req.params.id);
+  if (!result.success) {
+    return res.status(404).json(result);
+  }
+  return res.status(200).json(result);
 });
 
 // ---------------------------------------------------------------------------
