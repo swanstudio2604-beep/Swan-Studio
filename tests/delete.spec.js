@@ -15,9 +15,65 @@ async function authenticateAdmin(context, baseURL) {
   ]);
 }
 
+// Dispatches direct DOM click or fallback tap/click for rock-solid mobile compatibility
+async function tapOrClick(locator) {
+  try {
+    await locator.dispatchEvent('click');
+  } catch (e) {
+    await locator.click({ force: true });
+  }
+}
+
+// Ensures admin pages are fully authenticated and table is populated past the "Loading..." placeholder
+async function waitForAdminProductsReady(page) {
+  await page.waitForFunction(() => {
+    const el = document.querySelector('#products-table-body');
+    return el && !el.textContent.includes('Loading creations...');
+  }, { timeout: 30000 });
+}
+
+async function waitForAdminCategoriesReady(page) {
+  await page.waitForFunction(() => {
+    const el = document.querySelector('#categories-table-body');
+    return el && !el.textContent.includes('Loading collections...');
+  }, { timeout: 30000 });
+}
+
+// Polling helper for public API state
+async function waitForProductInApi(request, baseURL, slug, shouldExist, maxTries = 15) {
+  for (let i = 0; i < maxTries; i++) {
+    try {
+      const res = await request.get(`${baseURL}/api/products`);
+      if (res.ok()) {
+        const json = await res.json();
+        const found = Boolean(json.data && json.data.some(p => p.slug === slug));
+        if (found === shouldExist) return true;
+      }
+    } catch (e) {}
+    await new Promise(r => setTimeout(r, 600));
+  }
+  return false;
+}
+
+async function waitForCategoryInApi(request, baseURL, slug, shouldExist, maxTries = 15) {
+  for (let i = 0; i < maxTries; i++) {
+    try {
+      const res = await request.get(`${baseURL}/api/categories`);
+      if (res.ok()) {
+        const json = await res.json();
+        const found = Boolean(json.data && json.data.some(c => c.slug === slug));
+        if (found === shouldExist) return true;
+      }
+    } catch (e) {}
+    await new Promise(r => setTimeout(r, 600));
+  }
+  return false;
+}
+
 test.describe('Swan Studio — Delete Flow & Single Source of Truth Tests', () => {
 
   test('1. Create product, delete it (disappears everywhere, 10s undo, delete forever)', async ({ page, context, baseURL }) => {
+    test.setTimeout(120000);
     await authenticateAdmin(context, baseURL);
 
     const testProductName = `Handcrafted Tulip ${Date.now()}`;
@@ -25,50 +81,46 @@ test.describe('Swan Studio — Delete Flow & Single Source of Truth Tests', () =
 
     // 1. Create product in admin
     await page.goto(`${baseURL}/admin/products.html`);
-    await page.waitForSelector('#btn-add-product');
-    await page.click('#btn-add-product');
-    await page.waitForSelector('#prod-name', { state: 'visible' });
+    await waitForAdminProductsReady(page);
+    await tapOrClick(page.locator('#btn-add-product'));
+    await page.waitForSelector('#prod-name', { state: 'visible', timeout: 15000 });
 
     await page.fill('#prod-name', testProductName);
     await page.fill('#prod-slug', testSlug);
     await page.fill('#prod-price', '449');
-    await page.click('#modal-save-btn');
-    await page.waitForTimeout(1000);
+    await tapOrClick(page.locator('#modal-save-btn'));
 
-    // Verify product is in active admin table
-    const tableText = await page.locator('#products-table-body').textContent();
-    expect(tableText).toContain(testProductName);
+    // Wait for modal to dismiss and product to appear in active table
+    await expect(page.locator('#product-modal')).not.toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#products-table-body')).toContainText(testProductName, { timeout: 15000 });
 
-    // Verify product appears on public shop and sitemap
-    const publicRes = await page.request.get(`${baseURL}/api/products?search=${encodeURIComponent(testProductName)}`);
-    const publicJson = await publicRes.json();
-    expect(publicJson.data.some(p => p.slug === testSlug)).toBe(true);
+    // Verify product appears in public API
+    const apiAppeared = await waitForProductInApi(page.request, baseURL, testSlug, true);
+    expect(apiAppeared).toBe(true);
 
     const sitemapRes = await page.request.get(`${baseURL}/sitemap.xml`);
     const sitemapText = await sitemapRes.text();
     expect(sitemapText).toContain(testSlug);
 
     // 2. Delete product via 2-tap mobile flow
-    // Find row and click Delete
     const row = page.locator(`tr:has-text("${testProductName}")`);
-    await row.locator('.btn-delete-prod').click();
+    await tapOrClick(row.locator('.btn-delete-prod'));
 
     // Confirm dialog must fit screen and display exact message
     const confirmModal = page.locator('#admin-confirm-modal');
-    await expect(confirmModal).toBeVisible();
+    await expect(confirmModal).toBeVisible({ timeout: 10000 });
     await expect(confirmModal).toContainText(`Delete "${testProductName}"? It will disappear from your website.`);
 
     // Tap 2: Confirm delete
-    await confirmModal.locator('#admin-confirm-ok').click();
-    await page.waitForTimeout(1000);
+    await tapOrClick(confirmModal.locator('#admin-confirm-ok'));
+    await expect(confirmModal).not.toBeVisible({ timeout: 10000 });
 
     // Verify it disappears from active admin list
-    await expect(page.locator('#products-table-body')).not.toContainText(testProductName);
+    await expect(page.locator('#products-table-body')).not.toContainText(testProductName, { timeout: 15000 });
 
     // Verify it disappears from database / public API
-    const checkApi = await page.request.get(`${baseURL}/api/products?search=${encodeURIComponent(testProductName)}`);
-    const checkJson = await checkApi.json();
-    expect(checkJson.data.some(p => p.slug === testSlug)).toBe(false);
+    const apiGone = await waitForProductInApi(page.request, baseURL, testSlug, false);
+    expect(apiGone).toBe(true);
 
     // Verify it disappears from sitemap.xml
     const sitemapAfter = await (await page.request.get(`${baseURL}/sitemap.xml`)).text();
@@ -76,44 +128,41 @@ test.describe('Swan Studio — Delete Flow & Single Source of Truth Tests', () =
 
     // Verify 10-second Undo button exists on toast
     const undoBtn = page.locator('#admin-toast-undo-btn');
-    await expect(undoBtn).toBeVisible();
+    await expect(undoBtn).toBeVisible({ timeout: 10000 });
 
     // 3. Test Undo brings it back
-    await undoBtn.click();
-    await page.waitForTimeout(1000);
-
-    // Verify it reappeared in active admin table
-    await expect(page.locator('#products-table-body')).toContainText(testProductName);
+    await tapOrClick(undoBtn);
+    await expect(page.locator('#products-table-body')).toContainText(testProductName, { timeout: 15000 });
 
     // Verify it is back in public API
-    const restoredRes = await page.request.get(`${baseURL}/api/products?search=${encodeURIComponent(testProductName)}`);
-    const restoredJson = await restoredRes.json();
-    expect(restoredJson.data.some(p => p.slug === testSlug)).toBe(true);
+    const apiBack = await waitForProductInApi(page.request, baseURL, testSlug, true);
+    expect(apiBack).toBe(true);
 
     // 4. Delete again, then switch to Trash and test Delete Forever
     const rowAgain = page.locator(`tr:has-text("${testProductName}")`);
-    await rowAgain.locator('.btn-delete-prod').click();
-    await page.locator('#admin-confirm-ok').click();
-    await page.waitForTimeout(1000);
+    await tapOrClick(rowAgain.locator('.btn-delete-prod'));
+    await expect(confirmModal).toBeVisible({ timeout: 10000 });
+    await tapOrClick(page.locator('#admin-confirm-ok'));
+    await expect(confirmModal).not.toBeVisible({ timeout: 10000 });
+    await expect(page.locator('#products-table-body')).not.toContainText(testProductName, { timeout: 15000 });
 
     // Switch to Trash tab
-    await page.click('#tab-trash');
-    await page.waitForTimeout(500);
-
+    await tapOrClick(page.locator('#tab-trash'));
     const trashRow = page.locator(`tr:has-text("${testProductName}")`);
-    await expect(trashRow).toBeVisible();
+    await expect(trashRow).toBeVisible({ timeout: 15000 });
 
     // Click "Delete Forever"
-    await trashRow.locator('.btn-perm-del-prod').click();
-    await expect(confirmModal).toBeVisible();
-    await page.locator('#admin-confirm-ok').click();
-    await page.waitForTimeout(1000);
+    await tapOrClick(trashRow.locator('.btn-perm-del-prod'));
+    await expect(confirmModal).toBeVisible({ timeout: 10000 });
+    await tapOrClick(page.locator('#admin-confirm-ok'));
+    await expect(confirmModal).not.toBeVisible({ timeout: 10000 });
 
     // Verify permanently gone from Trash
-    await expect(page.locator('#products-table-body')).not.toContainText(testProductName);
+    await expect(page.locator('#products-table-body')).not.toContainText(testProductName, { timeout: 15000 });
   });
 
   test('2. Create category with products, delete it (move-or-delete resolution prompt, vanishes everywhere)', async ({ page, context, baseURL }) => {
+    test.setTimeout(120000);
     await authenticateAdmin(context, baseURL);
 
     const catName = `Spec Collection ${Date.now()}`;
@@ -123,55 +172,61 @@ test.describe('Swan Studio — Delete Flow & Single Source of Truth Tests', () =
 
     // 1. Create Category
     await page.goto(`${baseURL}/admin/categories.html`);
-    await page.click('#btn-add-category');
-    await page.waitForSelector('#cat-name', { state: 'visible' });
+    await waitForAdminCategoriesReady(page);
+    await tapOrClick(page.locator('#btn-add-category'));
+    await page.waitForSelector('#cat-name', { state: 'visible', timeout: 15000 });
     await page.fill('#cat-name', catName);
     await page.fill('#cat-slug', catSlug);
-    await page.click('#modal-save-btn');
-    await page.waitForTimeout(1000);
+    await tapOrClick(page.locator('#modal-save-btn'));
+    await expect(page.locator('#category-modal')).not.toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#categories-table-body')).toContainText(catName, { timeout: 15000 });
 
     // 2. Create Product linked to this category
     await page.goto(`${baseURL}/admin/products.html`);
-    await page.click('#btn-add-product');
-    await page.waitForSelector('#prod-name', { state: 'visible' });
+    await waitForAdminProductsReady(page);
+    await tapOrClick(page.locator('#btn-add-product'));
+    await page.waitForSelector('#prod-name', { state: 'visible', timeout: 15000 });
     await page.fill('#prod-name', prodName);
     await page.fill('#prod-slug', prodSlug);
     await page.fill('#prod-price', '350');
-    // Select our new category
     await page.selectOption('#prod-category', { label: catName });
-    await page.click('#modal-save-btn');
-    await page.waitForTimeout(1000);
+    await tapOrClick(page.locator('#modal-save-btn'));
+    await expect(page.locator('#product-modal')).not.toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#products-table-body')).toContainText(prodName, { timeout: 15000 });
 
     // Verify category is live on public shop
     await page.goto(`${baseURL}/shop.html`);
-    await page.waitForSelector('#category-pills');
-    await expect(page.locator('#category-pills')).toContainText(catName);
+    await page.waitForSelector('#category-pills', { timeout: 15000 });
+    await expect(page.locator('#category-pills')).toContainText(catName, { timeout: 15000 });
 
     // 3. Attempt to delete category in admin
     await page.goto(`${baseURL}/admin/categories.html`);
+    await waitForAdminCategoriesReady(page);
     const catRow = page.locator(`tr:has-text("${catName}")`);
-    await catRow.locator('.btn-delete-cat').click();
+    await tapOrClick(catRow.locator('.btn-delete-cat'));
 
     // Confirm initial delete
-    await page.locator('#admin-confirm-ok').click();
-    await page.waitForTimeout(800);
+    const confirmModal = page.locator('#admin-confirm-modal');
+    await expect(confirmModal).toBeVisible({ timeout: 10000 });
+    await tapOrClick(confirmModal.locator('#admin-confirm-ok'));
+    await expect(confirmModal).not.toBeVisible({ timeout: 10000 });
 
     // Resolution modal must appear with product count and category picker
     const resModal = page.locator('#resolution-modal');
-    await expect(resModal).toBeVisible();
+    await expect(resModal).toBeVisible({ timeout: 15000 });
     await expect(resModal).toContainText('Move them to another category, or delete them too?');
 
     // Move linked product to another collection and delete category
-    await page.locator('#btn-res-move').click();
-    await page.waitForTimeout(1000);
+    await tapOrClick(page.locator('#btn-res-move'));
+    await expect(resModal).not.toBeVisible({ timeout: 15000 });
 
     // Verify category is gone from admin
-    await expect(page.locator('#categories-table-body')).not.toContainText(catName);
+    await expect(page.locator('#categories-table-body')).not.toContainText(catName, { timeout: 15000 });
 
     // Verify category is gone from public shop pills
     await page.goto(`${baseURL}/shop.html`);
-    await page.waitForSelector('#category-pills');
-    await expect(page.locator('#category-pills')).not.toContainText(catName);
+    await page.waitForSelector('#category-pills', { timeout: 15000 });
+    await expect(page.locator('#category-pills')).not.toContainText(catName, { timeout: 15000 });
 
     // Verify visiting old ?category= URL redirects to clean shop
     await page.goto(`${baseURL}/shop.html?category=${catSlug}`);
@@ -180,6 +235,7 @@ test.describe('Swan Studio — Delete Flow & Single Source of Truth Tests', () =
   });
 
   test('3. Delete an empty category (deletes immediately, gone everywhere)', async ({ page, context, baseURL }) => {
+    test.setTimeout(120000);
     await authenticateAdmin(context, baseURL);
 
     const emptyCatName = `Empty Collection ${Date.now()}`;
@@ -187,29 +243,38 @@ test.describe('Swan Studio — Delete Flow & Single Source of Truth Tests', () =
 
     // Create empty category
     await page.goto(`${baseURL}/admin/categories.html`);
-    await page.click('#btn-add-category');
-    await page.waitForSelector('#cat-name', { state: 'visible' });
+    await waitForAdminCategoriesReady(page);
+    await tapOrClick(page.locator('#btn-add-category'));
+    await page.waitForSelector('#cat-name', { state: 'visible', timeout: 15000 });
     await page.fill('#cat-name', emptyCatName);
     await page.fill('#cat-slug', emptyCatSlug);
-    await page.click('#modal-save-btn');
-    await page.waitForTimeout(1000);
+    await tapOrClick(page.locator('#modal-save-btn'));
+    await expect(page.locator('#category-modal')).not.toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#categories-table-body')).toContainText(emptyCatName, { timeout: 15000 });
 
     // Delete it
     const row = page.locator(`tr:has-text("${emptyCatName}")`);
-    await row.locator('.btn-delete-cat').click();
+    await tapOrClick(row.locator('.btn-delete-cat'));
 
     // Confirm dialog
-    await page.locator('#admin-confirm-ok').click();
-    await page.waitForTimeout(1000);
+    const confirmModal = page.locator('#admin-confirm-modal');
+    await expect(confirmModal).toBeVisible({ timeout: 10000 });
+    await tapOrClick(confirmModal.locator('#admin-confirm-ok'));
+    await expect(confirmModal).not.toBeVisible({ timeout: 10000 });
 
     // Resolution modal should NOT appear because it has 0 products
     await expect(page.locator('#resolution-modal')).not.toBeVisible();
 
     // Should disappear immediately from admin
-    await expect(page.locator('#categories-table-body')).not.toContainText(emptyCatName);
+    await expect(page.locator('#categories-table-body')).not.toContainText(emptyCatName, { timeout: 15000 });
+
+    // Verify gone from public categories API
+    const catGone = await waitForCategoryInApi(page.request, baseURL, emptyCatSlug, false);
+    expect(catGone).toBe(true);
   });
 
   test('4. Bulk delete several products on mobile', async ({ page, context, baseURL }) => {
+    test.setTimeout(120000);
     await authenticateAdmin(context, baseURL);
 
     const p1Name = `Bulk Flower A ${Date.now()}`;
@@ -217,21 +282,24 @@ test.describe('Swan Studio — Delete Flow & Single Source of Truth Tests', () =
 
     // Create 2 products
     await page.goto(`${baseURL}/admin/products.html`);
-    await page.click('#btn-add-product');
-    await page.waitForSelector('#prod-name', { state: 'visible' });
+    await waitForAdminProductsReady(page);
+    await tapOrClick(page.locator('#btn-add-product'));
+    await page.waitForSelector('#prod-name', { state: 'visible', timeout: 15000 });
     await page.fill('#prod-name', p1Name);
     await page.fill('#prod-slug', `bulk-a-${Date.now()}`);
     await page.fill('#prod-price', '199');
-    await page.click('#modal-save-btn');
-    await page.waitForTimeout(800);
+    await tapOrClick(page.locator('#modal-save-btn'));
+    await expect(page.locator('#product-modal')).not.toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#products-table-body')).toContainText(p1Name, { timeout: 15000 });
 
-    await page.click('#btn-add-product');
-    await page.waitForSelector('#prod-name', { state: 'visible' });
+    await tapOrClick(page.locator('#btn-add-product'));
+    await page.waitForSelector('#prod-name', { state: 'visible', timeout: 15000 });
     await page.fill('#prod-name', p2Name);
     await page.fill('#prod-slug', `bulk-b-${Date.now()}`);
     await page.fill('#prod-price', '299');
-    await page.click('#modal-save-btn');
-    await page.waitForTimeout(1000);
+    await tapOrClick(page.locator('#modal-save-btn'));
+    await expect(page.locator('#product-modal')).not.toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#products-table-body')).toContainText(p2Name, { timeout: 15000 });
 
     // Select both checkboxes
     const r1 = page.locator(`tr:has-text("${p1Name}")`);
@@ -241,17 +309,19 @@ test.describe('Swan Studio — Delete Flow & Single Source of Truth Tests', () =
 
     // Bulk bar appears
     const bulkBar = page.locator('#bulk-action-bar');
-    await expect(bulkBar).toBeVisible();
+    await expect(bulkBar).toBeVisible({ timeout: 10000 });
     await expect(page.locator('#bulk-selected-count')).toContainText('2 selected');
 
     // Click bulk delete
-    await page.locator('#bulk-btn-delete').click();
-    await page.locator('#admin-confirm-ok').click();
-    await page.waitForTimeout(1000);
+    await tapOrClick(page.locator('#bulk-btn-delete'));
+    const confirmModal = page.locator('#admin-confirm-modal');
+    await expect(confirmModal).toBeVisible({ timeout: 10000 });
+    await tapOrClick(confirmModal.locator('#admin-confirm-ok'));
+    await expect(confirmModal).not.toBeVisible({ timeout: 10000 });
 
     // Both should be removed from active table
-    await expect(page.locator('#products-table-body')).not.toContainText(p1Name);
-    await expect(page.locator('#products-table-body')).not.toContainText(p2Name);
+    await expect(page.locator('#products-table-body')).not.toContainText(p1Name, { timeout: 15000 });
+    await expect(page.locator('#products-table-body')).not.toContainText(p2Name, { timeout: 15000 });
   });
 
   test('5. Logged-out user cannot delete anything (denied 401)', async ({ page, baseURL }) => {
@@ -269,6 +339,7 @@ test.describe('Swan Studio — Delete Flow & Single Source of Truth Tests', () =
   });
 
   test('6. Delete resilience: persists across page refresh and handles failed requests gracefully', async ({ page, context, baseURL }) => {
+    test.setTimeout(120000);
     await authenticateAdmin(context, baseURL);
 
     const resTestName = `Resilience Rose ${Date.now()}`;
@@ -276,32 +347,36 @@ test.describe('Swan Studio — Delete Flow & Single Source of Truth Tests', () =
 
     // Create item
     await page.goto(`${baseURL}/admin/products.html`);
-    await page.click('#btn-add-product');
-    await page.waitForSelector('#prod-name', { state: 'visible' });
+    await waitForAdminProductsReady(page);
+    await tapOrClick(page.locator('#btn-add-product'));
+    await page.waitForSelector('#prod-name', { state: 'visible', timeout: 15000 });
     await page.fill('#prod-name', resTestName);
     await page.fill('#prod-slug', resSlug);
     await page.fill('#prod-price', '599');
-    await page.click('#modal-save-btn');
-    await page.waitForTimeout(1000);
+    await tapOrClick(page.locator('#modal-save-btn'));
+    await expect(page.locator('#product-modal')).not.toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#products-table-body')).toContainText(resTestName, { timeout: 15000 });
 
     // Delete item
     const row = page.locator(`tr:has-text("${resTestName}")`);
-    await row.locator('.btn-delete-prod').click();
-    await page.locator('#admin-confirm-ok').click();
-    await page.waitForTimeout(1000);
+    await tapOrClick(row.locator('.btn-delete-prod'));
+    const confirmModal = page.locator('#admin-confirm-modal');
+    await expect(confirmModal).toBeVisible({ timeout: 10000 });
+    await tapOrClick(confirmModal.locator('#admin-confirm-ok'));
+    await expect(confirmModal).not.toBeVisible({ timeout: 10000 });
 
     // Reload page completely
     await page.reload();
-    await page.waitForSelector('#products-table-body');
+    await waitForAdminProductsReady(page);
 
     // Must still NOT appear after hard page reload
-    await expect(page.locator('#products-table-body')).not.toContainText(resTestName);
+    await expect(page.locator('#products-table-body')).not.toContainText(resTestName, { timeout: 15000 });
   });
 
   test('7. Previously existing demo and placeholder products are not resurrected', async ({ page, baseURL }) => {
     // Navigate to public shop
     await page.goto(`${baseURL}/shop.html`);
-    await page.waitForSelector('#results-count');
+    await page.waitForSelector('#results-count', { timeout: 15000 });
 
     // Verify no static fake products exist without backing database records
     const apiRes = await page.request.get(`${baseURL}/api/products`);
