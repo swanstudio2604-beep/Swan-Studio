@@ -8,7 +8,8 @@
     "dev": "node server.js",
     "test": "node -e \"console.log('All tests passed')\"",
     "test:mobile": "node tests/mobile.spec.js",
-    "test:lighthouse": "node tests/lighthouse.js"
+    "test:lighthouse": "node tests/lighthouse.js",
+    "test:delete": "playwright test tests/delete.spec.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -25,6 +26,8 @@
   "author": "Swan Studio (Founder: Bhumika Nama, DevOps: Mridul)",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "playwright": "^1.64.1",
     "puppeteer-core": "^25.14.0"
   }
 }
