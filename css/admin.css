@@ -621,13 +621,34 @@ body {
     box-sizing: border-box !important;
   }
 
-  /* Make arbitrary search and filter flex rows wrap cleanly */
-  .admin-card div[style*="display: flex"],
+  /* Make arbitrary search and filter flex rows wrap cleanly, excluding fixed badges and icons */
+  .admin-card div[style*="display: flex"]:not(.card-icon-badge):not(.badge):not(.badge-status):not(.product-tag),
   .admin-toolbar div[style*="display: flex"] {
     flex-wrap: wrap !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+  }
+
+  .admin-card-header-styled {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+  }
+  .card-icon-badge {
+    width: 40px !important;
+    max-width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    flex-shrink: 0 !important;
+  }
+  .card-title-styled {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    word-break: normal !important;
   }
 
   .admin-card input.form-control,
