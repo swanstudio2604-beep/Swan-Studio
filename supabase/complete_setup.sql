@@ -1238,4 +1238,18 @@ VALUES
   ('Can I request custom colors or personalized initial letters?', 'Absolutely! Visit our Custom Order page or reach out directly on WhatsApp with your favorite shades, size requirements, or gift themes. We will weave your vision to life.', 'custom', 4)
 ON CONFLICT DO NOTHING;
 
+-- ----------------------------------------------------------------------------
+-- 5. Standard Supabase Schema Grants
+-- Gives anon and authenticated roles table-level permissions.
+-- Row Level Security (RLS) policies continue to strictly govern and restrict all access.
+-- ----------------------------------------------------------------------------
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO anon, authenticated;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO anon, authenticated;
+
 
