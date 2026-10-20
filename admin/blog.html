@@ -445,7 +445,7 @@
         const payload = {
           title,
           slug: slugInput.value.trim() || slugify(title),
-          status: (statusSelect.value || 'draft').toUpperCase(),
+          status: (statusSelect.value || 'draft').toLowerCase(),
           published_at: dateInput.value ? new Date(dateInput.value).toISOString() : null,
           excerpt: excerptInput.value.trim(),
           tags: tagsInput.value.split(',').map(t => t.trim()).filter(Boolean),
