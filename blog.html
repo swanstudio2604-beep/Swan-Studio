@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Stories from the Atelier — Swan Studio | Handmade Crochet Blog Jaipur</title>
+  <meta name="description" content="Explore stories, crochet care guides, and slow craft reflections from Bhumika Nama, founder of Swan Studio in Jaipur, India.">
+  <link rel="canonical" href="https://swan-studio.onrender.com/blog.html">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="shortcut icon" href="favicon.ico">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Stories from the Atelier — Swan Studio | Handmade Crochet Blog">
+  <meta property="og:description" content="Reflections on slow craftsmanship, mindful crochet loops, and bouquet care from our Jaipur studio.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://swan-studio.onrender.com/blog.html">
+  <meta property="og:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Stories from the Atelier — Swan Studio">
+  <meta name="twitter:description" content="Reflections on slow craft and crochet artistry from Bhumika Nama in Jaipur.">
+  <meta name="twitter:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .blog-hero {
+      text-align: center;
+      padding: var(--space-2xl) 0 var(--space-xl);
+      background: linear-gradient(180deg, rgba(232, 183, 192, 0.18) 0%, rgba(255, 248, 241, 0) 100%);
+    }
+    .blog-tagline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 1rem;
+      background: var(--white);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--rose-text);
+      margin-bottom: var(--space-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .blog-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-base), box-shadow var(--transition-base);
+    }
+    .blog-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+    .blog-cover-wrap {
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+      position: relative;
+      background: #F5EBE6;
+    }
+    .blog-cover-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--transition-base);
+    }
+    .blog-card:hover .blog-cover-img {
+      transform: scale(1.04);
+    }
+    .blog-card-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .blog-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+      color: #8A7670;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .blog-card-tag {
+      background: rgba(199, 131, 145, 0.12);
+      color: var(--rose-text);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .blog-card-title {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+      color: var(--cocoa);
+    }
+    .blog-card-title a {
+      color: inherit;
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+    .blog-card-title a:hover {
+      color: var(--rose-text);
+    }
+    .blog-card-excerpt {
+      font-size: 0.92rem;
+      color: #73615A;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+      flex: 1;
+    }
+    .blog-card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--rose-text);
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      min-height: 44px;
+    }
+    .blog-card-link:hover {
+      text-decoration: underline;
+    }
+    .blog-filters {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .filter-btn {
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      background: var(--white);
+      color: var(--cocoa);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      min-height: 44px;
+      transition: all var(--transition-fast);
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--rose);
+      color: var(--white);
+      border-color: var(--rose);
+    }
+    @media (max-width: 600px) {
+      .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+      .blog-card-body {
+        padding: 1.15rem;
+      }
+      .blog-cover-wrap {
+        height: 190px;
+      }
+    }
+  </style>
+
+  <!-- Blog Schema JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Stories from the Atelier — Swan Studio",
+    "description": "Reflections on slow craftsmanship, crochet care guides, and handmade floral bouquets by Bhumika Nama in Jaipur.",
+    "url": "https://swan-studio.onrender.com/blog.html",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Swan Studio",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://swan-studio.onrender.com/assets/images/og-image.jpg"
+      }
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Skip Link -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Global Header (Injected by js/main.js) -->
+  <div id="site-header"></div>
+
+  <main id="main" class="section section-cream" style="padding-top: var(--space-lg);">
+    <div class="container">
+
+      <!-- Breadcrumbs -->
+      <nav aria-label="Breadcrumbs" style="margin-bottom: var(--space-md); font-size: 0.88rem; color: #8A7670;">
+        <a href="index.html" style="color: var(--cocoa); text-decoration: none;">Home</a>
+        <span style="margin: 0 0.4rem;">/</span>
+        <span style="color: var(--rose-text); font-weight: 500;">Stories & Atelier Journal</span>
+      </nav>
+
+      <!-- Hero Header -->
+      <header class="blog-hero">
+        <div class="blog-tagline-badge">
+          <span>🌸 Handcrafted Journal • Jaipur Atelier</span>
+        </div>
+        <h1 class="section-title" style="font-size: clamp(2.2rem, 5vw, 3.2rem); margin-bottom: 0.75rem;">
+          Stories from the Atelier
+        </h1>
+        <p class="section-subtitle" style="max-width: 640px; margin: 0 auto; color: #73615A;">
+          Reflections on slow craft, mindfulness, yarn care, and the heartwarming journey of handmade crochet creations.
+        </p>
+
+        <!-- Tag Filters -->
+        <div class="blog-filters" id="blog-filters" role="tablist" aria-label="Filter stories by topic">
+          <button type="button" class="filter-btn active" data-tag="" role="tab" aria-selected="true">All Stories</button>
+          <button type="button" class="filter-btn" data-tag="Craftsmanship" role="tab" aria-selected="false">Craftsmanship</button>
+          <button type="button" class="filter-btn" data-tag="Care Guide" role="tab" aria-selected="false">Care Guides</button>
+          <button type="button" class="filter-btn" data-tag="Slow Living" role="tab" aria-selected="false">Slow Living</button>
+          <button type="button" class="filter-btn" data-tag="Home Decor" role="tab" aria-selected="false">Home Decor</button>
+        </div>
+      </header>
+
+      <!-- Stories Listing Container -->
+      <div id="blog-container">
+        <div id="blog-loading" style="text-align: center; padding: 3rem 1rem; color: #8A7670;">
+          Loading stories from our atelier...
+        </div>
+        <div id="blog-posts-container">
+          <div class="blog-grid" id="blog-grid" style="display: none;"></div>
+        </div>
+        <div id="blog-empty" style="display: none; text-align: center; padding: 3.5rem 1rem; background: var(--white); border-radius: var(--radius-md); border: 1px dashed var(--border-subtle); margin-top: 2rem;">
+          <h3 style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--cocoa); margin-bottom: 0.5rem;">New Stories Coming Soon</h3>
+          <p style="color: #8A7670; max-width: 480px; margin: 0 auto 1.5rem;">Bhumika is currently at the atelier table crafting new stories and bouquets. Check back shortly!</p>
+          <a href="shop.html" class="btn btn-primary">Browse Handmade Shop</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Global Footer (Injected by js/main.js) -->
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="js/api-config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      let activeTag = '';
+      let allPosts = [];
+
+      const loadingEl = document.getElementById('blog-loading');
+      const gridEl = document.getElementById('blog-grid');
+      const emptyEl = document.getElementById('blog-empty');
+      const filtersEl = document.getElementById('blog-filters');
+
+      async function fetchStories(tag = '') {
+        loadingEl.style.display = 'block';
+        gridEl.style.display = 'none';
+        emptyEl.style.display = 'none';
+
+        try {
+          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          const url = new URL(`${baseUrl}/api/blog`);
+          if (tag) url.searchParams.set('tag', tag);
+
+          const res = await fetch(url.toString(), { cache: 'no-cache' });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const json = await res.json();
+          allPosts = json.data || [];
+          renderPosts(allPosts);
+        } catch (err) {
+          console.warn('API blog fetch error, falling back to local store if available:', err);
+          renderPosts([]);
+        } finally {
+          loadingEl.style.display = 'none';
+        }
+      }
+
+      function renderPosts(posts) {
+        if (!posts || posts.length === 0) {
+          emptyEl.style.display = 'block';
+          gridEl.style.display = 'none';
+          return;
+        }
+
+        emptyEl.style.display = 'none';
+        gridEl.style.display = 'grid';
+
+        gridEl.innerHTML = posts.map(p => {
+          const dateStr = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }) : '';
+          const readTime = p.read_time_minutes ? `${p.read_time_minutes} min read` : '3 min read';
+          const primaryTag = (Array.isArray(p.tags) && p.tags[0]) || 'Crochet Art';
+          const coverImg = p.cover_image || p.coverImage || 'assets/images/hero-bouquet.webp';
+          const coverAlt = p.cover_image_alt || p.coverImageAlt || p.title || 'Swan Studio Story';
+
+          return `
+            <article class="blog-card" id="post-${p.id}">
+              <div class="blog-cover-wrap">
+                <img 
+                  src="${coverImg}" 
+                  alt="${coverAlt}" 
+                  class="blog-cover-img" 
+                  loading="lazy" 
+                  width="400" 
+                  height="220"
+                  onerror="this.onerror=null; this.src='assets/images/hero-bouquet.webp';"
+                >
+              </div>
+              <div class="blog-card-body">
+                <div class="blog-meta-row">
+                  <span class="blog-card-tag">${primaryTag}</span>
+                  ${dateStr ? `<span>• ${dateStr}</span>` : ''}
+                  <span>• ${readTime}</span>
+                </div>
+                <h2 class="blog-card-title">
+                  <a href="blog-post.html?slug=${encodeURIComponent(p.slug)}">${p.title}</a>
+                </h2>
+                <p class="blog-card-excerpt">${p.excerpt || ''}</p>
+                <div>
+                  <a href="blog-post.html?slug=${encodeURIComponent(p.slug)}" class="blog-card-link" aria-label="Read story: ${p.title}">
+                    <span>Read Story</span> <span>&rarr;</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      // Filter click handling
+      if (filtersEl) {
+        filtersEl.addEventListener('click', (e) => {
+          const btn = e.target.closest('.filter-btn');
+          if (!btn) return;
+          filtersEl.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          activeTag = btn.getAttribute('data-tag') || '';
+          fetchStories(activeTag);
+        });
+      }
+
+      await fetchStories('');
+    });
+  </script>
+</body>
+</html>

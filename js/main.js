@@ -52,23 +52,21 @@ function renderHeader() {
   const headerContainer = document.getElementById('site-header');
   if (!headerContainer) return;
 
-  // Apply custom content from admin CMS if saved
+  // Apply custom content from memory or local cache
   try {
-    const customContent = localStorage.getItem('swan_site_content');
-    if (customContent) {
-      const parsed = JSON.parse(customContent);
-      if (parsed.announcement) SITE.announcement = parsed.announcement;
+    const liveContent = window.SWAN_CONTENT || JSON.parse(localStorage.getItem('swan_site_content') || 'null');
+    if (liveContent) {
+      if (liveContent.announcement) SITE.announcement = liveContent.announcement;
     }
-    const customSettings = localStorage.getItem('swan_site_settings');
-    if (customSettings) {
-      const s = JSON.parse(customSettings);
-      if (s.whatsapp) {
-        SITE.whatsapp = s.whatsapp;
-        SITE.whatsappUrl = `https://wa.me/91${s.whatsapp.replace(/[^0-9]/g, '')}`;
+    const liveSettings = window.SWAN_SETTINGS || JSON.parse(localStorage.getItem('swan_site_settings') || 'null');
+    if (liveSettings) {
+      if (liveSettings.whatsapp) {
+        SITE.whatsapp = liveSettings.whatsapp;
+        SITE.whatsappUrl = `https://wa.me/91${liveSettings.whatsapp.replace(/[^0-9]/g, '')}`;
       }
-      if (s.upiId) SITE.upiId = s.upiId;
-      if (s.email) SITE.email = s.email;
-      if (s.instagram) SITE.social.instagram = s.instagram.split('?')[0];
+      if (liveSettings.upiId) SITE.upiId = liveSettings.upiId;
+      if (liveSettings.email) SITE.email = liveSettings.email;
+      if (liveSettings.instagram) SITE.social.instagram = liveSettings.instagram.split('?')[0];
     }
   } catch (e) {}
 
@@ -100,6 +98,7 @@ function renderHeader() {
             <li><a href="index.html" class="nav-link ${isCurrent('index.html')}">Home</a></li>
             <li><a href="shop.html" class="nav-link ${isCurrent('shop.html')}">Shop</a></li>
             <li><a href="shop.html#collections" class="nav-link">Collections</a></li>
+            <li><a href="blog.html" class="nav-link ${isCurrent('blog.html') || isCurrent('blog-post.html')}">Stories</a></li>
             <li><a href="about.html" class="nav-link ${isCurrent('about.html')}">Our Story</a></li>
             <li><a href="reviews.html" class="nav-link ${isCurrent('reviews.html')}">Reviews</a></li>
             <li><a href="custom-order.html" class="nav-link ${isCurrent('custom-order.html')}">Custom Orders</a></li>
@@ -261,6 +260,7 @@ function renderFooter() {
             <h4 class="footer-heading">Support</h4>
             <ul class="footer-links">
               <li><a href="about.html">About the Maker</a></li>
+              <li><a href="blog.html">Atelier Stories & Care</a></li>
               <li><a href="reviews.html">Customer Reviews & Notes</a></li>
               <li><a href="custom-order.html">Custom Orders</a></li>
               <li><a href="contact.html">Contact Us</a></li>
@@ -442,13 +442,88 @@ function renderFloatingWhatsApp() {
 }
 
 // ---------------------------------------------------------------------------
-// 8. DOM Initialization
+// 8. Dynamic Live Configuration Hydration (Single Source of Truth)
+// ---------------------------------------------------------------------------
+async function loadSiteConfig() {
+  try {
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    
+    // Asynchronously fetch site content & site settings
+    const [cRes, sRes] = await Promise.all([
+      fetch(`${baseUrl}/api/content`, { cache: 'no-cache' }).catch(() => null),
+      fetch(`${baseUrl}/api/settings`, { cache: 'no-cache' }).catch(() => null)
+    ]);
+
+    let changed = false;
+
+    if (cRes && cRes.ok) {
+      const cJson = await cRes.json();
+      if (cJson.data) {
+        window.SWAN_CONTENT = cJson.data;
+        if (cJson.data.announcement) {
+          SITE.announcement = cJson.data.announcement;
+          changed = true;
+        }
+      }
+    }
+
+    if (sRes && sRes.ok) {
+      const sJson = await sRes.json();
+      if (sJson.data) {
+        window.SWAN_SETTINGS = sJson.data;
+        const s = sJson.data;
+        if (s.whatsapp) {
+          SITE.whatsapp = s.whatsapp;
+          SITE.whatsappUrl = `https://wa.me/91${s.whatsapp.replace(/[^0-9]/g, '')}`;
+          changed = true;
+        }
+        if (s.upiId) {
+          SITE.upiId = s.upiId;
+          changed = true;
+        }
+        if (s.email) {
+          SITE.email = s.email;
+          changed = true;
+        }
+        if (s.instagram) {
+          SITE.social.instagram = s.instagram.split('?')[0];
+          changed = true;
+        }
+      }
+    }
+
+    if (changed) {
+      renderHeader();
+      renderFooter();
+      const waBtn = document.getElementById('swan-floating-whatsapp');
+      if (waBtn) {
+        waBtn.href = `${SITE.whatsappUrl}?text=${encodeURIComponent("Hi Bhumika! I'm browsing the Swan Studio website and would like to inquire about a crochet creation.")}`;
+      }
+    }
+
+    // Dispatch event for page-specific hydration
+    window.dispatchEvent(new CustomEvent('swan:content-ready', {
+      detail: {
+        content: window.SWAN_CONTENT || {},
+        settings: window.SWAN_SETTINGS || {}
+      }
+    }));
+  } catch (err) {
+    console.warn('Live site configuration note:', err);
+  }
+}
+
+window.loadSiteConfig = loadSiteConfig;
+
+// ---------------------------------------------------------------------------
+// 9. DOM Initialization
 // ---------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   renderHeader();
   renderFooter();
   renderMobileBillingBar();
   renderFloatingWhatsApp();
+  loadSiteConfig();
 });
 
 // Sync cart across browser tabs

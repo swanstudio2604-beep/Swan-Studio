@@ -80,11 +80,11 @@
     <section class="hero-section" aria-label="Introduction to Swan Studio">
       <div class="container hero-grid">
         <div class="hero-content">
-          <div class="hero-tagline-badge">
+          <div class="hero-tagline-badge" id="hero-tagline-badge">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
-            <span>Handmade in Jaipur, India</span>
+            <span id="hero-badge-text">Handmade in Jaipur, India</span>
           </div>
 
           <h1 class="hero-title" id="hero-title-el">Everlasting Crochet Bouquets, Handmade in Jaipur.</h1>
@@ -257,7 +257,7 @@
             Every single piece in this studio is carefully crocheted by hand by Bhumika Nama in Jaipur, India. No mass machinery, no shortcuts—only meticulous craftsmanship, gentle colors, and deep attention to detail.
           </p>
 
-          <blockquote style="margin: 1.5rem 0; padding-left: 1.25rem; border-left: 3px solid var(--rose); font-style: italic; color: var(--rose-text); font-size: 1.05rem;">
+          <blockquote id="home-founder-quote" style="margin: 1.5rem 0; padding-left: 1.25rem; border-left: 3px solid var(--rose); font-style: italic; color: var(--rose-text); font-size: 1.05rem;">
             “Every loop has intention, every stitch has patience.”
           </blockquote>
 
@@ -426,9 +426,15 @@
           if (section) section.style.display = 'block';
           container.innerHTML = categories.map(c => `
             <a href="shop.html?category=${encodeURIComponent(c.slug)}" class="collection-card">
-              <div class="collection-icon" aria-hidden="true" style="font-size: 2rem; display: flex; align-items: center; justify-content: center;">
-                ${c.icon_emoji || '🌸'}
-              </div>
+              ${c.image_url ? `
+                <div class="collection-image-wrap" style="width: 100%; height: 160px; overflow: hidden; border-radius: 8px; margin-bottom: 0.85rem; background: #FCECEF;">
+                  <img src="${c.image_url}" alt="${c.name}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.style.display='none';">
+                </div>
+              ` : `
+                <div class="collection-icon" aria-hidden="true" style="font-size: 2.2rem; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                  ${c.icon_emoji || '🌸'}
+                </div>
+              `}
               <h3 class="collection-title">${c.name}</h3>
               <p class="collection-desc">${c.description || 'Handcrafted crochet pieces made with care.'}</p>
               <span class="btn btn-outline btn-sm">Explore ${c.name}</span>
@@ -441,20 +447,96 @@
 
       await loadHomeCollections();
 
+      // Dynamic Home Content Hydration from Single Source of Truth
+      function hydrateHomeContent(c) {
+        if (!c) return;
+
+        // Hero Headline, Subheadline & Badge
+        const heroBadge = c.heroBadge || c.hero?.badge;
+        const heroHead = c.heroHeadline || c.hero?.headline;
+        const heroSub = c.heroSub || c.hero?.subheadline;
+        const heroImg = c.heroImage || c.hero?.image;
+        const heroImgAlt = c.hero?.imageAlt || 'Handcrafted pastel crochet flower bouquet by Swan Studio';
+
+        const badgeEl = document.getElementById('hero-badge-text');
+        if (badgeEl && heroBadge) badgeEl.textContent = heroBadge;
+
+        const titleEl = document.getElementById('hero-title-el');
+        if (titleEl && heroHead) titleEl.textContent = heroHead;
+
+        const descEl = document.getElementById('hero-desc-el');
+        if (descEl && heroSub) descEl.textContent = heroSub;
+
+        // Hero Image
+        if (heroImg) {
+          const archCard = document.getElementById('hero-arch-container');
+          if (archCard) {
+            archCard.innerHTML = `
+              <img src="${heroImg}" alt="${heroImgAlt}" width="500" height="500" fetchpriority="high" style="width: 100%; height: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 140px 140px var(--radius-lg) var(--radius-lg); display: block;" onerror="this.onerror=null; this.src='assets/images/hero-bouquet.webp';">
+            `;
+          }
+        }
+
+        // Featured Section Headings
+        const featHead = c.featuredHeading;
+        const featSub = c.featuredSubtitle;
+        const featHeadEl = document.getElementById('featured-heading');
+        const featSubEl = document.getElementById('featured-subtitle');
+        if (featHeadEl && featHead) featHeadEl.textContent = featHead;
+        if (featSubEl && featSub) featSubEl.textContent = featSub;
+
+        // Founder Quote & Home Story
+        const quoteEl = document.getElementById('home-founder-quote');
+        if (quoteEl && c.founderQuote) quoteEl.textContent = `“${c.founderQuote}”`;
+
+        const makerHeadEl = document.getElementById('maker-heading');
+        if (makerHeadEl && c.homeStoryTitle) makerHeadEl.textContent = c.homeStoryTitle;
+
+        const storyP1El = document.getElementById('home-story-p1');
+        if (storyP1El && c.homeStoryText) storyP1El.textContent = c.homeStoryText;
+
+        // Maker Portrait on Home
+        const makerPhoto = c.story?.makerPhoto || c.makerPhoto;
+        const makerName = c.story?.makerName || c.makerName || 'Bhumika Nama';
+        const makerRole = c.story?.makerRole || c.makerRole || 'Founder & Crochet Artist • Jaipur, India';
+        if (makerPhoto) {
+          const makerFrame = document.getElementById('home-maker-frame');
+          if (makerFrame) {
+            makerFrame.innerHTML = `
+              <div style="position: relative; width: 100%; min-height: 360px; border-radius: 140px 140px var(--radius-lg) var(--radius-lg); overflow: hidden; border: 2px dashed var(--rose); box-shadow: var(--shadow-card);">
+                <img src="${makerPhoto}" alt="${makerName}" width="420" height="420" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='assets/images/maker-artisan.webp';">
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(66, 53, 49, 0.92)); padding: 1.5rem 1rem 1rem 1rem; color: #FFF8F1; text-align: center;">
+                  <h3 style="font-size: 1.25rem; margin: 0; color: #FFF8F1;">${makerName}</h3>
+                  <p style="font-size: 0.8rem; color: #E8B7C0; margin-top: 0.2rem;">${makerRole}</p>
+                </div>
+              </div>
+            `;
+          }
+        }
+      }
+
+      // Initial hydration from memory or fetch directly
+      if (window.SWAN_CONTENT) {
+        hydrateHomeContent(window.SWAN_CONTENT);
+      } else {
+        try {
+          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          fetch(`${baseUrl}/api/content`, { cache: 'no-cache' })
+            .then(r => r.json())
+            .then(j => { if (j.data) hydrateHomeContent(j.data); })
+            .catch(() => {});
+        } catch (e) {}
+      }
+
+      window.addEventListener('swan:content-ready', (e) => {
+        if (e.detail && e.detail.content) hydrateHomeContent(e.detail.content);
+      });
+
       // 1. Dynamic Featured Creations Loader
       async function loadFeaturedCreations() {
         const grid = document.getElementById('featured-products-grid');
         const headingEl = document.getElementById('featured-heading');
         const subtitleEl = document.getElementById('featured-subtitle');
-
-        try {
-          const stored = localStorage.getItem('swan_site_content');
-          if (stored) {
-            const sc = JSON.parse(stored);
-            if (sc.featuredHeading && headingEl) headingEl.textContent = sc.featuredHeading;
-            if (sc.featuredSubtitle && subtitleEl) subtitleEl.textContent = sc.featuredSubtitle;
-          }
-        } catch (e) {}
 
         if (!grid) return;
         grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem; color: #8A7670;">Loading handcrafted creations...</div>`;

@@ -184,61 +184,98 @@
   <div id="site-footer"></div>
 
   <!-- Scripts -->
+  <script src="js/api-config.js"></script>
   <script src="js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      try {
-        const stored = localStorage.getItem('swan_site_content');
-        if (!stored) return;
-
-        const c = JSON.parse(stored);
+      function hydrateAboutContent(c) {
+        if (!c) return;
 
         // Page title & subtitle
-        if (c.storyPageTitle) document.getElementById('story-page-title').textContent = c.storyPageTitle;
-        if (c.storyPageSubtitle) document.getElementById('story-page-subtitle').textContent = c.storyPageSubtitle;
+        const pageTitle = c.story?.pageTitle || c.storyPageTitle;
+        const pageSub = c.story?.pageSubtitle || c.storyPageSubtitle;
+        if (pageTitle) document.getElementById('story-page-title').textContent = pageTitle;
+        if (pageSub) document.getElementById('story-page-subtitle').textContent = pageSub;
 
         // Founder identity
-        if (c.makerName) document.getElementById('maker-name').textContent = c.makerName;
-        if (c.makerRole) document.getElementById('maker-role').textContent = c.makerRole;
-        if (c.makerQuote) document.getElementById('maker-quote').textContent = c.makerQuote;
+        const makerName = c.makerName || c.story?.makerName;
+        const makerRole = c.makerRole || c.story?.makerRole;
+        const makerQuote = c.makerQuote || c.story?.makerQuote;
+        if (makerName) document.getElementById('maker-name').textContent = makerName;
+        if (makerRole) document.getElementById('maker-role').textContent = makerRole;
+        if (makerQuote) document.getElementById('maker-quote')?.replaceChildren(document.createTextNode(makerQuote));
 
         // Founder Portrait Photo
-        if (c.makerPhoto) {
+        const makerPhoto = c.makerPhoto || c.story?.makerPhoto;
+        const makerPhotoAlt = c.makerPhotoAlt || c.story?.makerPhotoAlt || makerName || 'Bhumika Nama crocheting at Swan Studio in Jaipur';
+        if (makerPhoto) {
           const container = document.getElementById('maker-portrait-container');
-          container.style.padding = '0';
-          container.innerHTML = `
-            <img src="${c.makerPhoto}" alt="${c.makerName || 'Bhumika Nama'}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 140px 140px var(--radius-lg) var(--radius-lg);">
-            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(66, 53, 49, 0.88)); padding: 1.5rem 1rem 1rem 1rem; color: #FFF8F1; text-align: center; border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
-              <h3 style="font-size: 1.3rem; margin: 0; color: #FFF8F1;">${c.makerName || 'Bhumika Nama'}</h3>
-              <p style="font-size: 0.8rem; color: #E8B7C0; margin-top: 0.2rem;">${c.makerRole || 'Founder & Crochet Artist'}</p>
-            </div>
-          `;
+          if (container) {
+            container.style.padding = '0';
+            container.innerHTML = `
+              <img src="${makerPhoto}" alt="${makerPhotoAlt}" width="400" height="460" style="width: 100%; height: 100%; object-fit: cover; border-radius: 140px 140px var(--radius-lg) var(--radius-lg);" onerror="this.onerror=null; this.src='assets/images/maker-artisan.webp';">
+              <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(66, 53, 49, 0.88)); padding: 1.5rem 1rem 1rem 1rem; color: #FFF8F1; text-align: center; border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
+                <h3 style="font-size: 1.3rem; margin: 0; color: #FFF8F1;">${makerName || 'Bhumika Nama'}</h3>
+                <p style="font-size: 0.8rem; color: #E8B7C0; margin-top: 0.2rem;">${makerRole || 'Founder & Crochet Artist'}</p>
+              </div>
+            `;
+          }
 
-          // Banner is hidden in production
           const banner = document.getElementById('story-notice-banner');
           if (banner) banner.style.display = 'none';
         }
 
         // Story narrative
-        if (c.storyHeadline) document.getElementById('story-headline').textContent = c.storyHeadline;
-        if (c.storyPara1) document.getElementById('story-p1').textContent = c.storyPara1;
-        if (c.storySection1Title) document.getElementById('story-sec1-title').textContent = c.storySection1Title;
-        if (c.storySection1Text) document.getElementById('story-sec1-text').textContent = c.storySection1Text;
-        if (c.storySection2Title) document.getElementById('story-sec2-title').textContent = c.storySection2Title;
-        if (c.storySection2Text) document.getElementById('story-sec2-text').textContent = c.storySection2Text;
+        const headline = c.storyHeadline || c.story?.headline;
+        const p1 = c.storyPara1 || c.story?.p1;
+        const sec1Title = c.story?.sec1Title || c.storySection1Title;
+        const sec1Text = c.story?.sec1Text || c.storySection1Text;
+        const sec2Title = c.story?.sec2Title || c.storySection2Title;
+        const sec2Text = c.story?.sec2Text || c.storySection2Text;
+
+        if (headline) document.getElementById('story-headline').textContent = headline;
+        if (p1) document.getElementById('story-p1').textContent = p1;
+        if (sec1Title) document.getElementById('story-sec1-title').textContent = sec1Title;
+        if (sec1Text) document.getElementById('story-sec1-text').textContent = sec1Text;
+        if (sec2Title) document.getElementById('story-sec2-title').textContent = sec2Title;
+        if (sec2Text) document.getElementById('story-sec2-text').textContent = sec2Text;
 
         // Promises
-        if (c.promise1Title) document.getElementById('promise1-title').textContent = c.promise1Title;
-        if (c.promise1Text) document.getElementById('promise1-text').textContent = c.promise1Text;
-        if (c.promise2Title) document.getElementById('promise2-title').textContent = c.promise2Title;
-        if (c.promise2Text) document.getElementById('promise2-text').textContent = c.promise2Text;
-        if (c.promise3Title) document.getElementById('promise3-title').textContent = c.promise3Title;
-        if (c.promise3Text) document.getElementById('promise3-text').textContent = c.promise3Text;
-        if (c.promise4Title) document.getElementById('promise4-title').textContent = c.promise4Title;
-        if (c.promise4Text) document.getElementById('promise4-text').textContent = c.promise4Text;
-      } catch (err) {
-        console.warn('Failed to hydrate custom story content:', err);
+        const p1Title = c.story?.promise1Title || c.promise1Title;
+        const p1Text = c.story?.promise1Text || c.promise1Text;
+        const p2Title = c.story?.promise2Title || c.promise2Title;
+        const p2Text = c.story?.promise2Text || c.promise2Text;
+        const p3Title = c.story?.promise3Title || c.promise3Title;
+        const p3Text = c.story?.promise3Text || c.promise3Text;
+        const p4Title = c.story?.promise4Title || c.promise4Title;
+        const p4Text = c.story?.promise4Text || c.promise4Text;
+
+        if (p1Title) document.getElementById('promise1-title').textContent = p1Title;
+        if (p1Text) document.getElementById('promise1-text').textContent = p1Text;
+        if (p2Title) document.getElementById('promise2-title').textContent = p2Title;
+        if (p2Text) document.getElementById('promise2-text').textContent = p2Text;
+        if (p3Title) document.getElementById('promise3-title').textContent = p3Title;
+        if (p3Text) document.getElementById('promise3-text').textContent = p3Text;
+        if (p4Title) document.getElementById('promise4-title').textContent = p4Title;
+        if (p4Text) document.getElementById('promise4-text').textContent = p4Text;
       }
+
+      // Check existing or fetch directly
+      if (window.SWAN_CONTENT) {
+        hydrateAboutContent(window.SWAN_CONTENT);
+      } else {
+        try {
+          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          fetch(`${baseUrl}/api/content`, { cache: 'no-cache' })
+            .then(r => r.json())
+            .then(j => { if (j.data) hydrateAboutContent(j.data); })
+            .catch(() => {});
+        } catch (e) {}
+      }
+
+      window.addEventListener('swan:content-ready', (e) => {
+        if (e.detail && e.detail.content) hydrateAboutContent(e.detail.content);
+      });
     });
   </script>
 </body>

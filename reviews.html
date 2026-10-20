@@ -321,13 +321,14 @@
   <div id="site-footer"></div>
 
   <!-- Scripts -->
+  <script src="js/api-config.js"></script>
   <script src="js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // ----------------------------------------------------------------------
       // 1. Initial Starter Reviews Data (Authentic only - no fake testimonials)
       // ----------------------------------------------------------------------
-      const STARTER_REVIEWS = [];
+      let SERVER_REVIEWS = [];
 
       // ----------------------------------------------------------------------
       // 2. Admin Moderation Status (Only shown to authenticated admins)
@@ -386,40 +387,54 @@
       // 3. Load & Merge Local Reviews (Filtering Deleted IDs)
       // ----------------------------------------------------------------------
       function getAllReviews() {
-        let deletedIds = [];
+        return SERVER_REVIEWS;
+      }
+
+      async function fetchServerReviews() {
         try {
-          deletedIds = JSON.parse(localStorage.getItem('swan_deleted_review_ids') || '[]').map(String);
-        } catch (e) {
-          deletedIds = [];
-        }
-        let userRevs = [];
-        try {
-          const stored = localStorage.getItem('swan_customer_reviews');
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed)) {
-              userRevs = parsed;
+          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          const res = await fetch(`${baseUrl}/api/reviews`, { cache: 'no-cache' });
+          if (res.ok) {
+            const json = await res.json();
+            if (Array.isArray(json.data)) {
+              SERVER_REVIEWS = json.data.map(r => ({
+                id: r.id,
+                author: r.author_name || r.author || 'Cherished Patron',
+                city: r.author_city || r.city || 'India',
+                verified: Boolean(r.verified_purchase !== undefined ? r.verified_purchase : r.verified),
+                rating: r.rating || 5,
+                product: r.title || 'Handcrafted Crochet Piece',
+                category: (r.title && r.title.toLowerCase().includes('bouquet')) ? 'bouquet' : 'general',
+                date: r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recent',
+                tags: ['Artisan Love'],
+                notes: r.comment || r.notes || '',
+                helpful: 1
+              }));
+              renderFeed();
             }
           }
         } catch (e) {
-          console.warn('Unable to load stored reviews:', e);
+          console.warn('Unable to load server reviews:', e);
         }
-        const combined = [...userRevs, ...STARTER_REVIEWS];
-        const deletedSet = new Set(deletedIds);
-        return combined.filter(r => !deletedSet.has(String(r.id)));
       }
 
-      function saveUserReview(newRev) {
+      async function saveUserReview(newRev) {
         try {
-          let userRevs = [];
-          const stored = localStorage.getItem('swan_customer_reviews');
-          if (stored) {
-            userRevs = JSON.parse(stored) || [];
-          }
-          userRevs.unshift(newRev);
-          localStorage.setItem('swan_customer_reviews', JSON.stringify(userRevs));
+          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          await fetch(`${baseUrl}/api/reviews`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              authorName: newRev.author,
+              authorCity: newRev.city,
+              rating: newRev.rating,
+              title: newRev.product,
+              comment: newRev.notes
+            })
+          });
+          await fetchServerReviews();
         } catch (e) {
-          console.warn('Unable to save user review:', e);
+          console.warn('Unable to save user review via API:', e);
         }
       }
 
@@ -921,6 +936,7 @@
 
       // Initial Render
       renderFeed();
+      fetchServerReviews();
     });
   </script>
 </body>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title id="page-head-title">Atelier Story — Swan Studio | Handmade Crochet Jaipur</title>
+  <meta id="page-meta-desc" name="description" content="Artisanal crochet story and care guide from Swan Studio by Bhumika Nama in Jaipur.">
+  <link rel="canonical" id="canonical-link" href="https://swan-studio.onrender.com/blog-post.html">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="shortcut icon" href="favicon.ico">
+
+  <!-- Open Graph -->
+  <meta id="og-title" property="og:title" content="Stories from the Atelier — Swan Studio">
+  <meta id="og-desc" property="og:description" content="Handcrafted crochet stories from Bhumika Nama in Jaipur.">
+  <meta property="og:type" content="article">
+  <meta id="og-url" property="og:url" content="https://swan-studio.onrender.com/blog-post.html">
+  <meta id="og-image" property="og:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .article-wrap {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: var(--space-xl) 0 var(--space-3xl);
+    }
+    .article-header {
+      text-align: center;
+      margin-bottom: var(--space-2xl);
+    }
+    .article-tag {
+      display: inline-block;
+      background: rgba(199, 131, 145, 0.12);
+      color: var(--rose-text);
+      padding: 0.3rem 0.85rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    .article-title {
+      font-family: var(--font-serif);
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      line-height: 1.22;
+      color: var(--cocoa);
+      margin-bottom: 1rem;
+    }
+    .article-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      color: #8A7670;
+      font-size: 0.88rem;
+      flex-wrap: wrap;
+    }
+    .article-author-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      color: var(--cocoa);
+    }
+    .article-cover-frame {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+      background: #F5EBE6;
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-subtle);
+      max-height: 480px;
+    }
+    .article-cover-img {
+      width: 100%;
+      height: 100%;
+      max-height: 480px;
+      object-fit: cover;
+      display: block;
+    }
+    .article-content {
+      font-size: 1.1rem;
+      line-height: 1.85;
+      color: #4A3B36;
+    }
+    .article-content p {
+      margin-bottom: 1.5rem;
+    }
+    .article-content h2 {
+      font-family: var(--font-serif);
+      font-size: 1.85rem;
+      color: var(--cocoa);
+      margin-top: 2.25rem;
+      margin-bottom: 0.85rem;
+      line-height: 1.3;
+    }
+    .article-content h3 {
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      color: var(--rose-text);
+      margin-top: 1.75rem;
+      margin-bottom: 0.65rem;
+    }
+    .article-content ul, .article-content ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .article-content li {
+      margin-bottom: 0.5rem;
+    }
+    .article-content blockquote {
+      border-left: 3px solid var(--rose);
+      padding: 0.75rem 1.25rem;
+      background: #FFF3EB;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 1.75rem 0;
+      font-style: italic;
+      color: var(--cocoa);
+    }
+    .article-content img {
+      border-radius: var(--radius-md);
+      margin: 1.5rem 0;
+      width: 100%;
+      height: auto;
+    }
+    .article-share-bar {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px dashed var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .share-btn-group {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.95rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      background: var(--white);
+      color: var(--cocoa);
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      min-height: 44px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .share-btn:hover {
+      background: var(--cream);
+      border-color: var(--rose);
+      color: var(--rose-text);
+    }
+    .author-bio-card {
+      margin-top: 2.5rem;
+      padding: 1.75rem;
+      background: var(--white);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .author-bio-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 2px solid var(--blush);
+    }
+    @media (max-width: 600px) {
+      .author-bio-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.25rem;
+      }
+      .article-cover-frame {
+        max-height: 260px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Skip Link -->
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Global Header (Injected by js/main.js) -->
+  <div id="site-header"></div>
+
+  <main id="main" class="section section-cream" style="padding-top: var(--space-md);">
+    <div class="container">
+
+      <!-- Breadcrumbs -->
+      <nav aria-label="Breadcrumbs" style="margin-bottom: var(--space-lg); font-size: 0.88rem; color: #8A7670;">
+        <a href="index.html" style="color: var(--cocoa); text-decoration: none;">Home</a>
+        <span style="margin: 0 0.4rem;">/</span>
+        <a href="blog.html" style="color: var(--cocoa); text-decoration: none;">Stories</a>
+        <span style="margin: 0 0.4rem;">/</span>
+        <span id="breadcrumb-current-title" style="color: var(--rose-text); font-weight: 500;">Story</span>
+      </nav>
+
+      <!-- Loading State -->
+      <div id="post-loading" style="text-align: center; padding: 4rem 1rem; color: #8A7670;">
+        Gathering threads and loading story...
+      </div>
+
+      <!-- 404 / Missing State -->
+      <div id="post-not-found" style="display: none; text-align: center; padding: 4rem 1rem; max-width: 540px; margin: 0 auto; background: var(--white); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+        <span style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;">🌸</span>
+        <h2 style="font-family: var(--font-serif); font-size: 1.8rem; color: var(--cocoa); margin-bottom: 0.75rem;">Story Not Found</h2>
+        <p style="color: #73615A; margin-bottom: 1.5rem; line-height: 1.6;">The atelier story you are looking for may have been moved, updated, or returned to draft status.</p>
+        <a href="blog.html" class="btn btn-primary">Browse All Stories</a>
+      </div>
+
+      <!-- Article Wrapper -->
+      <article class="article-wrap" id="article-wrap" style="display: none;">
+        
+        <header class="article-header">
+          <span class="article-tag" id="post-tag">Crochet Story</span>
+          <h1 class="article-title" id="post-title">Every Stitch Tells a Story</h1>
+          <div class="article-meta">
+            <span class="article-author-pill">
+              <span>✍️</span> <span id="post-author">Bhumika Nama</span>
+            </span>
+            <span>•</span>
+            <span id="post-date">October 18, 2026</span>
+            <span>•</span>
+            <span id="post-readtime">3 min read</span>
+          </div>
+          <p id="post-excerpt" class="article-lead" style="font-size: 1.15rem; color: #5C4B45; line-height: 1.7; font-style: italic; margin-top: 1.25rem; margin-bottom: 0.5rem; text-align: center;"></p>
+        </header>
+
+        <!-- Cover Image -->
+        <div class="article-cover-frame" id="post-cover-frame">
+          <img 
+            id="post-cover-img" 
+            src="assets/images/hero-bouquet.webp" 
+            alt="Handcrafted crochet story photograph" 
+            class="article-cover-img"
+            width="800"
+            height="460"
+            onerror="this.onerror=null; this.src='assets/images/hero-bouquet.webp';"
+          >
+        </div>
+
+        <!-- Article Body Content -->
+        <div class="article-content" id="post-body"></div>
+
+        <!-- Share Section -->
+        <div class="article-share-bar">
+          <div>
+            <strong style="color: var(--cocoa); font-size: 0.95rem; display: block;">Share this Story</strong>
+            <span style="font-size: 0.8rem; color: #8A7670;">Pass on slow handmade love to friends</span>
+          </div>
+          <div class="share-btn-group">
+            <a href="#" id="share-wa" class="share-btn" target="_blank" rel="noopener noreferrer" aria-label="Share story on WhatsApp">
+              <span>💬 WhatsApp</span>
+            </a>
+            <a href="#" id="share-twitter" class="share-btn" target="_blank" rel="noopener noreferrer" aria-label="Share story on X / Twitter">
+              <span>🐦 X / Twitter</span>
+            </a>
+            <button type="button" id="share-copy" class="share-btn" aria-label="Copy story link to clipboard">
+              <span>🔗 Copy Link</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Author Bio Card -->
+        <aside class="author-bio-card">
+          <img src="assets/images/maker-artisan.webp" alt="Bhumika Nama portrait" class="author-bio-avatar" width="72" height="72" onerror="this.onerror=null; this.src='assets/images/hero-bouquet-sm.webp';">
+          <div>
+            <strong style="font-size: 1.1rem; color: var(--cocoa); display: block;" id="author-card-name">Bhumika Nama</strong>
+            <span style="font-size: 0.82rem; color: var(--rose-text); font-weight: 500; display: block; margin-bottom: 0.35rem;">Founder &amp; Crochet Artisan • Jaipur</span>
+            <p style="font-size: 0.88rem; color: #73615A; line-height: 1.5; margin: 0;">
+              Founder of Swan Studio in Jaipur, India. Dedicated to slow, tactile craft, everlasting crochet flowers, and creations that carry heartwarming smiles.
+            </p>
+          </div>
+        </aside>
+
+        <!-- Back Link -->
+        <div style="text-align: center; margin-top: 3rem;">
+          <a href="blog.html" class="btn btn-secondary" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <span>&larr; Back to All Stories</span>
+          </a>
+        </div>
+
+      </article>
+
+    </div>
+  </main>
+
+  <!-- Global Footer (Injected by js/main.js) -->
+  <div id="site-footer"></div>
+
+  <!-- Scripts -->
+  <script src="js/api-config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get('slug') || '';
+
+      const loadingEl = document.getElementById('post-loading');
+      const notFoundEl = document.getElementById('post-not-found');
+      const articleEl = document.getElementById('article-wrap');
+
+      if (!slug) {
+        loadingEl.style.display = 'none';
+        notFoundEl.style.display = 'block';
+        return;
+      }
+
+      try {
+        const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+        const res = await fetch(`${baseUrl}/api/blog/${encodeURIComponent(slug)}`, { cache: 'no-cache' });
+        
+        if (!res.ok) {
+          loadingEl.style.display = 'none';
+          notFoundEl.style.display = 'block';
+          return;
+        }
+
+        const json = await res.json();
+        const post = json.data;
+
+        if (!post) {
+          loadingEl.style.display = 'none';
+          notFoundEl.style.display = 'block';
+          return;
+        }
+
+        // Populate Article UI
+        document.getElementById('post-title').textContent = post.title;
+        document.getElementById('breadcrumb-current-title').textContent = post.title;
+        document.getElementById('page-head-title').textContent = `${post.title} — Swan Studio`;
+        if (post.excerpt) {
+          document.getElementById('page-meta-desc').setAttribute('content', post.excerpt);
+        }
+
+        const tag = (Array.isArray(post.tags) && post.tags[0]) || 'Craft Story';
+        document.getElementById('post-tag').textContent = tag;
+
+        if (post.author) {
+          document.getElementById('post-author').textContent = post.author;
+          document.getElementById('author-card-name').textContent = post.author;
+        }
+
+        if (post.published_at) {
+          const dateStr = new Date(post.published_at).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+          document.getElementById('post-date').textContent = dateStr;
+        }
+
+        if (post.read_time_minutes) {
+          document.getElementById('post-readtime').textContent = `${post.read_time_minutes} min read`;
+        }
+
+        const coverImg = document.getElementById('post-cover-img');
+        if (post.cover_image || post.coverImage) {
+          coverImg.src = post.cover_image || post.coverImage;
+          coverImg.alt = post.cover_image_alt || post.coverImageAlt || post.title;
+        }
+
+        // Render excerpt and body
+        const excerptEl = document.getElementById('post-excerpt');
+        if (excerptEl) excerptEl.textContent = post.excerpt || '';
+
+        const bodyEl = document.getElementById('post-body');
+        bodyEl.innerHTML = post.body || '';
+
+        // Share buttons
+        const pageUrl = window.location.href;
+        const shareText = encodeURIComponent(`${post.title} — Stories from Swan Studio`);
+        document.getElementById('share-wa').href = `https://api.whatsapp.com/send?text=${shareText}%20${encodeURIComponent(pageUrl)}`;
+        document.getElementById('share-twitter').href = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(pageUrl)}`;
+
+        const copyBtn = document.getElementById('share-copy');
+        copyBtn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pageUrl);
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => { copyBtn.innerHTML = orig; }, 2500);
+          } catch (e) {
+            alert('Story link: ' + pageUrl);
+          }
+        });
+
+        // Inject Article Schema JSON-LD
+        const schema = {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": post.title,
+          "description": post.excerpt || "",
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://swan-studio.onrender.com/blog-post.html?slug=${post.slug}`
+          },
+          "image": post.cover_image || "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+          "author": {
+            "@type": "Person",
+            "name": post.author || "Bhumika Nama"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Swan Studio",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://swan-studio.onrender.com/assets/images/og-image.jpg"
+            }
+          },
+          "datePublished": post.published_at || post.created_at,
+          "dateModified": post.updated_at || post.published_at || post.created_at
+        };
+        const scriptEl = document.createElement('script');
+        scriptEl.id = 'post-schema-jsonld';
+        scriptEl.type = 'application/ld+json';
+        scriptEl.textContent = JSON.stringify(schema);
+        document.head.appendChild(scriptEl);
+
+        loadingEl.style.display = 'none';
+        articleEl.style.display = 'block';
+
+      } catch (err) {
+        console.error('Failed to load blog post:', err);
+        loadingEl.style.display = 'none';
+        notFoundEl.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

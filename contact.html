@@ -75,7 +75,7 @@
             </p>
           </div>
           <div class="contact-action-wrapper">
-            <a id="contact-wa-btn" href="https://wa.me/919509966512?text=Hi%20Bhumika!%20I'm%20contacting%20you%20from%20the%20Swan%20Studio%20website." target="_blank" rel="noopener noreferrer" class="contact-btn contact-btn-primary">
+            <a id="contact-whatsapp-btn" href="https://wa.me/919509966512?text=Hi%20Bhumika!%20I'm%20contacting%20you%20from%20the%20Swan%20Studio%20website." target="_blank" rel="noopener noreferrer" class="contact-btn contact-btn-primary">
               <span>Chat on WhatsApp</span> <span>&rarr;</span>
             </a>
             <a href="https://wa.me/919509966512" class="contact-meta-info" id="contact-wa-sublink" target="_blank" rel="noopener noreferrer">
@@ -174,12 +174,13 @@
   <script src="js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      try {
-        const s = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
-        const c = JSON.parse(localStorage.getItem('swan_site_content') || '{}');
-        const waNum = s.whatsapp || (window.SITE && window.SITE.whatsapp) || '9509966512';
+      function hydrateContactDetails(s, c) {
+        s = s || window.SWAN_SETTINGS || {};
+        c = c || window.SWAN_CONTENT || {};
+
+        const waNum = s.whatsapp || c.contact?.whatsapp || (window.SITE && window.SITE.whatsapp) || '9509966512';
         const cleanWa = waNum.replace(/[^0-9]/g, '');
-        const waBtn = document.getElementById('contact-wa-btn');
+        const waBtn = document.getElementById('contact-whatsapp-btn') || document.getElementById('contact-wa-btn');
         const waSublink = document.getElementById('contact-wa-sublink');
         const waNumSpan = document.getElementById('contact-wa-number');
 
@@ -195,7 +196,7 @@
           waNumSpan.textContent = `+91 ${cleanWa}`;
         }
 
-        const email = s.email || (window.SITE && window.SITE.email) || 'swanstudio2604@gmail.com';
+        const email = s.email || c.contact?.email || (window.SITE && window.SITE.email) || 'swanstudio2604@gmail.com';
         const emailBtn = document.getElementById('contact-email-btn');
         const emailLink = document.getElementById('contact-email-link');
         const emailSpan = document.getElementById('contact-email-text');
@@ -213,9 +214,23 @@
           policyEmailLink.href = `mailto:${email}`;
           policyEmailLink.textContent = email;
         }
-      } catch (err) {
-        console.warn('Error hydrating contact settings:', err);
       }
+
+      if (window.SWAN_SETTINGS || window.SWAN_CONTENT) {
+        hydrateContactDetails(window.SWAN_SETTINGS, window.SWAN_CONTENT);
+      } else {
+        try {
+          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          fetch(`${baseUrl}/api/settings`, { cache: 'no-cache' })
+            .then(r => r.json())
+            .then(j => { if (j.data) hydrateContactDetails(j.data, null); })
+            .catch(() => {});
+        } catch (e) {}
+      }
+
+      window.addEventListener('swan:content-ready', (e) => {
+        if (e.detail) hydrateContactDetails(e.detail.settings, e.detail.content);
+      });
     });
   </script>
 </body>
