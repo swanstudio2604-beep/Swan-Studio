@@ -1655,7 +1655,8 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <script src="../js/config.js"></script>
   <script src="../js/api-config.js"></script>
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
@@ -2447,67 +2448,45 @@
 
       // Load Settings & Content from Backend Database
       async function loadAllContent() {
-        const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-
-        // 1. Fetch content from database
-        try {
-          const res = await fetch(`${baseUrl}/api/admin/content`, {
-            headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
-            credentials: 'include'
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.success && data.data) {
-              populateContentFields(data.data);
-              if (Array.isArray(data.data.history)) {
-                renderRevisionHistory(data.data.history);
-              }
-            }
-          } else {
-            const stored = JSON.parse(localStorage.getItem('swan_site_content') || '{}');
-            populateContentFields(stored);
-          }
-        } catch (err) {
-          console.warn('Backend content fetch error, using local fallback:', err);
-          const stored = JSON.parse(localStorage.getItem('swan_site_content') || '{}');
-          populateContentFields(stored);
-        }
-
-        // 2. Fetch settings from database
-        try {
-          const res = await fetch(`${baseUrl}/api/admin/settings`, {
-            headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
-            credentials: 'include'
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.success && data.data) {
-              populateSettingsFields(data.data);
-            }
-          } else {
-            const stored = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
-            populateSettingsFields(stored);
-          }
-        } catch (err) {
-          console.warn('Backend settings fetch error, using local fallback:', err);
-          const stored = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
-          populateSettingsFields(stored);
-        }
-
-        // 3. Supabase Live Sync if configured directly
         const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
         if (client) {
           try {
-            const { data: sData } = await client.from('site_settings').select('*').eq('id', 1).single();
-            if (sData) {
-              upiInput.value = sData.upi_id || upiInput.value;
-              waInput.value = sData.whatsapp_number || waInput.value;
-              freeShipInput.value = sData.free_shipping_threshold || freeShipInput.value;
-              stdShipInput.value = sData.standard_shipping_fee || stdShipInput.value;
-              lowStockInput.value = sData.low_stock_threshold || lowStockInput.value;
+            const { data, error } = await client.from('site_content').select('*');
+            if (!error && Array.isArray(data)) {
+              const contentRow = data.find(r => r.key === 'content' || r.key === 'story');
+              const settingsRow = data.find(r => r.key === 'settings' || r.key === 'contact');
+              const heroRow = data.find(r => r.key === 'hero');
+              const bannerRow = data.find(r => r.key === 'banner');
+
+              const combinedContent = {
+                ...(contentRow?.data || {}),
+                announcement: bannerRow?.data?.message || contentRow?.data?.announcement || '',
+                heroHeadline: heroRow?.data?.title || contentRow?.data?.heroHeadline || '',
+                heroSub: heroRow?.data?.subtitle || contentRow?.data?.heroSub || '',
+                heroImage: heroRow?.data?.image || contentRow?.data?.heroImage || null
+              };
+              populateContentFields(combinedContent);
+
+              if (settingsRow?.data) {
+                populateSettingsFields(settingsRow.data);
+              }
+
+              // Load revision history
+              const { data: history } = await client
+                .from('site_content_history')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(10);
+              if (history && history.length > 0) {
+                renderRevisionHistory(history.map(h => ({
+                  id: h.id,
+                  savedAt: h.created_at,
+                  previewSummary: `Update to ${h.content_key}`
+                })));
+              }
             }
           } catch (e) {
-            console.warn('Supabase fetch failed:', e);
+            console.warn('Error loading site_content from Supabase:', e);
           }
         }
 
@@ -2608,68 +2587,61 @@
           instagramHandle: instaHandleInput ? instaHandleInput.value.trim() : '@swan_handcrafted_studio.3568'
         };
 
-        const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-
         try {
-          // 1. Save to Database API (Single Source of Truth)
-          const contentRes = await fetch(`${baseUrl}/api/admin/content`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Admin-Token': ADMIN.activeProfile?.token || ''
-            },
-            credentials: 'include',
-            body: JSON.stringify(contentPayload)
-          });
-          if (!contentRes.ok) {
-            const errJson = await contentRes.json().catch(() => ({}));
-            throw new Error(errJson.error || 'Failed to save content to database.');
-          }
-
-          const settingsRes = await fetch(`${baseUrl}/api/admin/settings`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Admin-Token': ADMIN.activeProfile?.token || ''
-            },
-            credentials: 'include',
-            body: JSON.stringify(settingsPayload)
-          });
-          if (!settingsRes.ok) {
-            const errJson = await settingsRes.json().catch(() => ({}));
-            throw new Error(errJson.error || 'Failed to save settings to database.');
-          }
-
-          // 2. Also save to Supabase if connected
           const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-          if (client) {
-            try {
-              await client.from('site_settings').upsert({
-                id: 1,
-                upi_id: settingsPayload.upiId,
-                whatsapp_number: settingsPayload.whatsapp,
-                free_shipping_threshold: settingsPayload.freeShip,
-                standard_shipping_fee: settingsPayload.stdShip,
-                low_stock_threshold: settingsPayload.lowStock,
-                updated_at: new Date().toISOString()
-              });
+          if (!client) throw new Error('Database client not connected.');
 
-              await client.from('site_content').upsert([
-                { key: 'announcement', content_value: { text: contentPayload.announcement }, updated_at: new Date().toISOString() },
-                { key: 'hero', content_value: { headline: contentPayload.heroHeadline, subheadline: contentPayload.heroSub, image: contentPayload.heroImage }, updated_at: new Date().toISOString() },
-                { key: 'story', content_value: contentPayload, updated_at: new Date().toISOString() },
-                { key: 'founder_note', content_value: { quote: contentPayload.founderQuote, makerName: contentPayload.makerName }, updated_at: new Date().toISOString() }
-              ]);
-            } catch (supaErr) {
-              console.warn('Supabase save error:', supaErr);
+          const { error: upsertErr } = await client.from('site_content').upsert([
+            { key: 'content', data: contentPayload, updated_at: new Date().toISOString() },
+            { key: 'settings', data: settingsPayload, updated_at: new Date().toISOString() },
+            {
+              key: 'banner',
+              data: { enabled: true, message: contentPayload.announcement, linkText: 'Shop Now', linkUrl: 'shop.html' },
+              updated_at: new Date().toISOString()
+            },
+            {
+              key: 'hero',
+              data: {
+                eyebrow: contentPayload.heroBadge || 'Artisanal Handmade Crochet Atelier',
+                title: contentPayload.heroHeadline,
+                subtitle: contentPayload.heroSub,
+                image: contentPayload.heroImage,
+                ctaText: 'Explore Atelier Creations',
+                ctaUrl: 'shop.html'
+              },
+              updated_at: new Date().toISOString()
+            },
+            {
+              key: 'about',
+              data: {
+                founderName: contentPayload.makerName || 'Bhumika Nama',
+                founderRole: contentPayload.makerRole || 'Founder & Crochet Artisan',
+                quote: contentPayload.makerQuote || contentPayload.founderQuote,
+                photo: contentPayload.makerPhoto,
+                headline: contentPayload.storyHeadline,
+                story: contentPayload.storyPara1,
+                sec1Title: contentPayload.storySection1Title,
+                sec1Text: contentPayload.storySection1Text,
+                sec2Title: contentPayload.storySection2Title,
+                sec2Text: contentPayload.storySection2Text
+              },
+              updated_at: new Date().toISOString()
+            },
+            {
+              key: 'contact',
+              data: {
+                whatsapp: settingsPayload.whatsapp,
+                upiId: settingsPayload.upiId,
+                email: 'swanstudio2604@gmail.com',
+                instagram: settingsPayload.instagram || '@swanstudio.crochet'
+              },
+              updated_at: new Date().toISOString()
             }
-          }
+          ]);
 
-          // 3. Cache locally for offline performance
-          localStorage.setItem('swan_site_content', JSON.stringify(contentPayload));
-          localStorage.setItem('swan_site_settings', JSON.stringify(settingsPayload));
+          if (upsertErr) throw new Error(upsertErr.message);
 
-          // 4. Update Save Feedback with "Live on your website" and "View on site" button
+          // Update Save Feedback with "Live on your website" and "View on site" button
           const previewUrl = `../index.html?t=${Date.now()}`;
           saveFeedback.style.display = 'block';
           saveFeedback.style.background = '#E8F5E9';
@@ -2689,16 +2661,18 @@
           saveFeedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
           syncLiveSimulations();
-          // Reload content to update history
-          const res = await fetch(`${baseUrl}/api/admin/content`, {
-            headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
-            credentials: 'include'
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.data && Array.isArray(data.data.history)) {
-              renderRevisionHistory(data.data.history);
-            }
+          // Reload revision history from Supabase
+          const { data: history } = await client
+            .from('site_content_history')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(10);
+          if (history && history.length > 0) {
+            renderRevisionHistory(history.map(h => ({
+              id: h.id,
+              savedAt: h.created_at,
+              previewSummary: `Update to ${h.content_key}`
+            })));
           }
         } catch (err) {
           saveFeedback.style.display = 'block';

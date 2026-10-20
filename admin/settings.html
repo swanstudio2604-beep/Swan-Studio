@@ -199,7 +199,8 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <script src="../js/config.js"></script>
   <script src="../js/api-config.js"></script>
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
@@ -211,26 +212,19 @@
 
       const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
 
-      // Load Settings from Backend API with local fallback
+      // Load Settings from Supabase site_content
       async function loadSettings() {
         let s = {};
-        try {
-          const res = await fetch(`${baseUrl}/api/admin/settings`, {
-            headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
-            credentials: 'include'
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.success && data.data) s = data.data;
-          }
-        } catch (err) {
-          console.warn('Error loading settings from server:', err);
-        }
-
-        if (!Object.keys(s).length) {
+        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (client) {
           try {
-            s = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
-          } catch (e) {}
+            const { data } = await client.from('site_content').select('data').in('key', ['settings', 'contact']);
+            if (Array.isArray(data)) {
+              data.forEach(row => { Object.assign(s, row.data || {}); });
+            }
+          } catch (e) {
+            console.warn('Supabase settings load error:', e);
+          }
         }
 
         if (s.upiId || s.upi_id) document.getElementById('set-upi-id').value = s.upiId || s.upi_id;
@@ -250,58 +244,53 @@
         const whatsapp = document.getElementById('set-whatsapp').value.trim();
         const codEnabled = document.getElementById('set-cod-enabled').checked;
 
-        const current = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
-        current.upiId = upiId;
-        current.whatsapp = whatsapp;
-        current.codEnabled = codEnabled;
+        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (client) {
+          try {
+            const { data: curRow } = await client.from('site_content').select('data').eq('key', 'settings').maybeSingle();
+            const curData = curRow?.data || {};
+            curData.upiId = upiId;
+            curData.whatsapp = whatsapp;
+            curData.codEnabled = codEnabled;
 
-        try {
-          await fetch(`${baseUrl}/api/admin/settings`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Admin-Token': ADMIN.activeProfile?.token || ''
-            },
-            credentials: 'include',
-            body: JSON.stringify(current)
-          });
-        } catch (err) {
-          console.warn('Backend save settings error:', err);
+            await client.from('site_content').upsert([
+              { key: 'settings', data: curData, updated_at: new Date().toISOString() },
+              { key: 'contact', data: { whatsapp, upiId, email: 'swanstudio2604@gmail.com', instagram: '@swanstudio.crochet' }, updated_at: new Date().toISOString() }
+            ]);
+            ADMIN.showToast('✓ Payment & WhatsApp details saved to Supabase!');
+          } catch (err) {
+            ADMIN.showToast('Failed to save settings: ' + err.message, 'danger');
+          }
         }
-
-        localStorage.setItem('swan_site_settings', JSON.stringify(current));
-        ADMIN.showToast('✓ Payment & WhatsApp details saved successfully!');
       });
 
       // Save Shipping Rules
       document.getElementById('settings-shipping-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const shippingFee = parseFloat(document.getElementById('set-shipping-fee').value) || 99;
-        const freeThreshold = parseFloat(document.getElementById('set-free-threshold').value) || 1499;
+        const shippingFee = parseFloat(document.getElementById('set-shipping-fee').value) || 0;
+        const freeThreshold = parseFloat(document.getElementById('set-free-threshold').value) || 999;
         const lowStock = parseInt(document.getElementById('set-low-stock').value, 10) || 2;
 
-        const current = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
-        current.shippingFee = shippingFee;
-        current.freeThreshold = freeThreshold;
-        current.stdShip = shippingFee;
-        current.freeShip = freeThreshold;
-        current.lowStock = lowStock;
+        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (client) {
+          try {
+            const { data: curRow } = await client.from('site_content').select('data').eq('key', 'settings').maybeSingle();
+            const curData = curRow?.data || {};
+            curData.shippingFee = shippingFee;
+            curData.freeThreshold = freeThreshold;
+            curData.stdShip = shippingFee;
+            curData.freeShip = freeThreshold;
+            curData.lowStock = lowStock;
 
-        try {
-          await fetch(`${baseUrl}/api/admin/settings`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Admin-Token': ADMIN.activeProfile?.token || ''
-            },
-            credentials: 'include',
-            body: JSON.stringify(current)
-          });
-        } catch (err) {
-          console.warn('Backend save shipping settings error:', err);
+            await client.from('site_content').upsert([
+              { key: 'settings', data: curData, updated_at: new Date().toISOString() }
+            ]);
+            ADMIN.showToast('✓ Shipping rules & stock thresholds saved to Supabase!');
+          } catch (err) {
+            ADMIN.showToast('Failed to save shipping settings: ' + err.message, 'danger');
+          }
         }
-
-        localStorage.setItem('swan_site_settings', JSON.stringify(current));
+      });
         ADMIN.showToast('✓ Shipping rules & stock thresholds updated!');
       });
 

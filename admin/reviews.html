@@ -96,7 +96,8 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <script src="../js/config.js"></script>
   <script src="../js/api-config.js"></script>
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
@@ -116,76 +117,77 @@
       let currentFilter = 'all';
       let allReviews = [];
 
-      // Initial Default Reviews for Swan Studio (stored in localStorage for demo resilience)
-      const DEFAULT_REVIEWS = [
-        {
-          id: 'rev-101',
-          authorName: 'Sneha Kapur',
-          authorCity: 'Jaipur',
-          rating: 5,
-          title: 'Surpassed all expectations!',
-          comment: 'Ordered the Daisy Bouquet for my sister’s birthday in Vaishali Nagar. The yellow centers and crocheted stems are incredibly sturdy and lifelike. Bhumika even wrote a sweet handwritten note.',
-          productName: 'Daisy Delight Crochet Bouquet',
-          status: 'APPROVED',
-          verifiedPurchase: true,
-          createdAt: new Date(Date.now() - 3600000 * 24 * 3).toISOString()
-        },
-        {
-          id: 'rev-102',
-          authorName: 'Meera Iyer',
-          authorCity: 'Mumbai',
-          rating: 5,
-          title: 'Perfection in every loop',
-          comment: 'The pastel tote bag turned out so soft and spacious. It fits my diary, phone, and kindle effortlessly. Truly made with love!',
-          productName: 'Pastel Granny Square Tote Bag',
-          status: 'APPROVED',
-          verifiedPurchase: true,
-          createdAt: new Date(Date.now() - 3600000 * 24 * 7).toISOString()
-        },
-        {
-          id: 'rev-103',
-          authorName: 'Divya Nair',
-          authorCity: 'Bengaluru',
-          rating: 5,
-          title: 'Adorably soft amigurumi bunny',
-          comment: 'Got this bunny for my niece and she refuses to sleep without it! High quality yarn that does not fray.',
-          productName: 'Sleepy Bunny Amigurumi Plushie',
-          status: 'APPROVED',
-          verifiedPurchase: true,
-          createdAt: new Date(Date.now() - 3600000 * 24 * 12).toISOString()
-        },
-        {
-          id: 'rev-104',
-          authorName: 'Aarav Singhania',
-          authorCity: 'Delhi',
-          rating: 5,
-          title: 'Wonderful custom anniversary bouquet',
-          comment: 'Asked Bhumika for lavender and peach roses. She accommodated my tight deadline and delivered in 4 days. Absolutely wonderful craftswoman.',
-          productName: 'Custom Crochet Bouquet',
-          status: 'PENDING',
-          verifiedPurchase: true,
-          createdAt: new Date(Date.now() - 3600000 * 6).toISOString()
+      async function loadReviews() {
+        listContainer.innerHTML = '<div style="text-align: center; padding: 2.5rem; color: #8A7670;">Loading live customer reviews from Supabase...</div>';
+        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (!client) {
+          allReviews = [];
+          renderStats();
+          renderFeed();
+          return;
         }
-      ];
 
-      function loadReviews() {
         try {
-          const stored = localStorage.getItem('swan_customer_reviews');
-          if (stored) {
-            allReviews = JSON.parse(stored);
+          const { data, error } = await client
+            .from('reviews')
+            .select(`
+              id,
+              customer_name,
+              customer_email,
+              rating,
+              title,
+              comment,
+              status,
+              is_verified_buyer,
+              created_at,
+              products:product_id (
+                name,
+                slug,
+                image_url
+              )
+            `)
+            .order('created_at', { ascending: false });
+
+          if (error) {
+            console.warn('Error fetching reviews:', error.message);
+            allReviews = [];
           } else {
-            allReviews = [...DEFAULT_REVIEWS];
-            saveReviews();
+            allReviews = (data || []).map(r => ({
+              id: r.id,
+              authorName: r.customer_name || 'Verified Buyer',
+              authorEmail: r.customer_email || '',
+              authorCity: '',
+              rating: r.rating || 5,
+              title: r.title || '',
+              comment: r.comment || '',
+              productName: r.products?.name || '',
+              status: (r.status || 'pending').toUpperCase(),
+              verifiedPurchase: Boolean(r.is_verified_buyer),
+              createdAt: r.created_at
+            }));
           }
         } catch (e) {
-          allReviews = [...DEFAULT_REVIEWS];
+          console.error('Reviews load exception:', e);
+          allReviews = [];
         }
+
         renderStats();
         renderFeed();
       }
 
-      function saveReviews() {
-        localStorage.setItem('swan_customer_reviews', JSON.stringify(allReviews));
+      async function updateReviewStatus(id, newStatus) {
+        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (!client) throw new Error('Database not connected');
+        const dbStatus = newStatus.toLowerCase();
+        const { error } = await client.from('reviews').update({ status: dbStatus }).eq('id', id);
+        if (error) throw new Error(error.message);
+      }
+
+      async function deleteReviewRecord(id) {
+        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (!client) throw new Error('Database not connected');
+        const { error } = await client.from('reviews').delete().eq('id', id);
+        if (error) throw new Error(error.message);
       }
 
       function renderStats() {
@@ -204,6 +206,8 @@
         if (approvedReviews.length > 0) {
           const avg = (approvedReviews.reduce((sum, r) => sum + (r.rating || 5), 0) / approvedReviews.length).toFixed(1);
           document.getElementById('stat-avg-rating').textContent = `${avg} ★`;
+        } else {
+          document.getElementById('stat-avg-rating').textContent = '5.0 ★';
         }
       }
 
@@ -252,7 +256,7 @@
                 <div>
                   <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                     <strong style="font-size: 1rem; color: var(--cocoa);">${r.authorName}</strong>
-                    ${r.authorCity ? `<span style="font-size: 0.78rem; color: #8A7670;">📍 ${r.authorCity}</span>` : ''}
+                    ${r.verifiedPurchase ? '<span class="badge" style="background: #ECFDF5; color: #047857; font-size: 0.72rem;">✓ Verified Buyer</span>' : ''}
                   </div>
                   <div style="font-size: 0.85rem; color: #B45309; letter-spacing: 2px; margin-top: 0.2rem;">${stars}</div>
                 </div>
@@ -293,29 +297,40 @@
 
         // Wire handlers
         listContainer.querySelectorAll('.btn-approve').forEach(btn => {
-          btn.addEventListener('click', () => {
+          btn.addEventListener('click', async () => {
             const id = btn.dataset.id;
             const rev = allReviews.find(r => r.id === id);
-            if (rev) {
+            if (!rev) return;
+            try {
+              btn.disabled = true;
+              btn.textContent = 'Approving...';
+              await updateReviewStatus(id, 'APPROVED');
               rev.status = 'APPROVED';
-              saveReviews();
               renderStats();
               renderFeed();
               ADMIN.showToast(`✓ Review by ${rev.authorName} is now live on the public shop!`);
+            } catch (err) {
+              ADMIN.showToast('Failed to approve review: ' + err.message, 'danger');
+              btn.disabled = false;
             }
           });
         });
 
         listContainer.querySelectorAll('.btn-hide').forEach(btn => {
-          btn.addEventListener('click', () => {
+          btn.addEventListener('click', async () => {
             const id = btn.dataset.id;
             const rev = allReviews.find(r => r.id === id);
-            if (rev) {
+            if (!rev) return;
+            try {
+              btn.disabled = true;
+              await updateReviewStatus(id, 'HIDDEN');
               rev.status = 'HIDDEN';
-              saveReviews();
               renderStats();
               renderFeed();
-              ADMIN.showToast(`Review hidden from public storefront.`);
+              ADMIN.showToast('Review hidden from public storefront.');
+            } catch (err) {
+              ADMIN.showToast('Failed to hide review: ' + err.message, 'danger');
+              btn.disabled = false;
             }
           });
         });
@@ -330,12 +345,16 @@
               message: `Are you sure you want to permanently delete this review from ${rev.authorName}? This action cannot be undone.`,
               confirmText: 'Delete Review',
               danger: true,
-              onConfirm: () => {
-                allReviews = allReviews.filter(r => r.id !== id);
-                saveReviews();
-                renderStats();
-                renderFeed();
-                ADMIN.showToast('Review permanently removed.');
+              onConfirm: async () => {
+                try {
+                  await deleteReviewRecord(id);
+                  allReviews = allReviews.filter(r => r.id !== id);
+                  renderStats();
+                  renderFeed();
+                  ADMIN.showToast('Review permanently removed.');
+                } catch (err) {
+                  ADMIN.showToast('Failed to delete review: ' + err.message, 'danger');
+                }
               }
             });
           });

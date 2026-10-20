@@ -446,49 +446,56 @@ function renderFloatingWhatsApp() {
 // ---------------------------------------------------------------------------
 async function loadSiteConfig() {
   try {
-    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-    
-    // Asynchronously fetch site content & site settings
-    const [cRes, sRes] = await Promise.all([
-      fetch(`${baseUrl}/api/content`, { cache: 'no-cache' }).catch(() => null),
-      fetch(`${baseUrl}/api/settings`, { cache: 'no-cache' }).catch(() => null)
-    ]);
-
+    const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
     let changed = false;
 
-    if (cRes && cRes.ok) {
-      const cJson = await cRes.json();
-      if (cJson.data) {
-        window.SWAN_CONTENT = cJson.data;
-        if (cJson.data.announcement) {
-          SITE.announcement = cJson.data.announcement;
-          changed = true;
-        }
-      }
-    }
+    if (client) {
+      try {
+        const { data: rows, error } = await client.from('site_content').select('*');
+        if (!error && Array.isArray(rows)) {
+          const contentMap = {};
+          rows.forEach(r => {
+            contentMap[r.key] = r.data;
+          });
 
-    if (sRes && sRes.ok) {
-      const sJson = await sRes.json();
-      if (sJson.data) {
-        window.SWAN_SETTINGS = sJson.data;
-        const s = sJson.data;
-        if (s.whatsapp) {
-          SITE.whatsapp = s.whatsapp;
-          SITE.whatsappUrl = `https://wa.me/91${s.whatsapp.replace(/[^0-9]/g, '')}`;
-          changed = true;
+          const content = contentMap.content || contentMap.story || {};
+          const settings = contentMap.settings || contentMap.contact || {};
+          const banner = contentMap.banner;
+          const hero = contentMap.hero;
+          const contact = contentMap.contact;
+
+          if (banner?.message) {
+            SITE.announcement = banner.message;
+            changed = true;
+          } else if (content.announcement) {
+            SITE.announcement = content.announcement;
+            changed = true;
+          }
+
+          if (contact?.whatsapp || settings.whatsapp) {
+            const wa = contact?.whatsapp || settings.whatsapp;
+            SITE.whatsapp = wa;
+            SITE.whatsappUrl = `https://wa.me/91${wa.replace(/[^0-9]/g, '')}`;
+            changed = true;
+          }
+          if (contact?.upiId || settings.upiId) {
+            SITE.upiId = contact?.upiId || settings.upiId;
+            changed = true;
+          }
+          if (contact?.email || settings.email) {
+            SITE.email = contact?.email || settings.email;
+            changed = true;
+          }
+          if (contact?.instagram || settings.instagram) {
+            SITE.social.instagram = (contact?.instagram || settings.instagram).split('?')[0];
+            changed = true;
+          }
+
+          window.SWAN_CONTENT = { ...content, hero, banner, contact, about: contentMap.about };
+          window.SWAN_SETTINGS = settings;
         }
-        if (s.upiId) {
-          SITE.upiId = s.upiId;
-          changed = true;
-        }
-        if (s.email) {
-          SITE.email = s.email;
-          changed = true;
-        }
-        if (s.instagram) {
-          SITE.social.instagram = s.instagram.split('?')[0];
-          changed = true;
-        }
+      } catch (supaErr) {
+        console.warn('Supabase site_content fetch note:', supaErr);
       }
     }
 

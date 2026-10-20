@@ -211,7 +211,8 @@
   <div id="site-footer"></div>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/api-config.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/coupons.js"></script>
@@ -386,7 +387,14 @@
           window.location.href = `order-confirmation.html?order_id=${encodeURIComponent(result.orderId)}&total=${encodeURIComponent(result.totalAmount)}&upi=${encodeURIComponent(result.upiId)}`;
         } catch (err) {
           errorBox.style.display = 'block';
-          errorBox.textContent = err.message || 'Unable to place order. Please verify and try again.';
+          const waUrl = err.whatsappFallbackUrl || `https://wa.me/919509966512?text=Hello%20Swan%20Studio!%20I%20would%20like%20to%20complete%20my%20order.`;
+          errorBox.innerHTML = `
+            <div style="margin-bottom: 0.5rem; font-weight: 600; color: #9A5565;">⚠️ ${err.message || 'Unable to place order in database.'}</div>
+            <div style="font-size: 0.85rem; color: #73615A; margin-bottom: 0.75rem;">Don't worry! You can complete your order directly with Bhumika on WhatsApp:</div>
+            <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 0.5rem; background: #25D366; color: white; border-color: #25D366; text-decoration: none; padding: 0.6rem 1.15rem; border-radius: 999px; font-weight: 600;">
+              <span>💬 Complete Order via WhatsApp</span>
+            </a>
+          `;
           submitBtn.disabled = false;
           submitBtn.textContent = 'Place Order & Proceed to UPI';
         }

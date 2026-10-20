@@ -3,179 +3,103 @@
  * Brand: Swan Studio | Founder: Bhumika Nama
  * Tagline: Every Stitch Tells a Story.
  * 
- * SECURITY RULES (PRD Section 11 & 14):
- * 1. Initial payment status is strictly PENDING_VERIFICATION.
- * 2. Only a verified administrator can transition status to PAID or REJECTED.
- * 3. Status changes are logged in an immutable audit trail.
+ * Single Source of Truth: Supabase PostgreSQL (orders & order_status_history)
  */
 
 const SwanPayments = {
-  DEMO_ORDERS_KEY: 'swan_demo_orders',
-  DEMO_AUDIT_KEY: 'swan_payment_audit_log',
-
   /**
    * Customer submits their 12-digit UPI UTR / Transaction Reference and optional payment screenshot
    */
-  async submitTransactionRef(orderId, refId, notes = '', screenshot = '') {
+  async submitTransactionRef(orderRef, refId, notes = '', screenshot = '') {
     const cleanRef = (refId || '').trim();
     if (!cleanRef && !screenshot) {
       throw new Error('Please enter a valid UPI transaction reference (UTR) or upload a payment screenshot.');
     }
 
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+    if (!client) throw new Error('Database connection is not configured.');
 
-    if (client) {
-      try {
-        const { data, error } = await client.rpc('submit_payment_ref', {
-          p_order_id: orderId,
-          p_ref_id: cleanRef || 'SCREENSHOT_ATTACHED',
-          p_notes: notes
-        });
-        if (error) console.warn('Supabase submit_payment_ref rpc error:', error);
-      } catch (e) {
-        console.warn('Supabase submit_payment_ref failed, using demo fallback:', e);
-      }
+    // Look up order by id (UUID) or order_number
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderRef);
+    let matchQuery = client.from('orders').update({
+      utr_number: cleanRef || 'SCREENSHOT_ATTACHED',
+      customer_notes: notes || undefined
+    });
+
+    if (isUuid) {
+      matchQuery = matchQuery.eq('id', orderRef);
+    } else {
+      matchQuery = matchQuery.eq('order_number', orderRef);
     }
 
-    // Demo Mode Storage
-    try {
-      const stored = localStorage.getItem(this.DEMO_ORDERS_KEY);
-      const orders = stored ? JSON.parse(stored) : [];
-      const order = orders.find(o => o.orderId === orderId);
-
-      if (order) {
-        if (cleanRef) order.transactionRef = cleanRef;
-        if (screenshot) order.paymentScreenshot = screenshot;
-        order.customerPaymentNotes = notes;
-        order.refSubmittedAt = new Date().toISOString();
-        localStorage.setItem(this.DEMO_ORDERS_KEY, JSON.stringify(orders));
-      }
-
-      return {
-        success: true,
-        orderId: orderId,
-        transactionRef: cleanRef,
-        hasScreenshot: !!screenshot,
-        message: 'Transaction reference & payment proof submitted! Bhumika will verify receipt shortly.'
-      };
-    } catch (e) {
-      throw new Error('Failed to save reference details: ' + e.message);
+    const { data, error } = await matchQuery.select().single();
+    if (error) {
+      console.warn('submitTransactionRef error:', error.message);
+      // Attempt fallback by matching order_number loosely
+      const { error: looseErr } = await client
+        .from('orders')
+        .update({ utr_number: cleanRef })
+        .eq('order_number', orderRef);
+      if (looseErr) throw new Error('Could not update payment reference: ' + error.message);
     }
+
+    return {
+      success: true,
+      orderId: orderRef,
+      transactionRef: cleanRef,
+      hasScreenshot: !!screenshot,
+      message: 'Transaction reference & payment proof submitted! Bhumika will verify receipt shortly.'
+    };
   },
 
   /**
-   * Admin: Get all payments and order details
+   * Admin: Get all payments and order details from Supabase orders table
    */
   async getAllPayments() {
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+    if (!client) return [];
 
-    if (client) {
-      try {
-        const { data, error } = await client
-          .from('payments')
-          .select(`
-            id,
-            order_id,
-            payment_method,
-            upi_id,
-            amount,
-            status,
-            transaction_ref_id,
-            screenshot_path,
-            verified_at,
-            admin_notes,
-            created_at,
-            orders (
-              id,
-              customer_name,
-              customer_phone,
-              customer_email,
-              status,
-              created_at
-            )
-          `)
-          .order('created_at', { ascending: false });
-
-        if (!error && data) {
-          return data.map(p => ({
-            id: p.id,
-            orderId: p.orders ? p.orders.id : p.order_id,
-            customerName: p.orders ? p.orders.customer_name : 'Unknown Customer',
-            customerPhone: p.orders ? p.orders.customer_phone : '',
-            customerEmail: p.orders ? p.orders.customer_email : '',
-            orderStatus: p.orders ? p.orders.status : 'PENDING',
-            amount: parseFloat(p.amount) || 0,
-            status: p.status,
-            transactionRef: p.transaction_ref_id,
-            adminNotes: p.admin_notes,
-            verifiedAt: p.verified_at,
-            createdAt: p.created_at
-          }));
-        }
-      } catch (e) {
-        console.warn('Supabase fetch payments failed, using demo fallback:', e);
-      }
-    }
-
-    // Demo Mode Orders & Payments
     try {
-      const stored = localStorage.getItem(this.DEMO_ORDERS_KEY);
-      let orders = stored ? JSON.parse(stored) : [];
+      const { data, error } = await client
+        .from('orders')
+        .select(`
+          id,
+          order_number,
+          customer_name,
+          customer_phone,
+          customer_email,
+          total_amount,
+          payment_status,
+          order_status,
+          utr_number,
+          admin_notes,
+          created_at,
+          updated_at
+        `)
+        .order('created_at', { ascending: false });
 
-      if (orders.length === 0) {
-        // Provide sample records if fresh demo
-        orders = [
-          {
-            orderId: 'SWAN-882101',
-            createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
-            customerName: 'Ananya Verma',
-            customerPhone: '9820192831',
-            customerEmail: 'ananya@example.com',
-            shippingAddress: '42, Pink City Heights, Jaipur',
-            subtotal: 1099.00,
-            shippingFee: 0.00,
-            totalAmount: 1099.00,
-            status: 'PENDING',
-            paymentStatus: 'PENDING_VERIFICATION',
-            transactionRef: '429184719234',
-            upiId: '9509966512@fam'
-          },
-          {
-            orderId: 'SWAN-882102',
-            createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-            customerName: 'Rohan Mehra',
-            customerPhone: '9811223344',
-            customerEmail: 'rohan@example.com',
-            shippingAddress: '15, Heritage Lane, Udaipur',
-            subtotal: 899.00,
-            shippingFee: 99.00,
-            totalAmount: 998.00,
-            status: 'CONFIRMED',
-            paymentStatus: 'PAID',
-            transactionRef: '319284102918',
-            verifiedAt: new Date(Date.now() - 3600000 * 22).toISOString(),
-            upiId: '9509966512@fam'
-          }
-        ];
-        localStorage.setItem(this.DEMO_ORDERS_KEY, JSON.stringify(orders));
+      if (error) {
+        console.warn('getAllPayments error:', error.message);
+        return [];
       }
 
-      return orders.map(o => ({
-        id: 'pay-' + o.orderId,
-        orderId: o.orderId,
-        customerName: o.customerName,
-        customerPhone: o.customerPhone,
-        customerEmail: o.customerEmail,
-        orderStatus: o.status,
-        amount: parseFloat(o.totalAmount) || 0,
-        status: o.paymentStatus || 'PENDING_VERIFICATION',
-        transactionRef: o.transactionRef || null,
-        screenshot: o.paymentScreenshot || null,
-        adminNotes: o.adminNotes || '',
-        verifiedAt: o.verifiedAt || null,
-        createdAt: o.createdAt
+      return (data || []).map(o => ({
+        id: o.id,
+        orderId: o.order_number || o.id,
+        customerName: o.customer_name || 'Customer',
+        customerPhone: o.customer_phone || '',
+        customerEmail: o.customer_email || '',
+        orderStatus: o.order_status || 'NEW',
+        amount: parseFloat(o.total_amount) || 0,
+        status: o.payment_status || 'PENDING_VERIFICATION',
+        transactionRef: o.utr_number || null,
+        screenshot: null,
+        adminNotes: o.admin_notes || '',
+        verifiedAt: o.payment_status === 'PAID' ? o.updated_at : null,
+        createdAt: o.created_at
       }));
-    } catch {
+    } catch (e) {
+      console.error('getAllPayments exception:', e);
       return [];
     }
   },
@@ -185,32 +109,33 @@ const SwanPayments = {
    */
   async verifyPayment(paymentId, notes = 'Verified against bank statement') {
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+    if (!client) throw new Error('Database not connected.');
 
-    if (client) {
-      const { data, error } = await client.rpc('verify_payment', {
-        p_payment_id: paymentId,
-        p_notes: notes
-      });
-      if (error) throw new Error(error.message);
-      return data;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(paymentId);
+    let query = client.from('orders').update({
+      payment_status: 'PAID',
+      order_status: 'CONFIRMED',
+      admin_notes: notes
+    });
+
+    if (isUuid) {
+      query = query.eq('id', paymentId);
+    } else {
+      query = query.eq('order_number', paymentId);
     }
 
-    // Demo Mode Verification
-    const stored = localStorage.getItem(this.DEMO_ORDERS_KEY);
-    const orders = stored ? JSON.parse(stored) : [];
-    const target = orders.find(o => 'pay-' + o.orderId === paymentId || o.orderId === paymentId);
+    const { data, error } = await query.select().single();
+    if (error) throw new Error(error.message);
 
-    if (!target) throw new Error('Order/payment record not found.');
-
-    const oldStatus = target.paymentStatus || 'PENDING_VERIFICATION';
-    target.paymentStatus = 'PAID';
-    target.status = 'CONFIRMED';
-    target.verifiedAt = new Date().toISOString();
-    target.adminNotes = notes;
-    localStorage.setItem(this.DEMO_ORDERS_KEY, JSON.stringify(orders));
-
-    // Append Audit Trail
-    this._addAuditLog(paymentId, oldStatus, 'PAID', notes);
+    // Audit log
+    if (data?.id) {
+      await client.from('order_status_history').insert([{
+        order_id: data.id,
+        old_status: 'PENDING_VERIFICATION',
+        new_status: 'PAID',
+        notes: notes
+      }]).catch(() => {});
+    }
 
     return {
       success: true,
@@ -225,90 +150,75 @@ const SwanPayments = {
    */
   async rejectPayment(paymentId, reason = 'Payment not received in bank account') {
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+    if (!client) throw new Error('Database not connected.');
 
-    if (client) {
-      const { data, error } = await client.rpc('reject_payment', {
-        p_payment_id: paymentId,
-        p_reason: reason
-      });
-      if (error) throw new Error(error.message);
-      return data;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(paymentId);
+    let query = client.from('orders').update({
+      payment_status: 'FAILED',
+      order_status: 'CANCELLED',
+      admin_notes: reason
+    });
+
+    if (isUuid) {
+      query = query.eq('id', paymentId);
+    } else {
+      query = query.eq('order_number', paymentId);
     }
 
-    // Demo Mode Rejection
-    const stored = localStorage.getItem(this.DEMO_ORDERS_KEY);
-    const orders = stored ? JSON.parse(stored) : [];
-    const target = orders.find(o => 'pay-' + o.orderId === paymentId || o.orderId === paymentId);
+    const { data, error } = await query.select().single();
+    if (error) throw new Error(error.message);
 
-    if (!target) throw new Error('Order/payment record not found.');
-
-    const oldStatus = target.paymentStatus || 'PENDING_VERIFICATION';
-    target.paymentStatus = 'REJECTED';
-    target.status = 'CANCELLED';
-    target.verifiedAt = new Date().toISOString();
-    target.adminNotes = reason;
-    localStorage.setItem(this.DEMO_ORDERS_KEY, JSON.stringify(orders));
-
-    // Append Audit Trail
-    this._addAuditLog(paymentId, oldStatus, 'REJECTED', reason);
+    // Audit log
+    if (data?.id) {
+      await client.from('order_status_history').insert([{
+        order_id: data.id,
+        old_status: 'PENDING_VERIFICATION',
+        new_status: 'FAILED',
+        notes: reason
+      }]).catch(() => {});
+    }
 
     return {
       success: true,
       paymentId: paymentId,
-      newStatus: 'REJECTED',
+      newStatus: 'FAILED',
       orderStatus: 'CANCELLED'
     };
   },
 
   /**
-   * Helper: Record immutable audit trail in demo storage
-   */
-  _addAuditLog(paymentId, oldStatus, newStatus, notes) {
-    try {
-      const raw = localStorage.getItem(this.DEMO_AUDIT_KEY);
-      const list = raw ? JSON.parse(raw) : [];
-      list.unshift({
-        id: 'audit-' + Date.now(),
-        paymentId: paymentId,
-        changedBy: 'Bhumika Nama (Admin)',
-        oldStatus: oldStatus,
-        newStatus: newStatus,
-        notes: notes,
-        createdAt: new Date().toISOString()
-      });
-      localStorage.setItem(this.DEMO_AUDIT_KEY, JSON.stringify(list));
-    } catch (e) {
-      console.warn('Failed to save audit log:', e);
-    }
-  },
-
-  /**
    * Retrieves audit logs for admin review
    */
-  async getAuditLogs(paymentId = null) {
+  async getAuditLogs(orderIdentifier = null) {
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-
-    if (client) {
-      try {
-        let q = client.from('payment_audit_log').select('*').order('created_at', { ascending: false });
-        if (paymentId) q = q.eq('payment_id', paymentId);
-        const { data, error } = await q;
-        if (!error && data) return data;
-      } catch (e) {
-        console.warn('Supabase fetch audit logs failed, using demo fallback:', e);
-      }
-    }
+    if (!client) return [];
 
     try {
-      const raw = localStorage.getItem(this.DEMO_AUDIT_KEY);
-      const list = raw ? JSON.parse(raw) : [];
-      if (paymentId) {
-        return list.filter(l => l.paymentId === paymentId);
+      let orderId = orderIdentifier;
+      if (orderIdentifier && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderIdentifier)) {
+        const { data: o } = await client.from('orders').select('id').eq('order_number', orderIdentifier).maybeSingle();
+        if (o) orderId = o.id;
       }
-      return list;
-    } catch {
-      return [];
+
+      let q = client.from('order_status_history').select('*').order('created_at', { ascending: false });
+      if (orderId) q = q.eq('order_id', orderId);
+
+      const { data, error } = await q;
+      if (!error && data) {
+        return data.map(l => ({
+          id: l.id,
+          paymentId: l.order_id,
+          changedBy: 'Bhumika Nama (Admin)',
+          oldStatus: l.old_status,
+          newStatus: l.new_status,
+          notes: l.notes || '',
+          createdAt: l.created_at
+        }));
+      }
+    } catch (e) {
+      console.warn('Supabase fetch audit logs failed:', e);
     }
+    return [];
   }
 };
 

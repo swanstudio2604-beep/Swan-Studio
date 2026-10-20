@@ -419,7 +419,8 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <script src="../js/config.js"></script>
   <script src="../js/api-config.js"></script>
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
@@ -870,23 +871,22 @@
         if (statusEl) statusEl.textContent = 'Syncing...';
 
         try {
-          allPayments = await SwanPayments.getAllPayments();
+          // Fetch live orders directly from Supabase via ADMIN
+          allOrders = await ADMIN.getOrders();
 
-          // Fetch orders
-          allOrders = [];
-          try {
-            const storedOrders = localStorage.getItem('swan_demo_orders');
-            if (storedOrders) allOrders = JSON.parse(storedOrders);
-          } catch (e) {}
-
-          if (allOrders.length === 0 && allPayments.length > 0) {
-            allOrders = allPayments.map(p => ({
-              orderId: p.orderId,
-              status: p.orderStatus || 'PENDING',
-              totalAmount: p.amount,
-              customerName: p.customerName
-            }));
-          }
+          allPayments = allOrders.map(o => ({
+            id: o.id,
+            orderId: o.orderId,
+            customerName: o.customerName,
+            customerPhone: o.customerPhone,
+            customerEmail: o.customerEmail,
+            orderStatus: o.status,
+            amount: parseFloat(o.totalAmount) || 0,
+            status: o.paymentStatus || 'PENDING_VERIFICATION',
+            transactionRef: o.utr || null,
+            adminNotes: o.adminNotes || '',
+            createdAt: o.createdAt
+          }));
 
           populateMonthControls();
           renderMonthRevenue(currentMonthFilter);

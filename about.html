@@ -184,7 +184,10 @@
   <div id="site-footer"></div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/api-config.js"></script>
+  <script src="js/supabase.js"></script>
   <script src="js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -260,17 +263,11 @@
         if (p4Text) document.getElementById('promise4-text').textContent = p4Text;
       }
 
-      // Check existing or fetch directly
+      // Check existing or fetch directly from Supabase
       if (window.SWAN_CONTENT) {
         hydrateAboutContent(window.SWAN_CONTENT);
-      } else {
-        try {
-          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-          fetch(`${baseUrl}/api/content`, { cache: 'no-cache' })
-            .then(r => r.json())
-            .then(j => { if (j.data) hydrateAboutContent(j.data); })
-            .catch(() => {});
-        } catch (e) {}
+      } else if (typeof fetchSiteContent === 'function') {
+        fetchSiteContent().then(c => { if (c) hydrateAboutContent(c); });
       }
 
       window.addEventListener('swan:content-ready', (e) => {

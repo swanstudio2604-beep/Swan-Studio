@@ -321,7 +321,10 @@
   <div id="site-footer"></div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/api-config.js"></script>
+  <script src="js/supabase.js"></script>
   <script src="js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -392,49 +395,41 @@
 
       async function fetchServerReviews() {
         try {
-          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-          const res = await fetch(`${baseUrl}/api/reviews`, { cache: 'no-cache' });
-          if (res.ok) {
-            const json = await res.json();
-            if (Array.isArray(json.data)) {
-              SERVER_REVIEWS = json.data.map(r => ({
-                id: r.id,
-                author: r.author_name || r.author || 'Cherished Patron',
-                city: r.author_city || r.city || 'India',
-                verified: Boolean(r.verified_purchase !== undefined ? r.verified_purchase : r.verified),
-                rating: r.rating || 5,
-                product: r.title || 'Handcrafted Crochet Piece',
-                category: (r.title && r.title.toLowerCase().includes('bouquet')) ? 'bouquet' : 'general',
-                date: r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recent',
-                tags: ['Artisan Love'],
-                notes: r.comment || r.notes || '',
-                helpful: 1
-              }));
-              renderFeed();
-            }
+          const res = await fetchApprovedReviews();
+          if (res && Array.isArray(res.data)) {
+            SERVER_REVIEWS = res.data.map(r => ({
+              id: r.id,
+              author: r.customer_name || 'Cherished Patron',
+              city: 'India',
+              verified: Boolean(r.is_verified_buyer),
+              rating: r.rating || 5,
+              product: r.products?.name || r.title || 'Handcrafted Crochet Creation',
+              category: 'general',
+              date: r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recent',
+              tags: r.is_verified_buyer ? ['Verified Buyer', 'Artisan Love'] : ['Artisan Love'],
+              notes: r.comment || '',
+              helpful: 1
+            }));
+            renderFeed();
           }
         } catch (e) {
-          console.warn('Unable to load server reviews:', e);
+          console.warn('Unable to load Supabase approved reviews:', e);
         }
       }
 
       async function saveUserReview(newRev) {
         try {
-          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-          await fetch(`${baseUrl}/api/reviews`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              authorName: newRev.author,
-              authorCity: newRev.city,
-              rating: newRev.rating,
-              title: newRev.product,
-              comment: newRev.notes
-            })
+          await submitReviewSecure({
+            productId: newRev.productId || null,
+            customerName: newRev.author,
+            rating: newRev.rating,
+            title: newRev.product,
+            comment: newRev.notes,
+            honeypot: newRev.honeypot || null
           });
           await fetchServerReviews();
         } catch (e) {
-          console.warn('Unable to save user review via API:', e);
+          console.warn('Unable to submit review to Supabase:', e);
         }
       }
 

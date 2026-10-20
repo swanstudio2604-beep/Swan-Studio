@@ -300,7 +300,10 @@
   </div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <script src="../js/config.js"></script>
   <script src="../js/api-config.js"></script>
+  <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/admin/admin-shared.js"></script>
   <script>
@@ -453,25 +456,16 @@
           cover_image_alt: coverAltInput.value.trim() || title
         };
 
-        try {
-          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+          if (!client) throw new Error('Database client not connected.');
+
           const isEdit = Boolean(editIdInput.value);
-          const endpoint = isEdit ? `${baseUrl}/api/admin/blog/${editIdInput.value}` : `${baseUrl}/api/admin/blog`;
-          const method = isEdit ? 'PUT' : 'POST';
-
-          const res = await fetch(endpoint, {
-            method,
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Admin-Token': ADMIN.activeProfile?.token || ''
-            },
-            credentials: 'include',
-            body: JSON.stringify(payload)
-          });
-
-          if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.error || `HTTP ${res.status}`);
+          if (isEdit) {
+            const { error } = await client.from('blog_posts').update(payload).eq('id', editIdInput.value);
+            if (error) throw new Error(error.message);
+          } else {
+            const { error } = await client.from('blog_posts').insert([payload]);
+            if (error) throw new Error(error.message);
           }
 
           ADMIN.showToast(`✓ Story "${title}" saved successfully!`, 'success');
@@ -496,25 +490,38 @@
         empty.style.display = 'none';
 
         try {
-          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+          if (!client) {
+            currentPosts = [];
+            updateCounts();
+            renderStoriesList(currentPosts);
+            return;
+          }
+
           const isTrash = activeTab === 'TRASH';
-          const url = new URL(`${baseUrl}/api/admin/blog`);
-          if (isTrash) url.searchParams.set('trash', '1');
-          else if (activeTab !== 'ALL') url.searchParams.set('status', activeTab);
+          let query = client.from('blog_posts').select('*').order('created_at', { ascending: false });
 
-          const res = await fetch(url.toString(), {
-            headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
-            credentials: 'include',
-            cache: 'no-cache'
-          });
+          if (isTrash) {
+            query = query.not('deleted_at', 'is', null);
+          } else {
+            query = query.is('deleted_at', null);
+            if (activeTab !== 'ALL') {
+              query = query.eq('status', activeTab.toLowerCase());
+            }
+          }
 
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const json = await res.json();
-          currentPosts = json.data || [];
+          const { data, error } = await query;
+          if (error) throw new Error(error.message);
+          currentPosts = (data || []).map(p => ({
+            ...p,
+            status: (p.status || 'draft').toUpperCase()
+          }));
           updateCounts();
           renderStoriesList(currentPosts);
         } catch (err) {
           console.warn('Failed to load admin stories:', err);
+          currentPosts = [];
+          renderStoriesList([]);
         } finally {
           loading.style.display = 'none';
         }
@@ -589,12 +596,10 @@
           b.addEventListener('click', async () => {
             const id = b.getAttribute('data-id');
             if (!confirm('Move this story to trash?')) return;
-            const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-            await fetch(`${baseUrl}/api/admin/blog/${id}`, {
-              method: 'DELETE',
-              headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
-              credentials: 'include'
-            });
+            const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+            if (client) {
+              await client.from('blog_posts').update({ deleted_at: new Date().toISOString() }).eq('id', id);
+            }
             ADMIN.showToast('Story moved to trash');
             fetchAdminStories();
           });
@@ -603,12 +608,10 @@
         feed.querySelectorAll('.btn-restore').forEach(b => {
           b.addEventListener('click', async () => {
             const id = b.getAttribute('data-id');
-            const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-            await fetch(`${baseUrl}/api/admin/blog/${id}/restore`, {
-              method: 'POST',
-              headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
-              credentials: 'include'
-            });
+            const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+            if (client) {
+              await client.from('blog_posts').update({ deleted_at: null }).eq('id', id);
+            }
             ADMIN.showToast('Story restored from trash');
             fetchAdminStories();
           });
@@ -618,12 +621,10 @@
           b.addEventListener('click', async () => {
             const id = b.getAttribute('data-id');
             if (!confirm('Permanently delete this story? This action cannot be undone.')) return;
-            const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-            await fetch(`${baseUrl}/api/admin/blog/${id}?permanent=1`, {
-              method: 'DELETE',
-              headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
-              credentials: 'include'
-            });
+            const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+            if (client) {
+              await client.from('blog_posts').delete().eq('id', id);
+            }
             ADMIN.showToast('Story permanently deleted');
             fetchAdminStories();
           });

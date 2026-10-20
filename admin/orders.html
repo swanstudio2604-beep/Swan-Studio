@@ -330,79 +330,13 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <script src="../js/config.js"></script>
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/admin/admin-shared.js"></script>
   <script>
-    const DEFAULT_SEED_ORDERS = [
-      {
-        orderId: 'SWAN-ORD-9842',
-        createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-        customerName: 'Priya Sharma',
-        customerPhone: '9820192831',
-        customerEmail: 'priya.sharma@example.com',
-        shippingAddress: 'Flat 402, Lotus Residency, Baner Road, Pune, Maharashtra - 411045',
-        items: [
-          { name: 'Daisy Delight Crochet Bouquet', quantity: 1, price: 1299 }
-        ],
-        subtotal: 1299,
-        discountAmount: 0,
-        couponCode: null,
-        shippingFee: 0,
-        totalAmount: 1299,
-        status: 'PREPARING',
-        paymentStatus: 'PAID',
-        utr: '429104829104',
-        courier: 'India Post Speed Post',
-        trackingNumber: '',
-        notes: 'Hand-crocheting daisy stems with yellow centers.'
-      },
-      {
-        orderId: 'SWAN-ORD-9831',
-        createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-        customerName: 'Ananya Desai',
-        customerPhone: '9877112244',
-        customerEmail: 'ananya.d@example.com',
-        shippingAddress: 'B-12, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103',
-        items: [
-          { name: 'Pastel Granny Square Tote Bag', quantity: 1, price: 1249 }
-        ],
-        subtotal: 1249,
-        discountAmount: 100,
-        couponCode: 'WELCOME10',
-        shippingFee: 0,
-        totalAmount: 1149,
-        status: 'DISPATCHED',
-        paymentStatus: 'PAID',
-        utr: '429018291039',
-        courier: 'India Post Speed Post',
-        trackingNumber: 'ED948201948IN',
-        notes: 'Dispatched via India Post. Tracking shared with customer.'
-      },
-      {
-        orderId: 'SWAN-ORD-9815',
-        createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
-        customerName: 'Rohan Verma',
-        customerPhone: '9811223344',
-        customerEmail: 'rohan.v@example.com',
-        shippingAddress: 'House 84, Sector 15, Chandigarh, Punjab - 160015',
-        items: [
-          { name: 'Sleepy Bunny Amigurumi Plushie', quantity: 1, price: 649 }
-        ],
-        subtotal: 649,
-        discountAmount: 0,
-        couponCode: null,
-        shippingFee: 99,
-        totalAmount: 748,
-        status: 'PENDING',
-        paymentStatus: 'PENDING_VERIFICATION',
-        utr: '349281094821',
-        courier: '',
-        trackingNumber: '',
-        notes: 'Customer submitted UTR. Verification pending in bank statement.'
-      }
-    ];
+    // Live Supabase Orders System (Zero demo data)
 
     document.addEventListener('DOMContentLoaded', async () => {
       // 1. Guard & mount layout
@@ -512,65 +446,58 @@
 
         try {
           const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-          let loadedFromSupabase = false;
+          allOrders = [];
           if (client) {
             try {
               const { data, error } = await client
                 .from('orders')
-                .select('*, order_items(*), payments(*)')
+                .select('*, order_items(*), order_status_history(*)')
                 .order('created_at', { ascending: false });
 
-              if (!error && data && data.length > 0) {
-                allOrders = data.map(o => ({
-                  orderId: o.order_number || ('SWAN-ORD-' + o.id.slice(0, 6).toUpperCase()),
-                  id: o.id,
-                  createdAt: o.created_at,
-                  customerName: o.customer_name,
-                  customerPhone: o.customer_phone,
-                  customerEmail: o.customer_email,
-                  shippingAddress: `${o.shipping_address}, ${o.city}, ${o.state} - ${o.postal_code}`,
-                  items: (o.order_items || []).map(i => ({
-                    name: i.product_name,
-                    quantity: i.quantity,
-                    price: parseFloat(i.unit_price)
-                  })),
-                  subtotal: parseFloat(o.subtotal || o.total_amount),
-                  discountAmount: parseFloat(o.discount_amount || 0),
-                  couponCode: o.coupon_code,
-                  shippingFee: parseFloat(o.shipping_fee || 0),
-                  totalAmount: parseFloat(o.total_amount),
-                  status: o.fulfillment_status || o.status || 'PENDING',
-                  paymentStatus: o.payment_status || (o.payments?.[0]?.status) || 'PENDING_VERIFICATION',
-                  utr: o.payments?.[0]?.utr_number || o.utr || '',
-                  courier: o.courier_partner || '',
-                  trackingNumber: o.tracking_number || '',
-                  notes: o.admin_notes || ''
-                }));
-                loadedFromSupabase = true;
-              }
-            } catch (e) {
-              console.warn('Supabase orders fetch error, falling back to local demo:', e);
-            }
-          }
+              if (error) {
+                console.warn('Supabase orders fetch error:', error.message);
+              } else if (Array.isArray(data)) {
+                allOrders = data.map(o => {
+                  let addrStr = '';
+                  if (typeof o.shipping_address === 'object' && o.shipping_address !== null) {
+                    addrStr = [
+                      o.shipping_address.address_line,
+                      o.shipping_address.city,
+                      o.shipping_address.state,
+                      o.shipping_address.postal_code
+                    ].filter(Boolean).join(', ');
+                  } else {
+                    addrStr = String(o.shipping_address || '');
+                  }
 
-          if (!loadedFromSupabase) {
-            // Demo Storage
-            try {
-              const stored = localStorage.getItem('swan_demo_orders');
-              if (stored) {
-                const parsed = JSON.parse(stored);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                  allOrders = parsed;
-                } else {
-                  allOrders = [...DEFAULT_SEED_ORDERS];
-                  localStorage.setItem('swan_demo_orders', JSON.stringify(allOrders));
-                }
-              } else {
-                allOrders = [...DEFAULT_SEED_ORDERS];
-                localStorage.setItem('swan_demo_orders', JSON.stringify(allOrders));
+                  return {
+                    orderId: o.order_number || ('SWAN-ORD-' + o.id.slice(0, 6).toUpperCase()),
+                    id: o.id,
+                    createdAt: o.created_at,
+                    customerName: o.customer_name || 'Customer',
+                    customerPhone: o.customer_phone || '',
+                    customerEmail: o.customer_email || '',
+                    shippingAddress: addrStr,
+                    items: (o.order_items || []).map(i => ({
+                      name: i.product_name,
+                      quantity: i.quantity,
+                      price: parseFloat(i.product_price || 0)
+                    })),
+                    subtotal: parseFloat(o.subtotal || o.total_amount || 0),
+                    discountAmount: parseFloat(o.discount_amount || 0),
+                    couponCode: o.coupon_code || null,
+                    shippingFee: parseFloat(o.shipping_fee || 0),
+                    totalAmount: parseFloat(o.total_amount || 0),
+                    status: o.order_status || 'NEW',
+                    paymentStatus: o.payment_status || 'PENDING_VERIFICATION',
+                    utr: o.utr_number || '',
+                    trackingNumber: o.tracking_number || '',
+                    notes: o.admin_notes || ''
+                  };
+                });
               }
             } catch (e) {
-              allOrders = [...DEFAULT_SEED_ORDERS];
+              console.warn('Supabase orders fetch exception:', e);
             }
           }
 
@@ -915,36 +842,42 @@
           allOrders[orderIdx].notes = newNotes;
 
           // If marked dispatched or paid, ensure statuses harmonize
-          if (newStatus === 'DISPATCHED' && allOrders[orderIdx].paymentStatus === 'PENDING_VERIFICATION') {
-            allOrders[orderIdx].paymentStatus = 'PAID';
-          }
-          if (allOrders[orderIdx].paymentStatus === 'PAID' && allOrders[orderIdx].status === 'PENDING') {
-            allOrders[orderIdx].status = 'CONFIRMED';
-          }
-
-          // Persist to local demo storage
-          localStorage.setItem('swan_demo_orders', JSON.stringify(allOrders));
-
-          // Also update Supabase if live
+          // Update Supabase Database
           const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
           if (client && allOrders[orderIdx].id) {
             try {
-              await client.from('orders').update({
-                fulfillment_status: newStatus,
-                status: newStatus,
-                courier_partner: newCourier,
+              const { error: updateErr } = await client.from('orders').update({
+                order_status: newStatus,
+                payment_status: newPaymentStatus,
+                utr_number: newUtr,
                 tracking_number: newTracking,
                 admin_notes: newNotes,
                 updated_at: new Date().toISOString()
               }).eq('id', allOrders[orderIdx].id);
+
+              if (updateErr) {
+                alert('Database update warning: ' + updateErr.message);
+              } else {
+                // Record in order status audit history
+                await client.from('order_status_history').insert({
+                  order_id: allOrders[orderIdx].id,
+                  from_status: allOrders[orderIdx].status,
+                  to_status: newStatus,
+                  notes: newNotes
+                });
+              }
             } catch (err) {
               console.warn('Supabase order update failed:', err);
+              alert('Unable to save changes to Supabase: ' + err.message);
             }
           }
 
           closeModal();
-          renderStats();
+          renderStats(currentMonthFilter);
           applyFilters();
+          if (window.ADMIN && typeof ADMIN.showToast === 'function') {
+            ADMIN.showToast('✓ Order updated successfully', 'success');
+          }
         }
       });
 
