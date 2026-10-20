@@ -1,17 +1,24 @@
 /**
- * SWAN STUDIO — Supabase Frontend Configuration Example
+ * SWAN STUDIO — Supabase Client Configuration Template
  * 
- * INSTRUCTIONS FOR DEVELOPER:
- * 1. Create your free project on https://supabase.com
- * 2. Go to Project Settings -> API
- * 3. Copy your "Project URL" and your "Publishable (anon) API Key"
- * 4. Paste them into js/supabase.js (NEVER use or expose the service_role secret key!)
+ * INSTRUCTIONS FOR USER:
+ * 1. Copy this file to create `js/config.js`:
+ *    cp js/config.example.js js/config.js
+ * 2. In your Supabase dashboard (https://supabase.com/dashboard/project/hzlimdfxvojkqsszmulj),
+ *    navigate to: Project Settings -> API.
+ * 3. Copy your publishable "anon public" key.
+ * 4. Open `js/config.js` and paste your key replacing 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE'.
+ * 
+ * STRICT SECURITY RULES:
+ * - ONLY paste the `anon` (public) key here. It is safe for browser clients because
+ *   Row Level Security (RLS) protects the database.
+ * - NEVER paste the `service_role` key, database password, or personal access tokens!
  */
 
-const SUPABASE_CONFIG = {
-  // Your unique Supabase Project URL (e.g. 'https://xyzabcdefgh.supabase.co')
-  url: 'YOUR_SUPABASE_PROJECT_URL',
+window.SWAN_CONFIG = {
+  // Swan Studio Supabase Project URL
+  supabaseUrl: 'https://hzlimdfxvojkqsszmulj.supabase.co',
 
-  // Your public/anon API key (Safe for public browser code protected by RLS)
-  anonKey: 'YOUR_SUPABASE_ANON_KEY'
+  // PASTE YOUR PUBLISHABLE ANON KEY BETWEEN THE QUOTES:
+  supabaseAnonKey: 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE'
 };

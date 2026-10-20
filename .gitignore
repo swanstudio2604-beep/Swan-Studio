@@ -9,6 +9,13 @@ package-lock.json
 *.secret
 *.pem
 *.key
+js/config.js
+config.js
+
+# Local Exports & Data
+supabase/seed.review.sql
+*.review.sql
+data/store.json
 
 # Operating System Files
 .DS_Store
