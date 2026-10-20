@@ -128,6 +128,20 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label">Collection Cover Image</label>
+          <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+            <input type="text" id="cat-image" class="form-control" placeholder="Image URL (assets/images/... or uploaded URL)">
+            <label class="btn btn-secondary btn-sm" style="margin: 0; cursor: pointer; white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; gap: 0.35rem;">
+              📷 Upload
+              <input type="file" id="cat-image-file" accept="image/*" style="display: none;">
+            </label>
+          </div>
+          <div id="cat-image-preview" style="display: none; width: 100%; height: 110px; border-radius: 6px; overflow: hidden; background: #FAF5F0; border: 1px solid #E2E8F0; margin-bottom: 0.5rem;">
+            <img id="cat-preview-img" src="" alt="Cover preview" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.style.display='none';">
+          </div>
+        </div>
+
+        <div class="form-group">
           <label for="cat-slug" class="form-label">URL Slug <span style="color: var(--rose);">*</span></label>
           <input type="text" id="cat-slug" class="form-control" placeholder="e.g. bouquets" required>
         </div>
@@ -360,7 +374,13 @@
           const isHidden = Boolean(c.is_hidden || c.isHidden);
           return `
             <tr>
-              <td style="font-size: 1.5rem; text-align: center; width: 60px;">${c.icon_emoji || '🧶'}</td>
+              <td style="text-align: center; width: 60px;">
+                ${c.image_url ? `
+                  <img src="${c.image_url}" alt="${c.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #E2E8F0; display: inline-block;" onerror="this.outerHTML='<span style=\\'font-size: 1.4rem;\\'>${c.icon_emoji || '🧶'}</span>'">
+                ` : `
+                  <span style="font-size: 1.4rem;">${c.icon_emoji || '🧶'}</span>
+                `}
+              </td>
               <td><strong>${c.name}</strong></td>
               <td><code>${c.slug}</code></td>
               <td style="color: #73615A; max-width: 260px;">${c.description || '—'}</td>
@@ -407,6 +427,15 @@
             document.getElementById('cat-slug').value = cat.slug;
             document.getElementById('cat-desc').value = cat.description || '';
             document.getElementById('cat-icon').value = cat.icon_emoji || '🌸';
+            document.getElementById('cat-image').value = cat.image_url || '';
+            const previewEl = document.getElementById('cat-image-preview');
+            const previewImg = document.getElementById('cat-preview-img');
+            if (cat.image_url) {
+              previewImg.src = cat.image_url;
+              previewEl.style.display = 'block';
+            } else {
+              previewEl.style.display = 'none';
+            }
             document.getElementById('cat-sort').value = cat.sort_order || 1;
             document.getElementById('cat-hidden').checked = Boolean(cat.is_hidden || cat.isHidden);
           });
@@ -546,11 +575,47 @@
         modal.style.display = 'none';
         form.reset();
         document.getElementById('cat-id').value = '';
+        document.getElementById('cat-image').value = '';
+        document.getElementById('cat-image-preview').style.display = 'none';
       }
 
       addBtn.addEventListener('click', () => openModal(false));
       modalClose.addEventListener('click', closeModal);
       modalCancel.addEventListener('click', closeModal);
+
+      const catImgInput = document.getElementById('cat-image');
+      const catImgFile = document.getElementById('cat-image-file');
+      const catPreviewEl = document.getElementById('cat-image-preview');
+      const catPreviewImg = document.getElementById('cat-preview-img');
+
+      catImgInput.addEventListener('input', () => {
+        const val = catImgInput.value.trim();
+        if (val) {
+          catPreviewImg.src = val;
+          catPreviewEl.style.display = 'block';
+        } else {
+          catPreviewEl.style.display = 'none';
+        }
+      });
+
+      catImgFile.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+          ADMIN.showToast('Optimizing and uploading collection image...', 'info');
+          const uploaded = await ADMIN.compressAndUploadImage(file, {
+            maxWidth: 1200,
+            altText: document.getElementById('cat-name').value || 'Collection Cover'
+          });
+          const imgUrl = (uploaded && uploaded.url) ? uploaded.url : uploaded;
+          catImgInput.value = imgUrl;
+          catPreviewImg.src = imgUrl;
+          catPreviewEl.style.display = 'block';
+          ADMIN.showToast('✓ Collection cover photo uploaded!', 'success');
+        } catch (err) {
+          ADMIN.showToast('Failed to upload image: ' + err.message, 'danger');
+        }
+      });
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -561,6 +626,7 @@
         const slug = document.getElementById('cat-slug').value.trim();
         const desc = document.getElementById('cat-desc').value.trim();
         const icon = document.getElementById('cat-icon').value.trim();
+        const imageUrl = document.getElementById('cat-image').value.trim() || null;
         const sort = parseInt(document.getElementById('cat-sort').value, 10);
         const isHidden = document.getElementById('cat-hidden').checked;
 
@@ -571,6 +637,7 @@
             slug,
             description: desc,
             icon_emoji: icon,
+            image_url: imageUrl,
             sort_order: sort,
             is_hidden: isHidden
           });

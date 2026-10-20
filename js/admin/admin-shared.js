@@ -53,6 +53,7 @@ const ADMIN = {
       { key: 'reviews', label: '💌 Customer Reviews', href: 'reviews.html' },
       { key: 'customers', label: '👥 Customers', href: 'customers.html' },
       { key: 'content', label: '📝 Website Content', href: 'content.html' },
+      { key: 'blog', label: '📰 Blog Stories', href: 'blog.html' },
       { key: 'settings', label: '⚙️ Store Settings', href: 'settings.html' }
     ];
 
@@ -606,6 +607,48 @@ const ADMIN = {
       };
       reader.readAsDataURL(file);
     });
+  },
+
+  async compressAndUploadImage(file, { maxWidth = 1600, maxHeight = 1600, quality = 0.85, altText = '' } = {}) {
+    let processedFile = file;
+    const isHeic = file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+    if (isHeic && window.heic2any) {
+      try {
+        const convertedBlob = await window.heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+        processedFile = new File([convertedBlob], file.name.replace(/\.heic$/i, '.jpg'), { type: 'image/jpeg' });
+      } catch (heicErr) {
+        console.warn('HEIC conversion fallback:', heicErr);
+      }
+    }
+
+    const comp = await this.compressImage(processedFile, { maxWidth, maxHeight, quality });
+
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const res = await fetch(`${baseUrl}/api/admin/upload-image`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Token': this.activeProfile?.token || ''
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        dataUrl: comp.dataUrl,
+        filename: comp.name,
+        altText
+      })
+    });
+
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      throw new Error(errJson.error || `Upload failed (HTTP ${res.status})`);
+    }
+
+    const json = await res.json();
+    return {
+      ...json,
+      width: comp.width,
+      height: comp.height
+    };
   },
 
   // --------------------------------------------------------------------------

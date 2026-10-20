@@ -200,6 +200,7 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/api-config.js"></script>
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/admin/admin-shared.js"></script>
@@ -208,17 +209,42 @@
       const authorized = await ADMIN.init('settings');
       if (!authorized) return;
 
-      // Load Settings from LocalStorage / Server
-      const storedSettings = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
-      if (storedSettings.upiId) document.getElementById('set-upi-id').value = storedSettings.upiId;
-      if (storedSettings.whatsapp) document.getElementById('set-whatsapp').value = storedSettings.whatsapp;
-      if (storedSettings.codEnabled !== undefined) document.getElementById('set-cod-enabled').checked = storedSettings.codEnabled;
-      if (storedSettings.shippingFee !== undefined) document.getElementById('set-shipping-fee').value = storedSettings.shippingFee;
-      if (storedSettings.freeThreshold !== undefined) document.getElementById('set-free-threshold').value = storedSettings.freeThreshold;
-      if (storedSettings.lowStock !== undefined) document.getElementById('set-low-stock').value = storedSettings.lowStock;
+      const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+
+      // Load Settings from Backend API with local fallback
+      async function loadSettings() {
+        let s = {};
+        try {
+          const res = await fetch(`${baseUrl}/api/admin/settings`, {
+            headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
+            credentials: 'include'
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.data) s = data.data;
+          }
+        } catch (err) {
+          console.warn('Error loading settings from server:', err);
+        }
+
+        if (!Object.keys(s).length) {
+          try {
+            s = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
+          } catch (e) {}
+        }
+
+        if (s.upiId || s.upi_id) document.getElementById('set-upi-id').value = s.upiId || s.upi_id;
+        if (s.whatsapp || s.whatsapp_number) document.getElementById('set-whatsapp').value = s.whatsapp || s.whatsapp_number;
+        if (s.codEnabled !== undefined) document.getElementById('set-cod-enabled').checked = s.codEnabled;
+        if (s.shippingFee !== undefined || s.stdShip !== undefined) document.getElementById('set-shipping-fee').value = s.shippingFee !== undefined ? s.shippingFee : s.stdShip;
+        if (s.freeThreshold !== undefined || s.freeShip !== undefined) document.getElementById('set-free-threshold').value = s.freeThreshold !== undefined ? s.freeThreshold : s.freeShip;
+        if (s.lowStock !== undefined) document.getElementById('set-low-stock').value = s.lowStock;
+      }
+
+      await loadSettings();
 
       // Save Payment Settings
-      document.getElementById('settings-payment-form').addEventListener('submit', (e) => {
+      document.getElementById('settings-payment-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const upiId = document.getElementById('set-upi-id').value.trim();
         const whatsapp = document.getElementById('set-whatsapp').value.trim();
@@ -228,13 +254,27 @@
         current.upiId = upiId;
         current.whatsapp = whatsapp;
         current.codEnabled = codEnabled;
-        localStorage.setItem('swan_site_settings', JSON.stringify(current));
 
+        try {
+          await fetch(`${baseUrl}/api/admin/settings`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Admin-Token': ADMIN.activeProfile?.token || ''
+            },
+            credentials: 'include',
+            body: JSON.stringify(current)
+          });
+        } catch (err) {
+          console.warn('Backend save settings error:', err);
+        }
+
+        localStorage.setItem('swan_site_settings', JSON.stringify(current));
         ADMIN.showToast('✓ Payment & WhatsApp details saved successfully!');
       });
 
       // Save Shipping Rules
-      document.getElementById('settings-shipping-form').addEventListener('submit', (e) => {
+      document.getElementById('settings-shipping-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const shippingFee = parseFloat(document.getElementById('set-shipping-fee').value) || 99;
         const freeThreshold = parseFloat(document.getElementById('set-free-threshold').value) || 1499;
@@ -243,9 +283,25 @@
         const current = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
         current.shippingFee = shippingFee;
         current.freeThreshold = freeThreshold;
+        current.stdShip = shippingFee;
+        current.freeShip = freeThreshold;
         current.lowStock = lowStock;
-        localStorage.setItem('swan_site_settings', JSON.stringify(current));
 
+        try {
+          await fetch(`${baseUrl}/api/admin/settings`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Admin-Token': ADMIN.activeProfile?.token || ''
+            },
+            credentials: 'include',
+            body: JSON.stringify(current)
+          });
+        } catch (err) {
+          console.warn('Backend save shipping settings error:', err);
+        }
+
+        localStorage.setItem('swan_site_settings', JSON.stringify(current));
         ADMIN.showToast('✓ Shipping rules & stock thresholds updated!');
       });
 

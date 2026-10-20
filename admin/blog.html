@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Blog Stories Atelier — Swan Studio Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css?v=m4">
+  <style>
+    .story-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 1.25rem;
+      align-items: center;
+      transition: box-shadow var(--transition-fast);
+    }
+    .story-card:hover {
+      box-shadow: var(--shadow-sm);
+    }
+    .story-thumb {
+      width: 90px;
+      height: 90px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: #F5EBE6;
+      flex-shrink: 0;
+    }
+    .story-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .story-title {
+      font-size: 1.15rem;
+      color: var(--cocoa);
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .story-meta {
+      font-size: 0.8rem;
+      color: #8A7670;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .story-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .badge-status {
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-published { background: #E8F5E9; color: #1B5E20; }
+    .badge-draft { background: #FFF3E0; color: #E65100; }
+    .badge-scheduled { background: #E3F2FD; color: #0D47A1; }
+    .badge-trash { background: #FFEBEE; color: #B71C1C; }
+
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-sheet {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      width: 100%;
+      max-width: 720px;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-hover);
+    }
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FAFAF8;
+    }
+    @media (max-width: 600px) {
+      .story-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .story-thumb {
+        width: 100%;
+        height: 140px;
+      }
+      .modal-sheet {
+        max-height: 98vh;
+        border-radius: var(--radius-sm);
+      }
+      .modal-body {
+        padding: 1rem;
+      }
+      .modal-footer {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .modal-footer button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Application Wrapper -->
+  <div class="admin-container" id="admin-app" style="display: none;">
+    
+    <!-- Sidebar Mount -->
+    <div id="admin-sidebar-mount"></div>
+
+    <!-- Main Workspace -->
+    <main class="admin-main">
+      <div class="admin-header-row">
+        <div>
+          <h1 class="admin-page-title">Blog Stories Atelier</h1>
+          <p class="admin-page-subtitle">
+            Write, curate, publish, and schedule handcrafted crochet stories and care guides for your audience.
+          </p>
+        </div>
+        <div>
+          <button type="button" id="btn-create-story" class="btn btn-primary" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <span>✍️</span> <span>New Story</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="admin-tabs-row" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+        <button type="button" class="tab-btn active" data-tab="ALL">All Stories (<span id="count-all">0</span>)</button>
+        <button type="button" class="tab-btn" data-tab="PUBLISHED">Published (<span id="count-pub">0</span>)</button>
+        <button type="button" class="tab-btn" data-tab="DRAFT">Drafts (<span id="count-draft">0</span>)</button>
+        <button type="button" class="tab-btn" data-tab="SCHEDULED">Scheduled (<span id="count-sched">0</span>)</button>
+        <button type="button" class="tab-btn" data-tab="TRASH">Trash (<span id="count-trash">0</span>)</button>
+      </div>
+
+      <!-- Stories List Mount -->
+      <div id="stories-list-container">
+        <div id="stories-loading" style="text-align: center; padding: 3rem; color: #8A7670;">Loading stories...</div>
+        <div id="stories-feed" class="stories-feed"></div>
+        <div id="blog-feed" style="display:none;"></div>
+        <div id="stories-empty" style="display: none; text-align: center; padding: 3.5rem; background: var(--white); border-radius: var(--radius-md); border: 1px dashed var(--border-subtle);">
+          <h3 style="font-size: 1.25rem; color: var(--cocoa); margin-bottom: 0.5rem;">No stories found in this section</h3>
+          <p style="color: #8A7670; margin-bottom: 1.25rem;">Share a reflection, a crochet technique, or a bouquet care tutorial.</p>
+          <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('btn-create-story').click();">Write a Story</button>
+        </div>
+      </div>
+
+      <!-- Footer Mount -->
+      <div id="admin-footer-mount"></div>
+    </main>
+
+  </div>
+
+  <!-- Story Editor Modal -->
+  <div class="modal-backdrop" id="story-modal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h2 style="font-size: 1.25rem; margin: 0; color: var(--cocoa);" id="modal-title">Write a Story</h2>
+        <button type="button" id="modal-close" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <form id="story-form">
+          <input type="hidden" id="edit-story-id" value="">
+
+          <div class="form-group" style="margin-bottom: 1.15rem;">
+            <label for="story-title-input" class="form-label">Story Title <span style="color: var(--rose);">*</span></label>
+            <input type="text" id="story-title-input" class="form-control" placeholder="e.g. Why Crochet Can Never Be Replicated by a Machine" required style="font-size: 1.1rem; padding: 0.75rem;">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.15rem;">
+            <label for="story-slug-input" class="form-label">URL Slug (Auto-generated)</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="text" id="story-slug-input" class="form-control" placeholder="why-crochet-cannot-be-machine-made">
+            </div>
+            <small style="color: #8A7670; font-size: 0.78rem;">Public URL: <code>blog-post.html?slug=<span id="slug-preview">...</span></code></small>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.15rem;">
+            <div class="form-group">
+              <label for="story-status-select" class="form-label">Publishing Status <span style="color: var(--rose);">*</span></label>
+              <select id="story-status-select" class="form-control" style="min-height: 44px;">
+                <option value="draft">Draft (Admin Only)</option>
+                <option value="published">Published (Live to Customers)</option>
+                <option value="scheduled">Scheduled</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="story-date-input" class="form-label">Publish Date</label>
+              <input type="datetime-local" id="story-date-input" class="form-control" style="min-height: 44px;">
+            </div>
+          </div>
+
+          <!-- Cover Image Uploader -->
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label">Cover Photograph</label>
+            <div style="display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap;">
+              <div id="cover-preview-box" style="width: 140px; height: 95px; border-radius: var(--radius-sm); background: #F5EBE6; overflow: hidden; border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center;">
+                <img id="cover-preview-img" src="../assets/images/hero-bouquet.webp" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+              <div style="flex: 1; min-width: 200px;">
+                <label for="cover-file-input" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; width: 100%; justify-content: center;">
+                  <span>📷 Choose Camera / Gallery Photo</span>
+                  <input type="file" id="cover-file-input" accept="image/*" style="display: none;">
+                </label>
+                <div id="cover-upload-status" style="font-size: 0.78rem; color: #8A7670; margin-top: 0.35rem;">Auto-compresses < 1600px, < 500 KB</div>
+                <input type="text" id="cover-url-input" class="form-control" placeholder="Or enter image URL" style="margin-top: 0.5rem; font-size: 0.85rem;">
+                <input type="text" id="cover-alt-input" class="form-control" placeholder="Image alt text (accessibility & SEO)" style="margin-top: 0.35rem; font-size: 0.82rem;">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.15rem;">
+            <label for="story-excerpt-input" class="form-label">Short Excerpt (Summary for Cards)</label>
+            <textarea id="story-excerpt-input" class="form-control" rows="2" placeholder="Brief summary of this story shown on blog listing cards..."></textarea>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.15rem;">
+            <label for="story-tags-input" class="form-label">Tags / Categories (Comma separated)</label>
+            <input type="text" id="story-tags-input" class="form-control" placeholder="Craftsmanship, Care Guide, Slow Living">
+          </div>
+
+          <!-- Body Content Editor -->
+          <div class="form-group" style="margin-bottom: 1.15rem;">
+            <label for="story-body-input" class="form-label">Story Body (HTML or Rich Formatting) <span style="color: var(--rose);">*</span></label>
+            <div style="display: flex; gap: 0.35rem; margin-bottom: 0.4rem; flex-wrap: wrap;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<h2>', '</h2>')">H2</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<h3>', '</h3>')">H3</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<strong>', '</strong>')">Bold</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<em>', '</em>')">Italic</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<blockquote>', '</blockquote>')">Quote</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<ul>\n  <li>', '</li>\n</ul>')">List</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<p>', '</p>')">Para</button>
+            </div>
+            <textarea id="story-body-input" class="form-control" rows="8" placeholder="<p>Write your heartfelt story or advice here...</p>" required style="font-family: monospace; font-size: 0.9rem; line-height: 1.5;"></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label for="story-author-input" class="form-label">Author Name</label>
+              <input type="text" id="story-author-input" class="form-control" value="Bhumika Nama">
+            </div>
+            <div class="form-group">
+              <label for="story-seo-title" class="form-label">SEO Title (Optional)</label>
+              <input type="text" id="story-seo-title" class="form-control" placeholder="Title for Google search">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <div id="modal-feedback" style="font-size: 0.85rem; color: #1B5E20; display: none;"></div>
+        <div style="display: flex; gap: 0.75rem; margin-left: auto;">
+          <button type="button" id="btn-cancel-modal" class="btn btn-secondary" style="min-height: 44px;">Cancel</button>
+          <button type="button" id="btn-save-story" class="btn btn-primary" style="min-height: 44px;">💾 Save Story</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/api-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin/admin-shared.js"></script>
+  <script>
+    let currentPosts = [];
+    let activeTab = 'ALL';
+
+    function insertTag(open, close) {
+      const textarea = document.getElementById('story-body-input');
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      const selected = text.substring(start, end) || 'text';
+      const replacement = open + selected + close;
+      textarea.value = text.substring(0, start) + replacement + text.substring(end);
+      textarea.focus();
+      textarea.setSelectionRange(start + open.length, start + open.length + selected.length);
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const authorized = await ADMIN.init('blog');
+      if (!authorized) return;
+
+      const modal = document.getElementById('story-modal');
+      const btnCreate = document.getElementById('btn-create-story');
+      const btnClose = document.getElementById('modal-close');
+      const btnCancel = document.getElementById('btn-cancel-modal');
+      const btnSave = document.getElementById('btn-save-story');
+      const titleInput = document.getElementById('story-title-input');
+      const slugInput = document.getElementById('story-slug-input');
+      const slugPreview = document.getElementById('slug-preview');
+      const statusSelect = document.getElementById('story-status-select');
+      const dateInput = document.getElementById('story-date-input');
+      const excerptInput = document.getElementById('story-excerpt-input');
+      const tagsInput = document.getElementById('story-tags-input');
+      const bodyInput = document.getElementById('story-body-input');
+      const authorInput = document.getElementById('story-author-input');
+      const seoTitleInput = document.getElementById('story-seo-title');
+      const coverUrlInput = document.getElementById('cover-url-input');
+      const coverAltInput = document.getElementById('cover-alt-input');
+      const coverFileInput = document.getElementById('cover-file-input');
+      const coverPreviewImg = document.getElementById('cover-preview-img');
+      const coverStatus = document.getElementById('cover-upload-status');
+      const editIdInput = document.getElementById('edit-story-id');
+
+      function slugify(text) {
+        return (text || '').toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+      }
+
+      titleInput.addEventListener('input', () => {
+        if (!editIdInput.value) {
+          const s = slugify(titleInput.value);
+          slugInput.value = s;
+          slugPreview.textContent = s || '...';
+        }
+      });
+
+      slugInput.addEventListener('input', () => {
+        slugPreview.textContent = slugInput.value.trim() || '...';
+      });
+
+      coverUrlInput.addEventListener('input', () => {
+        const url = coverUrlInput.value.trim();
+        if (url) coverPreviewImg.src = url;
+      });
+
+      // Cover image upload with compression
+      coverFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        coverStatus.textContent = 'Compressing & uploading...';
+        try {
+          const uploaded = await ADMIN.compressAndUploadImage(file, {
+            maxWidth: 1600,
+            maxHeight: 1600,
+            altText: titleInput.value || 'Cover photo'
+          });
+          coverUrlInput.value = uploaded.url;
+          coverPreviewImg.src = uploaded.url;
+          if (!coverAltInput.value) coverAltInput.value = titleInput.value || file.name;
+          coverStatus.textContent = `✓ Uploaded (${Math.round(uploaded.size / 1024)} KB)`;
+        } catch (err) {
+          coverStatus.textContent = `Upload error: ${err.message}`;
+        }
+      });
+
+      function openModal(post = null) {
+        if (post) {
+          document.getElementById('modal-title').textContent = 'Edit Story';
+          editIdInput.value = post.id;
+          titleInput.value = post.title || '';
+          slugInput.value = post.slug || '';
+          slugPreview.textContent = post.slug || '...';
+          statusSelect.value = (post.status || 'draft').toLowerCase();
+          if (post.published_at) {
+            dateInput.value = new Date(post.published_at).toISOString().slice(0, 16);
+          } else {
+            dateInput.value = '';
+          }
+          excerptInput.value = post.excerpt || '';
+          tagsInput.value = Array.isArray(post.tags) ? post.tags.join(', ') : (post.tags || '');
+          bodyInput.value = post.body || '';
+          authorInput.value = post.author || 'Bhumika Nama';
+          seoTitleInput.value = post.seo_title || '';
+          coverUrlInput.value = post.cover_image || '';
+          coverAltInput.value = post.cover_image_alt || '';
+          coverPreviewImg.src = post.cover_image || '../assets/images/hero-bouquet.webp';
+        } else {
+          document.getElementById('modal-title').textContent = 'Write a Story';
+          editIdInput.value = '';
+          document.getElementById('story-form').reset();
+          coverPreviewImg.src = '../assets/images/hero-bouquet.webp';
+          slugPreview.textContent = '...';
+          statusSelect.value = 'draft';
+          dateInput.value = new Date().toISOString().slice(0, 16);
+        }
+        modal.style.display = 'flex';
+      }
+
+      function closeModal() {
+        modal.style.display = 'none';
+      }
+
+      btnCreate.addEventListener('click', () => openModal(null));
+      btnClose.addEventListener('click', closeModal);
+      btnCancel.addEventListener('click', closeModal);
+
+      // Save Story
+      btnSave.addEventListener('click', async () => {
+        const title = titleInput.value.trim();
+        if (!title) {
+          alert('Please enter a story title.');
+          titleInput.focus();
+          return;
+        }
+
+        btnSave.disabled = true;
+        btnSave.textContent = 'Saving...';
+
+        const payload = {
+          title,
+          slug: slugInput.value.trim() || slugify(title),
+          status: (statusSelect.value || 'draft').toUpperCase(),
+          published_at: dateInput.value ? new Date(dateInput.value).toISOString() : null,
+          excerpt: excerptInput.value.trim(),
+          tags: tagsInput.value.split(',').map(t => t.trim()).filter(Boolean),
+          body: bodyInput.value,
+          author: authorInput.value.trim() || 'Bhumika Nama',
+          seo_title: seoTitleInput.value.trim(),
+          cover_image: coverUrlInput.value.trim() || 'assets/images/hero-bouquet.webp',
+          cover_image_alt: coverAltInput.value.trim() || title
+        };
+
+        try {
+          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          const isEdit = Boolean(editIdInput.value);
+          const endpoint = isEdit ? `${baseUrl}/api/admin/blog/${editIdInput.value}` : `${baseUrl}/api/admin/blog`;
+          const method = isEdit ? 'PUT' : 'POST';
+
+          const res = await fetch(endpoint, {
+            method,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Admin-Token': ADMIN.activeProfile?.token || ''
+            },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+          });
+
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `HTTP ${res.status}`);
+          }
+
+          ADMIN.showToast(`✓ Story "${title}" saved successfully!`, 'success');
+          closeModal();
+          await fetchAdminStories();
+        } catch (err) {
+          alert('Error saving story: ' + err.message);
+        } finally {
+          btnSave.disabled = false;
+          btnSave.textContent = '💾 Save Story';
+        }
+      });
+
+      // Fetch Stories
+      async function fetchAdminStories() {
+        const loading = document.getElementById('stories-loading');
+        const feed = document.getElementById('stories-feed');
+        const empty = document.getElementById('stories-empty');
+
+        loading.style.display = 'block';
+        feed.style.display = 'none';
+        empty.style.display = 'none';
+
+        try {
+          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          const isTrash = activeTab === 'TRASH';
+          const url = new URL(`${baseUrl}/api/admin/blog`);
+          if (isTrash) url.searchParams.set('trash', '1');
+          else if (activeTab !== 'ALL') url.searchParams.set('status', activeTab);
+
+          const res = await fetch(url.toString(), {
+            headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
+            credentials: 'include',
+            cache: 'no-cache'
+          });
+
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const json = await res.json();
+          currentPosts = json.data || [];
+          updateCounts();
+          renderStoriesList(currentPosts);
+        } catch (err) {
+          console.warn('Failed to load admin stories:', err);
+        } finally {
+          loading.style.display = 'none';
+        }
+      }
+
+      function updateCounts() {
+        document.getElementById('count-all').textContent = currentPosts.length;
+      }
+
+      function renderStoriesList(posts) {
+        const feed = document.getElementById('stories-feed');
+        const empty = document.getElementById('stories-empty');
+
+        if (!posts || posts.length === 0) {
+          feed.style.display = 'none';
+          empty.style.display = 'block';
+          return;
+        }
+
+        empty.style.display = 'none';
+        feed.style.display = 'block';
+
+        feed.innerHTML = posts.map(p => {
+          const isTrash = Boolean(p.deleted_at);
+          let badgeClass = 'badge-draft';
+          if (isTrash) badgeClass = 'badge-trash';
+          else if (p.status === 'PUBLISHED') badgeClass = 'badge-published';
+          else if (p.status === 'SCHEDULED') badgeClass = 'badge-scheduled';
+
+          const dateFormatted = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No date';
+          const coverImg = p.cover_image || '../assets/images/hero-bouquet.webp';
+
+          return `
+            <div class="story-card" id="card-${p.id}">
+              <img src="${coverImg}" class="story-thumb" alt="${p.title}" onerror="this.onerror=null; this.src='../assets/images/hero-bouquet.webp';">
+              <div class="story-info">
+                <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.35rem; flex-wrap: wrap;">
+                  <span class="badge-status ${badgeClass}">${isTrash ? 'TRASH' : p.status}</span>
+                  <span style="font-size: 0.78rem; color: #8A7670;">${dateFormatted}</span>
+                  ${p.read_time_minutes ? `<span style="font-size: 0.78rem; color: #8A7670;">• ${p.read_time_minutes} min read</span>` : ''}
+                </div>
+                <div class="story-title" title="${p.title}">${p.title}</div>
+                <div class="story-meta">
+                  <span>Slug: <code>${p.slug}</code></span>
+                  <span>Author: ${p.author || 'Bhumika Nama'}</span>
+                </div>
+              </div>
+              <div class="story-actions">
+                ${!isTrash ? `
+                  <a href="../blog-post.html?slug=${p.slug}&v=${Date.now()}" target="_blank" class="btn btn-secondary btn-sm" style="min-height: 40px; display: inline-flex; align-items: center;">👁️ View</a>
+                  <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${p.id}" style="min-height: 40px;">✏️ Edit</button>
+                  <button type="button" class="btn btn-secondary btn-sm btn-trash" data-id="${p.id}" style="color: #DC2626; min-height: 40px;">🗑️</button>
+                ` : `
+                  <button type="button" class="btn btn-secondary btn-sm btn-restore" data-id="${p.id}" style="min-height: 40px;">↺ Restore</button>
+                  <button type="button" class="btn btn-secondary btn-sm btn-del-perm" data-id="${p.id}" style="color: #DC2626; min-height: 40px;">✕ Delete Permanently</button>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Wire event handlers
+        feed.querySelectorAll('.btn-edit').forEach(b => {
+          b.addEventListener('click', () => {
+            const id = b.getAttribute('data-id');
+            const post = currentPosts.find(p => String(p.id) === String(id));
+            if (post) openModal(post);
+          });
+        });
+
+        feed.querySelectorAll('.btn-trash').forEach(b => {
+          b.addEventListener('click', async () => {
+            const id = b.getAttribute('data-id');
+            if (!confirm('Move this story to trash?')) return;
+            const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+            await fetch(`${baseUrl}/api/admin/blog/${id}`, {
+              method: 'DELETE',
+              headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
+              credentials: 'include'
+            });
+            ADMIN.showToast('Story moved to trash');
+            fetchAdminStories();
+          });
+        });
+
+        feed.querySelectorAll('.btn-restore').forEach(b => {
+          b.addEventListener('click', async () => {
+            const id = b.getAttribute('data-id');
+            const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+            await fetch(`${baseUrl}/api/admin/blog/${id}/restore`, {
+              method: 'POST',
+              headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
+              credentials: 'include'
+            });
+            ADMIN.showToast('Story restored from trash');
+            fetchAdminStories();
+          });
+        });
+
+        feed.querySelectorAll('.btn-del-perm').forEach(b => {
+          b.addEventListener('click', async () => {
+            const id = b.getAttribute('data-id');
+            if (!confirm('Permanently delete this story? This action cannot be undone.')) return;
+            const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+            await fetch(`${baseUrl}/api/admin/blog/${id}?permanent=1`, {
+              method: 'DELETE',
+              headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
+              credentials: 'include'
+            });
+            ADMIN.showToast('Story permanently deleted');
+            fetchAdminStories();
+          });
+        });
+      }
+
+      // Tabs click
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeTab = btn.getAttribute('data-tab');
+          fetchAdminStories();
+        });
+      });
+
+      await fetchAdminStories();
+    });
+  </script>
+</body>
+</html>

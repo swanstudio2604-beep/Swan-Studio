@@ -791,7 +791,7 @@
         </button>
       </nav>
 
-      <form id="content-settings-form">
+      <form id="content-settings-form" novalidate>
 
         <!-- =================================================================== -->
         <!-- TAB 1: OUR STORY & MEET THE MAKER (about.html)                      -->
@@ -1633,6 +1633,19 @@
           </div>
         </div>
 
+        <!-- Revision History & One-Tap Restore Section -->
+        <div class="admin-card" id="history-card" style="margin-top: 1.5rem; padding: 1.25rem; background: #FAF5F0; border: 1.5px solid rgba(199, 131, 145, 0.4);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h3 style="font-size: 1rem; color: var(--cocoa); margin: 0; display: flex; align-items: center; gap: 0.4rem;">
+              <span>🕒</span> Revision History & One-Tap Restore
+            </h3>
+            <span style="font-size: 0.75rem; color: #8A7670;">Revisions saved automatically with each update</span>
+          </div>
+          <div id="revision-history-list" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto;">
+            <div style="font-size: 0.82rem; color: #8A7670; padding: 0.5rem;">No prior revisions recorded yet.</div>
+          </div>
+        </div>
+
       </form>
 
       <!-- Footer Mount -->
@@ -2072,18 +2085,27 @@
         }
       });
 
-      // Maker file & url listeners
-      makerFile.addEventListener('change', (e) => {
+      // Maker file & url listeners (Auto-compressed < 1600px, < 500 KB, uploaded to storage)
+      makerFile.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (loadEvt) => {
-          makerUrl.value = '';
-          const sizeKb = Math.round(file.size / 1024);
-          updateMakerPreview(loadEvt.target.result, `File: ${file.name} (${sizeKb} KB)`);
-          setMakerUploaderStatus(file.name, sizeKb);
-        };
-        reader.readAsDataURL(file);
+        setMakerUploaderStatus('Compressing & uploading photo...', 0);
+        try {
+          const uploaded = await ADMIN.compressAndUploadImage(file, {
+            maxWidth: 1600,
+            maxHeight: 1600,
+            altText: makerNameInput.value || 'Founder Portrait'
+          });
+          currentMakerPhotoDataUrl = uploaded.url;
+          makerUrl.value = uploaded.url;
+          const sizeKb = Math.round(uploaded.size / 1024);
+          updateMakerPreview(uploaded.url, `Uploaded: ${file.name} (${sizeKb} KB)`);
+          setMakerUploaderStatus(`✓ Saved to Server (${sizeKb} KB)`, sizeKb);
+        } catch (err) {
+          console.error('Maker upload failed:', err);
+          alert('Upload failed: ' + err.message);
+          setMakerUploaderStatus('Upload failed. Try again.', 0);
+        }
       });
 
       // Drag and drop for maker photo
@@ -2126,22 +2148,32 @@
       btnRemoveMaker.addEventListener('click', () => {
         makerFile.value = '';
         makerUrl.value = '';
+        currentMakerPhotoDataUrl = '';
         setMakerUploaderStatus('', 0);
         updateMakerPreview('', '');
       });
 
-      // Hero file & url listeners
-      heroFile.addEventListener('change', (e) => {
+      // Hero file & url listeners (Auto-compressed < 1600px, < 500 KB, uploaded to storage)
+      heroFile.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (loadEvt) => {
-          heroUrl.value = '';
-          const sizeKb = Math.round(file.size / 1024);
-          updateHeroPreview(loadEvt.target.result, `File: ${file.name} (${sizeKb} KB)`);
-          setHeroUploaderStatus(file.name, sizeKb);
-        };
-        reader.readAsDataURL(file);
+        setHeroUploaderStatus('Compressing & uploading photo...', 0);
+        try {
+          const uploaded = await ADMIN.compressAndUploadImage(file, {
+            maxWidth: 1600,
+            maxHeight: 1600,
+            altText: heroHeadInput.value || 'Hero Bouquet'
+          });
+          currentHeroPhotoDataUrl = uploaded.url;
+          heroUrl.value = uploaded.url;
+          const sizeKb = Math.round(uploaded.size / 1024);
+          updateHeroPreview(uploaded.url, `Uploaded: ${file.name} (${sizeKb} KB)`);
+          setHeroUploaderStatus(`✓ Saved to Server (${sizeKb} KB)`, sizeKb);
+        } catch (err) {
+          console.error('Hero upload failed:', err);
+          alert('Upload failed: ' + err.message);
+          setHeroUploaderStatus('Upload failed. Try again.', 0);
+        }
       });
 
       // Drag and drop for hero photo
@@ -2188,191 +2220,281 @@
         updateHeroPreview('', '');
       });
 
-      // Load Settings & Content
-      async function loadAllContent() {
-        // Try local storage first
-        try {
-          const storedSettings = localStorage.getItem('swan_site_settings');
-          if (storedSettings) {
-            const s = JSON.parse(storedSettings);
-            if (s.upiId) upiInput.value = s.upiId;
-            if (s.whatsapp) waInput.value = s.whatsapp;
-            if (s.email) emailInput.value = s.email;
-            if (s.location && locationInput) locationInput.value = s.location;
-            if (s.hours && hoursInput) hoursInput.value = s.hours;
-            if (s.freeShip) freeShipInput.value = s.freeShip;
-            if (s.stdShip) stdShipInput.value = s.stdShip;
-            if (s.lowStock) lowStockInput.value = s.lowStock;
-            if (s.instagram && instaUrlInput) instaUrlInput.value = s.instagram.split('?')[0];
-            if (s.instagramHandle && instaHandleInput) instaHandleInput.value = s.instagramHandle;
-          }
-
-
-
-          // Hydrate review moderation and count from localStorage
-          const STARTER_REVIEWS = [];
-
-          window.renderAdminReviewsList = function() {
-            const listEl = document.getElementById('admin-moderation-list');
-            const countEl = document.getElementById('admin-reviews-count');
-            if (!listEl) return;
-
-            let userRevs = [];
-            try {
-              userRevs = JSON.parse(localStorage.getItem('swan_customer_reviews') || '[]');
-            } catch (e) {}
-
-            let deletedIds = [];
-            try {
-              deletedIds = JSON.parse(localStorage.getItem('swan_deleted_review_ids') || '[]').map(String);
-            } catch (e) {
-              deletedIds = [];
-            }
-            const deletedSet = new Set(deletedIds);
-            const allReviews = [...(Array.isArray(userRevs) ? userRevs : []), ...STARTER_REVIEWS]
-              .filter(r => !deletedSet.has(String(r.id)));
-
-            if (countEl) countEl.textContent = (42 + allReviews.length) + '+';
-
-            if (allReviews.length === 0) {
-              listEl.innerHTML = '<div style="text-align: center; padding: 1.5rem; color: #8A7670; font-size: 0.85rem;">No customer reviews active.</div>';
-              return;
-            }
-
-            listEl.innerHTML = allReviews.map(r => `
-              <div style="background: #FFFFFF; border: 1px solid rgba(199, 131, 145, 0.3); border-radius: var(--radius-sm); padding: 0.75rem 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
-                <div style="flex: 1; min-width: 0;">
-                  <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                    <strong style="color: var(--cocoa); font-size: 0.88rem;">${r.author}</strong>
-                    <span style="font-size: 0.75rem; color: #8A7670;">(${r.city || 'India'})</span>
-                    <span style="color: #D97706; font-size: 0.78rem;">${'★'.repeat(r.rating || 5)}</span>
-                    <span style="font-size: 0.72rem; background: #FFF0F2; color: var(--rose-text); padding: 0.1rem 0.4rem; border-radius: 4px;">${r.product || 'Crochet Creation'}</span>
-                  </div>
-                  <p style="font-size: 0.78rem; color: #73615A; margin: 0.25rem 0 0; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 520px;">
-                    “${r.notes || ''}”
-                  </p>
-                </div>
-                <button type="button" class="btn-action btn-danger btn-admin-del-rev" data-id="${r.id}" data-author="${r.author}" style="background: #FFF0F2; color: #B91C1C; border-color: #F87171; flex-shrink: 0; font-size: 0.75rem; padding: 0.3rem 0.65rem; font-weight: 600;">
-                  🗑️ Delete
-                </button>
-              </div>
-            `).join('');
-
-            listEl.querySelectorAll('.btn-admin-del-rev').forEach(btn => {
-              btn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                const revId = String(btn.dataset.id || '').trim();
-                const author = btn.dataset.author || 'this customer';
-
-                let confirmed = false;
-                if (window.ADMIN && typeof ADMIN.confirmDialog === 'function') {
-                  confirmed = await ADMIN.confirmDialog({
-                    title: 'Delete Customer Review?',
-                    message: `Are you sure you want to permanently delete the review by "${author}"? It will be removed immediately from both customer view and admin moderation.`,
-                    confirmText: 'Delete Review',
-                    cancelText: 'Cancel',
-                    isDanger: true
-                  });
-                } else {
-                  confirmed = confirm(`Permanently delete review by "${author}"?`);
-                }
-
-                if (!confirmed) return;
-
-                try {
-                  const rawDeleted = localStorage.getItem('swan_deleted_review_ids');
-                  const currentDeleted = rawDeleted ? JSON.parse(rawDeleted) : [];
-                  const strIds = currentDeleted.map(String);
-                  if (!strIds.includes(revId)) {
-                    currentDeleted.push(revId);
-                    localStorage.setItem('swan_deleted_review_ids', JSON.stringify(currentDeleted));
-                  }
-                } catch (e) {
-                  console.warn('Error saving deleted review ID:', e);
-                }
-
-                try {
-                  const curUserRevs = JSON.parse(localStorage.getItem('swan_customer_reviews') || '[]');
-                  const filtered = curUserRevs.filter(r => String(r.id) !== revId);
-                  localStorage.setItem('swan_customer_reviews', JSON.stringify(filtered));
-                } catch (e) {}
-
-                window.renderAdminReviewsList();
-
-                if (window.ADMIN && typeof ADMIN.showToast === 'function') {
-                  ADMIN.showToast(`✓ Review by "${author}" was permanently deleted.`, 'success');
-                }
-              });
-            });
-          };
-
-          window.renderAdminReviewsList();
-
-          const storedContent = localStorage.getItem('swan_site_content');
-          if (storedContent) {
-            const c = JSON.parse(storedContent);
-            if (c.announcement) announceInput.value = c.announcement;
-            if (c.heroHeadline) heroHeadInput.value = c.heroHeadline;
-            if (c.heroBadge) heroBadgeInput.value = c.heroBadge;
-            if (c.heroSub) heroSubInput.value = c.heroSub;
-            if (c.founderQuote) founderQuoteInput.value = c.founderQuote;
-            if (c.homeStoryTitle && homeStoryTitleInput) homeStoryTitleInput.value = c.homeStoryTitle;
-            if (c.homeStoryText && homeStoryTextInput) homeStoryTextInput.value = c.homeStoryText;
-
-            // Maker & Story
-            if (c.makerName) makerNameInput.value = c.makerName;
-            if (c.makerRole) makerRoleInput.value = c.makerRole;
-            if (c.makerQuote) makerQuoteInput.value = c.makerQuote;
-            if (c.makerPhoto) {
-              if (c.makerPhoto.startsWith('data:')) {
-                updateMakerPreview(c.makerPhoto, 'Attached Portrait Photo');
-              } else {
-                makerUrl.value = c.makerPhoto;
-                updateMakerPreview(c.makerPhoto, c.makerPhoto);
-              }
-            }
-
-            if (c.heroImage) {
-              if (c.heroImage.startsWith('data:')) {
-                updateHeroPreview(c.heroImage, 'Attached Hero Photo');
-              } else {
-                heroUrl.value = c.heroImage;
-                updateHeroPreview(c.heroImage, c.heroImage);
-              }
-            }
-
-            if (c.storyPageTitle) storyPageTitleInput.value = c.storyPageTitle;
-            if (c.storyPageSubtitle) storyPageSubInput.value = c.storyPageSubtitle;
-            if (c.storyHeadline) storyHeadlineInput.value = c.storyHeadline;
-            if (c.storyPara1) storyP1Input.value = c.storyPara1;
-            if (c.storySection1Title) storySec1TitleInput.value = c.storySection1Title;
-            if (c.storySection1Text) storySec1TextInput.value = c.storySection1Text;
-            if (c.storySection2Title) storySec2TitleInput.value = c.storySection2Title;
-            if (c.storySection2Text) storySec2TextInput.value = c.storySection2Text;
-
-            if (c.featuredHeading && featHeadingInput) {
-              featHeadingInput.value = c.featuredHeading;
-              if (prevFeatHeading) prevFeatHeading.textContent = c.featuredHeading;
-            }
-            if (c.featuredSubtitle && featSubtitleInput) {
-              featSubtitleInput.value = c.featuredSubtitle;
-              if (prevFeatSubtitle) prevFeatSubtitle.textContent = c.featuredSubtitle;
-            }
-
-            if (c.promise1Title) p1TitleInput.value = c.promise1Title;
-            if (c.promise1Text) p1TextInput.value = c.promise1Text;
-            if (c.promise2Title) p2TitleInput.value = c.promise2Title;
-            if (c.promise2Text) p2TextInput.value = c.promise2Text;
-            if (c.promise3Title) p3TitleInput.value = c.promise3Title;
-            if (c.promise3Text) p3TextInput.value = c.promise3Text;
-            if (c.promise4Title && p4TitleInput) p4TitleInput.value = c.promise4Title;
-            if (c.promise4Text && p4TextInput) p4TextInput.value = c.promise4Text;
-          }
-        } catch (e) {
-          console.warn('Error reading local site content:', e);
+      // Field populating helpers
+      function populateContentFields(c) {
+        if (!c) return;
+        if (c.announcement) announceInput.value = c.announcement;
+        if (c.hero?.headline || c.heroHeadline) heroHeadInput.value = c.hero?.headline || c.heroHeadline;
+        if (c.hero?.badge || c.heroBadge) heroBadgeInput.value = c.hero?.badge || c.heroBadge;
+        if (c.hero?.subheadline || c.heroSub) heroSubInput.value = c.hero?.subheadline || c.heroSub;
+        
+        const hImg = c.hero?.image || c.heroImage;
+        if (hImg) {
+          heroUrl.value = hImg;
+          updateHeroPreview(hImg, 'Hero Photo');
         }
 
-        // Supabase Live Sync if connected
+        if (c.featuredHeading && featHeadingInput) featHeadingInput.value = c.featuredHeading;
+        if (c.featuredSubtitle && featSubtitleInput) featSubtitleInput.value = c.featuredSubtitle;
+        if (c.founderQuote) founderQuoteInput.value = c.founderQuote;
+        if (c.homeStoryTitle && homeStoryTitleInput) homeStoryTitleInput.value = c.homeStoryTitle;
+        if (c.homeStoryText && homeStoryTextInput) homeStoryTextInput.value = c.homeStoryText;
+
+        const makerName = c.story?.makerName || c.makerName;
+        if (makerName) makerNameInput.value = makerName;
+        const makerRole = c.story?.makerRole || c.makerRole;
+        if (makerRole) makerRoleInput.value = makerRole;
+        const makerQuote = c.story?.makerQuote || c.makerQuote;
+        if (makerQuote) makerQuoteInput.value = makerQuote;
+
+        const mPhoto = c.story?.makerPhoto || c.makerPhoto;
+        if (mPhoto) {
+          makerUrl.value = mPhoto;
+          updateMakerPreview(mPhoto, 'Attached Portrait Photo');
+        }
+
+        if (c.story?.pageTitle || c.storyPageTitle) storyPageTitleInput.value = c.story?.pageTitle || c.storyPageTitle;
+        if (c.story?.pageSubtitle || c.storyPageSubtitle) storyPageSubInput.value = c.story?.pageSubtitle || c.storyPageSubtitle;
+        if (c.story?.headline || c.storyHeadline) storyHeadlineInput.value = c.story?.headline || c.storyHeadline;
+        if (c.story?.p1 || c.storyPara1) storyP1Input.value = c.story?.p1 || c.storyPara1;
+        if (c.story?.sec1Title || c.storySection1Title) storySec1TitleInput.value = c.story?.sec1Title || c.storySection1Title;
+        if (c.story?.sec1Text || c.storySection1Text) storySec1TextInput.value = c.story?.sec1Text || c.storySection1Text;
+        if (c.story?.sec2Title || c.storySection2Title) storySec2TitleInput.value = c.story?.sec2Title || c.storySection2Title;
+        if (c.story?.sec2Text || c.storySection2Text) storySec2TextInput.value = c.story?.sec2Text || c.storySection2Text;
+
+        if (c.story?.promise1Title || c.promise1Title) p1TitleInput.value = c.story?.promise1Title || c.promise1Title;
+        if (c.story?.promise1Text || c.promise1Text) p1TextInput.value = c.story?.promise1Text || c.promise1Text;
+        if (c.story?.promise2Title || c.promise2Title) p2TitleInput.value = c.story?.promise2Title || c.promise2Title;
+        if (c.story?.promise2Text || c.promise2Text) p2TextInput.value = c.story?.promise2Text || c.promise2Text;
+        if (c.story?.promise3Title || c.promise3Title) p3TitleInput.value = c.story?.promise3Title || c.promise3Title;
+        if (c.story?.promise3Text || c.promise3Text) p3TextInput.value = c.story?.promise3Text || c.promise3Text;
+        if (c.story?.promise4Title || c.promise4Title) p4TitleInput.value = c.story?.promise4Title || c.promise4Title;
+        if (c.story?.promise4Text || c.promise4Text) p4TextInput.value = c.story?.promise4Text || c.promise4Text;
+      }
+
+      function populateSettingsFields(s) {
+        if (!s) return;
+        if (s.upiId || s.upi_id) upiInput.value = s.upiId || s.upi_id;
+        if (s.whatsapp || s.whatsapp_number) waInput.value = s.whatsapp || s.whatsapp_number;
+        if (s.email) emailInput.value = s.email;
+        if (locationInput && (s.location || s.contact?.location)) locationInput.value = s.location || s.contact?.location;
+        if (hoursInput && (s.hours || s.contact?.hours)) hoursInput.value = s.hours || s.contact?.hours;
+        if (s.freeShip || s.free_shipping_threshold) freeShipInput.value = s.freeShip || s.free_shipping_threshold;
+        if (s.stdShip || s.standard_shipping_fee) stdShipInput.value = s.stdShip || s.standard_shipping_fee;
+        if (s.lowStock || s.low_stock_threshold) lowStockInput.value = s.lowStock || s.low_stock_threshold;
+        if (instaUrlInput && s.instagram) instaUrlInput.value = s.instagram.split('?')[0];
+        if (instaHandleInput && s.instagramHandle) instaHandleInput.value = s.instagramHandle;
+      }
+
+      // Render Revision History
+      function renderRevisionHistory(history) {
+        const listEl = document.getElementById('revision-history-list');
+        if (!listEl) return;
+        if (!Array.isArray(history) || history.length === 0) {
+          listEl.innerHTML = '<div style="font-size: 0.82rem; color: #8A7670; padding: 0.5rem;">No prior revisions recorded yet.</div>';
+          return;
+        }
+
+        listEl.innerHTML = history.slice(0, 8).map(h => {
+          const dateStr = new Date(h.savedAt).toLocaleString('en-IN', {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+          });
+          return `
+            <div style="background: #FFFFFF; border: 1px solid rgba(199, 131, 145, 0.3); border-radius: var(--radius-sm); padding: 0.6rem 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+              <div style="font-size: 0.82rem; color: var(--cocoa);">
+                <strong>Snapshot</strong> • <span style="color: #73615A;">${dateStr}</span>
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm btn-restore-rev" data-version="${h.versionId}" style="min-height: 36px; padding: 0.25rem 0.65rem; font-size: 0.76rem; font-weight: 600;">
+                ↺ One-Tap Restore
+              </button>
+            </div>
+          `;
+        }).join('');
+
+        listEl.querySelectorAll('.btn-restore-rev').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const versionId = btn.dataset.version;
+            const confirmed = await ADMIN.confirmDialog({
+              title: 'Restore Website Content?',
+              message: 'Are you sure you want to restore website content to this previous revision? Your current settings will be archived as a new revision.',
+              confirmText: 'Restore Revision',
+              cancelText: 'Cancel'
+            });
+            if (!confirmed) return;
+
+            try {
+              const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+              const res = await fetch(`${baseUrl}/api/admin/content/restore`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-Admin-Token': ADMIN.activeProfile?.token || ''
+                },
+                credentials: 'include',
+                body: JSON.stringify({ versionId })
+              });
+              const json = await res.json();
+              if (res.ok && json.success) {
+                ADMIN.showToast('✓ Successfully restored previous website content revision!', 'success');
+                await loadAllContent();
+              } else {
+                throw new Error(json.error || 'Failed to restore');
+              }
+            } catch (err) {
+              ADMIN.showToast('Failed to restore revision: ' + err.message, 'danger');
+            }
+          });
+        });
+      }
+
+      // Review Moderation
+      async function loadAdminReviews() {
+        const listEl = document.getElementById('admin-moderation-list');
+        const countEl = document.getElementById('admin-reviews-count');
+        if (!listEl) return;
+
+        const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+        let reviews = [];
+        try {
+          const res = await fetch(`${baseUrl}/api/admin/reviews`, {
+            headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
+            credentials: 'include'
+          });
+          if (res.ok) {
+            const json = await res.json();
+            if (json.success && Array.isArray(json.data)) {
+              reviews = json.data;
+            }
+          }
+        } catch (e) {
+          console.warn('Error fetching reviews from backend:', e);
+        }
+
+        if (!reviews.length) {
+          try {
+            reviews = JSON.parse(localStorage.getItem('swan_customer_reviews') || '[]');
+          } catch (e) {}
+        }
+
+        if (countEl) countEl.textContent = reviews.length + '+';
+
+        if (reviews.length === 0) {
+          listEl.innerHTML = '<div style="text-align: center; padding: 1.5rem; color: #8A7670; font-size: 0.85rem;">No customer reviews active.</div>';
+          return;
+        }
+
+        listEl.innerHTML = reviews.map(r => `
+          <div style="background: #FFFFFF; border: 1px solid rgba(199, 131, 145, 0.3); border-radius: var(--radius-sm); padding: 0.75rem 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                <strong style="color: var(--cocoa); font-size: 0.88rem;">${r.author || r.customer_name || 'Customer'}</strong>
+                <span style="font-size: 0.75rem; color: #8A7670;">(${r.city || 'India'})</span>
+                <span style="color: #D97706; font-size: 0.78rem;">${'★'.repeat(r.rating || 5)}</span>
+                <span style="font-size: 0.72rem; background: #FFF0F2; color: var(--rose-text); padding: 0.1rem 0.4rem; border-radius: 4px;">${r.product || 'Crochet Creation'}</span>
+              </div>
+              <p style="font-size: 0.78rem; color: #73615A; margin: 0.25rem 0 0; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 520px;">
+                “${r.notes || r.comment || ''}”
+              </p>
+            </div>
+            <button type="button" class="btn-action btn-danger btn-admin-del-rev" data-id="${r.id}" data-author="${r.author || r.customer_name || 'Customer'}" style="background: #FFF0F2; color: #B91C1C; border-color: #F87171; flex-shrink: 0; font-size: 0.75rem; padding: 0.3rem 0.65rem; font-weight: 600; min-height: 44px;">
+              🗑️ Delete
+            </button>
+          </div>
+        `).join('');
+
+        listEl.querySelectorAll('.btn-admin-del-rev').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const revId = String(btn.dataset.id || '').trim();
+            const author = btn.dataset.author || 'this customer';
+
+            const confirmed = await ADMIN.confirmDialog({
+              title: 'Delete Customer Review?',
+              message: `Are you sure you want to permanently delete the review by "${author}"? It will be removed immediately from both customer view and admin moderation.`,
+              confirmText: 'Delete Review',
+              cancelText: 'Cancel',
+              danger: true
+            });
+            if (!confirmed) return;
+
+            try {
+              const res = await fetch(`${baseUrl}/api/admin/reviews/${encodeURIComponent(revId)}`, {
+                method: 'DELETE',
+                headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
+                credentials: 'include'
+              });
+              if (res.ok) {
+                ADMIN.showToast(`✓ Review by "${author}" was permanently deleted.`, 'success');
+              } else {
+                throw new Error('Server returned error');
+              }
+            } catch (err) {
+              console.warn('Backend review delete error, updating local:', err);
+              try {
+                const curUserRevs = JSON.parse(localStorage.getItem('swan_customer_reviews') || '[]');
+                const filtered = curUserRevs.filter(r => String(r.id) !== revId);
+                localStorage.setItem('swan_customer_reviews', JSON.stringify(filtered));
+              } catch (e) {}
+              ADMIN.showToast(`✓ Review deleted.`, 'success');
+            }
+            await loadAdminReviews();
+          });
+        });
+      }
+
+      window.renderAdminReviewsList = loadAdminReviews;
+
+      // Load Settings & Content from Backend Database
+      async function loadAllContent() {
+        const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+
+        // 1. Fetch content from database
+        try {
+          const res = await fetch(`${baseUrl}/api/admin/content`, {
+            headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
+            credentials: 'include'
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.data) {
+              populateContentFields(data.data);
+              if (Array.isArray(data.data.history)) {
+                renderRevisionHistory(data.data.history);
+              }
+            }
+          } else {
+            const stored = JSON.parse(localStorage.getItem('swan_site_content') || '{}');
+            populateContentFields(stored);
+          }
+        } catch (err) {
+          console.warn('Backend content fetch error, using local fallback:', err);
+          const stored = JSON.parse(localStorage.getItem('swan_site_content') || '{}');
+          populateContentFields(stored);
+        }
+
+        // 2. Fetch settings from database
+        try {
+          const res = await fetch(`${baseUrl}/api/admin/settings`, {
+            headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
+            credentials: 'include'
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.data) {
+              populateSettingsFields(data.data);
+            }
+          } else {
+            const stored = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
+            populateSettingsFields(stored);
+          }
+        } catch (err) {
+          console.warn('Backend settings fetch error, using local fallback:', err);
+          const stored = JSON.parse(localStorage.getItem('swan_site_settings') || '{}');
+          populateSettingsFields(stored);
+        }
+
+        // 3. Supabase Live Sync if configured directly
         const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
         if (client) {
           try {
@@ -2391,9 +2513,10 @@
 
         syncLiveSimulations();
         await renderFeaturedManager();
+        await loadAdminReviews();
       }
 
-      // Save All Settings & Content
+      // Save All Settings & Content to Database
       async function saveAll(e) {
         if (e) e.preventDefault();
 
@@ -2408,10 +2531,17 @@
 
         const contentPayload = {
           announcement: announceInput.value.trim(),
+          announcementActive: true,
           heroHeadline: heroHeadInput.value.trim(),
           heroBadge: heroBadgeInput.value.trim(),
           heroSub: heroSubInput.value.trim(),
           heroImage: finalHeroPhoto,
+          hero: {
+            headline: heroHeadInput.value.trim(),
+            badge: heroBadgeInput.value.trim(),
+            subheadline: heroSubInput.value.trim(),
+            image: finalHeroPhoto
+          },
           featuredHeading: featHeadingInput ? featHeadingInput.value.trim() : 'Featured Creations',
           featuredSubtitle: featSubtitleInput ? featSubtitleInput.value.trim() : 'Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.',
           founderQuote: founderQuoteInput.value.trim(),
@@ -2422,6 +2552,29 @@
           makerRole: makerRoleInput.value.trim(),
           makerQuote: makerQuoteInput.value.trim(),
           makerPhoto: finalMakerPhoto,
+
+          story: {
+            makerName: makerNameInput.value.trim(),
+            makerRole: makerRoleInput.value.trim(),
+            makerQuote: makerQuoteInput.value.trim(),
+            makerPhoto: finalMakerPhoto,
+            pageTitle: storyPageTitleInput.value.trim(),
+            pageSubtitle: storyPageSubInput.value.trim(),
+            headline: storyHeadlineInput.value.trim(),
+            p1: storyP1Input.value.trim(),
+            sec1Title: storySec1TitleInput.value.trim(),
+            sec1Text: storySec1TextInput.value.trim(),
+            sec2Title: storySec2TitleInput.value.trim(),
+            sec2Text: storySec2TextInput.value.trim(),
+            promise1Title: p1TitleInput.value.trim(),
+            promise1Text: p1TextInput.value.trim(),
+            promise2Title: p2TitleInput.value.trim(),
+            promise2Text: p2TextInput.value.trim(),
+            promise3Title: p3TitleInput.value.trim(),
+            promise3Text: p3TextInput.value.trim(),
+            promise4Title: p4TitleInput ? p4TitleInput.value.trim() : 'Artisan Packaging',
+            promise4Text: p4TextInput ? p4TextInput.value.trim() : 'Wrapped with kraft paper, twine, and personal handwritten care notes.'
+          },
 
           storyPageTitle: storyPageTitleInput.value.trim(),
           storyPageSubtitle: storyPageSubInput.value.trim(),
@@ -2455,11 +2608,37 @@
           instagramHandle: instaHandleInput ? instaHandleInput.value.trim() : '@swan_handcrafted_studio.3568'
         };
 
-        try {
-          // 1. Save to localStorage for instant local reflection
-          localStorage.setItem('swan_site_content', JSON.stringify(contentPayload));
-          localStorage.setItem('swan_site_settings', JSON.stringify(settingsPayload));
+        const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
 
+        try {
+          // 1. Save to Database API (Single Source of Truth)
+          const contentRes = await fetch(`${baseUrl}/api/admin/content`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Admin-Token': ADMIN.activeProfile?.token || ''
+            },
+            credentials: 'include',
+            body: JSON.stringify(contentPayload)
+          });
+          if (!contentRes.ok) {
+            const errJson = await contentRes.json().catch(() => ({}));
+            throw new Error(errJson.error || 'Failed to save content to database.');
+          }
+
+          const settingsRes = await fetch(`${baseUrl}/api/admin/settings`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Admin-Token': ADMIN.activeProfile?.token || ''
+            },
+            credentials: 'include',
+            body: JSON.stringify(settingsPayload)
+          });
+          if (!settingsRes.ok) {
+            const errJson = await settingsRes.json().catch(() => ({}));
+            throw new Error(errJson.error || 'Failed to save settings to database.');
+          }
 
           // 2. Also save to Supabase if connected
           const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
@@ -2486,20 +2665,52 @@
             }
           }
 
+          // 3. Cache locally for offline performance
+          localStorage.setItem('swan_site_content', JSON.stringify(contentPayload));
+          localStorage.setItem('swan_site_settings', JSON.stringify(settingsPayload));
+
+          // 4. Update Save Feedback with "Live on your website" and "View on site" button
+          const previewUrl = `../index.html?t=${Date.now()}`;
           saveFeedback.style.display = 'block';
           saveFeedback.style.background = '#E8F5E9';
-          saveFeedback.style.border = '1.5px solid #A5D6A7';
+          saveFeedback.style.border = '1.5px solid #81C784';
           saveFeedback.style.color = '#1B5E20';
-          saveFeedback.innerHTML = '<strong>✓ Website Content & Story Saved Successfully!</strong> All photos, editorial narratives, and store operational parameters are now live across your atelier.';
+          saveFeedback.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+              <div>
+                <strong style="display: block; font-size: 0.98rem; font-weight: 700;">✓ Live on your website!</strong>
+                <span style="font-size: 0.82rem; color: #2E7D32;">All images, stories, editorial content, and store settings are updated in the live database.</span>
+              </div>
+              <a href="${previewUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-sm" style="background: #2E7D32; color: #FFFFFF; text-decoration: none; padding: 0.55rem 1.15rem; border-radius: 6px; font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 2px 8px rgba(46, 125, 50, 0.25);">
+                👁️ View on site
+              </a>
+            </div>
+          `;
           saveFeedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
           syncLiveSimulations();
+          // Reload content to update history
+          const res = await fetch(`${baseUrl}/api/admin/content`, {
+            headers: { 'X-Admin-Token': ADMIN.activeProfile?.token || '' },
+            credentials: 'include'
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.data && Array.isArray(data.data.history)) {
+              renderRevisionHistory(data.data.history);
+            }
+          }
         } catch (err) {
           saveFeedback.style.display = 'block';
           saveFeedback.style.background = '#FFEBEE';
           saveFeedback.style.border = '1.5px solid #FFCDD2';
           saveFeedback.style.color = '#B71C1C';
-          saveFeedback.textContent = 'Save failed: ' + (err.message || 'Please check your inputs.');
+          saveFeedback.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+              <span><strong>Save failed:</strong> ${err.message || 'Please check your inputs and try again.'}</span>
+              <button type="button" onclick="document.getElementById('btn-save-all-bottom').click()" class="btn btn-sm btn-outline" style="min-height: 38px;">Retry</button>
+            </div>
+          `;
         } finally {
           btnTop.disabled = false;
           btnBottom.disabled = false;
@@ -2508,8 +2719,9 @@
         }
       }
 
-      form.addEventListener('submit', saveAll);
-      btnTop.addEventListener('click', () => form.requestSubmit());
+      form.addEventListener('submit', (e) => saveAll(e));
+      btnTop.addEventListener('click', (e) => saveAll(e));
+      btnBottom.addEventListener('click', (e) => saveAll(e));
 
       await loadAllContent();
     });

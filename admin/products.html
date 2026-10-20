@@ -494,14 +494,30 @@
 
         for (const file of files) {
           try {
-            const comp = await ADMIN.compressImage(file);
+            uploadSubtitle.textContent = `Optimizing & uploading ${file.name}...`;
+            const uploaded = await ADMIN.compressAndUploadImage(file, {
+              maxWidth: 1600,
+              maxHeight: 1600,
+              altText: nameInput.value || 'Crochet creation photo'
+            });
+            const finalUrl = (uploaded && uploaded.url) ? uploaded.url : uploaded.dataUrl;
             attachedImages.push({
-              dataUrl: comp.dataUrl,
+              dataUrl: finalUrl,
               altText: nameInput.value || 'Crochet creation photo',
               isPrimary: attachedImages.length === 0
             });
           } catch (err) {
-            console.error('Image compression error:', err);
+            console.error('Image upload error:', err);
+            try {
+              const comp = await ADMIN.compressImage(file);
+              attachedImages.push({
+                dataUrl: comp.dataUrl,
+                altText: nameInput.value || 'Crochet creation photo',
+                isPrimary: attachedImages.length === 0
+              });
+            } catch (fallbackErr) {
+              console.error('Local fallback error:', fallbackErr);
+            }
           }
         }
 
