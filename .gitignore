@@ -9,8 +9,6 @@ package-lock.json
 *.secret
 *.pem
 *.key
-js/config.js
-config.js
 
 # Local Exports & Data
 supabase/seed.review.sql

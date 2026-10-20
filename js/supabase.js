@@ -15,7 +15,7 @@ const SUPABASE_CONFIG = {
     : 'https://hzlimdfxvojkqsszmulj.supabase.co',
   anonKey: (typeof window !== 'undefined' && window.SWAN_CONFIG && window.SWAN_CONFIG.supabaseAnonKey)
     ? window.SWAN_CONFIG.supabaseAnonKey
-    : ''
+    : 'sb_publishable_A6lhEw5XB5OESdClA4Z6rg_XulpKLG4'
 };
 
 let _supabaseClient = null;
