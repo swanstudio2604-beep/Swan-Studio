@@ -44,3 +44,6 @@ yarn-error.log*
 test-results/
 playwright-report/
 
+# Dynamic Uploads
+uploads/*
+!uploads/.gitkeep

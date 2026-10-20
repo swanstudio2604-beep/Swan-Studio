@@ -458,6 +458,7 @@ function createCategory(payload) {
     slug: uniqueSlug,
     description: String(payload.description || '').trim(),
     icon_emoji: payload.icon_emoji || '🌸',
+    image_url: payload.image_url || null,
     sort_order: parseInt(payload.sort_order || store.categories.length + 1, 10),
     is_hidden: Boolean(payload.is_hidden),
     deleted_at: null,
@@ -581,11 +582,374 @@ function restoreCategory(id) {
 }
 
 // ---------------------------------------------------------------------------
+// SITE CONTENT & SETTINGS PERSISTENCE
+// ---------------------------------------------------------------------------
+
+function getPublicContent() {
+  const store = readStore();
+  const content = store.site_content || {};
+  // Return clean copy
+  const clean = JSON.parse(JSON.stringify(content));
+  delete clean.history; // Don't expose revision history to public
+  return clean;
+}
+
+function getAdminContent() {
+  const store = readStore();
+  return store.site_content || {};
+}
+
+function updateContent(newContent) {
+  const store = readStore();
+  const current = store.site_content || {};
+  
+  // Create history snapshot
+  const history = Array.isArray(current.history) ? current.history : [];
+  const snapshot = {
+    versionId: 'ver-' + Date.now(),
+    savedAt: new Date().toISOString(),
+    content: { ...current }
+  };
+  delete snapshot.content.history;
+  
+  // Keep last 15 revisions
+  const updatedHistory = [snapshot, ...history].slice(0, 15);
+  
+  store.site_content = {
+    ...current,
+    ...newContent,
+    updated_at: new Date().toISOString(),
+    history: updatedHistory
+  };
+  
+  writeStore(store);
+  return { success: true, data: store.site_content };
+}
+
+function restoreContentVersion(versionId) {
+  const store = readStore();
+  const current = store.site_content || {};
+  const history = Array.isArray(current.history) ? current.history : [];
+  const target = history.find(h => h.versionId === versionId);
+  
+  if (!target || !target.content) {
+    return { success: false, error: 'Revision version not found.' };
+  }
+  
+  // Save current state as revision before restoring
+  const snapshot = {
+    versionId: 'ver-' + Date.now(),
+    savedAt: new Date().toISOString(),
+    content: { ...current }
+  };
+  delete snapshot.content.history;
+  
+  const updatedHistory = [snapshot, ...history].slice(0, 15);
+  
+  store.site_content = {
+    ...target.content,
+    updated_at: new Date().toISOString(),
+    history: updatedHistory
+  };
+  
+  writeStore(store);
+  return { success: true, data: store.site_content, restoredVersionId: versionId };
+}
+
+function getPublicSettings() {
+  const store = readStore();
+  return store.site_settings || {};
+}
+
+function getAdminSettings() {
+  const store = readStore();
+  return store.site_settings || {};
+}
+
+function updateSettings(newSettings) {
+  const store = readStore();
+  store.site_settings = {
+    ...(store.site_settings || {}),
+    ...newSettings,
+    updated_at: new Date().toISOString()
+  };
+  writeStore(store);
+  return { success: true, data: store.site_settings };
+}
+
+// ---------------------------------------------------------------------------
+// BLOG POSTS PERSISTENCE
+// ---------------------------------------------------------------------------
+
+function slugify(text) {
+  return String(text || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function estimateReadingTime(htmlOrMarkdown = '') {
+  const text = htmlOrMarkdown.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  return Math.max(1, Math.ceil(words / 180));
+}
+
+function getPublicBlogPosts({ tag = '', search = '' } = {}) {
+  const store = readStore();
+  const now = new Date();
+  
+  let list = (store.blog_posts || []).filter(p => {
+    if (p.deleted_at) return false;
+    if (p.status !== 'PUBLISHED') return false;
+    if (p.published_at && new Date(p.published_at) > now) return false;
+    return true;
+  });
+  
+  if (tag && tag.trim()) {
+    const cleanTag = tag.trim().toLowerCase();
+    list = list.filter(p => Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase() === cleanTag));
+  }
+  
+  if (search && search.trim()) {
+    const q = search.trim().toLowerCase();
+    list = list.filter(p => 
+      (p.title && p.title.toLowerCase().includes(q)) ||
+      (p.excerpt && p.excerpt.toLowerCase().includes(q)) ||
+      (Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase().includes(q)))
+    );
+  }
+  
+  // Sort descending by publish date
+  list.sort((a, b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at));
+  
+  return list;
+}
+
+function getPublicBlogPostBySlug(slug) {
+  const store = readStore();
+  const now = new Date();
+  const post = (store.blog_posts || []).find(p => p.slug === slug);
+  if (!post) return null;
+  if (post.deleted_at) return null;
+  if (post.status !== 'PUBLISHED') return null;
+  if (post.published_at && new Date(post.published_at) > now) return null;
+  return post;
+}
+
+function getAdminBlogPosts({ trash = false, status = null } = {}) {
+  const store = readStore();
+  let list = (store.blog_posts || []).filter(p => {
+    if (trash) {
+      return Boolean(p.deleted_at);
+    } else {
+      return !p.deleted_at;
+    }
+  });
+  
+  if (status && status !== 'ALL' && !trash) {
+    list = list.filter(p => p.status === status);
+  }
+  
+  list.sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at));
+  return list;
+}
+
+function createBlogPost(data) {
+  const store = readStore();
+  if (!store.blog_posts) store.blog_posts = [];
+  
+  const now = new Date().toISOString();
+  let baseSlug = slugify(data.slug || data.title || 'untitled-story');
+  if (!baseSlug) baseSlug = 'story-' + Date.now();
+  
+  // Ensure uniqueness
+  let finalSlug = baseSlug;
+  let counter = 1;
+  while (store.blog_posts.some(p => p.slug === finalSlug && !p.deleted_at)) {
+    finalSlug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+  
+  const id = 'post-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+  const readTime = estimateReadingTime(data.body || '');
+  
+  const newPost = {
+    id,
+    title: (data.title || 'Untitled Creation Story').trim(),
+    slug: finalSlug,
+    excerpt: (data.excerpt || '').trim(),
+    body: data.body || '',
+    cover_image: data.cover_image || data.coverImage || 'assets/images/hero-bouquet.webp',
+    cover_image_alt: data.cover_image_alt || data.coverImageAlt || (data.title || 'Crochet Story Cover'),
+    tags: Array.isArray(data.tags) ? data.tags : (typeof data.tags === 'string' ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : []),
+    status: ['PUBLISHED', 'DRAFT', 'SCHEDULED'].includes((data.status || '').toUpperCase()) ? (data.status || '').toUpperCase() : 'DRAFT',
+    published_at: data.published_at || ((data.status || '').toUpperCase() === 'PUBLISHED' ? now : null),
+    created_at: now,
+    updated_at: now,
+    deleted_at: null,
+    is_featured: Boolean(data.is_featured),
+    read_time_minutes: readTime,
+    author: (data.author || 'Bhumika Nama').trim(),
+    seo_title: data.seo_title || data.title || '',
+    seo_description: data.seo_description || data.excerpt || ''
+  };
+  
+  store.blog_posts.unshift(newPost);
+  writeStore(store);
+  return newPost;
+}
+
+function updateBlogPost(id, data) {
+  const store = readStore();
+  if (!store.blog_posts) store.blog_posts = [];
+  const post = store.blog_posts.find(p => String(p.id) === String(id));
+  if (!post) return null;
+  
+  const now = new Date().toISOString();
+  
+  if (data.title !== undefined) post.title = data.title.trim();
+  if (data.slug !== undefined && data.slug.trim()) {
+    const requestedSlug = slugify(data.slug);
+    // Ensure uniqueness excluding self
+    const collision = store.blog_posts.some(p => p.slug === requestedSlug && String(p.id) !== String(id) && !p.deleted_at);
+    if (!collision) post.slug = requestedSlug;
+  }
+  if (data.excerpt !== undefined) post.excerpt = data.excerpt.trim();
+  if (data.body !== undefined) {
+    post.body = data.body;
+    post.read_time_minutes = estimateReadingTime(data.body);
+  }
+  if (data.cover_image !== undefined || data.coverImage !== undefined) {
+    post.cover_image = data.cover_image || data.coverImage;
+  }
+  if (data.cover_image_alt !== undefined || data.coverImageAlt !== undefined) {
+    post.cover_image_alt = data.cover_image_alt || data.coverImageAlt;
+  }
+  if (data.tags !== undefined) {
+    post.tags = Array.isArray(data.tags) ? data.tags : (typeof data.tags === 'string' ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : []);
+  }
+  if (data.status !== undefined) {
+    const sUpper = String(data.status).toUpperCase();
+    if (['PUBLISHED', 'DRAFT', 'SCHEDULED'].includes(sUpper)) {
+      post.status = sUpper;
+      if (sUpper === 'PUBLISHED' && !post.published_at) {
+        post.published_at = now;
+      }
+    }
+  }
+  if (data.published_at !== undefined) post.published_at = data.published_at;
+  if (data.is_featured !== undefined) post.is_featured = Boolean(data.is_featured);
+  if (data.author !== undefined) post.author = data.author.trim();
+  if (data.seo_title !== undefined) post.seo_title = data.seo_title.trim();
+  if (data.seo_description !== undefined) post.seo_description = data.seo_description.trim();
+  
+  post.updated_at = now;
+  writeStore(store);
+  return post;
+}
+
+function deleteBlogPost(id, permanent = false) {
+  const store = readStore();
+  if (!store.blog_posts) store.blog_posts = [];
+  const idx = store.blog_posts.findIndex(p => String(p.id) === String(id));
+  if (idx === -1) return { success: false, error: 'Blog post not found.' };
+  
+  if (permanent) {
+    store.blog_posts.splice(idx, 1);
+  } else {
+    store.blog_posts[idx].deleted_at = new Date().toISOString();
+  }
+  
+  writeStore(store);
+  return { success: true, id, permanent };
+}
+
+function restoreBlogPost(id) {
+  const store = readStore();
+  if (!store.blog_posts) store.blog_posts = [];
+  const post = store.blog_posts.find(p => String(p.id) === String(id));
+  if (!post) return { success: false, error: 'Blog post not found.' };
+  
+  post.deleted_at = null;
+  post.updated_at = new Date().toISOString();
+  writeStore(store);
+  return { success: true, data: post };
+}
+
+// ---------------------------------------------------------------------------
+// REVIEWS PERSISTENCE
+// ---------------------------------------------------------------------------
+
+function getPublicReviews() {
+  const store = readStore();
+  return (store.reviews || []).filter(r => r.status === 'APPROVED');
+}
+
+function getAdminReviews({ status = null } = {}) {
+  const store = readStore();
+  let list = store.reviews || [];
+  if (status && status !== 'ALL') {
+    list = list.filter(r => r.status === status);
+  }
+  list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  return list;
+}
+
+function createReview(data) {
+  const store = readStore();
+  if (!store.reviews) store.reviews = [];
+  const newRev = {
+    id: 'rev-' + Date.now(),
+    author_name: (data.author_name || data.authorName || 'Cherished Patron').trim(),
+    author_city: (data.author_city || data.authorCity || 'India').trim(),
+    rating: Math.min(5, Math.max(1, parseInt(data.rating, 10) || 5)),
+    title: (data.title || '').trim(),
+    comment: (data.comment || '').trim(),
+    status: data.status || 'PENDING',
+    verified_purchase: Boolean(data.verified_purchase || data.verifiedPurchase),
+    created_at: new Date().toISOString()
+  };
+  store.reviews.unshift(newRev);
+  writeStore(store);
+  return newRev;
+}
+
+function updateReview(id, data) {
+  const store = readStore();
+  if (!store.reviews) store.reviews = [];
+  const rev = store.reviews.find(r => String(r.id) === String(id));
+  if (!rev) return null;
+  
+  if (data.status) rev.status = data.status;
+  if (data.verified_purchase !== undefined) rev.verified_purchase = Boolean(data.verified_purchase);
+  if (data.rating !== undefined) rev.rating = parseInt(data.rating, 10);
+  if (data.comment !== undefined) rev.comment = data.comment;
+  if (data.title !== undefined) rev.title = data.title;
+  
+  rev.updated_at = new Date().toISOString();
+  writeStore(store);
+  return rev;
+}
+
+function deleteReview(id) {
+  const store = readStore();
+  if (!store.reviews) store.reviews = [];
+  const idx = store.reviews.findIndex(r => String(r.id) === String(id));
+  if (idx === -1) return { success: false, error: 'Review not found.' };
+  store.reviews.splice(idx, 1);
+  writeStore(store);
+  return { success: true, id };
+}
+
+// ---------------------------------------------------------------------------
 // SITEMAP XML GENERATOR
 // ---------------------------------------------------------------------------
 function generateSitemapXml(baseUrl = 'https://swan-studio.onrender.com') {
   const products = getPublicProducts();
   const categories = getPublicCategories();
+  const blogPosts = getPublicBlogPosts();
   const now = new Date().toISOString().split('T')[0];
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
@@ -595,6 +959,7 @@ function generateSitemapXml(baseUrl = 'https://swan-studio.onrender.com') {
   const staticPages = [
     { loc: '', priority: '1.0', changefreq: 'daily' },
     { loc: 'shop.html', priority: '0.9', changefreq: 'daily' },
+    { loc: 'blog.html', priority: '0.8', changefreq: 'daily' },
     { loc: 'about.html', priority: '0.7', changefreq: 'monthly' },
     { loc: 'reviews.html', priority: '0.8', changefreq: 'weekly' },
     { loc: 'custom-order.html', priority: '0.8', changefreq: 'monthly' },
@@ -619,6 +984,11 @@ function generateSitemapXml(baseUrl = 'https://swan-studio.onrender.com') {
     xml += `  <url>\n    <loc>${baseUrl}/product.html?slug=${p.slug}</loc>\n    <lastmod>${p.updated_at ? p.updated_at.split('T')[0] : now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
   });
 
+  // Active Published Blog Posts only
+  blogPosts.forEach(b => {
+    xml += `  <url>\n    <loc>${baseUrl}/blog-post.html?slug=${b.slug}</loc>\n    <lastmod>${b.updated_at ? b.updated_at.split('T')[0] : now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+  });
+
   xml += `</urlset>`;
   return xml;
 }
@@ -640,5 +1010,27 @@ module.exports = {
   updateCategory,
   deleteCategory,
   restoreCategory,
+  // Site Content & Settings
+  getPublicContent,
+  getAdminContent,
+  updateContent,
+  restoreContentVersion,
+  getPublicSettings,
+  getAdminSettings,
+  updateSettings,
+  // Blog
+  getPublicBlogPosts,
+  getPublicBlogPostBySlug,
+  getAdminBlogPosts,
+  createBlogPost,
+  updateBlogPost,
+  deleteBlogPost,
+  restoreBlogPost,
+  // Reviews
+  getPublicReviews,
+  getAdminReviews,
+  createReview,
+  updateReview,
+  deleteReview,
   generateSitemapXml
 };

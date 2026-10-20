@@ -23,6 +23,10 @@ const Store = require('./server-store');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
 
 // Configurable CORS origins
 const allowedOrigins = [
@@ -281,7 +285,7 @@ function adminRouteGuard(req, res, next) {
   }
 
   // Local automated audit hook
-  const auditKey = req.headers['x-audit-key'] || cookies['swan_audit_key'];
+  const auditKey = req.headers['x-admin-token'] || req.headers['x-audit-key'] || cookies['swan_audit_key'];
   if (auditKey && auditKey === ADMIN_AUDIT_KEY) {
     req.adminSession = {
       id: 'audit-admin-session',
@@ -582,7 +586,7 @@ function verifyAdminApiSession(req, res, next) {
     req.adminSession = session;
     return next();
   }
-  const auditKey = req.headers['x-audit-key'] || cookies['swan_audit_key'];
+  const auditKey = req.headers['x-admin-token'] || req.headers['x-audit-key'] || cookies['swan_audit_key'];
   if (auditKey && auditKey === ADMIN_AUDIT_KEY) {
     req.adminSession = { id: 'audit-admin', role: 'admin' };
     return next();
@@ -691,6 +695,276 @@ app.post('/api/admin/categories/:id/restore', verifyAdminApiSession, (req, res) 
 });
 
 // ---------------------------------------------------------------------------
+// Helper: getBaseUrl
+// ---------------------------------------------------------------------------
+function getRequestBaseUrl(req) {
+  const forwardedProto = req.headers['x-forwarded-proto'];
+  const protocol = forwardedProto || (req.secure ? 'https' : 'http');
+  const host = req.get('host') || 'swan-studio.onrender.com';
+  return `${protocol}://${host}`;
+}
+
+// ---------------------------------------------------------------------------
+// Admin Image Upload Pipeline (Public Storage & Fingerprinted URLs)
+// ---------------------------------------------------------------------------
+app.post('/api/admin/upload-image', verifyAdminApiSession, (req, res) => {
+  const { dataUrl, filename, altText } = req.body;
+  if (!dataUrl || typeof dataUrl !== 'string') {
+    return res.status(400).json({ success: false, error: 'Valid image dataUrl is required.' });
+  }
+
+  // Parse data URI: data:image/jpeg;base64,...
+  const match = dataUrl.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+  if (!match) {
+    return res.status(400).json({ success: false, error: 'Invalid image format. Expected data:image/...;base64,...' });
+  }
+
+  let ext = match[1].toLowerCase();
+  if (ext === 'jpeg') ext = 'jpg';
+  if (ext === 'svg+xml') ext = 'svg';
+  const base64Data = match[2];
+  const buffer = Buffer.from(base64Data, 'base64');
+
+  if (buffer.length > 10 * 1024 * 1024) {
+    return res.status(400).json({ success: false, error: 'File size exceeds 10MB limit.' });
+  }
+
+  const safeOriginal = (filename || 'photo').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 30) || 'img';
+  const uniqueName = `swan-${Date.now()}-${crypto.randomBytes(4).toString('hex')}-${safeOriginal}.${ext}`;
+  const filePath = path.join(UPLOADS_DIR, uniqueName);
+
+  try {
+    fs.writeFileSync(filePath, buffer);
+    const baseUrl = getRequestBaseUrl(req);
+    const absoluteUrl = `${baseUrl}/uploads/${uniqueName}`;
+    const relativeUrl = `uploads/${uniqueName}`;
+
+    return res.status(200).json({
+      success: true,
+      url: absoluteUrl,
+      relativeUrl,
+      filename: uniqueName,
+      size: buffer.length,
+      altText: altText || ''
+    });
+  } catch (err) {
+    console.error('Error saving uploaded image:', err);
+    return res.status(500).json({ success: false, error: 'Failed to write uploaded image to storage.' });
+  }
+});
+
+app.delete('/api/admin/upload-image/:filename', verifyAdminApiSession, (req, res) => {
+  const rawFilename = path.basename(req.params.filename);
+  const filePath = path.join(UPLOADS_DIR, rawFilename);
+  if (fs.existsSync(filePath)) {
+    try {
+      fs.unlinkSync(filePath);
+      return res.status(200).json({ success: true, message: 'Image deleted from storage.' });
+    } catch (e) {
+      return res.status(500).json({ success: false, error: 'Could not delete image.' });
+    }
+  }
+  return res.status(200).json({ success: true, message: 'Image not found or already removed.' });
+});
+
+// ---------------------------------------------------------------------------
+// Public & Admin Site Content Endpoints
+// ---------------------------------------------------------------------------
+app.get('/api/content', (req, res) => {
+  const content = Store.getPublicContent();
+  return res.status(200).json({
+    success: true,
+    isLive: true,
+    data: content
+  });
+});
+
+app.get('/api/admin/content', verifyAdminApiSession, (req, res) => {
+  const content = Store.getAdminContent();
+  return res.status(200).json({
+    success: true,
+    data: content
+  });
+});
+
+app.put('/api/admin/content', verifyAdminApiSession, (req, res) => {
+  const result = Store.updateContent(req.body);
+  return res.status(200).json(result);
+});
+
+app.post('/api/admin/content/restore', verifyAdminApiSession, (req, res) => {
+  const { versionId } = req.body;
+  if (!versionId) {
+    return res.status(400).json({ success: false, error: 'versionId is required to restore revision.' });
+  }
+  const result = Store.restoreContentVersion(versionId);
+  return res.status(result.success ? 200 : 400).json(result);
+});
+
+// ---------------------------------------------------------------------------
+// Public & Admin Store Settings Endpoints
+// ---------------------------------------------------------------------------
+app.get('/api/settings', (req, res) => {
+  const settings = Store.getPublicSettings();
+  return res.status(200).json({
+    success: true,
+    isLive: true,
+    data: settings
+  });
+});
+
+app.get('/api/admin/settings', verifyAdminApiSession, (req, res) => {
+  const settings = Store.getAdminSettings();
+  return res.status(200).json({
+    success: true,
+    data: settings
+  });
+});
+
+app.put('/api/admin/settings', verifyAdminApiSession, (req, res) => {
+  const result = Store.updateSettings(req.body);
+  return res.status(200).json(result);
+});
+
+// ---------------------------------------------------------------------------
+// Public & Admin Blog Stories Endpoints
+// ---------------------------------------------------------------------------
+app.get('/api/blog', (req, res) => {
+  const posts = Store.getPublicBlogPosts({
+    tag: req.query.tag || '',
+    search: req.query.search || ''
+  });
+  return res.status(200).json({
+    success: true,
+    isLive: true,
+    data: posts
+  });
+});
+
+app.get('/api/blog/:slug', (req, res) => {
+  const post = Store.getPublicBlogPostBySlug(req.params.slug);
+  if (!post) {
+    return res.status(404).json({
+      success: false,
+      error: 'Story not found or no longer published.'
+    });
+  }
+  return res.status(200).json({
+    success: true,
+    isLive: true,
+    data: post
+  });
+});
+
+app.get('/api/admin/blog', verifyAdminApiSession, (req, res) => {
+  const trash = req.query.trash === '1' || req.query.trash === 'true';
+  const status = req.query.status || null;
+  const posts = Store.getAdminBlogPosts({ trash, status });
+  return res.status(200).json({
+    success: true,
+    data: posts
+  });
+});
+
+app.post('/api/admin/blog', verifyAdminApiSession, (req, res) => {
+  const { title } = req.body;
+  if (!title) {
+    return res.status(400).json({ success: false, error: 'Story title is required.' });
+  }
+  const post = Store.createBlogPost(req.body);
+  return res.status(201).json({ success: true, data: post });
+});
+
+app.put('/api/admin/blog/:id', verifyAdminApiSession, (req, res) => {
+  const updated = Store.updateBlogPost(req.params.id, req.body);
+  if (!updated) {
+    return res.status(404).json({ success: false, error: 'Story not found.' });
+  }
+  return res.status(200).json({ success: true, data: updated });
+});
+
+app.delete('/api/admin/blog/:id', verifyAdminApiSession, (req, res) => {
+  const permanent = req.query.permanent === '1' || req.query.permanent === 'true';
+  const result = Store.deleteBlogPost(req.params.id, permanent);
+  if (!result.success) {
+    return res.status(404).json(result);
+  }
+  return res.status(200).json(result);
+});
+
+app.post('/api/admin/blog/:id/restore', verifyAdminApiSession, (req, res) => {
+  const result = Store.restoreBlogPost(req.params.id);
+  if (!result.success) {
+    return res.status(404).json(result);
+  }
+  return res.status(200).json(result);
+});
+
+// ---------------------------------------------------------------------------
+// Public & Admin Reviews Endpoints
+// ---------------------------------------------------------------------------
+app.get('/api/reviews', (req, res) => {
+  const reviews = Store.getPublicReviews();
+  return res.status(200).json({
+    success: true,
+    isLive: true,
+    data: reviews
+  });
+});
+
+app.post('/api/reviews', (req, res) => {
+  const { authorName, authorCity, rating, title, comment } = req.body;
+  if (!authorName || !comment) {
+    return res.status(400).json({
+      success: false,
+      error: 'Author name and review comment are required.'
+    });
+  }
+
+  const safeData = {
+    authorName: sanitizeInput(authorName),
+    authorCity: sanitizeInput(authorCity || 'India'),
+    rating: parseInt(rating, 10) || 5,
+    title: sanitizeInput(title || ''),
+    comment: sanitizeInput(comment),
+    status: 'PENDING',
+    verifiedPurchase: false
+  };
+
+  const newReview = Store.createReview(safeData);
+  return res.status(201).json({
+    success: true,
+    message: 'Thank you! Your love note has been received and will appear after owner review.',
+    data: newReview
+  });
+});
+
+app.get('/api/admin/reviews', verifyAdminApiSession, (req, res) => {
+  const status = req.query.status || null;
+  const reviews = Store.getAdminReviews({ status });
+  return res.status(200).json({
+    success: true,
+    data: reviews
+  });
+});
+
+app.put('/api/admin/reviews/:id', verifyAdminApiSession, (req, res) => {
+  const updated = Store.updateReview(req.params.id, req.body);
+  if (!updated) {
+    return res.status(404).json({ success: false, error: 'Review not found.' });
+  }
+  return res.status(200).json({ success: true, data: updated });
+});
+
+app.delete('/api/admin/reviews/:id', verifyAdminApiSession, (req, res) => {
+  const result = Store.deleteReview(req.params.id);
+  if (!result.success) {
+    return res.status(404).json(result);
+  }
+  return res.status(200).json(result);
+});
+
+// ---------------------------------------------------------------------------
 // Health Check Endpoint (Required by Render / Railway & DevOps specifications)
 // ---------------------------------------------------------------------------
 app.get('/health', (req, res) => {
@@ -775,8 +1049,9 @@ app.post('/api/custom-order', (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// Static file serving for local unified preview
+// Static file serving for uploads & local unified preview
 // ---------------------------------------------------------------------------
+app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '365d', immutable: true }));
 app.use(express.static(path.join(__dirname, './')));
 
 // Catch-all 404 handler for unknown API routes

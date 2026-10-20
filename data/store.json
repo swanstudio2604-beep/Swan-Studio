@@ -351,5 +351,1906 @@
       "created_at": "2026-10-19T00:00:00.000Z",
       "updated_at": "2026-10-19T00:00:00.000Z"
     }
+  ],
+  "site_content": {
+    "announcement": "✨ Festive Handcrafted Collection 1792477937230 ✨",
+    "announcementActive": true,
+    "announcementStartDate": null,
+    "announcementEndDate": null,
+    "hero": {
+      "headline": "Every Stitch Tells a Story",
+      "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+      "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+      "image": "assets/images/hero-bouquet.webp?v=1792477937230"
+    },
+    "featuredHeading": "Featured Creations",
+    "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+    "story": {
+      "makerName": "Bhumika Nama",
+      "makerRole": "Founder & Crochet Artisan • Jaipur",
+      "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+      "makerPhoto": "assets/images/maker-artisan.webp?v=1792477937230",
+      "pageTitle": "The Hands Behind the Hook",
+      "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+      "headline": "Handcrafted Art with Heart 1792477943808",
+      "p1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477943808.",
+      "sec1Title": "Slow, Mindful Craftsmanship",
+      "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+      "sec2Title": "Pure Materials & Attention to Detail",
+      "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+      "promise1Title": "Slow Handcrafted Artistry",
+      "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+      "promise2Title": "Skin-Safe Premium Yarns",
+      "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+      "promise3Title": "Custom Commissions",
+      "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+      "promise4Title": "Artisan Packaging",
+      "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+    },
+    "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+    "homeStoryTitle": "A Note from the Founder",
+    "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+    "contact": {
+      "email": "swanstudio2604@gmail.com",
+      "whatsapp": "9509966512",
+      "location": "Jaipur, Rajasthan, India",
+      "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+      "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+    },
+    "faq": [
+      {
+        "question": "Are your crochet creations machine-made or handmade?",
+        "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+      },
+      {
+        "question": "How long does a made-to-order piece take?",
+        "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+      },
+      {
+        "question": "Do you deliver across India?",
+        "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+      },
+      {
+        "question": "Can I request custom colors or designs?",
+        "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+      }
+    ],
+    "policies": {
+      "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+      "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+      "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+      "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+    },
+    "footer": {
+      "tagline": "Every Stitch Tells a Story.",
+      "developerCredit": "Developed with ❤️ by Mridul"
+    },
+    "seo": {
+      "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+      "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+      "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+      "favicon": "assets/icons/favicon.svg"
+    },
+    "history": [
+      {
+        "versionId": "ver-1792477944288",
+        "savedAt": "2026-10-20T06:32:24.288Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792477937230 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "image": "assets/images/hero-bouquet.webp?v=1792477937230"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp?v=1792477937230",
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "headline": "Handcrafted Art with Heart 1792477925159",
+            "p1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477925159.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792477937230",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792477937230",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Handcrafted Art with Heart 1792477925159",
+          "storyPara1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477925159.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-20T06:32:17.715Z"
+        }
+      },
+      {
+        "versionId": "ver-1792477937715",
+        "savedAt": "2026-10-20T06:32:17.715Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792477918457 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "image": "assets/images/hero-bouquet.webp?v=1792477918457"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp?v=1792477918457",
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "headline": "Handcrafted Art with Heart 1792477925159",
+            "p1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477925159.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792477918457",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792477918457",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Handcrafted Art with Heart 1792477925159",
+          "storyPara1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477925159.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-20T06:32:05.627Z"
+        }
+      },
+      {
+        "versionId": "ver-1792477925627",
+        "savedAt": "2026-10-20T06:32:05.627Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792477918457 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "image": "assets/images/hero-bouquet.webp?v=1792477918457"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp?v=1792477918457",
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "headline": "Handcrafted Art with Heart 1792477014436",
+            "p1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477014436.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792477918457",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792477918457",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Handcrafted Art with Heart 1792477014436",
+          "storyPara1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477014436.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-20T06:31:59.076Z"
+        }
+      },
+      {
+        "versionId": "ver-1792477919076",
+        "savedAt": "2026-10-20T06:31:59.076Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792436490959 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "image": "assets/images/hero-bouquet.webp?v=1792436490959"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "headline": "Handcrafted Art with Heart 1792477014436",
+            "p1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477014436.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792436490959",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Handcrafted Art with Heart 1792477014436",
+          "storyPara1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477014436.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-20T06:16:54.942Z"
+        }
+      },
+      {
+        "versionId": "ver-1792477014942",
+        "savedAt": "2026-10-20T06:16:54.942Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792436490959 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "image": "assets/images/hero-bouquet.webp?v=1792436490959"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "headline": "Handcrafted Art with Heart 1792477010914",
+            "p1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477010914.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792436490959",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Handcrafted Art with Heart 1792477010914",
+          "storyPara1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477010914.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-20T06:16:51.490Z"
+        }
+      },
+      {
+        "versionId": "ver-1792477011490",
+        "savedAt": "2026-10-20T06:16:51.490Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792436490959 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "image": "assets/images/hero-bouquet.webp?v=1792436490959"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "headline": "Handcrafted Art with Heart 1792476909777",
+            "p1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792476909777.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792436490959",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Handcrafted Art with Heart 1792476909777",
+          "storyPara1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792476909777.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-20T06:15:10.306Z"
+        }
+      },
+      {
+        "versionId": "ver-1792476910306",
+        "savedAt": "2026-10-20T06:15:10.306Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792436490959 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "image": "assets/images/hero-bouquet.webp?v=1792436490959"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "headline": "Handcrafted Art with Heart 1792476901847",
+            "p1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792476901847.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792436490959",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Handcrafted Art with Heart 1792476901847",
+          "storyPara1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792476901847.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-20T06:15:02.398Z"
+        }
+      },
+      {
+        "versionId": "ver-1792476902398",
+        "savedAt": "2026-10-20T06:15:02.398Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792436490959 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "image": "assets/images/hero-bouquet.webp?v=1792436490959"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "headline": "Handcrafted Art with Heart 1792476818326",
+            "p1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792476818326.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792436490959",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Handcrafted Art with Heart 1792476818326",
+          "storyPara1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792476818326.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-20T06:13:38.826Z"
+        }
+      },
+      {
+        "versionId": "ver-1792476818826",
+        "savedAt": "2026-10-20T06:13:38.826Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792436490959 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "image": "assets/images/hero-bouquet.webp?v=1792436490959"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "headline": "Handcrafted Art with Heart 1792476810943",
+            "p1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792476810943.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792436490959",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Handcrafted Art with Heart 1792476810943",
+          "storyPara1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792476810943.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-20T06:13:31.532Z"
+        }
+      },
+      {
+        "versionId": "ver-1792476811532",
+        "savedAt": "2026-10-20T06:13:31.532Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792436490959 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "image": "assets/images/hero-bouquet.webp?v=1792436490959"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "headline": "Every Stitch Tells a Story.",
+            "p1": "Swan Studio began with a simple hook, a skein of soft pastel yarn, and a passion for creating tactile, heartwarming objects by hand. What started as an intimate creative pursuit grew into a studio dedicated to celebrating handmade artistry.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792436490959",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792436490959",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Every Stitch Tells a Story.",
+          "storyPara1": "Swan Studio began with a simple hook, a skein of soft pastel yarn, and a passion for creating tactile, heartwarming objects by hand. What started as an intimate creative pursuit grew into a studio dedicated to celebrating handmade artistry.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-19T19:01:31.464Z"
+        }
+      },
+      {
+        "versionId": "ver-1792436491464",
+        "savedAt": "2026-10-19T19:01:31.464Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792436488451 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "image": "assets/images/hero-bouquet.webp?v=1792436488451"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp?v=1792436488451",
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "headline": "Every Stitch Tells a Story.",
+            "p1": "Swan Studio began with a simple hook, a skein of soft pastel yarn, and a passion for creating tactile, heartwarming objects by hand. What started as an intimate creative pursuit grew into a studio dedicated to celebrating handmade artistry.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792436488451",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792436488451",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Every Stitch Tells a Story.",
+          "storyPara1": "Swan Studio began with a simple hook, a skein of soft pastel yarn, and a passion for creating tactile, heartwarming objects by hand. What started as an intimate creative pursuit grew into a studio dedicated to celebrating handmade artistry.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-19T19:01:29.111Z"
+        }
+      },
+      {
+        "versionId": "ver-1792436489111",
+        "savedAt": "2026-10-19T19:01:29.111Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792436391938 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "image": "assets/images/hero-bouquet.webp",
+            "imageAlt": "Handcrafted crochet flower bouquet in pastel artisan wrap by Swan Studio Jaipur",
+            "buttonText": "Explore Creations",
+            "buttonLink": "shop.html"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp",
+            "makerPhotoAlt": "Bhumika Nama crocheting at Swan Studio workspace in Jaipur",
+            "headline": "Every Stitch Tells a Story.",
+            "p1": "Swan Studio began with a simple hook, a skein of soft pastel yarn, and a passion for creating tactile, heartwarming objects by hand. What started as an intimate creative pursuit grew into a studio dedicated to celebrating handmade artistry.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792436391938",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792436391938",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Every Stitch Tells a Story.",
+          "storyPara1": "Swan Studio began with a simple hook, a skein of soft pastel yarn, and a passion for creating tactile, heartwarming objects by hand. What started as an intimate creative pursuit grew into a studio dedicated to celebrating handmade artistry.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-19T18:59:52.547Z"
+        }
+      },
+      {
+        "versionId": "ver-1792436392547",
+        "savedAt": "2026-10-19T18:59:52.547Z",
+        "content": {
+          "announcement": "✨ Festive Handcrafted Collection 1792436384702 ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "image": "assets/images/hero-bouquet.webp",
+            "imageAlt": "Handcrafted crochet flower bouquet in pastel artisan wrap by Swan Studio Jaipur",
+            "buttonText": "Explore Creations",
+            "buttonLink": "shop.html"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp",
+            "makerPhotoAlt": "Bhumika Nama crocheting at Swan Studio workspace in Jaipur",
+            "headline": "Every Stitch Tells a Story.",
+            "p1": "Swan Studio began with a simple hook, a skein of soft pastel yarn, and a passion for creating tactile, heartwarming objects by hand. What started as an intimate creative pursuit grew into a studio dedicated to celebrating handmade artistry.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          },
+          "heroHeadline": "Every Stitch Tells a Story",
+          "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+          "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+          "heroImage": "assets/images/hero-bouquet.webp?v=1792436384702",
+          "makerName": "Bhumika Nama",
+          "makerRole": "Founder & Crochet Artisan • Jaipur",
+          "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+          "makerPhoto": "assets/images/maker-artisan.webp?v=1792436384702",
+          "storyPageTitle": "The Hands Behind the Hook",
+          "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+          "storyHeadline": "Every Stitch Tells a Story.",
+          "storyPara1": "Swan Studio began with a simple hook, a skein of soft pastel yarn, and a passion for creating tactile, heartwarming objects by hand. What started as an intimate creative pursuit grew into a studio dedicated to celebrating handmade artistry.",
+          "storySection1Title": "Slow, Mindful Craftsmanship",
+          "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+          "storySection2Title": "Pure Materials & Attention to Detail",
+          "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+          "promise1Title": "Slow Handcrafted Artistry",
+          "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+          "promise2Title": "Skin-Safe Premium Yarns",
+          "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+          "promise3Title": "Custom Commissions",
+          "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+          "promise4Title": "Artisan Packaging",
+          "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+          "updated_at": "2026-10-19T18:59:45.280Z"
+        }
+      },
+      {
+        "versionId": "ver-1792436385280",
+        "savedAt": "2026-10-19T18:59:45.280Z",
+        "content": {
+          "announcement": "✨ Handcrafted with love in India • Custom crochet creations & personalized gifts ✨",
+          "announcementActive": true,
+          "announcementStartDate": null,
+          "announcementEndDate": null,
+          "hero": {
+            "headline": "Every Stitch Tells a Story",
+            "subheadline": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+            "badge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+            "image": "assets/images/hero-bouquet.webp",
+            "imageAlt": "Handcrafted crochet flower bouquet in pastel artisan wrap by Swan Studio Jaipur",
+            "buttonText": "Explore Creations",
+            "buttonLink": "shop.html"
+          },
+          "featuredHeading": "Featured Creations",
+          "featuredSubtitle": "Artisanal crochet pieces handcrafted with premium yarn, patient details, and timeless charm.",
+          "story": {
+            "pageTitle": "The Hands Behind the Hook",
+            "pageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+            "makerName": "Bhumika Nama",
+            "makerRole": "Founder & Crochet Artisan • Jaipur",
+            "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+            "makerPhoto": "assets/images/maker-artisan.webp",
+            "makerPhotoAlt": "Bhumika Nama crocheting at Swan Studio workspace in Jaipur",
+            "headline": "Every Stitch Tells a Story.",
+            "p1": "Swan Studio began with a simple hook, a skein of soft pastel yarn, and a passion for creating tactile, heartwarming objects by hand. What started as an intimate creative pursuit grew into a studio dedicated to celebrating handmade artistry.",
+            "sec1Title": "Slow, Mindful Craftsmanship",
+            "sec1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+            "sec2Title": "Pure Materials & Attention to Detail",
+            "sec2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+            "promise1Title": "Slow Handcrafted Artistry",
+            "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+            "promise2Title": "Skin-Safe Premium Yarns",
+            "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+            "promise3Title": "Custom Commissions",
+            "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+            "promise4Title": "Artisan Packaging",
+            "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes."
+          },
+          "founderQuote": "Crochet is my meditation. When I create a flower or a plushie, I imagine the smile it will bring when someone opens their parcel.",
+          "homeStoryTitle": "A Note from the Founder",
+          "homeStoryText": "Swan Studio was born from a love for slow, tactile art in Jaipur. Every creation is handcrafted by Bhumika Nama using 100% milk cotton yarn.",
+          "contact": {
+            "email": "swanstudio2604@gmail.com",
+            "whatsapp": "9509966512",
+            "location": "Jaipur, Rajasthan, India",
+            "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+            "note": "Direct Connection Policy: Rather than an unmonitored generic web form, Swan Studio connects directly through WhatsApp and Email."
+          },
+          "faq": [
+            {
+              "question": "Are your crochet creations machine-made or handmade?",
+              "answer": "Every single Swan Studio creation is 100% handcrafted by human hands. Crochet cannot be replicated by any commercial knitting machine in the world."
+            },
+            {
+              "question": "How long does a made-to-order piece take?",
+              "answer": "Made-to-order creations typically require 3–6 business days to knit, assemble, and package before dispatch."
+            },
+            {
+              "question": "Do you deliver across India?",
+              "answer": "Yes, we deliver pan-India via trusted courier partners including DTDC, Delhivery, and India Post Speed Post."
+            },
+            {
+              "question": "Can I request custom colors or designs?",
+              "answer": "Absolutely! Visit our Custom Orders page or message Bhumika directly on WhatsApp to design your dream bouquet, bag, or plushie."
+            }
+          ],
+          "policies": {
+            "shipping": "Swan Studio ships pan-India from our Jaipur atelier. Ready-to-ship creations dispatch within 1–2 business days. Made-to-order items require 3–6 business days for crafting. Standard delivery fee is ₹99, and shipping is free on orders above ₹1,499.",
+            "returns": "Because our crochet pieces are meticulously handcrafted and made-to-order, we accept cancellations within 24 hours of order placement. If an item arrives damaged during transit, notify us within 48 hours with an unboxing video for an immediate replacement.",
+            "privacy": "We deeply respect your privacy. Customer contact details, delivery addresses, and payment references are used solely for fulfilling your orders and communication regarding your creations. We never share or sell your information.",
+            "terms": "By ordering from Swan Studio, you celebrate the natural uniqueness of handcrafted art. Minor handcraft variations in stitch tension or color hues are a hallmark of artisanal slow craft."
+          },
+          "footer": {
+            "tagline": "Every Stitch Tells a Story.",
+            "developerCredit": "Developed with ❤️ by Mridul"
+          },
+          "seo": {
+            "defaultTitle": "Swan Studio — Handcrafted Crochet Floral Bouquets, Bags & Plushies | Jaipur",
+            "defaultDescription": "Discover handcrafted artisanal crochet flowers, granny square bags, and amigurumi plushies by Bhumika Nama in Jaipur. Pan-India delivery.",
+            "ogImage": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+            "favicon": "assets/icons/favicon.svg"
+          }
+        }
+      }
+    ],
+    "heroHeadline": "Every Stitch Tells a Story",
+    "heroBadge": "🌸 Jaipur's Handcrafted Crochet Atelier",
+    "heroSub": "Artisanal handmade crochet creations crafted with love, premium milk cotton yarn, and endless patience in Jaipur.",
+    "heroImage": "assets/images/hero-bouquet.webp?v=1792477937230",
+    "makerName": "Bhumika Nama",
+    "makerRole": "Founder & Crochet Artisan • Jaipur",
+    "makerQuote": "Every stitch at Swan Studio carries patience, intention, and warmth.",
+    "makerPhoto": "assets/images/maker-artisan.webp?v=1792477937230",
+    "storyPageTitle": "The Hands Behind the Hook",
+    "storyPageSubtitle": "Swan Studio is an artisanal crochet atelier founded by Bhumika Nama in Jaipur, India, dedicated to slow craft and heartfelt creations.",
+    "storyHeadline": "Handcrafted Art with Heart 1792477943808",
+    "storyPara1": "At Swan Studio, we pour love into every petal and loop. Updated test 1792477943808.",
+    "storySection1Title": "Slow, Mindful Craftsmanship",
+    "storySection1Text": "In an era of fast fashion and mass manufacturing, crochet stands apart: it cannot be replicated by any commercial machine. Every loop, knot, and petal must be crafted by human hands. That means every single creation that leaves Swan Studio carries true individuality, patience, and warmth.",
+    "storySection2Title": "Pure Materials & Attention to Detail",
+    "storySection2Text": "We select premium milk cotton yarns, mercerized threads, and hypoallergenic stuffing. We test color combinations, shape stability, and durability so that your bouquets, plushies, and bags remain cherished keepsakes for years.",
+    "promise1Title": "Slow Handcrafted Artistry",
+    "promise1Text": "Every piece is crocheted loop by loop with patience, never rushed or machine manufactured.",
+    "promise2Title": "Skin-Safe Premium Yarns",
+    "promise2Text": "We use non-toxic, skin-friendly milk cotton yarn and hypoallergenic polyfill stuffing.",
+    "promise3Title": "Custom Commissions",
+    "promise3Text": "Personalized color palettes, character requests, and bespoke bouquets made specifically for you.",
+    "promise4Title": "Artisan Packaging",
+    "promise4Text": "Wrapped with kraft paper, twine, and personal handwritten care notes.",
+    "updated_at": "2026-10-20T06:32:24.288Z"
+  },
+  "site_settings": {
+    "upiId": "9509966512@fam",
+    "whatsapp": "9509966512",
+    "email": "swanstudio2604@gmail.com",
+    "location": "Jaipur, Rajasthan, India",
+    "hours": "Mon – Sat: 10:00 AM – 7:00 PM IST",
+    "shippingFee": 99,
+    "freeThreshold": 1499,
+    "lowStock": 2,
+    "codEnabled": false,
+    "instagram": "https://www.instagram.com/swan_handcrafted_studio.3568",
+    "instagramHandle": "@swan_handcrafted_studio.3568",
+    "freeShip": 1499,
+    "stdShip": 99,
+    "updated_at": "2026-10-20T06:32:24.298Z"
+  },
+  "blog_posts": [
+    {
+      "id": "post-1792477939613-486",
+      "title": "The Art of Slow Crochet 1792477939178",
+      "slug": "art-of-slow-crochet-1792477939178",
+      "excerpt": "UPDATED EXCERPT FOR STORY 1792477939178",
+      "body": "<h2>Slow Living</h2><p>In our Jaipur atelier, every stitch is formed with intention.</p>",
+      "cover_image": "assets/images/hero-bouquet.webp",
+      "cover_image_alt": "The Art of Slow Crochet 1792477939178",
+      "tags": [],
+      "status": "PUBLISHED",
+      "published_at": "2026-10-19T14:02:00.000Z",
+      "created_at": "2026-10-20T06:32:19.613Z",
+      "updated_at": "2026-10-20T06:32:21.520Z",
+      "deleted_at": "2026-10-20T06:32:22.135Z",
+      "is_featured": false,
+      "read_time_minutes": 1,
+      "author": "Bhumika Nama",
+      "seo_title": "The Art of Slow Crochet 1792477939178",
+      "seo_description": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792477939178."
+    },
+    {
+      "id": "post-1792477920984-463",
+      "title": "The Art of Slow Crochet 1792477920537",
+      "slug": "art-of-slow-crochet-1792477920537",
+      "excerpt": "UPDATED EXCERPT FOR STORY 1792477920537",
+      "body": "<h2>Slow Living</h2><p>In our Jaipur atelier, every stitch is formed with intention.</p>",
+      "cover_image": "assets/images/hero-bouquet.webp",
+      "cover_image_alt": "The Art of Slow Crochet 1792477920537",
+      "tags": [],
+      "status": "PUBLISHED",
+      "published_at": "2026-10-19T14:02:00.000Z",
+      "created_at": "2026-10-20T06:32:00.984Z",
+      "updated_at": "2026-10-20T06:32:02.901Z",
+      "deleted_at": "2026-10-20T06:32:03.502Z",
+      "is_featured": false,
+      "read_time_minutes": 1,
+      "author": "Bhumika Nama",
+      "seo_title": "The Art of Slow Crochet 1792477920537",
+      "seo_description": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792477920537."
+    },
+    {
+      "id": "post-1792476766182-991",
+      "title": "The Art of Slow Crochet 1792476765676",
+      "slug": "art-of-slow-crochet-1792476765676",
+      "excerpt": "UPDATED EXCERPT FOR STORY 1792476765676",
+      "body": "<h2>Slow Living</h2><p>In our Jaipur atelier, every stitch is formed with intention.</p>",
+      "cover_image": "assets/images/hero-bouquet.webp",
+      "cover_image_alt": "The Art of Slow Crochet 1792476765676",
+      "tags": [],
+      "status": "PUBLISHED",
+      "published_at": "2026-10-19T13:42:00.000Z",
+      "created_at": "2026-10-20T06:12:46.182Z",
+      "updated_at": "2026-10-20T06:12:48.098Z",
+      "deleted_at": "2026-10-20T06:12:48.674Z",
+      "is_featured": false,
+      "read_time_minutes": 1,
+      "author": "Bhumika Nama",
+      "seo_title": "The Art of Slow Crochet 1792476765676",
+      "seo_description": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792476765676."
+    },
+    {
+      "id": "post-1792476761052-68",
+      "title": "The Art of Slow Crochet 1792476760434",
+      "slug": "art-of-slow-crochet-1792476760434",
+      "excerpt": "UPDATED EXCERPT FOR STORY 1792476760434",
+      "body": "<h2>Slow Living</h2><p>In our Jaipur atelier, every stitch is formed with intention.</p>",
+      "cover_image": "assets/images/hero-bouquet.webp",
+      "cover_image_alt": "The Art of Slow Crochet 1792476760434",
+      "tags": [],
+      "status": "PUBLISHED",
+      "published_at": "2026-10-19T13:42:00.000Z",
+      "created_at": "2026-10-20T06:12:41.051Z",
+      "updated_at": "2026-10-20T06:12:43.001Z",
+      "deleted_at": "2026-10-20T06:12:43.604Z",
+      "is_featured": false,
+      "read_time_minutes": 1,
+      "author": "Bhumika Nama",
+      "seo_title": "The Art of Slow Crochet 1792476760434",
+      "seo_description": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792476760434."
+    },
+    {
+      "id": "post-1792437308660-626",
+      "title": "The Art of Slow Crochet 1792437308193",
+      "slug": "art-of-slow-crochet-1792437308193",
+      "excerpt": "UPDATED EXCERPT FOR STORY 1792437308193",
+      "body": "<h2>Slow Living</h2><p>In our Jaipur atelier, every stitch is formed with intention.</p>",
+      "cover_image": "assets/images/hero-bouquet.webp",
+      "cover_image_alt": "The Art of Slow Crochet 1792437308193",
+      "tags": [],
+      "status": "PUBLISHED",
+      "published_at": "2026-10-19T02:45:00.000Z",
+      "created_at": "2026-10-19T19:15:08.660Z",
+      "updated_at": "2026-10-19T19:15:10.607Z",
+      "deleted_at": null,
+      "is_featured": false,
+      "read_time_minutes": 1,
+      "author": "Bhumika Nama",
+      "seo_title": "The Art of Slow Crochet 1792437308193",
+      "seo_description": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792437308193."
+    },
+    {
+      "id": "post-1792437303425-822",
+      "title": "The Art of Slow Crochet 1792437302853",
+      "slug": "art-of-slow-crochet-1792437302853",
+      "excerpt": "UPDATED EXCERPT FOR STORY 1792437302853",
+      "body": "<h2>Slow Living</h2><p>In our Jaipur atelier, every stitch is formed with intention.</p>",
+      "cover_image": "assets/images/hero-bouquet.webp",
+      "cover_image_alt": "The Art of Slow Crochet 1792437302853",
+      "tags": [],
+      "status": "PUBLISHED",
+      "published_at": "2026-10-19T02:45:00.000Z",
+      "created_at": "2026-10-19T19:15:03.425Z",
+      "updated_at": "2026-10-19T19:15:05.447Z",
+      "deleted_at": "2026-10-19T19:15:06.075Z",
+      "is_featured": false,
+      "read_time_minutes": 1,
+      "author": "Bhumika Nama",
+      "seo_title": "The Art of Slow Crochet 1792437302853",
+      "seo_description": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792437302853."
+    },
+    {
+      "id": "post-1792437153982-109",
+      "title": "The Art of Slow Crochet 1792437153416",
+      "slug": "art-of-slow-crochet-1792437153416",
+      "excerpt": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792437153416.",
+      "body": "<h2>Slow Living</h2><p>In our Jaipur atelier, every stitch is formed with intention.</p>",
+      "cover_image": "assets/images/hero-bouquet.webp",
+      "cover_image_alt": "The Art of Slow Crochet 1792437153416",
+      "tags": [],
+      "status": "PUBLISHED",
+      "published_at": "2026-10-19T08:12:00.000Z",
+      "created_at": "2026-10-19T19:12:33.981Z",
+      "updated_at": "2026-10-19T19:12:34.702Z",
+      "deleted_at": null,
+      "is_featured": false,
+      "read_time_minutes": 1,
+      "author": "Bhumika Nama",
+      "seo_title": "The Art of Slow Crochet 1792437153416",
+      "seo_description": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792437153416."
+    },
+    {
+      "id": "post-1792437025353-490",
+      "title": "The Art of Slow Crochet 1792437024893",
+      "slug": "art-of-slow-crochet-1792437024893",
+      "excerpt": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792437024893.",
+      "body": "<h2>Slow Living</h2><p>In our Jaipur atelier, every stitch is formed with intention.</p>",
+      "cover_image": "assets/images/hero-bouquet.webp",
+      "cover_image_alt": "The Art of Slow Crochet 1792437024893",
+      "tags": [],
+      "status": "PUBLISHED",
+      "published_at": "2026-10-19T08:10:00.000Z",
+      "created_at": "2026-10-19T19:10:25.353Z",
+      "updated_at": "2026-10-19T19:10:26.054Z",
+      "deleted_at": null,
+      "is_featured": false,
+      "read_time_minutes": 1,
+      "author": "Bhumika Nama",
+      "seo_title": "The Art of Slow Crochet 1792437024893",
+      "seo_description": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792437024893."
+    },
+    {
+      "id": "post-1792437008096-770",
+      "title": "The Art of Slow Crochet 1792437007468",
+      "slug": "art-of-slow-crochet-1792437007468",
+      "excerpt": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792437007468.",
+      "body": "<h2>Slow Living</h2><p>In our Jaipur atelier, every stitch is formed with intention.</p>",
+      "cover_image": "assets/images/hero-bouquet.webp",
+      "cover_image_alt": "The Art of Slow Crochet 1792437007468",
+      "tags": [],
+      "status": "PUBLISHED",
+      "published_at": "2026-10-19T08:10:00.000Z",
+      "created_at": "2026-10-19T19:10:08.095Z",
+      "updated_at": "2026-10-19T19:10:08.812Z",
+      "deleted_at": null,
+      "is_featured": false,
+      "read_time_minutes": 1,
+      "author": "Bhumika Nama",
+      "seo_title": "The Art of Slow Crochet 1792437007468",
+      "seo_description": "Exploring the mindfulness and timeless beauty of hand-looped milk cotton yarn 1792437007468."
+    },
+    {
+      "id": "post-001",
+      "title": "Why Crochet Can Never Be Replicated by a Machine",
+      "slug": "why-crochet-cannot-be-machine-made",
+      "excerpt": "Unlike factory-knitted fabric, every crochet stitch requires human fingers to loop, pull, and tension yarn. Discover why crochet remains true slow craft.",
+      "body": "<p>In an age dominated by industrial fast fashion and rapid automated textile factories, there is one craft that stubbornly defies mechanization: <strong>crochet</strong>.</p><h2>The Anatomy of a Crochet Loop</h2><p>While knitting machines have existed since the Victorian industrial era, no commercial machine in the world can replicate true crochet. A knitting machine works on a fixed bed of needles where loops are formed simultaneously across rows. Crochet, however, is created with a single hook, forming one stitch at a time and inserting that hook into preceding loops that can vary dynamically in height, angle, and tension.</p><p>Every flower petal, granny square, and amigurumi curve you see at Swan Studio is formed loop by loop with human hands, patient concentration, and mindful artistry.</p><h2>Slow Craft as a Living Philosophy</h2><p>When you hold a Swan Studio crochet bouquet, you hold hours of human presence. Each petal is individually looped and stabilized with floral wire so it never wilts. It is an enduring heirloom that brings natural warmth into modern living spaces.</p>",
+      "cover_image": "assets/images/hero-bouquet.webp",
+      "cover_image_alt": "Handmade crochet flower bouquet by Bhumika Nama in Jaipur",
+      "tags": [
+        "Craftsmanship",
+        "Crochet Philosophy",
+        "Slow Living"
+      ],
+      "status": "PUBLISHED",
+      "published_at": "2026-10-15T10:00:00.000Z",
+      "created_at": "2026-10-15T09:00:00.000Z",
+      "updated_at": "2026-10-15T10:00:00.000Z",
+      "deleted_at": null,
+      "is_featured": true,
+      "read_time_minutes": 3,
+      "author": "Bhumika Nama",
+      "seo_title": "Why Crochet Cannot Be Replicated by Machines — Swan Studio",
+      "seo_description": "Discover why crochet remains the only textile art that cannot be mass produced by machines. Every loop is handcrafted by Bhumika Nama."
+    },
+    {
+      "id": "post-002",
+      "title": "How to Care for Your Handcrafted Crochet Bouquets & Bags",
+      "slug": "how-to-care-for-crochet-bouquets-and-bags",
+      "excerpt": "Simple, gentle care instructions to keep your milk cotton yarn bouquets dust-free, vibrant, and shaped beautifully for years to come.",
+      "body": "<p>One of the great joys of crochet floral bouquets is that they never require water, will never droop, and will never wilt. With minimal gentle care, your Swan Studio pieces will look as fresh in five years as they do the day you unbox them.</p><h2>1. Dusting Your Bouquets</h2><p>Keep your everlasting flowers looking vibrant by gently dusting them every few weeks. You can use a soft makeup brush, a feather duster, or a hairdryer set to the <em>cool, gentle air</em> setting from a distance of about 12 inches.</p><h2>2. Reshaping Petals & Leaves</h2><p>Our bouquets are built with flexible craft floral wire inside stems and leaves. If a petal bends during packing or moving, simply cup it gently in your fingertips and smooth it back into its natural curved shape.</p><h2>3. Spot Cleaning Bags & Totes</h2><p>For our Granny Square totes and bags, we recommend spot-cleaning with a damp cloth and mild baby shampoo. Avoid machine washing or wringing to protect the structure of the milk cotton fibers.</p>",
+      "cover_image": "assets/images/product-tote.webp",
+      "cover_image_alt": "Handmade crochet granny square tote bag care guide",
+      "tags": [
+        "Care Guide",
+        "Home Decor",
+        "Handmade Tips"
+      ],
+      "status": "PUBLISHED",
+      "published_at": "2026-10-18T12:00:00.000Z",
+      "created_at": "2026-10-18T11:00:00.000Z",
+      "updated_at": "2026-10-18T12:00:00.000Z",
+      "deleted_at": null,
+      "is_featured": false,
+      "read_time_minutes": 2,
+      "author": "Bhumika Nama",
+      "seo_title": "How to Care for Handmade Crochet Bouquets & Bags — Swan Studio",
+      "seo_description": "Expert tips on dusting, reshaping, and caring for handmade milk cotton crochet flowers and totes from Swan Studio in Jaipur."
+    }
+  ],
+  "reviews": [
+    {
+      "id": "rev-001",
+      "author_name": "Ananya Sharma",
+      "author_city": "Jaipur",
+      "rating": 5,
+      "title": "Everlasting Birthday Surprise!",
+      "comment": "I ordered the Daisy Delight bouquet for my mother's birthday. She was in absolute awe! The craftsmanship is breathtaking and the packaging had a lovely handwritten note. Bhumika is truly gifted.",
+      "status": "APPROVED",
+      "verified_purchase": true,
+      "created_at": "2026-10-10T14:20:00.000Z"
+    },
+    {
+      "id": "rev-002",
+      "author_name": "Pooja Verma",
+      "author_city": "Delhi",
+      "rating": 5,
+      "title": "Cutest Amigurumi Bunny!",
+      "comment": "The Marshmallow Bunny is the softest plushie I have ever held. Milk cotton yarn makes a huge difference compared to synthetic shop toys. Beautiful work!",
+      "status": "APPROVED",
+      "verified_purchase": true,
+      "created_at": "2026-10-12T16:45:00.000Z"
+    },
+    {
+      "id": "rev-003",
+      "author_name": "Rhea Sen",
+      "author_city": "Bengaluru",
+      "rating": 5,
+      "title": "Pastel Meadow Tote Bag",
+      "comment": "Sturdy, perfectly lined, and I get compliments everywhere I go. You can feel the love stitched into every single square.",
+      "status": "APPROVED",
+      "verified_purchase": true,
+      "created_at": "2026-10-14T09:15:00.000Z"
+    }
   ]
 }
