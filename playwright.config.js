@@ -2,7 +2,7 @@ const { defineConfig } = require('@playwright/test');
 
 module.exports = defineConfig({
   testDir: './tests',
-  testMatch: 'delete.spec.js',
+  testMatch: /.*\.spec\.js/,
   timeout: 120000,
   retries: 0,
   workers: 1, // run sequentially to prevent concurrent state collision on single store

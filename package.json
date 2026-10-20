@@ -9,7 +9,8 @@
     "test": "node -e \"console.log('All tests passed')\"",
     "test:mobile": "node tests/mobile.spec.js",
     "test:lighthouse": "node tests/lighthouse.js",
-    "test:delete": "playwright test tests/delete.spec.js"
+    "test:delete": "playwright test tests/delete.spec.js",
+    "test:content": "playwright test tests/content.spec.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
