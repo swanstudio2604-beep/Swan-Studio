@@ -46,6 +46,8 @@ const PUBLIC_PAGES = [
   'returns.html',
   'privacy.html',
   'terms.html',
+  'blog.html',
+  'blog-post.html',
   '404.html'
 ];
 
@@ -58,6 +60,7 @@ const ADMIN_PAGES = [
   'admin/custom-orders.html',
   'admin/reviews.html',
   'admin/content.html',
+  'admin/blog.html',
   'admin/inventory.html',
   'admin/payments.html',
   'admin/coupons.html',

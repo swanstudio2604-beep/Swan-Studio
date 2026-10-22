@@ -456,6 +456,7 @@
           cover_image_alt: coverAltInput.value.trim() || title
         };
 
+        try {
           const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
           if (!client) throw new Error('Database client not connected.');
 
@@ -493,42 +494,65 @@
           const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
           if (!client) {
             currentPosts = [];
-            updateCounts();
+            updateCounts([]);
             renderStoriesList(currentPosts);
             return;
           }
 
-          const isTrash = activeTab === 'TRASH';
-          let query = client.from('blog_posts').select('*').order('created_at', { ascending: false });
+          const { data, error } = await client
+            .from('blog_posts')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-          if (isTrash) {
-            query = query.not('deleted_at', 'is', null);
-          } else {
-            query = query.is('deleted_at', null);
-            if (activeTab !== 'ALL') {
-              query = query.eq('status', activeTab.toLowerCase());
-            }
-          }
-
-          const { data, error } = await query;
           if (error) throw new Error(error.message);
-          currentPosts = (data || []).map(p => ({
+
+          const rawPosts = (data || []).map(p => ({
             ...p,
             status: (p.status || 'draft').toUpperCase()
           }));
-          updateCounts();
+
+          updateCounts(rawPosts);
+
+          if (activeTab === 'TRASH') {
+            currentPosts = rawPosts.filter(p => Boolean(p.deleted_at));
+          } else {
+            const nonTrash = rawPosts.filter(p => !p.deleted_at);
+            if (activeTab === 'ALL') {
+              currentPosts = nonTrash;
+            } else {
+              currentPosts = nonTrash.filter(p => p.status === activeTab);
+            }
+          }
+
           renderStoriesList(currentPosts);
         } catch (err) {
           console.warn('Failed to load admin stories:', err);
           currentPosts = [];
+          updateCounts([]);
           renderStoriesList([]);
         } finally {
           loading.style.display = 'none';
         }
       }
 
-      function updateCounts() {
-        document.getElementById('count-all').textContent = currentPosts.length;
+      function updateCounts(allPosts = []) {
+        const nonTrash = allPosts.filter(p => !p.deleted_at);
+        const trash = allPosts.filter(p => Boolean(p.deleted_at));
+        const pub = nonTrash.filter(p => (p.status || '').toUpperCase() === 'PUBLISHED');
+        const draft = nonTrash.filter(p => (p.status || '').toUpperCase() === 'DRAFT');
+        const sched = nonTrash.filter(p => (p.status || '').toUpperCase() === 'SCHEDULED');
+
+        const elAll = document.getElementById('count-all');
+        const elPub = document.getElementById('count-pub');
+        const elDraft = document.getElementById('count-draft');
+        const elSched = document.getElementById('count-sched');
+        const elTrash = document.getElementById('count-trash');
+
+        if (elAll) elAll.textContent = nonTrash.length;
+        if (elPub) elPub.textContent = pub.length;
+        if (elDraft) elDraft.textContent = draft.length;
+        if (elSched) elSched.textContent = sched.length;
+        if (elTrash) elTrash.textContent = trash.length;
       }
 
       function renderStoriesList(posts) {
