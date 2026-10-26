@@ -153,7 +153,7 @@
         </div>
 
         <!-- Right Column: Order Summary Review -->
-        <div style="background: var(--white); border-radius: var(--radius-lg); border: 2px dashed var(--rose); padding: 1.75rem; box-shadow: var(--shadow-card);">
+        <div class="checkout-summary-card checkout-card-box" style="background: var(--white); border-radius: var(--radius-lg); border: 2px dashed var(--rose); box-shadow: var(--shadow-card);">
           <h2 style="font-size: 1.35rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
             Order Summary
           </h2>
@@ -179,25 +179,25 @@
             </div>
 
             <!-- Checkout Coupon Box -->
-            <div id="checkout-coupon-section" style="margin: 0.85rem 0; padding: 0.75rem; background: var(--cream); border-radius: var(--radius-sm); border: 1px dashed var(--border-subtle);">
-              <div id="co-coupon-input-wrap" style="display: flex; gap: 0.4rem;">
-                <input type="text" id="co-coupon-input" placeholder="Coupon Code" style="flex: 1; padding: 0.4rem 0.6rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 0.82rem; text-transform: uppercase;">
-                <button type="button" id="co-apply-coupon-btn" class="btn btn-secondary btn-sm" style="padding: 0.4rem 0.75rem; font-size: 0.8rem;">Apply</button>
+            <div id="checkout-coupon-section" style="margin: 0.85rem 0; padding: 0.75rem; background: var(--cream); border-radius: var(--radius-sm); border: 1px dashed var(--border-subtle); width: 100%; box-sizing: border-box;">
+              <div id="co-coupon-input-wrap" style="display: flex; gap: 0.4rem; align-items: stretch; width: 100%; box-sizing: border-box;">
+                <input type="text" id="co-coupon-input" placeholder="Coupon Code" style="flex: 1; min-width: 0; width: 100%; box-sizing: border-box; padding: 0.45rem 0.65rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 0.85rem; text-transform: uppercase;">
+                <button type="button" id="co-apply-coupon-btn" class="btn btn-secondary btn-sm" style="flex-shrink: 0; white-space: nowrap; padding: 0.45rem 0.85rem; font-size: 0.82rem; font-weight: 600;">Apply</button>
               </div>
-              <div id="co-coupon-applied-wrap" style="display: none; justify-content: space-between; align-items: center;">
-                <span id="co-applied-tag" style="font-size: 0.82rem; font-weight: 600; color: var(--rose-text);"></span>
-                <button type="button" id="co-remove-coupon-btn" style="background: none; border: none; color: #B33939; font-size: 0.78rem; text-decoration: underline; cursor: pointer;">Remove</button>
+              <div id="co-coupon-applied-wrap" style="display: none; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.25rem 0;">
+                <span id="co-applied-tag" style="font-size: 0.85rem; font-weight: 600; color: var(--rose-text); flex: 1; min-width: 0; overflow-wrap: break-word;"></span>
+                <button type="button" id="co-remove-coupon-btn" style="flex-shrink: 0; background: none; border: none; color: #B33939; font-size: 0.82rem; font-weight: 600; text-decoration: underline; cursor: pointer; padding: 0.2rem 0.4rem;">Remove</button>
               </div>
-              <div id="co-coupon-msg" style="display: none; font-size: 0.75rem; margin-top: 0.35rem;"></div>
+              <div id="co-coupon-msg" style="display: none; font-size: 0.78rem; margin-top: 0.4rem; line-height: 1.4;"></div>
             </div>
 
-            <p id="checkout-shipping-banner" style="font-size: 0.78rem; color: #8A7670; margin-bottom: 1rem;">
-              🎉 Free delivery on orders ₹1,499 and above pan-India!
+            <p id="checkout-shipping-banner" style="font-size: 0.78rem; color: #8A7670; margin-bottom: 1rem; word-break: break-word; overflow-wrap: break-word; line-height: 1.45;">
+              🎉 Free delivery on orders ₹999 and above pan-India!
             </p>
 
-            <div style="display: flex; justify-content: space-between; padding-top: 1rem; border-top: 2px dashed var(--border-subtle); font-size: 1.3rem; font-weight: 700; color: var(--cocoa);">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; padding-top: 1rem; border-top: 2px dashed var(--border-subtle); font-size: 1.2rem; font-weight: 700; color: var(--cocoa); flex-wrap: wrap;">
               <span>Total Payable</span>
-              <span id="summary-total" style="color: var(--cocoa);">₹0.00</span>
+              <span id="summary-total" style="color: var(--cocoa); margin-left: auto;">₹0.00</span>
             </div>
           </div>
         </div>
@@ -260,7 +260,7 @@
       }
 
       async function refreshSummary() {
-        const { items, subtotal, discount, appliedCoupon, shipping, total, hasBlockedItems, blockedReasons } = await CHECKOUT.loadCartWithDetails();
+        const { items, subtotal, shipping, hasBlockedItems, blockedReasons } = await CHECKOUT.loadCartWithDetails();
 
         if (items.length === 0) {
           alert('Your shopping bag is empty. Redirecting to shop...');
@@ -289,8 +289,8 @@
 
         // Render summary items
         summaryItems.innerHTML = items.map(item => `
-          <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; font-size: 0.88rem; ${item.isOutOfStock || item.isUnavailable ? 'color: var(--cocoa); background: #FAF7F5; padding: 0.5rem; border-radius: 4px; border: 1px solid rgba(115, 97, 90, 0.2);' : ''}">
-            <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; font-size: 0.88rem; width: 100%; box-sizing: border-box; ${item.isOutOfStock || item.isUnavailable ? 'color: var(--cocoa); background: #FAF7F5; padding: 0.5rem; border-radius: 4px; border: 1px solid rgba(115, 97, 90, 0.2);' : ''}">
+            <div style="flex: 1; min-width: 0; overflow-wrap: break-word;">
               <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
                 <strong>${item.name}</strong>
                 ${item.isOutOfStock ? '<span class="sold-out-pill" style="font-size: 0.68rem; padding: 0.15rem 0.45rem;">Sold out</span>' : ''}
@@ -298,11 +298,30 @@
               </div>
               <div style="font-size: 0.78rem; color: #8A7670;">Qty: ${item.quantity} × ₹${item.unitPrice.toLocaleString('en-IN')}</div>
             </div>
-            <span style="font-weight: 600;">₹${item.lineTotal.toLocaleString('en-IN')}</span>
+            <span style="flex-shrink: 0; font-weight: 600; text-align: right; margin-left: 0.5rem;">₹${item.lineTotal.toLocaleString('en-IN')}</span>
           </div>
         `).join('');
 
         subtotalEl.textContent = `₹${subtotal.toLocaleString('en-IN')}`;
+
+        // Validate and apply coupon discount
+        let discount = 0;
+        let appliedCoupon = window.SwanCoupons ? window.SwanCoupons.getApplied() : null;
+        if (appliedCoupon && appliedCoupon.code) {
+          const val = await window.SwanCoupons.validate(appliedCoupon.code, subtotal);
+          if (val && val.valid) {
+            discount = parseFloat(val.discount_amount) || 0;
+            appliedCoupon.discount_amount = discount;
+            appliedCoupon.code = val.code;
+          } else {
+            if (window.SwanCoupons) window.SwanCoupons.removeApplied();
+            appliedCoupon = null;
+            discount = 0;
+            coMsg.style.display = 'block';
+            coMsg.style.color = '#B33939';
+            coMsg.textContent = val ? val.message : 'Coupon no longer applicable.';
+          }
+        }
         
         if (discount > 0 && appliedCoupon) {
           discountRowEl.style.display = 'flex';
@@ -317,8 +336,9 @@
           coAppliedWrap.style.display = 'none';
         }
 
+        const effectiveTotal = Math.max(0, subtotal - discount) + shipping;
         shippingEl.textContent = shipping === 0 ? 'FREE' : `₹${shipping.toLocaleString('en-IN')}`;
-        totalEl.textContent = `₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        totalEl.textContent = `₹${effectiveTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       }
 
       await refreshSummary();
@@ -351,7 +371,11 @@
       // Remove coupon in checkout
       coRemoveBtn.addEventListener('click', async () => {
         if (window.SwanCoupons) window.SwanCoupons.removeApplied();
-        coMsg.style.display = 'none';
+        coCouponInput.value = '';
+        coMsg.style.display = 'block';
+        coMsg.style.color = '#73615A';
+        coMsg.textContent = 'Coupon removed.';
+        setTimeout(() => { coMsg.style.display = 'none'; }, 2500);
         await refreshSummary();
       });
 
@@ -378,9 +402,12 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Securing order & reserving items...';
 
+        const applied = window.SwanCoupons ? window.SwanCoupons.getApplied() : null;
+        const couponCode = applied && applied.code ? applied.code : null;
+
         try {
           const result = await CHECKOUT.placeOrder({
-            name, phone, email, address, city, state, postalCode: pin, notes
+            name, phone, email, address, city, state, postalCode: pin, notes, couponCode
           });
 
           // Redirect to payment confirmation instructions

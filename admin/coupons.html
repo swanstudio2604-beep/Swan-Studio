@@ -330,10 +330,11 @@
             const id = e.currentTarget.dataset.id;
             try {
               btn.disabled = true;
-              await SwanCoupons.toggleActive(id);
+              const newState = await SwanCoupons.toggleActive(id);
               await loadCoupons();
+              ADMIN.showToast(newState ? '✓ Coupon activated' : '⏸ Coupon deactivated', 'success');
             } catch (err) {
-              alert('Failed to toggle status: ' + err.message);
+              ADMIN.showToast('Failed to toggle status: ' + err.message, 'error');
             } finally {
               btn.disabled = false;
             }
@@ -351,8 +352,9 @@
               btn.disabled = true;
               await SwanCoupons.delete(id);
               await loadCoupons();
+              ADMIN.showToast(`🗑️ Coupon "${code}" deleted`, 'success');
             } catch (err) {
-              alert('Failed to delete coupon: ' + err.message);
+              ADMIN.showToast('Failed to delete coupon: ' + err.message, 'error');
             }
           });
         });

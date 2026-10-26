@@ -376,7 +376,26 @@
         if (excerptEl) excerptEl.textContent = post.excerpt || '';
 
         const bodyEl = document.getElementById('post-body');
-        bodyEl.innerHTML = post.body || '';
+        function formatContent(raw) {
+          if (!raw) return '';
+          let t = raw.trim();
+          if (t.includes('<p>') || t.includes('<h2>') || t.includes('<div>')) return t;
+          const blocks = t.split(/\n\s*\n/);
+          return blocks.map(block => {
+            let b = block.trim();
+            if (!b) return '';
+            if (b.startsWith('### ')) return `<h3>${b.substring(4)}</h3>`;
+            if (b.startsWith('## ')) return `<h2>${b.substring(3)}</h2>`;
+            if (b.startsWith('> ')) return `<blockquote>${b.substring(2)}</blockquote>`;
+            if (b.startsWith('• ') || b.startsWith('- ')) {
+              const lis = b.split('\n').map(l => `<li>${l.replace(/^[•\-]\s*/, '')}</li>`).join('');
+              return `<ul>${lis}</ul>`;
+            }
+            let fmt = b.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
+            return `<p>${fmt}</p>`;
+          }).join('\n');
+        }
+        bodyEl.innerHTML = formatContent(post.body || '');
 
         // Share buttons
         const pageUrl = window.location.href;

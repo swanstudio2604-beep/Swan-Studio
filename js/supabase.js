@@ -214,57 +214,142 @@ async function fetchCategories() {
   }
 }
 
-/**
- * Fetches published blog posts from Supabase.
- */
-async function fetchBlogPosts({ limit = 10 } = {}) {
-  const client = getSupabaseClient();
-  if (!client) return { isLive: false, data: [] };
+const DEFAULT_STORIES_FALLBACK = [
+  {
+    id: 'story-1',
+    title: 'Why Handmade Crochet Is An Art of Infinite Patience',
+    slug: 'why-handmade-crochet-is-an-art-of-infinite-patience',
+    status: 'published',
+    published_at: '2026-02-10T10:00:00.000Z',
+    created_at: '2026-02-10T10:00:00.000Z',
+    author: 'Bhumika Nama',
+    tags: ['Craftsmanship', 'Slow Living'],
+    read_time_minutes: 4,
+    cover_image: 'assets/images/hero-bouquet.webp',
+    cover_image_alt: 'Handcrafted pastel crochet bouquet arranged in studio',
+    excerpt: 'In a world of factory machines, every single crochet stitch is looped by human hands with quiet devotion, soft cotton yarn, and endless patience.',
+    body: `<h2>The Machine That Can Never Be Built</h2>
+<p>In our modern world, machines can weave giant carpets, print intricate 3D sculptures, and knit thousands of sweaters an hour. Yet, there is one craft that technology has never managed to replicate: <strong>crochet</strong>.</p>
+<p>Every single crochet stitch requires the human fingertip to gauge tension, twist the hook, and loop yarn through existing stitches with intuitive touch. When you hold a Swan Studio bouquet or wearable top, you are holding hundreds of minutes of mindful, focused human presence.</p>
+<blockquote>"Every loop is a quiet prayer of patience. You cannot rush yarn; it only blossoms when given time."</blockquote>
+<h2>Slow Craft as a Gentle Form of Meditation</h2>
+<p>Each sunflower or daisy begins with a magic ring — a tiny circle of cotton thread held gently between the fingers. As the petals take shape in our Jaipur atelier, the world outside slows down. That gentle rhythm of loop, pull, and stitch is why we say: <em>Every Stitch Tells a Story</em>.</p>`
+  },
+  {
+    id: 'story-2',
+    title: 'Caring For Your Handcrafted Crochet Bouquets',
+    slug: 'caring-for-your-handcrafted-crochet-bouquets',
+    status: 'published',
+    published_at: '2026-02-18T10:00:00.000Z',
+    created_at: '2026-02-18T10:00:00.000Z',
+    author: 'Bhumika Nama',
+    tags: ['Care Guide', 'Home Decor'],
+    read_time_minutes: 3,
+    cover_image: 'assets/images/hero-bouquet-sm.webp',
+    cover_image_alt: 'Delicate everlasting crochet flowers in a ceramic vase',
+    excerpt: 'Simple, gentle tips to ensure your everlasting crochet floral bouquets, daisies, and lavender stems remain fresh, vibrant, and blooming forever.',
+    body: `<h2>Everlasting Blooms, Tenderly Kept</h2>
+<p>Unlike real florals that wither in a week, our handmade crochet bouquets are created to hold your sweetest memories forever. With just a little bit of mindful care, your blooms will look just as radiant five years from now as they do today.</p>
+<h2>1. Keep Them Dust-Free with Gentle Care</h2>
+<p>Every few weeks, give your flowers a gentle puff of cool air using a hairdryer on the lowest, coolest setting, or lightly dust them with a soft makeup brush or microfiber cloth.</p>
+<h2>2. Shield from Harsh Direct Sunlight</h2>
+<p>While our premium milk-cotton yarns are colorfast, prolonged exposure to harsh afternoon sun can slowly soften vibrant pastel dyes over many years. Display them in well-lit living spaces, study desks, or bedside tables away from direct blazing heat.</p>
+<h2>3. Moisture & Storage</h2>
+<p>Crochet blooms love dry, cozy spaces. Avoid spraying water or perfumes directly on the petals. If you ever need to pack them away for travel, place them in a rigid gift box to prevent wire stems from bending.</p>`
+  },
+  {
+    id: 'story-3',
+    title: 'Behind the Stitches: How a Custom Crochet Top Comes to Life',
+    slug: 'behind-the-stitches-how-a-custom-crochet-top-comes-to-life',
+    status: 'published',
+    published_at: '2026-03-01T10:00:00.000Z',
+    created_at: '2026-03-01T10:00:00.000Z',
+    author: 'Bhumika Nama',
+    tags: ['Craftsmanship', 'Studio Diary'],
+    read_time_minutes: 5,
+    cover_image: 'assets/images/product-corset-top.webp',
+    cover_image_alt: 'Black crochet corset top with delicate lace borders',
+    excerpt: 'From sizing measurements to selecting breathable cotton yarn — step inside our Jaipur atelier to see how bespoke wearable crochet pieces are crafted.',
+    body: `<h2>Wearable Art Custom-Fitted to You</h2>
+<p>A crochet garment is completely different from fast-fashion clothing. It is sculpted directly to your natural contours, stitch by stitch, loop by loop.</p>
+<p>When a client shares their bust, waist, and underbust measurements with us, we calculate the exact stitch count needed so the corset top or halter fits like a second skin — supportive, breathable, and utterly unique.</p>
+<blockquote>"Crochet conforms to the body with soft natural warmth that no synthetic fabric can duplicate."</blockquote>
+<h2>Premium Cotton for Indian Weather</h2>
+<p>We work exclusively with soft 4-ply and 5-ply combed milk cotton yarn. It is breathable in warm weather, gentle on sensitive skin, and retains its graceful drape wash after wash.</p>`
+  }
+];
 
+function getLocalStoriesFallback() {
   try {
-    const now = new Date().toISOString();
-    const { data, error } = await client
-      .from('blog_posts')
-      .select('*')
-      .eq('status', 'published')
-      .is('deleted_at', null)
-      .or(`published_at.is.null,published_at.lte.${now}`)
-      .order('published_at', { ascending: false, nullsFirst: false })
-      .limit(limit);
-
-    if (error) {
-      console.warn('fetchBlogPosts error:', error.message);
-      return { isLive: false, data: [] };
+    const raw = localStorage.getItem('swan_admin_stories');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     }
-    return { isLive: true, data: data || [] };
-  } catch (err) {
-    console.error('fetchBlogPosts exception:', err);
-    return { isLive: false, data: [] };
+    localStorage.setItem('swan_admin_stories', JSON.stringify(DEFAULT_STORIES_FALLBACK));
+    return DEFAULT_STORIES_FALLBACK.slice();
+  } catch {
+    return DEFAULT_STORIES_FALLBACK.slice();
   }
 }
 
 /**
- * Fetches a single blog post by slug from Supabase.
+ * Fetches published blog posts from Supabase (with resilient local fallback).
+ */
+async function fetchBlogPosts({ limit = 10 } = {}) {
+  const client = getSupabaseClient();
+  if (client) {
+    try {
+      const now = new Date().toISOString();
+      const { data, error } = await client
+        .from('blog_posts')
+        .select('*')
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .or(`published_at.is.null,published_at.lte.${now}`)
+        .order('published_at', { ascending: false, nullsFirst: false })
+        .limit(limit);
+
+      if (!error && data && data.length > 0) {
+        return { isLive: true, data };
+      }
+    } catch (err) {
+      console.warn('fetchBlogPosts Supabase fallback:', err);
+    }
+  }
+
+  // Local fallback
+  const local = getLocalStoriesFallback();
+  const published = local.filter(p => !p.deleted_at && (p.status || '').toLowerCase() === 'published');
+  return { isLive: false, data: published.slice(0, limit) };
+}
+
+/**
+ * Fetches a single blog post by slug from Supabase (with resilient local fallback).
  */
 async function fetchBlogPostBySlug(slug) {
+  if (!slug) return { isLive: false, data: null };
   const client = getSupabaseClient();
-  if (!client || !slug) return { isLive: false, data: null };
+  if (client) {
+    try {
+      const { data, error } = await client
+        .from('blog_posts')
+        .select('*')
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .single();
 
-  try {
-    const { data, error } = await client
-      .from('blog_posts')
-      .select('*')
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .is('deleted_at', null)
-      .single();
-
-    if (error || !data) return { isLive: false, data: null };
-    return { isLive: true, data };
-  } catch (err) {
-    console.error('fetchBlogPostBySlug exception:', err);
-    return { isLive: false, data: null };
+      if (!error && data) return { isLive: true, data };
+    } catch (err) {
+      console.warn('fetchBlogPostBySlug Supabase fallback:', err);
+    }
   }
+
+  // Local fallback
+  const local = getLocalStoriesFallback();
+  const post = local.find(p => p.slug === slug && !p.deleted_at && (p.status || '').toLowerCase() === 'published');
+  return { isLive: false, data: post || null };
 }
 
 /**

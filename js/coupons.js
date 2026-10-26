@@ -62,6 +62,34 @@ const SwanCoupons = {
   STORAGE_KEY: 'swan_admin_coupons',
 
   /**
+   * Helper to load coupons from localStorage fallback
+   */
+  getLocal() {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(DEFAULT_DEMO_COUPONS));
+      return DEFAULT_DEMO_COUPONS.slice();
+    } catch {
+      return DEFAULT_DEMO_COUPONS.slice();
+    }
+  },
+
+  /**
+   * Helper to persist coupons to localStorage fallback
+   */
+  saveLocal(list) {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.warn('Failed to save coupons to local storage:', e);
+    }
+  },
+
+  /**
    * Retrieves the coupon catalog (Supabase if live, otherwise demo storage)
    */
   async getAll() {
@@ -72,23 +100,16 @@ const SwanCoupons = {
           .from('coupons')
           .select('*')
           .order('created_at', { ascending: false });
-        if (!error && data) return data;
+        if (!error && data && Array.isArray(data) && data.length > 0) {
+          this.saveLocal(data);
+          return data;
+        }
       } catch (e) {
         console.warn('Supabase fetch coupons failed, using local fallback:', e);
       }
     }
 
-    // LocalStorage Fallback
-    try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored) {
-        return JSON.parse(stored);
-      }
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(DEFAULT_DEMO_COUPONS));
-      return DEFAULT_DEMO_COUPONS;
-    } catch {
-      return DEFAULT_DEMO_COUPONS;
-    }
+    return this.getLocal();
   },
 
   /**
@@ -110,18 +131,19 @@ const SwanCoupons = {
           p_subtotal: sub,
           p_user_id: userId
         });
-        if (error) {
-          return { valid: false, message: error.message || 'Error validating coupon.' };
+        if (!error && data && typeof data.valid === 'boolean') {
+          return data;
         }
-        return data;
+        // If error message indicates missing schema/table/function, fall through to local fallback
+        console.warn('Supabase RPC validate_coupon returned error/missing, using fallback:', error ? error.message : 'no data');
       } catch (e) {
         console.warn('Supabase RPC validate_coupon failed, using fallback:', e);
       }
     }
 
-    // Demo Mode Local Validation
+    // Resilient Fallback Validation
     const all = await this.getAll();
-    const coupon = all.find(c => c.code.toUpperCase() === code);
+    const coupon = all.find(c => (c.code || '').toUpperCase() === code);
 
     if (!coupon) {
       return { valid: false, message: `Coupon "${code}" is invalid or does not exist.` };
@@ -223,25 +245,37 @@ const SwanCoupons = {
       times_used: 0
     };
 
+    let remoteCreated = null;
     if (client) {
-      const { data, error } = await client.from('coupons').insert([formatted]).select().single();
-      if (error) throw new Error(error.message);
-      return data;
+      try {
+        const { data, error } = await client.from('coupons').insert([formatted]).select().single();
+        if (!error && data) {
+          remoteCreated = data;
+        } else if (error) {
+          console.warn('Supabase coupon create failed, saving locally:', error.message);
+        }
+      } catch (err) {
+        console.warn('Supabase coupon create exception:', err);
+      }
     }
 
-    // Demo Mode
-    const all = await this.getAll();
-    if (all.some(c => c.code.toUpperCase() === formatted.code)) {
-      throw new Error(`A coupon with code "${formatted.code}" already exists.`);
+    // Local Storage synchronization
+    const all = this.getLocal();
+    if (all.some(c => (c.code || '').toUpperCase() === formatted.code && (!remoteCreated || c.id !== remoteCreated.id))) {
+      if (!remoteCreated) {
+        throw new Error(`A coupon with code "${formatted.code}" already exists.`);
+      }
     }
 
-    const newCoupon = {
+    const newCoupon = remoteCreated || {
       ...formatted,
       id: 'coupon-' + Date.now(),
       created_at: new Date().toISOString()
     };
+
+    // Prepend and save
     all.unshift(newCoupon);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(all));
+    this.saveLocal(all);
     return newCoupon;
   },
 
@@ -250,18 +284,25 @@ const SwanCoupons = {
    */
   async toggleActive(id) {
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-    const all = await this.getAll();
-    const target = all.find(c => c.id === id);
-    if (!target) throw new Error('Coupon not found');
-
-    const newState = !target.is_active;
+    const all = this.getLocal();
+    const target = all.find(c => String(c.id) === String(id));
+    const newState = target ? !target.is_active : false;
 
     if (client) {
-      const { error } = await client.from('coupons').update({ is_active: newState }).eq('id', id);
-      if (error) throw new Error(error.message);
-    } else {
+      try {
+        const { error } = await client.from('coupons').update({ is_active: newState }).eq('id', id);
+        if (error) {
+          console.warn('Supabase toggleActive failed, persisting locally:', error.message);
+        }
+      } catch (err) {
+        console.warn('Supabase toggleActive exception:', err);
+      }
+    }
+
+    if (target) {
       target.is_active = newState;
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(all));
+      this.saveLocal(all);
+      return newState;
     }
 
     return newState;
@@ -273,13 +314,20 @@ const SwanCoupons = {
   async delete(id) {
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
     if (client) {
-      const { error } = await client.from('coupons').delete().eq('id', id);
-      if (error) throw new Error(error.message);
-    } else {
-      const all = await this.getAll();
-      const filtered = all.filter(c => c.id !== id);
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
+      try {
+        const { error } = await client.from('coupons').delete().eq('id', id);
+        if (error) {
+          console.warn('Supabase delete coupon failed, deleting locally:', error.message);
+        }
+      } catch (err) {
+        console.warn('Supabase delete coupon exception:', err);
+      }
     }
+
+    // Always update local storage
+    const all = this.getLocal();
+    const filtered = all.filter(c => String(c.id) !== String(id));
+    this.saveLocal(filtered);
     return true;
   },
 

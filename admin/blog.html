@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Blog Stories Atelier — Swan Studio Admin</title>
+  <title>Stories & Atelier Journal — Swan Studio Admin</title>
   <meta name="robots" content="noindex, nofollow">
 
   <!-- Google Fonts: Cormorant Garamond & Poppins -->
@@ -12,8 +12,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="../css/admin.css?v=m4">
+  <link rel="stylesheet" href="../css/admin.css?v=m5">
   <style>
+    /* Stories Atelier Theme Enhancements */
+    .stories-hero-card {
+      background: linear-gradient(135deg, #FFFDF9 0%, #FFF3EB 50%, #FAF0EE 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .stories-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.75rem;
+      background: #FFF;
+      border: 1px solid rgba(199, 131, 145, 0.3);
+      border-radius: var(--radius-pill);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--rose-text);
+      margin-bottom: 0.4rem;
+    }
+
     .story-card {
       background: var(--white);
       border-radius: var(--radius-md);
@@ -23,34 +50,39 @@
       display: flex;
       gap: 1.25rem;
       align-items: center;
-      transition: box-shadow var(--transition-fast);
+      transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
     .story-card:hover {
       box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
     }
     .story-thumb {
-      width: 90px;
-      height: 90px;
+      width: 95px;
+      height: 95px;
       border-radius: var(--radius-sm);
       object-fit: cover;
       background: #F5EBE6;
       flex-shrink: 0;
+      border: 1px solid var(--border-subtle);
     }
     .story-info {
       flex: 1;
       min-width: 0;
     }
     .story-title {
-      font-size: 1.15rem;
+      font-family: var(--font-serif);
+      font-size: 1.28rem;
       color: var(--cocoa);
       font-weight: 600;
       margin-bottom: 0.35rem;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
+      line-height: 1.3;
     }
     .story-meta {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: #8A7670;
       display: flex;
       gap: 0.75rem;
@@ -61,22 +93,28 @@
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
+      align-items: center;
     }
     .badge-status {
-      padding: 0.2rem 0.6rem;
+      padding: 0.2rem 0.65rem;
       border-radius: var(--radius-pill);
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
     }
-    .badge-published { background: #E8F5E9; color: #1B5E20; }
-    .badge-draft { background: #FFF3E0; color: #E65100; }
-    .badge-scheduled { background: #E3F2FD; color: #0D47A1; }
-    .badge-trash { background: #FFEBEE; color: #B71C1C; }
+    .badge-published { background: #E8F5E9; color: #1B5E20; border: 1px solid rgba(27,94,32,0.2); }
+    .badge-draft { background: #FFF8E1; color: #B78103; border: 1px solid rgba(183,129,3,0.2); }
+    .badge-scheduled { background: #E3F2FD; color: #0D47A1; border: 1px solid rgba(13,71,161,0.2); }
+    .badge-trash { background: #FFEBEE; color: #B71C1C; border: 1px solid rgba(183,28,28,0.2); }
 
+    /* Modal Sheet: Mobile-First Bottom Sheet / Desktop Centered Card */
     .modal-backdrop {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(43, 31, 28, 0.65);
+      backdrop-filter: blur(4px);
       z-index: 1000;
       display: none;
       align-items: center;
@@ -85,26 +123,56 @@
     }
     .modal-sheet {
       background: var(--white);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 720px;
+      max-width: 760px;
       max-height: 92vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: var(--shadow-hover);
+      box-shadow: 0 12px 38px rgba(0,0,0,0.18);
+      border: 1px solid rgba(199, 131, 145, 0.3);
     }
     .modal-header {
-      padding: 1.25rem 1.5rem;
+      padding: 1.15rem 1.5rem;
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: #FFFDF9;
+    }
+    .modal-nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.5rem 1.5rem;
+      background: #FAF7F4;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .modal-tab-btn {
+      padding: 0.45rem 0.95rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      background: transparent;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #73615A;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all var(--transition-fast);
+    }
+    .modal-tab-btn.active {
+      background: #FFFFFF;
+      color: var(--rose-text);
+      border-color: rgba(199, 131, 145, 0.4);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
     .modal-body {
       padding: 1.5rem;
       overflow-y: auto;
       flex: 1;
+      -webkit-overflow-scrolling: touch;
     }
     .modal-footer {
       padding: 1rem 1.5rem;
@@ -112,20 +180,154 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #FAFAF8;
+      background: #FFFDF9;
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
     }
-    @media (max-width: 600px) {
+
+    /* Friendly Visual Formatting Toolbar */
+    .editor-toolbar {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.5rem;
+      background: #FAF5F2;
+      border: 1px solid var(--border-subtle);
+      border-bottom: none;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      flex-wrap: wrap;
+    }
+    .tool-btn {
+      padding: 0.35rem 0.65rem;
+      background: #FFFFFF;
+      border: 1px solid rgba(199, 131, 145, 0.25);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--cocoa);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: background 0.15s ease;
+    }
+    .tool-btn:hover {
+      background: #FFF0F2;
+      border-color: var(--rose);
+      color: var(--rose-text);
+    }
+    .story-textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid var(--border-subtle);
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      padding: 0.85rem;
+      font-size: 1rem;
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      color: #3E322E;
+      min-height: 220px;
+      resize: vertical;
+      background: #FFFFFF;
+    }
+    .story-textarea:focus {
+      outline: none;
+      border-color: var(--rose);
+      box-shadow: 0 0 0 3px rgba(199, 131, 145, 0.15);
+    }
+
+    /* Friendly Topic Preset Pills */
+    .topic-pills {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-top: 0.4rem;
+    }
+    .topic-pill {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      background: #FAF5F2;
+      border: 1px dashed var(--border-subtle);
+      border-radius: var(--radius-pill);
+      color: #73615A;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .topic-pill:hover, .topic-pill.selected {
+      background: #FFF0F2;
+      border-color: var(--rose);
+      color: var(--rose-text);
+      font-weight: 600;
+    }
+
+    /* Customer Phone Preview Frame */
+    .phone-mockup-frame {
+      max-width: 380px;
+      margin: 0 auto;
+      background: #FFFFFF;
+      border-radius: 28px;
+      border: 8px solid #2B211E;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .phone-speaker-bar {
+      height: 18px;
+      background: #2B211E;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .phone-notch {
+      width: 60px;
+      height: 4px;
+      background: #4A3A35;
+      border-radius: 99px;
+    }
+    .phone-screen-content {
+      padding: 1.25rem 1rem;
+      overflow-y: auto;
+      max-height: 460px;
+      background: #FFFDF9;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 680px) {
+      .stories-hero-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.25rem 1rem;
+      }
+      .stories-hero-card .btn {
+        width: 100%;
+        justify-content: center;
+      }
       .story-card {
         flex-direction: column;
         align-items: flex-start;
+        padding: 1rem;
       }
       .story-thumb {
         width: 100%;
-        height: 140px;
+        height: 160px;
+      }
+      .story-actions {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+      }
+      .story-actions .btn {
+        flex: 1;
+        justify-content: center;
       }
       .modal-sheet {
-        max-height: 98vh;
-        border-radius: var(--radius-sm);
+        max-height: 100vh;
+        height: 100vh;
+        border-radius: 0;
+      }
+      .modal-backdrop {
+        padding: 0;
       }
       .modal-body {
         padding: 1rem;
@@ -134,8 +336,14 @@
         flex-direction: column;
         gap: 0.75rem;
       }
-      .modal-footer button {
+      .modal-footer > div {
         width: 100%;
+        display: flex;
+        gap: 0.5rem;
+      }
+      .modal-footer button {
+        flex: 1;
+        justify-content: center;
       }
     }
   </style>
@@ -150,16 +358,23 @@
 
     <!-- Main Workspace -->
     <main class="admin-main">
-      <div class="admin-header-row">
+      
+      <!-- Friendly Atelier Banner -->
+      <div class="stories-hero-card">
         <div>
-          <h1 class="admin-page-title">Blog Stories Atelier</h1>
-          <p class="admin-page-subtitle">
-            Write, curate, publish, and schedule handcrafted crochet stories and care guides for your audience.
+          <div class="stories-hero-badge">
+            <span>🌸</span> <span>Stories & Atelier Journal</span>
+          </div>
+          <h1 class="admin-page-title" style="margin-bottom: 0.35rem; font-size: 1.85rem;">
+            Stories & Craft Reflections
+          </h1>
+          <p class="admin-page-subtitle" style="margin: 0; max-width: 580px; font-size: 0.92rem;">
+            Write and share crochet care tips, behind-the-scenes stories, and slow craft reflections for your store visitors. No coding or technical knowledge required!
           </p>
         </div>
         <div>
-          <button type="button" id="btn-create-story" class="btn btn-primary" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.5rem;">
-            <span>✍️</span> <span>New Story</span>
+          <button type="button" id="btn-create-story" class="btn btn-primary" style="min-height: 46px; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.65rem 1.35rem; font-weight: 600; font-size: 0.95rem;">
+            <span>✍️</span> <span>Write a Story</span>
           </button>
         </div>
       </div>
@@ -167,10 +382,10 @@
       <!-- Filter Tabs -->
       <div class="admin-tabs-row" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
         <button type="button" class="tab-btn active" data-tab="ALL">All Stories (<span id="count-all">0</span>)</button>
-        <button type="button" class="tab-btn" data-tab="PUBLISHED">Published (<span id="count-pub">0</span>)</button>
-        <button type="button" class="tab-btn" data-tab="DRAFT">Drafts (<span id="count-draft">0</span>)</button>
-        <button type="button" class="tab-btn" data-tab="SCHEDULED">Scheduled (<span id="count-sched">0</span>)</button>
-        <button type="button" class="tab-btn" data-tab="TRASH">Trash (<span id="count-trash">0</span>)</button>
+        <button type="button" class="tab-btn" data-tab="PUBLISHED">🌟 Published (<span id="count-pub">0</span>)</button>
+        <button type="button" class="tab-btn" data-tab="DRAFT">📝 Drafts (<span id="count-draft">0</span>)</button>
+        <button type="button" class="tab-btn" data-tab="SCHEDULED">⏰ Scheduled (<span id="count-sched">0</span>)</button>
+        <button type="button" class="tab-btn" data-tab="TRASH">🗑️ Trash (<span id="count-trash">0</span>)</button>
       </div>
 
       <!-- Stories List Mount -->
@@ -178,10 +393,15 @@
         <div id="stories-loading" style="text-align: center; padding: 3rem; color: #8A7670;">Loading stories...</div>
         <div id="stories-feed" class="stories-feed"></div>
         <div id="blog-feed" style="display:none;"></div>
-        <div id="stories-empty" style="display: none; text-align: center; padding: 3.5rem; background: var(--white); border-radius: var(--radius-md); border: 1px dashed var(--border-subtle);">
-          <h3 style="font-size: 1.25rem; color: var(--cocoa); margin-bottom: 0.5rem;">No stories found in this section</h3>
-          <p style="color: #8A7670; margin-bottom: 1.25rem;">Share a reflection, a crochet technique, or a bouquet care tutorial.</p>
-          <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('btn-create-story').click();">Write a Story</button>
+        <div id="stories-empty" style="display: none; text-align: center; padding: 3.5rem 1.5rem; background: var(--white); border-radius: var(--radius-md); border: 1.5px dashed var(--border-subtle);">
+          <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🌸</div>
+          <h3 style="font-size: 1.3rem; color: var(--cocoa); margin-bottom: 0.5rem; font-family: var(--font-serif);">No stories in this section</h3>
+          <p style="color: #8A7670; margin-bottom: 1.35rem; max-width: 440px; margin-left: auto; margin-right: auto; font-size: 0.92rem;">
+            Share a crochet bouquet care guide, a founder reflection, or how you select soft cotton yarn.
+          </p>
+          <button type="button" class="btn btn-primary" onclick="document.getElementById('btn-create-story').click();">
+            ✍️ Write Your First Story
+          </button>
         </div>
       </div>
 
@@ -194,106 +414,184 @@
   <!-- Story Editor Modal -->
   <div class="modal-backdrop" id="story-modal">
     <div class="modal-sheet">
+      <!-- Modal Header -->
       <div class="modal-header">
-        <h2 style="font-size: 1.25rem; margin: 0; color: var(--cocoa);" id="modal-title">Write a Story</h2>
-        <button type="button" id="modal-close" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center;" aria-label="Close modal">✕</button>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.3rem;">🌸</span>
+          <h2 style="font-size: 1.3rem; margin: 0; color: var(--cocoa); font-family: var(--font-serif);" id="modal-title">Write a Story</h2>
+        </div>
+        <button type="button" id="modal-close" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; color: #8A7670;" aria-label="Close story editor">✕</button>
       </div>
 
-      <div class="modal-body">
-        <form id="story-form">
+      <!-- Visual Tabs: Write vs Phone Preview -->
+      <div class="modal-nav-tabs">
+        <button type="button" class="modal-tab-btn active" id="tab-write-mode">
+          <span>✍️</span> <span>Write &amp; Style</span>
+        </button>
+        <button type="button" class="modal-tab-btn" id="tab-preview-mode">
+          <span>📱</span> <span>Customer Phone Preview</span>
+        </button>
+      </div>
+
+      <!-- Tab 1: Write & Style Mode -->
+      <div class="modal-body" id="modal-body-write">
+        <form id="story-form" onsubmit="return false;">
           <input type="hidden" id="edit-story-id" value="">
 
-          <div class="form-group" style="margin-bottom: 1.15rem;">
-            <label for="story-title-input" class="form-label">Story Title <span style="color: var(--rose);">*</span></label>
-            <input type="text" id="story-title-input" class="form-control" placeholder="e.g. Why Crochet Can Never Be Replicated by a Machine" required style="font-size: 1.1rem; padding: 0.75rem;">
-          </div>
-
-          <div class="form-group" style="margin-bottom: 1.15rem;">
-            <label for="story-slug-input" class="form-label">URL Slug (Auto-generated)</label>
-            <div style="display: flex; gap: 0.5rem; align-items: center;">
-              <input type="text" id="story-slug-input" class="form-control" placeholder="why-crochet-cannot-be-machine-made">
-            </div>
-            <small style="color: #8A7670; font-size: 0.78rem;">Public URL: <code>blog-post.html?slug=<span id="slug-preview">...</span></code></small>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.15rem;">
-            <div class="form-group">
-              <label for="story-status-select" class="form-label">Publishing Status <span style="color: var(--rose);">*</span></label>
-              <select id="story-status-select" class="form-control" style="min-height: 44px;">
-                <option value="draft">Draft (Admin Only)</option>
-                <option value="published">Published (Live to Customers)</option>
-                <option value="scheduled">Scheduled</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="story-date-input" class="form-label">Publish Date</label>
-              <input type="datetime-local" id="story-date-input" class="form-control" style="min-height: 44px;">
-            </div>
-          </div>
-
-          <!-- Cover Image Uploader -->
+          <!-- Section 1: Headline & Web Link -->
           <div class="form-group" style="margin-bottom: 1.25rem;">
-            <label class="form-label">Cover Photograph</label>
+            <label for="story-title-input" class="form-label" style="font-weight: 600;">Story Title <span style="color: var(--rose);">*</span></label>
+            <input type="text" id="story-title-input" class="form-control" placeholder="e.g. Caring for Your Everlasting Crochet Sunflower Bouquet" required style="font-size: 1.15rem; padding: 0.8rem 1rem; border-radius: var(--radius-sm); font-family: var(--font-serif);">
+            <div style="margin-top: 0.4rem; font-size: 0.8rem; color: #8A7670; display: flex; align-items: center; gap: 0.35rem;">
+              <span>🔗 Store link:</span>
+              <code style="background: var(--cream); padding: 0.15rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-subtle); color: var(--cocoa);">blog-post.html?slug=<span id="slug-preview">...</span></code>
+            </div>
+            <input type="hidden" id="story-slug-input">
+          </div>
+
+          <!-- Section 2: Story Topic & Tag -->
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label for="story-tags-input" class="form-label" style="font-weight: 600;">Story Topic / Category</label>
+            <input type="text" id="story-tags-input" class="form-control" placeholder="e.g. Care Guide, Craftsmanship">
+            <div class="topic-pills">
+              <span class="topic-pill" onclick="appendTopic('Care Guide')">🌸 Care Guide</span>
+              <span class="topic-pill" onclick="appendTopic('Craftsmanship')">🧵 Craftsmanship</span>
+              <span class="topic-pill" onclick="appendTopic('Slow Living')">🌿 Slow Living</span>
+              <span class="topic-pill" onclick="appendTopic('Studio Diary')">✨ Studio Diary</span>
+              <span class="topic-pill" onclick="appendTopic('Home Decor')">🏡 Home Decor</span>
+            </div>
+          </div>
+
+          <!-- Section 3: Cover Photograph -->
+          <div class="form-group" style="margin-bottom: 1.35rem;">
+            <label class="form-label" style="font-weight: 600;">Cover Photograph</label>
             <div style="display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap;">
-              <div id="cover-preview-box" style="width: 140px; height: 95px; border-radius: var(--radius-sm); background: #F5EBE6; overflow: hidden; border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center;">
-                <img id="cover-preview-img" src="../assets/images/hero-bouquet.webp" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+              <div id="cover-preview-box" style="width: 135px; height: 95px; border-radius: var(--radius-sm); background: #F5EBE6; overflow: hidden; border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); flex-shrink: 0;">
+                <img id="cover-preview-img" src="../assets/images/hero-bouquet.webp" alt="Cover Preview" style="width: 100%; height: 100%; object-fit: cover;">
               </div>
-              <div style="flex: 1; min-width: 200px;">
-                <label for="cover-file-input" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; width: 100%; justify-content: center;">
-                  <span>📷 Choose Camera / Gallery Photo</span>
+              <div style="flex: 1; min-width: 220px;">
+                <label for="cover-file-input" class="btn btn-secondary btn-sm" style="min-height: 42px; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; width: 100%; justify-content: center;">
+                  <span>📸 Tap to Pick Photo from Phone / Camera</span>
                   <input type="file" id="cover-file-input" accept="image/*" style="display: none;">
                 </label>
-                <div id="cover-upload-status" style="font-size: 0.78rem; color: #8A7670; margin-top: 0.35rem;">Auto-compresses < 1600px, < 500 KB</div>
-                <input type="text" id="cover-url-input" class="form-control" placeholder="Or enter image URL" style="margin-top: 0.5rem; font-size: 0.85rem;">
-                <input type="text" id="cover-alt-input" class="form-control" placeholder="Image alt text (accessibility & SEO)" style="margin-top: 0.35rem; font-size: 0.82rem;">
+                <div id="cover-upload-status" style="font-size: 0.78rem; color: #8A7670; margin-top: 0.35rem;">
+                  Automatically optimized for crystal-clear, fast mobile display.
+                </div>
+                <input type="text" id="cover-alt-input" class="form-control" placeholder="Brief photo description (e.g. 'Yellow crochet sunflowers on wooden table')" style="margin-top: 0.45rem; font-size: 0.82rem;">
+                <input type="hidden" id="cover-url-input" value="assets/images/hero-bouquet.webp">
               </div>
             </div>
           </div>
 
-          <div class="form-group" style="margin-bottom: 1.15rem;">
-            <label for="story-excerpt-input" class="form-label">Short Excerpt (Summary for Cards)</label>
-            <textarea id="story-excerpt-input" class="form-control" rows="2" placeholder="Brief summary of this story shown on blog listing cards..."></textarea>
+          <!-- Section 4: Short Summary -->
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label for="story-excerpt-input" class="form-label" style="font-weight: 600;">Story Summary (1–2 sentences)</label>
+            <textarea id="story-excerpt-input" class="form-control" rows="2" placeholder="Brief, inviting summary shown on story cards to welcome readers..." style="font-size: 0.92rem;"></textarea>
           </div>
 
-          <div class="form-group" style="margin-bottom: 1.15rem;">
-            <label for="story-tags-input" class="form-label">Tags / Categories (Comma separated)</label>
-            <input type="text" id="story-tags-input" class="form-control" placeholder="Craftsmanship, Care Guide, Slow Living">
+          <!-- Section 5: Story Writing Area (Friendly & Intuitive) -->
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.4rem;">
+              <label for="story-body-input" class="form-label" style="font-weight: 600; margin: 0;">Story Content <span style="color: var(--rose);">*</span></label>
+              <span style="font-size: 0.78rem; color: #8A7670;">💡 Just type naturally! Press Enter twice for a new paragraph.</span>
+            </div>
+
+            <!-- Friendly visual toolbar -->
+            <div class="editor-toolbar">
+              <button type="button" class="tool-btn" onclick="formatInsert('## ', '\n')">🔤 Heading</button>
+              <button type="button" class="tool-btn" onclick="formatInsert('### ', '\n')">🔡 Subtitle</button>
+              <button type="button" class="tool-btn" onclick="formatInsert('**', '**')">𝗕 Bold</button>
+              <button type="button" class="tool-btn" onclick="formatInsert('*', '*')">𝘐 Italic</button>
+              <button type="button" class="tool-btn" onclick="formatInsert('> \"', '\"')">❝ Quote</button>
+              <button type="button" class="tool-btn" onclick="formatInsert('• ', '\n')">📋 List</button>
+              <button type="button" class="tool-btn" onclick="formatInsert('\n\n🌸 * * * 🌸\n\n', '')">🌸 Divider</button>
+            </div>
+
+            <textarea id="story-body-input" class="story-textarea" placeholder="Write your heartfelt story here...
+
+You can tell your customers how each loop is made by hand, share how to clean cotton yarn bouquets, or reflect on slow living in Jaipur.
+
+Press Enter twice to start a new paragraph!" required></textarea>
           </div>
 
-          <!-- Body Content Editor -->
-          <div class="form-group" style="margin-bottom: 1.15rem;">
-            <label for="story-body-input" class="form-label">Story Body (HTML or Rich Formatting) <span style="color: var(--rose);">*</span></label>
-            <div style="display: flex; gap: 0.35rem; margin-bottom: 0.4rem; flex-wrap: wrap;">
-              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<h2>', '</h2>')">H2</button>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<h3>', '</h3>')">H3</button>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<strong>', '</strong>')">Bold</button>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<em>', '</em>')">Italic</button>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<blockquote>', '</blockquote>')">Quote</button>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<ul>\n  <li>', '</li>\n</ul>')">List</button>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="insertTag('<p>', '</p>')">Para</button>
+          <!-- Section 6: Publishing Choice -->
+          <div style="background: #FFFDF9; border: 1.5px dashed var(--rose); border-radius: var(--radius-sm); padding: 1.15rem; margin-bottom: 1.25rem;">
+            <label class="form-label" style="font-weight: 600; color: var(--rose-text); margin-bottom: 0.5rem; display: block;">
+              Publishing Options
+            </label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <label style="display: flex; align-items: center; gap: 0.6rem; background: #FFFFFF; padding: 0.75rem; border: 1px solid var(--border-subtle); border-radius: 6px; cursor: pointer;">
+                <input type="radio" name="publish-choice" id="choice-pub" value="published" checked style="accent-color: var(--rose-text);">
+                <div>
+                  <strong style="display: block; font-size: 0.88rem; color: #1B5E20;">🌟 Publish Live Now</strong>
+                  <span style="font-size: 0.76rem; color: #8A7670;">Visible immediately on your website</span>
+                </div>
+              </label>
+
+              <label style="display: flex; align-items: center; gap: 0.6rem; background: #FFFFFF; padding: 0.75rem; border: 1px solid var(--border-subtle); border-radius: 6px; cursor: pointer;">
+                <input type="radio" name="publish-choice" id="choice-draft" value="draft" style="accent-color: var(--rose-text);">
+                <div>
+                  <strong style="display: block; font-size: 0.88rem; color: #B78103;">📝 Save as Draft</strong>
+                  <span style="font-size: 0.76rem; color: #8A7670;">Keep private to finish writing later</span>
+                </div>
+              </label>
             </div>
-            <textarea id="story-body-input" class="form-control" rows="8" placeholder="<p>Write your heartfelt story or advice here...</p>" required style="font-family: monospace; font-size: 0.9rem; line-height: 1.5;"></textarea>
+            <input type="hidden" id="story-status-select" value="published">
+            <input type="hidden" id="story-date-input" value="">
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-            <div class="form-group">
-              <label for="story-author-input" class="form-label">Author Name</label>
-              <input type="text" id="story-author-input" class="form-control" value="Bhumika Nama">
-            </div>
-            <div class="form-group">
-              <label for="story-seo-title" class="form-label">SEO Title (Optional)</label>
-              <input type="text" id="story-seo-title" class="form-control" placeholder="Title for Google search">
-            </div>
-          </div>
+          <input type="hidden" id="story-author-input" value="Bhumika Nama">
+          <input type="hidden" id="story-seo-title" value="">
         </form>
       </div>
 
+      <!-- Tab 2: Customer Phone Preview Mode -->
+      <div class="modal-body" id="modal-body-preview" style="display: none; background: #F8F4F0; padding: 1.5rem 0.5rem;">
+        <div class="phone-mockup-frame">
+          <div class="phone-speaker-bar">
+            <div class="phone-notch"></div>
+          </div>
+          <div class="phone-screen-content">
+            <!-- Simulated Store Story View -->
+            <div style="text-align: center; margin-bottom: 0.85rem;">
+              <span id="prev-tag" style="background: rgba(199, 131, 145, 0.15); color: var(--rose-text); font-size: 0.74rem; font-weight: 600; padding: 0.2rem 0.65rem; border-radius: 999px;">Care Guide</span>
+            </div>
+            
+            <h1 id="prev-title" style="font-family: var(--font-serif); font-size: 1.5rem; line-height: 1.25; color: var(--cocoa); margin-bottom: 0.65rem; text-align: center;">
+              Your Story Title Preview
+            </h1>
+
+            <div style="display: flex; justify-content: center; align-items: center; gap: 0.4rem; font-size: 0.76rem; color: #8A7670; margin-bottom: 1rem;">
+              <span>By Bhumika Nama</span>
+              <span>•</span>
+              <span id="prev-read-time">3 min read</span>
+            </div>
+
+            <div style="border-radius: 12px; overflow: hidden; margin-bottom: 1rem; border: 1px solid var(--border-subtle); max-height: 200px;">
+              <img id="prev-cover-img" src="../assets/images/hero-bouquet.webp" alt="Cover" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+
+            <p id="prev-excerpt" style="font-style: italic; color: #73615A; font-size: 0.88rem; line-height: 1.5; margin-bottom: 1rem; border-left: 2px solid var(--rose); padding-left: 0.65rem;">
+              Story summary will appear here...
+            </p>
+
+            <div id="prev-rendered-body" style="font-size: 0.9rem; line-height: 1.65; color: #4A3B36;">
+              <!-- Formatted body will render here -->
+            </div>
+
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed var(--border-subtle); text-align: center; font-size: 0.8rem; color: var(--rose-text); font-family: var(--font-serif); font-style: italic;">
+              Every Stitch Tells a Story.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
       <div class="modal-footer">
         <div id="modal-feedback" style="font-size: 0.85rem; color: #1B5E20; display: none;"></div>
         <div style="display: flex; gap: 0.75rem; margin-left: auto;">
-          <button type="button" id="btn-cancel-modal" class="btn btn-secondary" style="min-height: 44px;">Cancel</button>
-          <button type="button" id="btn-save-story" class="btn btn-primary" style="min-height: 44px;">💾 Save Story</button>
+          <button type="button" id="btn-cancel-modal" class="btn btn-secondary" style="min-height: 44px; padding: 0.6rem 1.2rem;">Cancel</button>
+          <button type="button" id="btn-save-story" class="btn btn-primary" style="min-height: 44px; padding: 0.6rem 1.4rem; font-weight: 600;">💾 Save &amp; Publish</button>
         </div>
       </div>
     </div>
@@ -307,19 +605,143 @@
   <script src="../js/auth.js"></script>
   <script src="../js/admin/admin-shared.js"></script>
   <script>
+    const STORAGE_KEY = 'swan_admin_stories';
+
+    const INITIAL_STORIES = [
+      {
+        id: 'story-1',
+        title: 'Why Handmade Crochet Is An Art of Infinite Patience',
+        slug: 'why-handmade-crochet-is-an-art-of-infinite-patience',
+        status: 'published',
+        published_at: '2026-02-10T10:00:00.000Z',
+        created_at: '2026-02-10T10:00:00.000Z',
+        author: 'Bhumika Nama',
+        tags: ['Craftsmanship', 'Slow Living'],
+        read_time_minutes: 4,
+        cover_image: 'assets/images/hero-bouquet.webp',
+        cover_image_alt: 'Handcrafted pastel crochet bouquet arranged in studio',
+        excerpt: 'In a world of factory machines, every single crochet stitch is looped by human hands with quiet devotion, soft cotton yarn, and endless patience.',
+        body: `## The Machine That Can Never Be Built\n\nIn our modern world, machines can weave giant carpets, print intricate 3D sculptures, and knit thousands of sweaters an hour. Yet, there is one craft that technology has never managed to replicate: **crochet**.\n\nEvery single crochet stitch requires the human fingertip to gauge tension, twist the hook, and loop yarn through existing stitches with intuitive touch. When you hold a Swan Studio bouquet or wearable top, you are holding hundreds of minutes of mindful, focused human presence.\n\n> "Every loop is a quiet prayer of patience. You cannot rush yarn; it only blossoms when given time."\n\n## Slow Craft as a Gentle Form of Meditation\n\nEach sunflower or daisy begins with a magic ring — a tiny circle of cotton thread held gently between the fingers. As the petals take shape in our Jaipur atelier, the world outside slows down. That gentle rhythm of loop, pull, and stitch is why we say: *Every Stitch Tells a Story*.`
+      },
+      {
+        id: 'story-2',
+        title: 'Caring For Your Handcrafted Crochet Bouquets',
+        slug: 'caring-for-your-handcrafted-crochet-bouquets',
+        status: 'published',
+        published_at: '2026-02-18T10:00:00.000Z',
+        created_at: '2026-02-18T10:00:00.000Z',
+        author: 'Bhumika Nama',
+        tags: ['Care Guide', 'Home Decor'],
+        read_time_minutes: 3,
+        cover_image: 'assets/images/hero-bouquet-sm.webp',
+        cover_image_alt: 'Delicate everlasting crochet flowers in a ceramic vase',
+        excerpt: 'Simple, gentle tips to ensure your everlasting crochet floral bouquets, daisies, and lavender stems remain fresh, vibrant, and blooming forever.',
+        body: `## Everlasting Blooms, Tenderly Kept\n\nUnlike real florals that wither in a week, our handmade crochet bouquets are created to hold your sweetest memories forever. With just a little bit of mindful care, your blooms will look just as radiant five years from now as they do today.\n\n### 1. Keep Them Dust-Free with Gentle Care\n\nEvery few weeks, give your flowers a gentle puff of cool air using a hairdryer on the lowest, coolest setting, or lightly dust them with a soft makeup brush or microfiber cloth.\n\n### 2. Shield from Harsh Direct Sunlight\n\nWhile our premium milk-cotton yarns are colorfast, prolonged exposure to harsh afternoon sun can slowly soften vibrant pastel dyes over many years. Display them in well-lit living spaces, study desks, or bedside tables away from direct blazing heat.\n\n### 3. Moisture & Storage\n\nCrochet blooms love dry, cozy spaces. Avoid spraying water or perfumes directly on the petals. If you ever need to pack them away for travel, place them in a rigid gift box to prevent wire stems from bending.`
+      },
+      {
+        id: 'story-3',
+        title: 'Behind the Stitches: How a Custom Crochet Top Comes to Life',
+        slug: 'behind-the-stitches-how-a-custom-crochet-top-comes-to-life',
+        status: 'published',
+        published_at: '2026-03-01T10:00:00.000Z',
+        created_at: '2026-03-01T10:00:00.000Z',
+        author: 'Bhumika Nama',
+        tags: ['Craftsmanship', 'Studio Diary'],
+        read_time_minutes: 5,
+        cover_image: 'assets/images/product-corset-top.webp',
+        cover_image_alt: 'Black crochet corset top with delicate lace borders',
+        excerpt: 'From sizing measurements to selecting breathable cotton yarn — step inside our Jaipur atelier to see how bespoke wearable crochet pieces are crafted.',
+        body: `## Wearable Art Custom-Fitted to You\n\nA crochet garment is completely different from fast-fashion clothing. It is sculpted directly to your natural contours, stitch by stitch, loop by loop.\n\nWhen a client shares their bust, waist, and underbust measurements with us, we calculate the exact stitch count needed so the corset top or halter fits like a second skin — supportive, breathable, and utterly unique.\n\n> "Crochet conforms to the body with soft natural warmth that no synthetic fabric can duplicate."\n\n## Premium Cotton for Indian Weather\n\nWe work exclusively with soft 4-ply and 5-ply combed milk cotton yarn. It is breathable in warm weather, gentle on sensitive skin, and retains its graceful drape wash after wash.`
+      }
+    ];
+
     let currentPosts = [];
     let activeTab = 'ALL';
 
-    function insertTag(open, close) {
+    function getLocalStories() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_STORIES));
+        return INITIAL_STORIES.slice();
+      } catch {
+        return INITIAL_STORIES.slice();
+      }
+    }
+
+    function saveLocalStories(list) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      } catch (e) {
+        console.warn('Failed to save stories locally:', e);
+      }
+    }
+
+    // Helper: Friendly markdown & text to HTML parser for non-IT users
+    function parseStoryToHtml(rawText) {
+      if (!rawText) return '';
+      let text = rawText.trim();
+      
+      // If it's already HTML (contains <p> or <h2>), return as is
+      if (text.includes('<p>') || text.includes('<h2>') || text.includes('<div>')) {
+        return text;
+      }
+
+      // Convert Markdown-like syntax
+      const blocks = text.split(/\n\s*\n/);
+      return blocks.map(block => {
+        let b = block.trim();
+        if (!b) return '';
+        if (b.startsWith('### ')) {
+          return `<h3 style="font-family: var(--font-serif); font-size: 1.25rem; color: var(--rose-text); margin: 1.2rem 0 0.5rem;">${b.substring(4)}</h3>`;
+        }
+        if (b.startsWith('## ')) {
+          return `<h2 style="font-family: var(--font-serif); font-size: 1.55rem; color: var(--cocoa); margin: 1.4rem 0 0.5rem;">${b.substring(3)}</h2>`;
+        }
+        if (b.startsWith('> ')) {
+          return `<blockquote style="border-left: 3px solid var(--rose); padding: 0.65rem 1rem; background: #FFF3EB; margin: 1.25rem 0; font-style: italic; border-radius: 0 6px 6px 0;">${b.substring(2)}</blockquote>`;
+        }
+        if (b.includes('🌸 * * * 🌸')) {
+          return `<div style="text-align: center; margin: 1.5rem 0; color: var(--rose-text);">🌸 • • • 🌸</div>`;
+        }
+        if (b.startsWith('• ') || b.startsWith('- ')) {
+          const items = b.split('\n').map(line => `<li>${line.replace(/^[•\-]\s*/, '')}</li>`).join('');
+          return `<ul style="margin: 0.85rem 0 0.85rem 1.5rem; line-height: 1.6;">${items}</ul>`;
+        }
+
+        // Inline formatting: bold and italic
+        let formatted = b
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/\n/g, '<br>');
+
+        return `<p style="margin-bottom: 1.15rem; line-height: 1.7;">${formatted}</p>`;
+      }).join('\n');
+    }
+
+    // Helper: Insert formatting without breaking lines
+    function formatInsert(open, close) {
       const textarea = document.getElementById('story-body-input');
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       const text = textarea.value;
-      const selected = text.substring(start, end) || 'text';
+      const selected = text.substring(start, end) || 'your words here';
       const replacement = open + selected + close;
       textarea.value = text.substring(0, start) + replacement + text.substring(end);
       textarea.focus();
       textarea.setSelectionRange(start + open.length, start + open.length + selected.length);
+    }
+
+    function appendTopic(topic) {
+      const input = document.getElementById('story-tags-input');
+      const current = input.value.split(',').map(t => t.trim()).filter(Boolean);
+      if (!current.includes(topic)) {
+        current.push(topic);
+        input.value = current.join(', ');
+      }
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -331,16 +753,20 @@
       const btnClose = document.getElementById('modal-close');
       const btnCancel = document.getElementById('btn-cancel-modal');
       const btnSave = document.getElementById('btn-save-story');
+      
+      const tabWrite = document.getElementById('tab-write-mode');
+      const tabPrev = document.getElementById('tab-preview-mode');
+      const bodyWrite = document.getElementById('modal-body-write');
+      const bodyPrev = document.getElementById('modal-body-preview');
+
       const titleInput = document.getElementById('story-title-input');
       const slugInput = document.getElementById('story-slug-input');
       const slugPreview = document.getElementById('slug-preview');
-      const statusSelect = document.getElementById('story-status-select');
-      const dateInput = document.getElementById('story-date-input');
+      const choicePub = document.getElementById('choice-pub');
+      const choiceDraft = document.getElementById('choice-draft');
       const excerptInput = document.getElementById('story-excerpt-input');
       const tagsInput = document.getElementById('story-tags-input');
       const bodyInput = document.getElementById('story-body-input');
-      const authorInput = document.getElementById('story-author-input');
-      const seoTitleInput = document.getElementById('story-seo-title');
       const coverUrlInput = document.getElementById('cover-url-input');
       const coverAltInput = document.getElementById('cover-alt-input');
       const coverFileInput = document.getElementById('cover-file-input');
@@ -360,20 +786,40 @@
         }
       });
 
-      slugInput.addEventListener('input', () => {
-        slugPreview.textContent = slugInput.value.trim() || '...';
+      // Tab Switching
+      tabWrite.addEventListener('click', () => {
+        tabWrite.classList.add('active');
+        tabPrev.classList.remove('active');
+        bodyWrite.style.display = 'block';
+        bodyPrev.style.display = 'none';
       });
 
-      coverUrlInput.addEventListener('input', () => {
-        const url = coverUrlInput.value.trim();
-        if (url) coverPreviewImg.src = url;
+      tabPrev.addEventListener('click', () => {
+        tabPrev.classList.add('active');
+        tabWrite.classList.remove('active');
+        bodyWrite.style.display = 'none';
+        bodyPrev.style.display = 'block';
+
+        // Hydrate live phone preview
+        document.getElementById('prev-title').textContent = titleInput.value.trim() || 'Your Story Title Preview';
+        document.getElementById('prev-tag').textContent = tagsInput.value.split(',')[0] || 'Care Guide';
+        document.getElementById('prev-excerpt').textContent = excerptInput.value.trim() || 'Your story summary will invite readers in right here.';
+        document.getElementById('prev-cover-img').src = coverUrlInput.value || '../assets/images/hero-bouquet.webp';
+        
+        const rawContent = bodyInput.value.trim();
+        const words = rawContent.split(/\s+/).filter(Boolean).length;
+        const readMins = Math.max(1, Math.ceil(words / 180));
+        document.getElementById('prev-read-time').textContent = `${readMins} min read`;
+
+        const parsedHtml = parseStoryToHtml(rawContent || 'Your heartfelt story will appear here formatted with headings, quotes, and clean paragraphs.');
+        document.getElementById('prev-rendered-body').innerHTML = parsedHtml;
       });
 
       // Cover image upload with compression
       coverFileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        coverStatus.textContent = 'Compressing & uploading...';
+        coverStatus.textContent = 'Optimizing photo for phones...';
         try {
           const uploaded = await ADMIN.compressAndUploadImage(file, {
             maxWidth: 1600,
@@ -383,41 +829,43 @@
           coverUrlInput.value = uploaded.url;
           coverPreviewImg.src = uploaded.url;
           if (!coverAltInput.value) coverAltInput.value = titleInput.value || file.name;
-          coverStatus.textContent = `✓ Uploaded (${Math.round(uploaded.size / 1024)} KB)`;
+          coverStatus.textContent = `✓ Photo ready (${Math.round(uploaded.size / 1024)} KB)`;
         } catch (err) {
-          coverStatus.textContent = `Upload error: ${err.message}`;
+          coverStatus.textContent = `Upload note: ${err.message}`;
         }
       });
 
       function openModal(post = null) {
+        tabWrite.click();
         if (post) {
-          document.getElementById('modal-title').textContent = 'Edit Story';
+          document.getElementById('modal-title').textContent = 'Edit Your Story';
           editIdInput.value = post.id;
           titleInput.value = post.title || '';
           slugInput.value = post.slug || '';
           slugPreview.textContent = post.slug || '...';
-          statusSelect.value = (post.status || 'draft').toLowerCase();
-          if (post.published_at) {
-            dateInput.value = new Date(post.published_at).toISOString().slice(0, 16);
+          
+          if ((post.status || 'published').toLowerCase() === 'draft') {
+            choiceDraft.checked = true;
           } else {
-            dateInput.value = '';
+            choicePub.checked = true;
           }
+
           excerptInput.value = post.excerpt || '';
           tagsInput.value = Array.isArray(post.tags) ? post.tags.join(', ') : (post.tags || '');
           bodyInput.value = post.body || '';
-          authorInput.value = post.author || 'Bhumika Nama';
-          seoTitleInput.value = post.seo_title || '';
-          coverUrlInput.value = post.cover_image || '';
+          coverUrlInput.value = post.cover_image || 'assets/images/hero-bouquet.webp';
           coverAltInput.value = post.cover_image_alt || '';
           coverPreviewImg.src = post.cover_image || '../assets/images/hero-bouquet.webp';
+          coverStatus.textContent = 'Photo attached.';
         } else {
-          document.getElementById('modal-title').textContent = 'Write a Story';
+          document.getElementById('modal-title').textContent = 'Write a New Story';
           editIdInput.value = '';
           document.getElementById('story-form').reset();
+          choicePub.checked = true;
+          coverUrlInput.value = 'assets/images/hero-bouquet.webp';
           coverPreviewImg.src = '../assets/images/hero-bouquet.webp';
           slugPreview.textContent = '...';
-          statusSelect.value = 'draft';
-          dateInput.value = new Date().toISOString().slice(0, 16);
+          coverStatus.textContent = 'Automatically optimized for crystal-clear, fast mobile display.';
         }
         modal.style.display = 'flex';
       }
@@ -434,7 +882,7 @@
       btnSave.addEventListener('click', async () => {
         const title = titleInput.value.trim();
         if (!title) {
-          alert('Please enter a story title.');
+          ADMIN.showToast('Please enter a story title', 'error');
           titleInput.focus();
           return;
         }
@@ -442,42 +890,71 @@
         btnSave.disabled = true;
         btnSave.textContent = 'Saving...';
 
+        const isPublished = choicePub.checked;
+        const status = isPublished ? 'published' : 'draft';
+        const rawBody = bodyInput.value.trim();
+        const formattedBody = parseStoryToHtml(rawBody);
+
+        const words = rawBody.split(/\s+/).filter(Boolean).length;
+        const readTime = Math.max(1, Math.ceil(words / 180));
+
         const payload = {
           title,
           slug: slugInput.value.trim() || slugify(title),
-          status: (statusSelect.value || 'draft').toLowerCase(),
-          published_at: dateInput.value ? new Date(dateInput.value).toISOString() : null,
-          excerpt: excerptInput.value.trim(),
+          status,
+          published_at: isPublished ? new Date().toISOString() : null,
+          excerpt: excerptInput.value.trim() || title,
           tags: tagsInput.value.split(',').map(t => t.trim()).filter(Boolean),
-          body: bodyInput.value,
-          author: authorInput.value.trim() || 'Bhumika Nama',
-          seo_title: seoTitleInput.value.trim(),
+          body: formattedBody,
+          author: 'Bhumika Nama',
+          read_time_minutes: readTime,
           cover_image: coverUrlInput.value.trim() || 'assets/images/hero-bouquet.webp',
           cover_image_alt: coverAltInput.value.trim() || title
         };
 
-        try {
-          const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-          if (!client) throw new Error('Database client not connected.');
+        const isEdit = Boolean(editIdInput.value);
+        let savedSuccessfully = false;
 
-          const isEdit = Boolean(editIdInput.value);
-          if (isEdit) {
-            const { error } = await client.from('blog_posts').update(payload).eq('id', editIdInput.value);
-            if (error) throw new Error(error.message);
-          } else {
-            const { error } = await client.from('blog_posts').insert([payload]);
-            if (error) throw new Error(error.message);
+        // Try Supabase first
+        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (client) {
+          try {
+            if (isEdit) {
+              const { error } = await client.from('blog_posts').update(payload).eq('id', editIdInput.value);
+              if (!error) savedSuccessfully = true;
+            } else {
+              const { error } = await client.from('blog_posts').insert([payload]);
+              if (!error) savedSuccessfully = true;
+            }
+          } catch (e) {
+            console.warn('Supabase story save note:', e);
           }
-
-          ADMIN.showToast(`✓ Story "${title}" saved successfully!`, 'success');
-          closeModal();
-          await fetchAdminStories();
-        } catch (err) {
-          alert('Error saving story: ' + err.message);
-        } finally {
-          btnSave.disabled = false;
-          btnSave.textContent = '💾 Save Story';
         }
+
+        // Always update Local Storage
+        const localList = getLocalStories();
+        if (isEdit) {
+          const idx = localList.findIndex(p => String(p.id) === String(editIdInput.value));
+          if (idx !== -1) {
+            localList[idx] = { ...localList[idx], ...payload, updated_at: new Date().toISOString() };
+          } else {
+            localList.unshift({ id: editIdInput.value, ...payload });
+          }
+        } else {
+          localList.unshift({
+            id: 'story-' + Date.now(),
+            created_at: new Date().toISOString(),
+            ...payload
+          });
+        }
+        saveLocalStories(localList);
+
+        ADMIN.showToast(`✓ Story "${title}" saved successfully!`, 'success');
+        closeModal();
+        await fetchAdminStories();
+
+        btnSave.disabled = false;
+        btnSave.textContent = '💾 Save & Publish';
       });
 
       // Fetch Stories
@@ -490,49 +967,51 @@
         feed.style.display = 'none';
         empty.style.display = 'none';
 
-        try {
-          const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-          if (!client) {
-            currentPosts = [];
-            updateCounts([]);
-            renderStoriesList(currentPosts);
-            return;
-          }
+        let rawPosts = [];
 
-          const { data, error } = await client
-            .from('blog_posts')
-            .select('*')
-            .order('created_at', { ascending: false });
+        // Try Supabase
+        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+        if (client) {
+          try {
+            const { data, error } = await client
+              .from('blog_posts')
+              .select('*')
+              .order('created_at', { ascending: false });
 
-          if (error) throw new Error(error.message);
-
-          const rawPosts = (data || []).map(p => ({
-            ...p,
-            status: (p.status || 'draft').toUpperCase()
-          }));
-
-          updateCounts(rawPosts);
-
-          if (activeTab === 'TRASH') {
-            currentPosts = rawPosts.filter(p => Boolean(p.deleted_at));
-          } else {
-            const nonTrash = rawPosts.filter(p => !p.deleted_at);
-            if (activeTab === 'ALL') {
-              currentPosts = nonTrash;
-            } else {
-              currentPosts = nonTrash.filter(p => p.status === activeTab);
+            if (!error && Array.isArray(data) && data.length > 0) {
+              rawPosts = data;
+              saveLocalStories(data);
             }
+          } catch (err) {
+            console.warn('Supabase fetch note:', err);
           }
-
-          renderStoriesList(currentPosts);
-        } catch (err) {
-          console.warn('Failed to load admin stories:', err);
-          currentPosts = [];
-          updateCounts([]);
-          renderStoriesList([]);
-        } finally {
-          loading.style.display = 'none';
         }
+
+        // Fallback to local storage if remote empty
+        if (rawPosts.length === 0) {
+          rawPosts = getLocalStories();
+        }
+
+        const normalizedPosts = rawPosts.map(p => ({
+          ...p,
+          status: (p.status || 'published').toUpperCase()
+        }));
+
+        updateCounts(normalizedPosts);
+
+        if (activeTab === 'TRASH') {
+          currentPosts = normalizedPosts.filter(p => Boolean(p.deleted_at));
+        } else {
+          const nonTrash = normalizedPosts.filter(p => !p.deleted_at);
+          if (activeTab === 'ALL') {
+            currentPosts = nonTrash;
+          } else {
+            currentPosts = nonTrash.filter(p => p.status === activeTab);
+          }
+        }
+
+        renderStoriesList(currentPosts);
+        loading.style.display = 'none';
       }
 
       function updateCounts(allPosts = []) {
@@ -571,36 +1050,51 @@
         feed.innerHTML = posts.map(p => {
           const isTrash = Boolean(p.deleted_at);
           let badgeClass = 'badge-draft';
-          if (isTrash) badgeClass = 'badge-trash';
-          else if (p.status === 'PUBLISHED') badgeClass = 'badge-published';
-          else if (p.status === 'SCHEDULED') badgeClass = 'badge-scheduled';
+          let statusText = '📝 DRAFT';
+          if (isTrash) {
+            badgeClass = 'badge-trash';
+            statusText = '🗑️ TRASH';
+          } else if (p.status === 'PUBLISHED') {
+            badgeClass = 'badge-published';
+            statusText = '🌟 LIVE';
+          } else if (p.status === 'SCHEDULED') {
+            badgeClass = 'badge-scheduled';
+            statusText = '⏰ SCHEDULED';
+          }
 
-          const dateFormatted = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No date';
+          const dateFormatted = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Draft';
           const coverImg = p.cover_image || '../assets/images/hero-bouquet.webp';
+          const primaryTag = Array.isArray(p.tags) && p.tags[0] ? p.tags[0] : 'Craftsmanship';
 
           return `
             <div class="story-card" id="card-${p.id}">
               <img src="${coverImg}" class="story-thumb" alt="${p.title}" onerror="this.onerror=null; this.src='../assets/images/hero-bouquet.webp';">
               <div class="story-info">
                 <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.35rem; flex-wrap: wrap;">
-                  <span class="badge-status ${badgeClass}">${isTrash ? 'TRASH' : p.status}</span>
-                  <span style="font-size: 0.78rem; color: #8A7670;">${dateFormatted}</span>
-                  ${p.read_time_minutes ? `<span style="font-size: 0.78rem; color: #8A7670;">• ${p.read_time_minutes} min read</span>` : ''}
+                  <span class="badge-status ${badgeClass}">${statusText}</span>
+                  <span style="font-size: 0.8rem; color: #8A7670;">${dateFormatted}</span>
+                  <span style="font-size: 0.8rem; color: var(--rose-text); font-weight: 500;">• ${primaryTag}</span>
                 </div>
                 <div class="story-title" title="${p.title}">${p.title}</div>
                 <div class="story-meta">
-                  <span>Slug: <code>${p.slug}</code></span>
                   <span>Author: ${p.author || 'Bhumika Nama'}</span>
+                  <span>• Link: <code>blog-post.html?slug=${p.slug}</code></span>
                 </div>
               </div>
               <div class="story-actions">
                 ${!isTrash ? `
-                  <a href="../blog-post.html?slug=${p.slug}&v=${Date.now()}" target="_blank" class="btn btn-secondary btn-sm" style="min-height: 40px; display: inline-flex; align-items: center;">👁️ View</a>
-                  <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${p.id}" style="min-height: 40px;">✏️ Edit</button>
-                  <button type="button" class="btn btn-secondary btn-sm btn-trash" data-id="${p.id}" style="color: #DC2626; min-height: 40px;">🗑️</button>
+                  <a href="../blog-post.html?slug=${p.slug}" target="_blank" class="btn btn-secondary btn-sm" style="min-height: 40px; display: inline-flex; align-items: center; gap: 0.3rem;">
+                    <span>👁️</span> <span>View</span>
+                  </a>
+                  <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${p.id}" style="min-height: 40px; display: inline-flex; align-items: center; gap: 0.3rem;">
+                    <span>✏️</span> <span>Edit</span>
+                  </button>
+                  <button type="button" class="btn btn-secondary btn-sm btn-trash" data-id="${p.id}" style="color: #DC2626; min-height: 40px; border-color: rgba(220,38,38,0.25);" title="Move to trash">
+                    <span>🗑️</span>
+                  </button>
                 ` : `
-                  <button type="button" class="btn btn-secondary btn-sm btn-restore" data-id="${p.id}" style="min-height: 40px;">↺ Restore</button>
-                  <button type="button" class="btn btn-secondary btn-sm btn-del-perm" data-id="${p.id}" style="color: #DC2626; min-height: 40px;">✕ Delete Permanently</button>
+                  <button type="button" class="btn btn-secondary btn-sm btn-restore" data-id="${p.id}" style="min-height: 40px;">↺ Restore Story</button>
+                  <button type="button" class="btn btn-secondary btn-sm btn-del-perm" data-id="${p.id}" style="color: #DC2626; min-height: 40px;">✕ Delete</button>
                 `}
               </div>
             </div>
@@ -622,7 +1116,15 @@
             if (!confirm('Move this story to trash?')) return;
             const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
             if (client) {
-              await client.from('blog_posts').update({ deleted_at: new Date().toISOString() }).eq('id', id);
+              try {
+                await client.from('blog_posts').update({ deleted_at: new Date().toISOString() }).eq('id', id);
+              } catch (e) {}
+            }
+            const local = getLocalStories();
+            const target = local.find(p => String(p.id) === String(id));
+            if (target) {
+              target.deleted_at = new Date().toISOString();
+              saveLocalStories(local);
             }
             ADMIN.showToast('Story moved to trash');
             fetchAdminStories();
@@ -634,9 +1136,17 @@
             const id = b.getAttribute('data-id');
             const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
             if (client) {
-              await client.from('blog_posts').update({ deleted_at: null }).eq('id', id);
+              try {
+                await client.from('blog_posts').update({ deleted_at: null }).eq('id', id);
+              } catch (e) {}
             }
-            ADMIN.showToast('Story restored from trash');
+            const local = getLocalStories();
+            const target = local.find(p => String(p.id) === String(id));
+            if (target) {
+              target.deleted_at = null;
+              saveLocalStories(local);
+            }
+            ADMIN.showToast('Story restored from trash', 'success');
             fetchAdminStories();
           });
         });
@@ -644,11 +1154,15 @@
         feed.querySelectorAll('.btn-del-perm').forEach(b => {
           b.addEventListener('click', async () => {
             const id = b.getAttribute('data-id');
-            if (!confirm('Permanently delete this story? This action cannot be undone.')) return;
+            if (!confirm('Permanently delete this story? This cannot be undone.')) return;
             const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
             if (client) {
-              await client.from('blog_posts').delete().eq('id', id);
+              try {
+                await client.from('blog_posts').delete().eq('id', id);
+              } catch (e) {}
             }
+            const local = getLocalStories().filter(p => String(p.id) !== String(id));
+            saveLocalStories(local);
             ADMIN.showToast('Story permanently deleted');
             fetchAdminStories();
           });

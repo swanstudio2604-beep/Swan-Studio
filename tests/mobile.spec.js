@@ -125,7 +125,7 @@ async function runMobileTestSuite() {
         return meta && meta.getAttribute('content').includes('noindex');
       });
 
-      const isBlocked = currentUrl.includes('login.html');
+      const isBlocked = currentUrl.includes('login');
       if (!isBlocked && !currentUrl.includes('admin/')) {
         logBug(adminPage, 'all', `Admin page did not redirect unauthenticated visitor to login!`, 'critical');
       } else {

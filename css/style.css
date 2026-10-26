@@ -4340,11 +4340,32 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
   }
 
   .cart-card-box,
-  #cart-content-layout > div {
-    padding: 1rem 0.85rem !important;
+  .checkout-card-box,
+  .checkout-summary-card,
+  .confirmation-card-box,
+  #cart-content-layout > div,
+  .checkout-content-layout > div {
+    padding: 1.15rem 0.95rem !important;
+    width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
+  }
+
+  .checkout-summary-card #checkout-coupon-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .checkout-summary-card #co-coupon-input {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  .checkout-summary-card #co-apply-coupon-btn {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
   }
 
   #cart-items-list {
