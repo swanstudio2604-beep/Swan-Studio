@@ -307,6 +307,37 @@
         flex-direction: column;
         align-items: flex-start;
         padding: 1rem;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+      }
+      .story-info {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+      }
+      .story-title {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        line-height: 1.35 !important;
+        font-size: 1.18rem !important;
+      }
+      .story-meta {
+        font-size: 0.8rem !important;
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+        max-width: 100% !important;
+      }
+      .story-meta code,
+      .story-meta a {
+        word-break: break-all !important;
+        overflow-wrap: anywhere !important;
+        max-width: 100% !important;
+        white-space: normal !important;
       }
       .story-thumb {
         width: 100%;
@@ -1063,7 +1094,10 @@ Press Enter twice to start a new paragraph!" required></textarea>
           }
 
           const dateFormatted = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Draft';
-          const coverImg = p.cover_image || '../assets/images/hero-bouquet.webp';
+          const rawCover = p.cover_image || 'assets/images/hero-bouquet.webp';
+          const coverImg = (rawCover.startsWith('../') || rawCover.startsWith('http') || rawCover.startsWith('/'))
+            ? rawCover
+            : `../${rawCover}`;
           const primaryTag = Array.isArray(p.tags) && p.tags[0] ? p.tags[0] : 'Craftsmanship';
 
           return `
@@ -1078,7 +1112,7 @@ Press Enter twice to start a new paragraph!" required></textarea>
                 <div class="story-title" title="${p.title}">${p.title}</div>
                 <div class="story-meta">
                   <span>Author: ${p.author || 'Bhumika Nama'}</span>
-                  <span>• Link: <code>blog-post.html?slug=${p.slug}</code></span>
+                  <span>• Link: <a href="../blog-post.html?slug=${p.slug}" target="_blank" style="color: var(--rose-text); text-decoration: underline; font-family: monospace; font-size: 0.78rem;">/${p.slug}</a></span>
                 </div>
               </div>
               <div class="story-actions">

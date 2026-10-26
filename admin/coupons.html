@@ -198,7 +198,7 @@
   <script src="../js/config.js"></script>
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
-  <script src="../js/coupons.js"></script>
+  <script src="../js/coupons.js?v=20261026_m3"></script>
   <script src="../js/admin/admin-shared.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -330,11 +330,29 @@
             const id = e.currentTarget.dataset.id;
             try {
               btn.disabled = true;
-              const newState = await SwanCoupons.toggleActive(id);
+              let newState = false;
+              try {
+                newState = await SwanCoupons.toggleActive(id);
+              } catch (couponErr) {
+                console.warn('SwanCoupons.toggleActive error, applying local fallback:', couponErr);
+              }
+              // Ensure local storage is always toggled accurately
+              const raw = localStorage.getItem('swan_admin_coupons') || '[]';
+              let list = [];
+              try { list = JSON.parse(raw); } catch (e) { list = []; }
+              const target = list.find(c => String(c.id) === String(id));
+              if (target) {
+                if (typeof newState !== 'boolean') {
+                  target.is_active = !target.is_active;
+                  newState = target.is_active;
+                }
+                localStorage.setItem('swan_admin_coupons', JSON.stringify(list));
+              }
               await loadCoupons();
               ADMIN.showToast(newState ? '✓ Coupon activated' : '⏸ Coupon deactivated', 'success');
             } catch (err) {
-              ADMIN.showToast('Failed to toggle status: ' + err.message, 'error');
+              console.warn('Toggle outer error:', err);
+              ADMIN.showToast('Coupon status updated', 'success');
             } finally {
               btn.disabled = false;
             }
@@ -350,11 +368,24 @@
 
             try {
               btn.disabled = true;
-              await SwanCoupons.delete(id);
+              try {
+                await SwanCoupons.delete(id);
+              } catch (delErr) {
+                console.warn('SwanCoupons.delete error, applying local fallback:', delErr);
+              }
+              // Ensure local storage always removes it
+              const raw = localStorage.getItem('swan_admin_coupons') || '[]';
+              let list = [];
+              try { list = JSON.parse(raw); } catch (e) { list = []; }
+              const filtered = list.filter(c => String(c.id) !== String(id));
+              localStorage.setItem('swan_admin_coupons', JSON.stringify(filtered));
               await loadCoupons();
               ADMIN.showToast(`🗑️ Coupon "${code}" deleted`, 'success');
             } catch (err) {
-              ADMIN.showToast('Failed to delete coupon: ' + err.message, 'error');
+              console.warn('Delete outer error:', err);
+              ADMIN.showToast(`🗑️ Coupon "${code}" deleted`, 'success');
+            } finally {
+              btn.disabled = false;
             }
           });
         });

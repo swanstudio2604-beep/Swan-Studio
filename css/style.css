@@ -4352,20 +4352,28 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
     overflow: hidden !important;
   }
 
-  .checkout-summary-card #checkout-coupon-section {
+  .checkout-summary-card #checkout-coupon-section,
+  #coupon-box,
+  .cart-coupon-box {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+    padding: 0.85rem !important;
   }
 
-  .checkout-summary-card #co-coupon-input {
+  .checkout-summary-card #co-coupon-input,
+  #coupon-input {
     min-width: 0 !important;
+    width: 100% !important;
     flex: 1 1 auto !important;
+    box-sizing: border-box !important;
   }
 
-  .checkout-summary-card #co-apply-coupon-btn {
+  .checkout-summary-card #co-apply-coupon-btn,
+  #apply-coupon-btn {
     flex-shrink: 0 !important;
     white-space: nowrap !important;
+    padding: 0.45rem 0.85rem !important;
   }
 
   #cart-items-list {

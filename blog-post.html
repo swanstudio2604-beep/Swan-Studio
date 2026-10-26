@@ -44,10 +44,12 @@
     }
     .article-title {
       font-family: var(--font-serif);
-      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-size: clamp(2rem, 5vw, 3.4rem);
       line-height: 1.22;
       color: var(--cocoa);
       margin-bottom: 1rem;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
     .article-meta {
       display: flex;
@@ -85,6 +87,10 @@
       font-size: 1.1rem;
       line-height: 1.85;
       color: #4A3B36;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
     .article-content p {
       margin-bottom: 1.5rem;

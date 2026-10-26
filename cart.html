@@ -83,7 +83,7 @@
         </div>
 
         <!-- Summary & Checkout Card -->
-        <div style="background: var(--white); border-radius: var(--radius-lg); border: 2px dashed var(--rose); padding: 1.75rem; box-shadow: var(--shadow-card);">
+        <div class="checkout-summary-card checkout-card-box" style="background: var(--white); border-radius: var(--radius-lg); border: 2px dashed var(--rose); box-shadow: var(--shadow-card);">
           <h2 style="font-size: 1.4rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
             Order Summary
           </h2>
@@ -99,18 +99,20 @@
           </div>
 
           <!-- Coupon Input & Applied Display (Phase 6) -->
-          <div id="coupon-box" style="margin: 1.25rem 0; padding: 1rem; background: var(--cream); border-radius: var(--radius-sm); border: 1px dashed var(--border-subtle);">
-            <div id="coupon-input-wrapper">
+          <div id="coupon-box" class="cart-coupon-box" style="margin: 1.25rem 0; padding: 0.85rem; background: var(--cream); border-radius: var(--radius-sm); border: 1px dashed var(--border-subtle); box-sizing: border-box; max-width: 100%;">
+            <div id="coupon-input-wrapper" style="width: 100%; box-sizing: border-box;">
               <label for="coupon-input" style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--cocoa); margin-bottom: 0.35rem;">
                 Have a coupon code?
               </label>
-              <div style="display: flex; gap: 0.5rem;">
-                <input type="text" id="coupon-input" placeholder="e.g. SWANFIRST" style="flex: 1; padding: 0.5rem 0.75rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 0.85rem; text-transform: uppercase;">
-                <button id="apply-coupon-btn" class="btn btn-secondary btn-sm" type="button">Apply</button>
+              <div style="display: flex; gap: 0.5rem; align-items: stretch; width: 100%; box-sizing: border-box;">
+                <input type="text" id="coupon-input" placeholder="e.g. SWANFIRST" style="flex: 1; min-width: 0; width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); font-size: 0.85rem; text-transform: uppercase; box-sizing: border-box;">
+                <button id="apply-coupon-btn" class="btn btn-secondary btn-sm" type="button" style="flex-shrink: 0; white-space: nowrap; padding: 0.55rem 0.95rem; font-weight: 600;">Apply</button>
               </div>
               <div id="coupon-feedback" style="font-size: 0.78rem; margin-top: 0.45rem; display: none;"></div>
-              <div style="font-size: 0.75rem; color: #8A7670; margin-top: 0.45rem;">
-                Try code: <button type="button" class="sample-code-chip" data-code="SWANFIRST" style="background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.1); border-radius: 3px; font-weight: 600; font-size: 0.75rem; cursor: pointer; padding: 0.1rem 0.35rem; color: var(--cocoa);">SWANFIRST (10% off)</button> or <button type="button" class="sample-code-chip" data-code="BHUMIKA100" style="background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.1); border-radius: 3px; font-weight: 600; font-size: 0.75rem; cursor: pointer; padding: 0.1rem 0.35rem; color: var(--cocoa);">BHUMIKA100 (₹100 off)</button>
+              <div style="font-size: 0.75rem; color: #8A7670; margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center;">
+                <span>Try:</span>
+                <button type="button" class="sample-code-chip" data-code="SWANFIRST" style="background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.1); border-radius: 3px; font-weight: 600; font-size: 0.72rem; cursor: pointer; padding: 0.15rem 0.4rem; color: var(--cocoa); white-space: nowrap;">SWANFIRST (10% off)</button>
+                <button type="button" class="sample-code-chip" data-code="BHUMIKA100" style="background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.1); border-radius: 3px; font-weight: 600; font-size: 0.72rem; cursor: pointer; padding: 0.15rem 0.4rem; color: var(--cocoa); white-space: nowrap;">BHUMIKA100 (₹100 off)</button>
               </div>
             </div>
 
@@ -174,7 +176,7 @@
   <script src="js/config.js"></script>
   <script src="js/api-config.js"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/coupons.js"></script>
+  <script src="js/coupons.js?v=20261026_m3"></script>
   <script src="js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
