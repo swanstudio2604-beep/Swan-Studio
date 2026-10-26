@@ -4,7 +4,7 @@
   "description": "Swan Studio — Handcrafted Crochet Portfolio & Store by Bhumika Nama",
   "main": "server.js",
   "scripts": {
-    "build": "echo 'No build step required'",
+    "build": "node build.js",
     "start": "node server.js",
     "dev": "node server.js",
     "test": "node -e \"console.log('All tests passed')\"",
