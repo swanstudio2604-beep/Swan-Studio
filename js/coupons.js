@@ -60,6 +60,108 @@ const DEFAULT_DEMO_COUPONS = [
 const SwanCoupons = {
   APPLIED_KEY: 'swan_applied_coupon',
   STORAGE_KEY: 'swan_admin_coupons',
+  DELETED_KEY: 'swan_deleted_coupon_ids',
+  OVERRIDES_KEY: 'swan_coupon_status_overrides',
+
+  /**
+   * Helper to retrieve list of permanently deleted coupon IDs and uppercase codes
+   */
+  getDeletedIds() {
+    try {
+      const raw = localStorage.getItem(this.DELETED_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+      return Array.isArray(list) ? list.map(x => String(x).toUpperCase()) : [];
+    } catch {
+      return [];
+    }
+  },
+
+  /**
+   * Helper to record permanently deleted coupon by ID and/or Code
+   */
+  addDeletedId(id, code) {
+    try {
+      const list = this.getDeletedIds();
+      if (id && !list.includes(String(id).toUpperCase())) list.push(String(id).toUpperCase());
+      if (code && !list.includes(String(code).toUpperCase())) list.push(String(code).toUpperCase());
+      localStorage.setItem(this.DELETED_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.warn('Error saving deleted coupon id:', e);
+    }
+  },
+
+  /**
+   * Helper to remove ID/Code from deleted list (e.g. when recreating a coupon)
+   */
+  removeDeletedId(id, code) {
+    try {
+      let list = this.getDeletedIds();
+      const remove = [];
+      if (id) remove.push(String(id).toUpperCase());
+      if (code) remove.push(String(code).toUpperCase());
+      list = list.filter(item => !remove.includes(item));
+      localStorage.setItem(this.DELETED_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.warn('Error removing deleted coupon id:', e);
+    }
+  },
+
+  /**
+   * Helper to get status overrides (for active/inactive states across offline/schema issues)
+   */
+  getStatusOverrides() {
+    try {
+      const raw = localStorage.getItem(this.OVERRIDES_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  },
+
+  /**
+   * Helper to set status override
+   */
+  setStatusOverride(id, code, isActive) {
+    try {
+      const overrides = this.getStatusOverrides();
+      if (id) overrides[String(id)] = Boolean(isActive);
+      if (code) overrides[String(code).toUpperCase()] = Boolean(isActive);
+      localStorage.setItem(this.OVERRIDES_KEY, JSON.stringify(overrides));
+    } catch (e) {
+      console.warn('Error saving status override:', e);
+    }
+  },
+
+  /**
+   * Filters out permanently deleted coupons and applies status overrides
+   */
+  filterCoupons(list) {
+    if (!Array.isArray(list)) return [];
+    const deleted = this.getDeletedIds();
+    const overrides = this.getStatusOverrides();
+
+    return list
+      .filter(c => {
+        if (!c) return false;
+        const cid = c.id ? String(c.id).toUpperCase() : '';
+        const code = c.code ? String(c.code).toUpperCase() : '';
+        if (deleted.includes(cid) || deleted.includes(code)) {
+          return false; // permanently deleted
+        }
+        return true;
+      })
+      .map(c => {
+        const cid = c.id ? String(c.id) : '';
+        const code = c.code ? String(c.code).toUpperCase() : '';
+        let active = c.is_active !== false;
+        if (overrides[cid] !== undefined) active = overrides[cid];
+        else if (overrides[code] !== undefined) active = overrides[code];
+        return {
+          ...c,
+          is_active: active
+        };
+      });
+  },
 
   /**
    * Helper to load coupons from localStorage fallback
@@ -67,15 +169,21 @@ const SwanCoupons = {
   getLocal() {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
-      if (stored) {
+      if (stored !== null) {
+        // If storage was already created (even as empty array []), honor it!
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          return this.filterCoupons(parsed);
+        }
       }
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(DEFAULT_DEMO_COUPONS));
-      return DEFAULT_DEMO_COUPONS.slice();
-    } catch {
-      return DEFAULT_DEMO_COUPONS.slice();
+    } catch (e) {
+      console.warn('Error reading stored coupons:', e);
     }
+
+    // Only if never initialized before
+    const initial = this.filterCoupons(DEFAULT_DEMO_COUPONS.slice());
+    this.saveLocal(initial);
+    return initial;
   },
 
   /**
@@ -83,7 +191,8 @@ const SwanCoupons = {
    */
   saveLocal(list) {
     try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+      const sanitized = this.filterCoupons(list);
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(sanitized));
     } catch (e) {
       console.warn('Failed to save coupons to local storage:', e);
     }
@@ -100,9 +209,10 @@ const SwanCoupons = {
           .from('coupons')
           .select('*')
           .order('created_at', { ascending: false });
-        if (!error && data && Array.isArray(data) && data.length > 0) {
-          this.saveLocal(data);
-          return data;
+        if (!error && data && Array.isArray(data)) {
+          const sanitized = this.filterCoupons(data);
+          this.saveLocal(sanitized);
+          return sanitized;
         }
       } catch (e) {
         console.warn('Supabase fetch coupons failed, using local fallback:', e);
@@ -121,6 +231,12 @@ const SwanCoupons = {
       return { valid: false, message: 'Please enter a coupon code.' };
     }
 
+    // Reject permanently deleted coupons immediately
+    const deleted = this.getDeletedIds();
+    if (deleted.includes(code)) {
+      return { valid: false, message: `Coupon "${code}" is invalid or does not exist.` };
+    }
+
     const sub = parseFloat(subtotal) || 0;
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
 
@@ -132,9 +248,13 @@ const SwanCoupons = {
           p_user_id: userId
         });
         if (!error && data && typeof data.valid === 'boolean') {
+          // If marked invalid locally via overrides, enforce it
+          const overrides = this.getStatusOverrides();
+          if (overrides[code] === false) {
+            return { valid: false, message: `Coupon "${code}" is currently deactivated.` };
+          }
           return data;
         }
-        // If error message indicates missing schema/table/function, fall through to local fallback
         console.warn('Supabase RPC validate_coupon returned error/missing, using fallback:', error ? error.message : 'no data');
       } catch (e) {
         console.warn('Supabase RPC validate_coupon failed, using fallback:', e);
@@ -213,7 +333,17 @@ const SwanCoupons = {
   getApplied() {
     try {
       const raw = sessionStorage.getItem(this.APPLIED_KEY);
-      return raw ? JSON.parse(raw) : null;
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || !parsed.code) return null;
+
+      // If applied coupon was since deleted or deactivated, clear it
+      const deleted = this.getDeletedIds();
+      if (deleted.includes(String(parsed.code).toUpperCase())) {
+        this.removeApplied();
+        return null;
+      }
+      return parsed;
     } catch {
       return null;
     }
@@ -273,6 +403,10 @@ const SwanCoupons = {
       created_at: new Date().toISOString()
     };
 
+    // If this code was previously in deleted list, resurrect it for this new coupon
+    this.removeDeletedId(newCoupon.id, formatted.code);
+    this.setStatusOverride(newCoupon.id, formatted.code, formatted.is_active);
+
     // Prepend and save
     all.unshift(newCoupon);
     this.saveLocal(all);
@@ -282,52 +416,71 @@ const SwanCoupons = {
   /**
    * Admin: Toggles coupon active state
    */
-  async toggleActive(id) {
+  async toggleActive(id, optionalCode = null) {
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
     const all = this.getLocal();
-    const target = all.find(c => String(c.id) === String(id));
+    const target = all.find(c => String(c.id) === String(id) || (optionalCode && String(c.code).toUpperCase() === String(optionalCode).toUpperCase()));
+    const code = optionalCode || (target ? target.code : null);
     const newState = target ? !target.is_active : false;
 
-    if (client) {
-      try {
-        const { error } = await client.from('coupons').update({ is_active: newState }).eq('id', id);
-        if (error) {
-          console.warn('Supabase toggleActive failed, persisting locally:', error.message);
-        }
-      } catch (err) {
-        console.warn('Supabase toggleActive exception:', err);
-      }
-    }
+    // 1. Record status override so it persists across all reloads
+    this.setStatusOverride(id, code, newState);
 
+    // 2. Update local storage
     if (target) {
       target.is_active = newState;
       this.saveLocal(all);
-      return newState;
+    }
+
+    // 3. Try remote update
+    if (client) {
+      try {
+        if (id) await client.from('coupons').update({ is_active: newState }).eq('id', id);
+        if (code) await client.from('coupons').update({ is_active: newState }).eq('code', code.toUpperCase());
+      } catch (err) {
+        console.warn('Supabase toggleActive remote note:', err);
+      }
     }
 
     return newState;
   },
 
   /**
-   * Admin: Deletes coupon
+   * Admin: Permanently deletes coupon
    */
-  async delete(id) {
+  async delete(id, optionalCode = null) {
+    const all = this.getLocal();
+    const target = all.find(c => String(c.id) === String(id) || (optionalCode && String(c.code).toUpperCase() === String(optionalCode).toUpperCase()));
+    const code = optionalCode || (target ? target.code : null);
+
+    // 1. Permanently record as deleted
+    this.addDeletedId(id, code);
+
+    // 2. Remove from local list
+    const filtered = all.filter(c => {
+      if (id && String(c.id) === String(id)) return false;
+      if (code && String(c.code).toUpperCase() === String(code).toUpperCase()) return false;
+      return true;
+    });
+    this.saveLocal(filtered);
+
+    // 3. Clear applied coupon if matching
+    const applied = this.getApplied();
+    if (applied && ((id && String(applied.id) === String(id)) || (code && String(applied.code).toUpperCase() === String(code).toUpperCase()))) {
+      this.removeApplied();
+    }
+
+    // 4. Try remote delete on Supabase
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
     if (client) {
       try {
-        const { error } = await client.from('coupons').delete().eq('id', id);
-        if (error) {
-          console.warn('Supabase delete coupon failed, deleting locally:', error.message);
-        }
+        if (id) await client.from('coupons').delete().eq('id', id);
+        if (code) await client.from('coupons').delete().eq('code', code.toUpperCase());
       } catch (err) {
-        console.warn('Supabase delete coupon exception:', err);
+        console.warn('Supabase remote coupon delete note:', err);
       }
     }
 
-    // Always update local storage
-    const all = this.getLocal();
-    const filtered = all.filter(c => String(c.id) !== String(id));
-    this.saveLocal(filtered);
     return true;
   },
 

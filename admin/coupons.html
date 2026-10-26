@@ -198,7 +198,7 @@
   <script src="../js/config.js"></script>
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
-  <script src="../js/coupons.js?v=20261026_m3"></script>
+  <script src="../js/coupons.js?v=20261026_m4"></script>
   <script src="../js/admin/admin-shared.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -309,7 +309,7 @@
               <td>${c.per_customer_limit || 1} per user</td>
               <td>${statusBadge}</td>
               <td style="text-align: right; white-space: nowrap;">
-                <button class="btn btn-secondary btn-sm btn-toggle-active" data-id="${c.id}" style="padding: 0.3rem 0.6rem; font-size: 0.78rem;">
+                <button class="btn btn-secondary btn-sm btn-toggle-active" data-id="${c.id}" data-code="${c.code}" style="padding: 0.3rem 0.6rem; font-size: 0.78rem;">
                   ${c.is_active ? '⏸ Deactivate' : '▶ Activate'}
                 </button>
                 <button class="btn btn-sm btn-delete-coupon" data-id="${c.id}" data-code="${c.code}" style="padding: 0.3rem 0.6rem; font-size: 0.78rem; background: transparent; color: #B33939; border: 1px solid rgba(179, 57, 57, 0.3); margin-left: 0.3rem;">
@@ -328,26 +328,10 @@
         document.querySelectorAll('.btn-toggle-active').forEach(btn => {
           btn.addEventListener('click', async (e) => {
             const id = e.currentTarget.dataset.id;
+            const code = e.currentTarget.dataset.code;
             try {
               btn.disabled = true;
-              let newState = false;
-              try {
-                newState = await SwanCoupons.toggleActive(id);
-              } catch (couponErr) {
-                console.warn('SwanCoupons.toggleActive error, applying local fallback:', couponErr);
-              }
-              // Ensure local storage is always toggled accurately
-              const raw = localStorage.getItem('swan_admin_coupons') || '[]';
-              let list = [];
-              try { list = JSON.parse(raw); } catch (e) { list = []; }
-              const target = list.find(c => String(c.id) === String(id));
-              if (target) {
-                if (typeof newState !== 'boolean') {
-                  target.is_active = !target.is_active;
-                  newState = target.is_active;
-                }
-                localStorage.setItem('swan_admin_coupons', JSON.stringify(list));
-              }
+              const newState = await SwanCoupons.toggleActive(id, code);
               await loadCoupons();
               ADMIN.showToast(newState ? '✓ Coupon activated' : '⏸ Coupon deactivated', 'success');
             } catch (err) {
@@ -368,17 +352,7 @@
 
             try {
               btn.disabled = true;
-              try {
-                await SwanCoupons.delete(id);
-              } catch (delErr) {
-                console.warn('SwanCoupons.delete error, applying local fallback:', delErr);
-              }
-              // Ensure local storage always removes it
-              const raw = localStorage.getItem('swan_admin_coupons') || '[]';
-              let list = [];
-              try { list = JSON.parse(raw); } catch (e) { list = []; }
-              const filtered = list.filter(c => String(c.id) !== String(id));
-              localStorage.setItem('swan_admin_coupons', JSON.stringify(filtered));
+              await SwanCoupons.delete(id, code);
               await loadCoupons();
               ADMIN.showToast(`🗑️ Coupon "${code}" deleted`, 'success');
             } catch (err) {
