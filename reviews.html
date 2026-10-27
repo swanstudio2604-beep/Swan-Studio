@@ -107,38 +107,64 @@
             </div>
 
             <!-- Distribution Rows -->
-            ${[5, 4, 3, 2, 1].map(star => `
-              <div class="rating-row" style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.84rem; margin-bottom: 0.4rem;">
-                <span style="width: 50px; font-weight: 500; color: var(--cocoa);">${star} star</span>
-                <div class="rating-bar-bg" style="flex: 1; height: 8px; background: #F3EAE3; border-radius: 4px; overflow: hidden;">
-                  <div class="rating-bar-fill" id="bar-${star}" style="width: 0%; height: 100%; background: #F59E0B; border-radius: 4px; transition: width 0.4s ease;"></div>
-                </div>
-                <span style="width: 38px; text-align: right; font-weight: 600; color: #7A6962;" id="pct-${star}">0%</span>
+            <div class="rating-row" style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.84rem; margin-bottom: 0.4rem;">
+              <span style="width: 50px; font-weight: 500; color: var(--cocoa);">5 star</span>
+              <div class="rating-bar-bg" style="flex: 1; height: 8px; background: #F3EAE3; border-radius: 4px; overflow: hidden;">
+                <div class="rating-bar-fill" id="bar-5" style="width: 0%; height: 100%; background: #F59E0B; border-radius: 4px; transition: width 0.4s ease;"></div>
               </div>
-            `).join('')}
+              <span style="width: 38px; text-align: right; font-weight: 600; color: #7A6962;" id="pct-5">0%</span>
+            </div>
+            <div class="rating-row" style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.84rem; margin-bottom: 0.4rem;">
+              <span style="width: 50px; font-weight: 500; color: var(--cocoa);">4 star</span>
+              <div class="rating-bar-bg" style="flex: 1; height: 8px; background: #F3EAE3; border-radius: 4px; overflow: hidden;">
+                <div class="rating-bar-fill" id="bar-4" style="width: 0%; height: 100%; background: #F59E0B; border-radius: 4px; transition: width 0.4s ease;"></div>
+              </div>
+              <span style="width: 38px; text-align: right; font-weight: 600; color: #7A6962;" id="pct-4">0%</span>
+            </div>
+            <div class="rating-row" style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.84rem; margin-bottom: 0.4rem;">
+              <span style="width: 50px; font-weight: 500; color: var(--cocoa);">3 star</span>
+              <div class="rating-bar-bg" style="flex: 1; height: 8px; background: #F3EAE3; border-radius: 4px; overflow: hidden;">
+                <div class="rating-bar-fill" id="bar-3" style="width: 0%; height: 100%; background: #F59E0B; border-radius: 4px; transition: width 0.4s ease;"></div>
+              </div>
+              <span style="width: 38px; text-align: right; font-weight: 600; color: #7A6962;" id="pct-3">0%</span>
+            </div>
+            <div class="rating-row" style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.84rem; margin-bottom: 0.4rem;">
+              <span style="width: 50px; font-weight: 500; color: var(--cocoa);">2 star</span>
+              <div class="rating-bar-bg" style="flex: 1; height: 8px; background: #F3EAE3; border-radius: 4px; overflow: hidden;">
+                <div class="rating-bar-fill" id="bar-2" style="width: 0%; height: 100%; background: #F59E0B; border-radius: 4px; transition: width 0.4s ease;"></div>
+              </div>
+              <span style="width: 38px; text-align: right; font-weight: 600; color: #7A6962;" id="pct-2">0%</span>
+            </div>
+            <div class="rating-row" style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.84rem; margin-bottom: 0.4rem;">
+              <span style="width: 50px; font-weight: 500; color: var(--cocoa);">1 star</span>
+              <div class="rating-bar-bg" style="flex: 1; height: 8px; background: #F3EAE3; border-radius: 4px; overflow: hidden;">
+                <div class="rating-bar-fill" id="bar-1" style="width: 0%; height: 100%; background: #F59E0B; border-radius: 4px; transition: width 0.4s ease;"></div>
+              </div>
+              <span style="width: 38px; text-align: right; font-weight: 600; color: #7A6962;" id="pct-1">0%</span>
+            </div>
           </div>
         </div>
 
         <!-- Filter Chips & Sorting Toolbar -->
-        <div class="reviews-toolbar" id="reviews-toolbar" style="display: none; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding: 0.85rem 1rem; background: var(--cream); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-          <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;" role="group" aria-label="Review Filters">
-            <button type="button" class="category-pill active" data-filter="all" id="filter-all" style="min-height: 44px; padding: 0.4rem 0.9rem;">
+        <div class="reviews-toolbar" id="reviews-toolbar" style="display: none;">
+          <div class="reviews-filter-group" role="group" aria-label="Review Filters">
+            <button type="button" class="category-pill active" data-filter="all" id="filter-all">
               All (<span id="count-chip-all">0</span>)
             </button>
-            <button type="button" class="category-pill" data-filter="5stars" id="filter-5stars" style="min-height: 44px; padding: 0.4rem 0.9rem;">
+            <button type="button" class="category-pill" data-filter="5stars" id="filter-5stars">
               5 Stars (<span id="count-chip-5">0</span>)
             </button>
-            <button type="button" class="category-pill" data-filter="photo" id="filter-photo" style="min-height: 44px; padding: 0.4rem 0.9rem;">
+            <button type="button" class="category-pill" data-filter="photo" id="filter-photo">
               With Photo (<span id="count-chip-photo">0</span>)
             </button>
-            <select id="filter-product-select" class="form-control form-select" style="max-width: 200px; min-height: 44px; font-size: 0.84rem; padding: 0.4rem 0.6rem; border-color: var(--border-subtle);" aria-label="Filter by product">
+            <select id="filter-product-select" class="form-control form-select product-filter-dropdown" aria-label="Filter by product">
               <option value="">All Pieces</option>
             </select>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <div class="reviews-sort-group">
             <label for="sort-reviews-select" style="font-size: 0.84rem; font-weight: 500; color: #7A6962; white-space: nowrap;">Sort by:</label>
-            <select id="sort-reviews-select" class="form-control form-select" style="min-height: 44px; font-size: 0.84rem; padding: 0.4rem 0.75rem;" aria-label="Sort reviews">
+            <select id="sort-reviews-select" class="form-control form-select sort-reviews-dropdown" aria-label="Sort reviews">
               <option value="newest">Newest first</option>
               <option value="highest">Highest rating</option>
             </select>
@@ -266,8 +292,8 @@
             return;
           }
 
-          // Hydrate top summary ONLY if at least 3 approved reviews exist
-          if (reviews.length >= 3) {
+          // Hydrate top summary if at least 1 approved review exists
+          if (reviews.length >= 1) {
             renderSummary(reviews);
             summaryContainer.style.display = 'grid';
           } else {
@@ -289,7 +315,7 @@
               if (freshRes && freshRes.data) {
                 allApprovedReviews = freshRes.data;
                 applyFiltersAndSort();
-                if (allApprovedReviews.length >= 3) {
+                if (allApprovedReviews.length >= 1) {
                   renderSummary(allApprovedReviews);
                   summaryContainer.style.display = 'grid';
                 }
@@ -340,7 +366,10 @@
           requestAnimationFrame(animateCount);
         }
 
-        document.getElementById('total-reviews-count').textContent = total;
+        const countWrap = document.getElementById('stat-total-notes');
+        if (countWrap) {
+          countWrap.innerHTML = `Based on <strong id="total-reviews-count">${total}</strong> genuine customer ${total === 1 ? 'note' : 'notes'}`;
+        }
 
         // Render average stars with half-star support
         const starsWrap = document.getElementById('stat-avg-stars');
@@ -478,9 +507,10 @@
 
         emptyState.style.display = 'none';
         const slice = reviews.slice(0, visibleCount);
+        const isSingle = slice.length === 1;
 
         container.innerHTML = `
-          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;" class="reviews-cards-grid">
+          <div class="reviews-cards-grid ${isSingle ? 'single-review-grid' : ''}" style="${isSingle ? 'max-width: 580px; margin: 0 auto;' : 'display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;'}">
             ${slice.map(r => renderSingleCard(r)).join('')}
           </div>
         `;
@@ -498,68 +528,88 @@
       function renderSingleCard(r) {
         const rating = Math.min(5, Math.max(1, parseInt(r.rating, 10) || 5));
         const authorName = r.displayName || 'Kind Customer';
+        const initial = (authorName.trim()[0] || 'K').toUpperCase();
         const bodyText = r.body || 'Loved this handmade piece!';
         const dateStr = formatDate(r.createdAt);
+        const cityStr = r.city ? r.city : 'Verified Customer';
         const hasPhoto = Boolean(r.photoUrl);
         const isVerified = Boolean(r.verifiedBuyer);
         const hasReply = Boolean(r.adminReply);
 
         return `
-          <article class="home-review-card" style="box-shadow: var(--shadow-sm); border: 1px solid var(--border-subtle); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
-                <div class="home-review-stars" aria-label="${rating} out of 5 stars">
-                  ${renderSwanStars(rating, 18)}
+          <article class="home-review-card artisan-review-card">
+            <div class="card-inner-content">
+              <div class="review-card-header">
+                <div class="review-author-wrap">
+                  <div class="review-avatar" aria-hidden="true">${escapeHtml(initial)}</div>
+                  <div class="review-author-details">
+                    <div class="review-author-name-row">
+                      <span class="home-review-author">${escapeHtml(authorName)}</span>
+                      ${isVerified ? `
+                        <span class="verified-buyer-badge" title="Order verified by atelier">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          Verified
+                        </span>
+                      ` : ''}
+                    </div>
+                    <span class="home-review-location">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                      ${escapeHtml(cityStr)}
+                    </span>
+                  </div>
                 </div>
-                ${isVerified ? `
-                  <span class="verified-buyer-badge" title="Order verified by atelier">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Verified buyer
-                  </span>
-                ` : ''}
+                <div class="review-rating-pill" aria-label="${rating} out of 5 stars">
+                  <span class="rating-pill-num">${rating}.0</span>
+                  <div class="rating-stars-inline home-review-stars">${renderSwanStars(rating, 14)}</div>
+                </div>
               </div>
 
               <!-- Clamped note text with Read more toggle -->
-              <div class="review-text-wrap" style="position: relative;">
-                <p class="home-review-body review-expandable-text" style="margin-bottom: 0.5rem; font-size: 0.94rem; line-height: 1.6; color: var(--cocoa);">
-                  ${escapeHtml(bodyText)}
-                </p>
-                <button type="button" class="btn-toggle-read-more" style="display: none; background: none; border: none; padding: 0; font-size: 0.82rem; font-weight: 600; color: var(--rose-text); cursor: pointer; margin-bottom: 0.75rem;">
-                  Read more &darr;
-                </button>
+              <div class="review-quote-wrap">
+                <svg class="review-quote-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                </svg>
+                <div class="review-text-wrap" style="position: relative;">
+                  <p class="home-review-body review-expandable-text">
+                    ${escapeHtml(bodyText)}
+                  </p>
+                  <button type="button" class="btn-toggle-read-more" style="display: none; background: none; border: none; padding: 0; font-size: 0.82rem; font-weight: 600; color: var(--rose-text); cursor: pointer; margin-bottom: 0.75rem;">
+                    Read more &darr;
+                  </button>
+                </div>
               </div>
 
               ${hasPhoto ? `
                 <div style="margin: 0.5rem 0 0.85rem 0;">
                   <button type="button" class="photo-thumbnail-btn" data-full-photo="${escapeHtml(r.photoUrl)}" style="background: none; border: none; padding: 0; cursor: pointer; display: inline-block; border-radius: 8px; overflow: hidden;" aria-label="Tap to enlarge photo">
-                    <img src="${escapeHtml(r.photoUrl)}" alt="Customer unboxing photo by ${escapeHtml(authorName)}" loading="lazy" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-subtle); display: block; transition: transform 0.2s ease;">
+                    <img src="${escapeHtml(r.photoUrl)}" alt="Customer unboxing photo by ${escapeHtml(authorName)}" loading="lazy" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1.5px solid rgba(199, 131, 145, 0.3); display: block; transition: transform 0.2s ease;">
                   </button>
                 </div>
               ` : ''}
 
               ${hasReply ? `
-                <div class="admin-reply-box">
+                <div class="admin-reply-box" style="margin-top: 0.75rem;">
                   <div class="admin-reply-header">Reply from Bhumika:</div>
                   <p class="admin-reply-text">${escapeHtml(r.adminReply)}</p>
                 </div>
               ` : ''}
             </div>
 
-            <div class="home-review-meta" style="margin-top: 1rem;">
-              <div>
-                <span class="home-review-author">${escapeHtml(authorName)}</span>
-                ${r.city ? `<span class="home-review-city"> • ${escapeHtml(r.city)}</span>` : ''}
-                ${r.productName ? `
-                  <div class="home-review-product">
-                    ${r.productSlug ? `
-                      <a href="product.html?slug=${encodeURIComponent(r.productSlug)}" style="color: var(--rose-text); text-decoration: none;">
-                        ${escapeHtml(r.productName)} &rarr;
-                      </a>
-                    ` : escapeHtml(r.productName)}
-                  </div>
-                ` : ''}
-              </div>
-              <time datetime="${escapeHtml(r.createdAt || '')}" style="font-size: 0.76rem; color: #8C7B74; white-space: nowrap;">
+            <div class="home-review-meta">
+              ${r.productName ? `
+                <div class="home-review-product-pill">
+                  ${r.productSlug ? `
+                    <a href="product.html?slug=${encodeURIComponent(r.productSlug)}" class="product-chip-link">
+                      <span>🌸</span> ${escapeHtml(r.productName)}
+                    </a>
+                  ` : `<span class="product-chip-link"><span>🌸</span> ${escapeHtml(r.productName)}</span>`}
+                </div>
+              ` : `
+                <span class="product-chip-link default-chip">
+                  <span>🧶</span> Handcrafted Keepsake
+                </span>
+              `}
+              <time datetime="${escapeHtml(r.createdAt || '')}" class="home-review-date">
                 ${dateStr}
               </time>
             </div>

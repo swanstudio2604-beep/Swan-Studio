@@ -559,8 +559,10 @@ function renderActionDock() {
     document.body.appendChild(dock);
   }
 
-  // 1. Leave Note Button
-  if (!document.getElementById('swan-floating-note-btn')) {
+  // 1. Leave Note Button (do not show on reviews.html or checkout)
+  const isReviewsPage = window.location.pathname.includes('reviews.html');
+  const isCheckoutPage = window.location.pathname.includes('checkout.html') || window.location.pathname.includes('order-confirmation.html');
+  if (!document.getElementById('swan-floating-note-btn') && !isReviewsPage && !isCheckoutPage) {
     const noteBtn = document.createElement('button');
     noteBtn.type = 'button';
     noteBtn.id = 'swan-floating-note-btn';
@@ -573,7 +575,7 @@ function renderActionDock() {
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
       </span>
-      <span class="dock-btn-label">Leave a note</span>
+      <span class="dock-btn-label dock-note-label">Leave a note</span>
     `;
     noteBtn.addEventListener('click', () => {
       if (typeof openNoteModal === 'function') {

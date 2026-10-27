@@ -287,9 +287,19 @@
     <!-- 6. Kind Words From Our Customers -->
     <section class="home-reviews-section" id="customer-reviews-home" aria-labelledby="home-reviews-heading">
       <div class="container">
-        <div class="home-reviews-header">
-          <h2 class="home-reviews-title" id="home-reviews-heading">Kind words from our customers</h2>
-          <p class="home-reviews-subtitle">Notes from people who received a Swan Studio piece.</p>
+        <div class="home-reviews-header" style="text-align: center; max-width: 680px; margin: 0 auto 2.25rem auto;">
+          <span class="hero-tagline-badge" style="margin-bottom: 0.75rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            Community Love &amp; Stories
+          </span>
+          <h2 class="home-reviews-title" id="home-reviews-heading" style="font-family: var(--font-serif); font-size: clamp(2rem, 3.8vw, 2.75rem); color: var(--cocoa); margin-bottom: 0.5rem; line-height: 1.2;">
+            Kind words from our customers
+          </h2>
+          <p class="home-reviews-subtitle" style="color: #73615A; font-size: 0.98rem; line-height: 1.6; margin: 0 auto;">
+            Every crochet piece carries intention and every parcel is packed with care. Explore reflections from people across India who received a piece from Bhumika.
+          </p>
         </div>
 
         <!-- Dynamic Container: Skeletons -> Cards or Honest Empty Invitation -->
@@ -324,11 +334,16 @@
 
         <!-- Call to Actions -->
         <div class="home-reviews-cta-row">
-          <button type="button" class="btn btn-primary open-note-modal-btn" id="btn-home-leave-note" style="min-height: 48px; padding: 0.75rem 1.4rem;">
+          <button type="button" class="btn btn-primary open-note-modal-btn" id="btn-home-leave-note" style="min-height: 48px; padding: 0.75rem 1.6rem; border-radius: 999px; display: inline-flex; align-items: center; gap: 0.5rem;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
             Leave a note
           </button>
-          <a href="reviews.html" class="btn btn-outline" style="min-height: 48px; padding: 0.75rem 1.25rem; border-color: var(--rose); color: var(--rose-text);" id="link-read-all-notes">
-            Read all notes &rarr;
+          <a href="reviews.html" class="btn btn-outline" style="min-height: 48px; padding: 0.75rem 1.4rem; border-radius: 999px; border-color: var(--rose); color: var(--rose-text); display: inline-flex; align-items: center; gap: 0.4rem;" id="link-read-all-notes">
+            <span>Read all notes &amp; reviews</span>
+            <span aria-hidden="true">&rarr;</span>
           </a>
         </div>
       </div>
@@ -686,47 +701,76 @@
           });
 
           const items = sorted.slice(0, 6);
+          const isSingle = items.length === 1;
 
           container.innerHTML = `
-            <div class="home-reviews-track" id="home-reviews-track">
+            <div class="home-reviews-track ${isSingle ? 'single-review' : ''}" id="home-reviews-track">
               ${items.map(r => {
                 const authorName = r.displayName || 'Kind Customer';
+                const initial = (authorName.trim()[0] || 'K').toUpperCase();
                 const bodyText = r.body || 'Loved this handmade creation!';
                 const dateStr = formatDate(r.createdAt);
+                const cityStr = r.city ? r.city : 'Verified Customer';
+                const rating = Math.min(5, Math.max(1, parseInt(r.rating, 10) || 5));
                 return `
                   <article class="home-review-card">
-                    <div>
-                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <div class="home-review-stars" aria-label="${r.rating} stars">
-                          ${renderSwanStars(r.rating, 16)}
+                    <div class="card-inner-content">
+                      <div class="review-card-header">
+                        <div class="review-author-wrap">
+                          <div class="review-avatar" aria-hidden="true">${escapeHtml(initial)}</div>
+                          <div class="review-author-details">
+                            <div class="review-author-name-row">
+                              <span class="home-review-author">${escapeHtml(authorName)}</span>
+                              ${r.verifiedBuyer ? `
+                                <span class="verified-buyer-badge" title="Verified buyer">
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                  Verified
+                                </span>
+                              ` : ''}
+                            </div>
+                            <span class="home-review-location">
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                              ${escapeHtml(cityStr)}
+                            </span>
+                          </div>
                         </div>
-                        ${r.verifiedBuyer ? `
-                          <span class="verified-buyer-badge" title="Verified buyer">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            Verified buyer
-                          </span>
-                        ` : ''}
+                        <div class="review-rating-pill" aria-label="${rating} out of 5 stars">
+                          <span class="rating-pill-num">${rating}.0</span>
+                          <div class="rating-stars-inline home-review-stars">${renderSwanStars(rating, 14)}</div>
+                        </div>
                       </div>
-                      <p class="home-review-body">
-                        ${escapeHtml(bodyText)}
-                      </p>
+
+                      <div class="review-quote-wrap">
+                        <svg class="review-quote-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                          <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                        </svg>
+                        <p class="home-review-body">
+                          ${escapeHtml(bodyText)}
+                        </p>
+                      </div>
+
                       ${r.photoUrl ? `
-                        <div style="margin-bottom: 0.75rem;">
+                        <div style="margin-bottom: 0.85rem;">
                           <img src="${escapeHtml(r.photoUrl)}" alt="Customer photo by ${escapeHtml(authorName)}" loading="lazy" class="home-review-thumb">
                         </div>
                       ` : ''}
                     </div>
+
                     <div class="home-review-meta">
-                      <div>
-                        <span class="home-review-author">${escapeHtml(authorName)}</span>
-                        ${r.city ? `<span class="home-review-city"> • ${escapeHtml(r.city)}</span>` : ''}
-                        ${r.productName ? `
-                          <div class="home-review-product">
-                            ${escapeHtml(r.productName)}
-                          </div>
-                        ` : ''}
-                      </div>
-                      <time datetime="${escapeHtml(r.createdAt || '')}" style="font-size: 0.76rem; color: #8C7B74; white-space: nowrap;">
+                      ${r.productName ? `
+                        <div class="home-review-product-pill">
+                          ${r.productSlug ? `
+                            <a href="product.html?slug=${encodeURIComponent(r.productSlug)}" class="product-chip-link">
+                              <span>🌸</span> ${escapeHtml(r.productName)}
+                            </a>
+                          ` : `<span class="product-chip-link"><span>🌸</span> ${escapeHtml(r.productName)}</span>`}
+                        </div>
+                      ` : `
+                        <span class="product-chip-link default-chip">
+                          <span>🧶</span> Handcrafted Keepsake
+                        </span>
+                      `}
+                      <time datetime="${escapeHtml(r.createdAt || '')}" class="home-review-date">
                         ${dateStr}
                       </time>
                     </div>

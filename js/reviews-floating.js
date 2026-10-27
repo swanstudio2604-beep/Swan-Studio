@@ -43,8 +43,8 @@
   function renderFloatingButton() {
     if (document.getElementById('swan-floating-note-btn')) return;
 
-    // Hide if payment step on checkout.html
-    if (currentPath === 'checkout.html' || currentPath === 'order-confirmation.html') {
+    // Hide if payment step on checkout.html or if on reviews.html (page has dedicated review actions)
+    if (currentPath === 'checkout.html' || currentPath === 'order-confirmation.html' || currentPath === 'reviews.html') {
       return;
     }
 
@@ -133,14 +133,14 @@
               <label class="form-label" id="star-rating-label">How did you like it? *</label>
               <div class="star-picker" role="radiogroup" aria-labelledby="star-rating-label" id="star-picker">
                 ${[1, 2, 3, 4, 5].map(val => `
-                  <button type="button" class="star-btn ${val === 5 ? 'active' : ''}" data-value="${val}" role="radio" aria-checked="${val === 5}" aria-label="${val} star${val > 1 ? 's' : ''}">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="${val === 5 ? '#F5A623' : '#E5E7EB'}" stroke="none" aria-hidden="true">
+                  <button type="button" class="star-btn ${val <= 5 ? 'active' : ''}" data-value="${val}" role="radio" aria-checked="${val === 5}" aria-label="${val} star${val > 1 ? 's' : ''}">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="${val <= 5 ? '#F5A623' : '#E5E7EB'}" stroke="${val <= 5 ? '#D97706' : '#D1D5DB'}" stroke-width="1" aria-hidden="true">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                   </button>
                 `).join('')}
               </div>
-              <div class="rating-feedback-text" id="rating-feedback-text">Loved it</div>
+              <div class="rating-feedback-text" id="rating-feedback-text">✨ 5 out of 5 — Loved it! Absolutely delighted</div>
               <input type="hidden" name="rating" id="note-rating-input" value="5">
               <div class="form-error-msg" id="err-rating"></div>
             </div>
@@ -416,11 +416,11 @@
     const ratingInput = document.getElementById('note-rating-input');
     const ratingText = document.getElementById('rating-feedback-text');
     const ratingDescriptions = {
-      1: 'Disappointed',
-      2: 'Could be better',
-      3: 'It was nice',
-      4: 'Really liked it',
-      5: 'Loved it'
+      1: '😞 1 out of 5 — Disappointed, we want to make it right',
+      2: '🌱 2 out of 5 — Could be better',
+      3: '🌸 3 out of 5 — It was nice and thoughtful',
+      4: '⭐ 4 out of 5 — Really liked it! Beautiful work',
+      5: '✨ 5 out of 5 — Loved it! Absolutely delighted'
     };
 
     starButtons.forEach(btn => {
