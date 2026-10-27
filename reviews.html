@@ -306,15 +306,47 @@
 
       function renderSummary(reviews) {
         const total = reviews.length;
+        if (!total) {
+          document.getElementById('stat-avg-rating').textContent = '5.0';
+          document.getElementById('total-reviews-count').textContent = '0';
+          const starsWrap = document.getElementById('stat-avg-stars');
+          if (starsWrap) starsWrap.innerHTML = renderSwanStars(5, 20);
+          return;
+        }
+
         const sum = reviews.reduce((acc, r) => acc + (parseInt(r.rating, 10) || 5), 0);
         const avg = (sum / total).toFixed(1);
 
-        document.getElementById('stat-avg-rating').textContent = avg;
+        // Count up from 0 to avg for real data
+        const ratingEl = document.getElementById('stat-avg-rating');
+        const targetVal = parseFloat(avg);
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReduced || targetVal === 0) {
+          ratingEl.textContent = avg;
+        } else {
+          const duration = 600;
+          const startTime = performance.now();
+          function animateCount(time) {
+            const elapsed = time - startTime;
+            const progress = Math.min(1, elapsed / duration);
+            const current = (progress * targetVal).toFixed(1);
+            ratingEl.textContent = current;
+            if (progress < 1) {
+              requestAnimationFrame(animateCount);
+            } else {
+              ratingEl.textContent = avg;
+            }
+          }
+          requestAnimationFrame(animateCount);
+        }
+
         document.getElementById('total-reviews-count').textContent = total;
 
-        // Render stars
+        // Render average stars with half-star support
         const starsWrap = document.getElementById('stat-avg-stars');
-        starsWrap.innerHTML = renderStarGlyphs(Math.round(parseFloat(avg)));
+        if (starsWrap) {
+          starsWrap.innerHTML = renderSwanStars(parseFloat(avg), 20);
+        }
 
         // Distribution
         const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -465,6 +497,8 @@
 
       function renderSingleCard(r) {
         const rating = Math.min(5, Math.max(1, parseInt(r.rating, 10) || 5));
+        const authorName = r.displayName || 'Kind Customer';
+        const bodyText = r.body || 'Loved this handmade piece!';
         const dateStr = formatDate(r.createdAt);
         const hasPhoto = Boolean(r.photoUrl);
         const isVerified = Boolean(r.verifiedBuyer);
@@ -475,7 +509,7 @@
             <div>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
                 <div class="home-review-stars" aria-label="${rating} out of 5 stars">
-                  ${renderStarGlyphs(rating)}
+                  ${renderSwanStars(rating, 18)}
                 </div>
                 ${isVerified ? `
                   <span class="verified-buyer-badge" title="Order verified by atelier">
@@ -488,7 +522,7 @@
               <!-- Clamped note text with Read more toggle -->
               <div class="review-text-wrap" style="position: relative;">
                 <p class="home-review-body review-expandable-text" style="margin-bottom: 0.5rem; font-size: 0.94rem; line-height: 1.6; color: var(--cocoa);">
-                  ${escapeHtml(r.body)}
+                  ${escapeHtml(bodyText)}
                 </p>
                 <button type="button" class="btn-toggle-read-more" style="display: none; background: none; border: none; padding: 0; font-size: 0.82rem; font-weight: 600; color: var(--rose-text); cursor: pointer; margin-bottom: 0.75rem;">
                   Read more &darr;
@@ -498,7 +532,7 @@
               ${hasPhoto ? `
                 <div style="margin: 0.5rem 0 0.85rem 0;">
                   <button type="button" class="photo-thumbnail-btn" data-full-photo="${escapeHtml(r.photoUrl)}" style="background: none; border: none; padding: 0; cursor: pointer; display: inline-block; border-radius: 8px; overflow: hidden;" aria-label="Tap to enlarge photo">
-                    <img src="${escapeHtml(r.photoUrl)}" alt="Customer unboxing photo by ${escapeHtml(r.displayName)}" loading="lazy" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-subtle); display: block; transition: transform 0.2s ease;">
+                    <img src="${escapeHtml(r.photoUrl)}" alt="Customer unboxing photo by ${escapeHtml(authorName)}" loading="lazy" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-subtle); display: block; transition: transform 0.2s ease;">
                   </button>
                 </div>
               ` : ''}
@@ -513,7 +547,7 @@
 
             <div class="home-review-meta" style="margin-top: 1rem;">
               <div>
-                <span class="home-review-author">${escapeHtml(r.displayName)}</span>
+                <span class="home-review-author">${escapeHtml(authorName)}</span>
                 ${r.city ? `<span class="home-review-city"> • ${escapeHtml(r.city)}</span>` : ''}
                 ${r.productName ? `
                   <div class="home-review-product">
@@ -525,7 +559,7 @@
                   </div>
                 ` : ''}
               </div>
-              <time datetime="${escapeHtml(r.createdAt)}" style="font-size: 0.76rem; color: #8C7B74; white-space: nowrap;">
+              <time datetime="${escapeHtml(r.createdAt || '')}" style="font-size: 0.76rem; color: #8C7B74; white-space: nowrap;">
                 ${dateStr}
               </time>
             </div>
@@ -595,17 +629,28 @@
         document.body.style.overflow = '';
       }
 
-      function renderStarGlyphs(count) {
+      function renderSwanStars(rating, size = 18) {
+        const num = Math.max(0, Math.min(5, parseFloat(rating) || 5));
         let out = '';
+        const gradId = 'halfStarGrad_' + Math.random().toString(36).substring(2, 8);
+        let defsAdded = false;
+
         for (let i = 1; i <= 5; i++) {
-          out += `
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="${i <= count ? '#F59E0B' : '#E5E7EB'}" stroke="none" aria-hidden="true">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-            </svg>
-          `;
+          if (i <= Math.floor(num)) {
+            out += `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="#F5A623" stroke="#D97706" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block!important;vertical-align:middle!important;flex-shrink:0!important;" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+          } else if (i - num < 1 && (num % 1) >= 0.25) {
+            if (!defsAdded) {
+              out += `<svg width="0" height="0" style="position:absolute;width:0;height:0;"><defs><linearGradient id="${gradId}"><stop offset="50%" stop-color="#F5A623"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs></svg>`;
+              defsAdded = true;
+            }
+            out += `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="url(#${gradId})" stroke="#D97706" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block!important;vertical-align:middle!important;flex-shrink:0!important;" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+          } else {
+            out += `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="#E5E7EB" stroke="#D1D5DB" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block!important;vertical-align:middle!important;flex-shrink:0!important;" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+          }
         }
         return out;
       }
+      const renderStarGlyphs = renderSwanStars;
 
       function formatDate(dateStr) {
         if (!dateStr) return '';

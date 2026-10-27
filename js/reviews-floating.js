@@ -37,60 +37,56 @@
   let productsCache = [];
 
   // ---------------------------------------------------------------------------
-  // 1. DOM Injection: Floating "Leave a note" Action Button
+  // ---------------------------------------------------------------------------
+  // 1. DOM Injection: Floating "Leave a note" Action Button inside Action Dock
   // ---------------------------------------------------------------------------
   function renderFloatingButton() {
     if (document.getElementById('swan-floating-note-btn')) return;
 
     // Hide if payment step on checkout.html
-    if (currentPath === 'checkout.html') {
+    if (currentPath === 'checkout.html' || currentPath === 'order-confirmation.html') {
       return;
+    }
+
+    let dock = document.getElementById('swan-action-dock');
+    if (!dock) {
+      dock = document.createElement('div');
+      dock.id = 'swan-action-dock';
+      dock.className = 'swan-action-dock';
+      dock.setAttribute('role', 'region');
+      dock.setAttribute('aria-label', 'Quick Actions');
+      document.body.appendChild(dock);
     }
 
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.id = 'swan-floating-note-btn';
-    btn.className = 'floating-note-btn';
+    btn.className = 'dock-btn dock-note-btn';
     btn.setAttribute('aria-label', 'Leave a kind note for Bhumika');
     btn.setAttribute('title', 'Leave a kind note');
     btn.innerHTML = `
-      <span class="floating-note-icon" aria-hidden="true">
+      <span class="dock-btn-icon" aria-hidden="true">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
       </span>
-      <span class="floating-note-label">Leave a note</span>
+      <span class="dock-note-label">Leave a note</span>
     `;
 
     btn.addEventListener('click', () => {
       openNoteModal();
     });
 
-    document.body.appendChild(btn);
-
-    // Scroll collapse/expand behavior (respecting prefers-reduced-motion)
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!prefersReducedMotion) {
-      window.addEventListener('scroll', () => {
-        if (!scrollTicking) {
-          window.requestAnimationFrame(() => {
-            const currentY = window.scrollY;
-            if (currentY > lastScrollY && currentY > 80) {
-              btn.classList.add('collapsed');
-            } else {
-              btn.classList.remove('collapsed');
-            }
-            lastScrollY = currentY;
-            scrollTicking = false;
-          });
-          scrollTicking = true;
-        }
-      }, { passive: true });
+    // Place Leave a Note button above WhatsApp in the dock
+    if (dock.firstChild) {
+      dock.insertBefore(btn, dock.firstChild);
+    } else {
+      dock.appendChild(btn);
     }
   }
 
   // ---------------------------------------------------------------------------
-  // 2. DOM Injection: Floating Bottom Sheet / Modal
+  // 2. DOM Injection: Floating Bottom Sheet / Centered Modal (Bug 3, 4, 5 Fix)
   // ---------------------------------------------------------------------------
   function renderNoteModal() {
     if (document.getElementById('swan-note-modal-overlay')) return;
@@ -106,7 +102,9 @@
     overlay.innerHTML = `
       <div class="swan-modal-backdrop" id="swan-modal-backdrop"></div>
       <div class="swan-bottom-sheet" id="swan-bottom-sheet">
-        <div class="sheet-drag-handle" aria-hidden="true"></div>
+        <div class="sheet-drag-handle-wrap" id="sheet-drag-handle-wrap" aria-hidden="true">
+          <div class="sheet-drag-handle"></div>
+        </div>
         
         <!-- Sheet Header -->
         <div class="sheet-header">
@@ -130,13 +128,13 @@
               <input type="text" name="website_url_hp" id="note-hp-field" tabindex="-1" autocomplete="off">
             </div>
 
-            <!-- Star Rating (1 to 5) -->
+            <!-- Star Rating (1 to 5) with Gold Palette and Tap Pop -->
             <div class="form-group rating-group">
               <label class="form-label" id="star-rating-label">How did you like it? *</label>
               <div class="star-picker" role="radiogroup" aria-labelledby="star-rating-label" id="star-picker">
                 ${[1, 2, 3, 4, 5].map(val => `
                   <button type="button" class="star-btn ${val === 5 ? 'active' : ''}" data-value="${val}" role="radio" aria-checked="${val === 5}" aria-label="${val} star${val > 1 ? 's' : ''}">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="${val === 5 ? '#F5A623' : '#E5E7EB'}" stroke="none" aria-hidden="true">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                   </button>
@@ -147,12 +145,9 @@
               <div class="form-error-msg" id="err-rating"></div>
             </div>
 
-            <!-- Your Note Body -->
+            <!-- Your Note Body with Character Counter Underneath -->
             <div class="form-group">
-              <div class="label-row">
-                <label for="note-body-input" class="form-label">Your note *</label>
-                <span class="char-counter" id="note-char-counter">0 / 600</span>
-              </div>
+              <label for="note-body-input" class="form-label">Your note *</label>
               <textarea 
                 id="note-body-input" 
                 name="body" 
@@ -163,6 +158,9 @@
                 maxlength="600"
                 required
               ></textarea>
+              <div class="char-counter-row">
+                <span class="char-counter-bottom" id="note-char-counter">0 / 600</span>
+              </div>
               <div class="form-error-msg" id="err-body"></div>
             </div>
 
@@ -205,26 +203,39 @@
               </select>
             </div>
 
-            <!-- Optional Photo Attachment -->
+            <!-- Custom Styled Photo Upload Card (Bug 5 Fix) -->
             <div class="form-group">
               <label class="form-label">Photo (unboxing or finished piece)</label>
-              <div class="photo-upload-container">
+              <div class="photo-upload-card" id="photo-upload-card">
                 <input 
                   type="file" 
                   id="note-photo-file" 
                   accept="image/*,.heic,.heif" 
                   class="photo-file-input"
+                  style="position: absolute !important; width: 1px !important; height: 1px !important; opacity: 0 !important; pointer-events: none !important; overflow: hidden !important;"
+                  tabindex="-1"
                 >
-                <label for="note-photo-file" class="photo-upload-btn" id="photo-upload-trigger">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                    <polyline points="21 15 16 10 5 21"></polyline>
-                  </svg>
-                  <span>Add a photo (gallery or camera)</span>
+                <label for="note-photo-file" class="photo-upload-dropzone" id="photo-upload-trigger">
+                  <div class="upload-icon-circle" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                      <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                  </div>
+                  <div class="upload-text-block">
+                    <span class="upload-main-text">Add a photo (gallery or camera)</span>
+                    <span class="upload-sub-text">Compressed directly on your phone • Private until approved</span>
+                  </div>
                 </label>
                 <div class="photo-preview-wrap" id="note-photo-preview-wrap" style="display: none;">
                   <img src="" alt="Photo preview" id="note-photo-preview-img" class="photo-preview-img">
+                  <div class="photo-preview-info">
+                    <span id="photo-file-name" class="photo-file-name">Photo attached</span>
+                    <span id="photo-file-size" class="photo-file-size">Ready to upload</span>
+                    <div class="photo-progress-bar" id="photo-compress-progress" style="display: none;">
+                      <div class="photo-progress-fill" id="photo-progress-fill"></div>
+                    </div>
+                  </div>
                   <button type="button" class="photo-remove-btn" id="note-photo-remove-btn" aria-label="Remove attached photo">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -234,39 +245,45 @@
                   </button>
                 </div>
               </div>
-              <div class="photo-help-text">Compressed directly on your phone. Private until approved.</div>
               <div class="form-error-msg" id="err-photo"></div>
             </div>
 
-            <!-- Visibility Choice -->
+            <!-- Segmented Control for Visibility Choice (Bug 5 Fix) -->
             <div class="form-group visibility-box">
               <label class="form-label">Note visibility</label>
-              <div class="visibility-radios">
-                <label class="radio-label">
-                  <input type="radio" name="visibility" value="public" id="vis-public" checked>
-                  <span>Show on the website</span>
-                </label>
-                <label class="radio-label">
-                  <input type="radio" name="visibility" value="private" id="vis-private">
-                  <span>Only send to Bhumika (private note)</span>
-                </label>
+              <div class="segmented-control" role="radiogroup" aria-label="Note visibility choice">
+                <button type="button" class="segment-btn active" id="seg-public" role="radio" aria-checked="true" data-value="public">
+                  Show on the website
+                </button>
+                <button type="button" class="segment-btn" id="seg-private" role="radio" aria-checked="false" data-value="private">
+                  Only send to Bhumika
+                </button>
               </div>
+              <input type="hidden" name="visibility" id="note-visibility-input" value="public">
 
               <!-- Consent checkbox (required for public option) -->
-              <div class="consent-row" id="consent-container">
-                <label class="checkbox-label">
-                  <input type="checkbox" id="note-consent-check" checked required>
-                  <span>Bhumika may display my first name, city, note and photo on this website.</span>
+              <div class="consent-checkbox-wrap" id="consent-container">
+                <label class="consent-checkbox-label">
+                  <input type="checkbox" id="note-consent-check" class="custom-checkbox" checked required>
+                  <span class="consent-text">Bhumika may display my first name, city, note and photo on this website.</span>
                 </label>
                 <div class="form-error-msg" id="err-consent"></div>
               </div>
+              <div class="private-note-hint" id="private-note-hint" style="display: none;">
+                💌 This note will be sent directly to Bhumika as private feedback and will never appear on the website.
+              </div>
             </div>
 
-            <!-- Optional Order ID or Phone (Verified Buyer) -->
+            <!-- Optional Order ID or Phone (Verified Buyer Accordion) -->
             <div class="form-group" style="margin-top: 0.5rem;">
-              <details class="order-link-accordion">
-                <summary class="order-link-summary">Have an order ID or phone number? (optional)</summary>
-                <div class="order-link-fields" style="padding-top: 0.75rem;">
+              <details class="order-link-accordion" id="order-link-accordion">
+                <summary class="order-link-summary">
+                  <span>Have an order ID or phone number? (optional)</span>
+                  <svg class="accordion-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </summary>
+                <div class="order-link-fields">
                   <input 
                     type="text" 
                     id="note-order-contact" 
@@ -282,25 +299,12 @@
 
             <!-- Form Global Error Notification -->
             <div class="form-global-error" id="note-form-global-error" style="display: none;"></div>
-
-            <!-- Submit Action -->
-            <div class="form-actions" style="margin-top: 1.25rem;">
-              <button type="submit" class="btn btn-primary btn-block submit-btn" id="swan-note-submit-btn">
-                <span class="btn-text">Send note with love</span>
-                <span class="btn-spinner" aria-hidden="true" style="display: none;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="spin">
-                    <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
-                    <path d="M12 2a10 10 0 0 1 10 10"></path>
-                  </svg>
-                </span>
-              </button>
-            </div>
           </form>
 
           <!-- Success State -->
           <div class="note-state-box note-success-box" id="note-success-view" style="display: none;">
             <div class="state-icon" aria-hidden="true">
-              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="drawn-check">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
               </svg>
@@ -325,7 +329,7 @@
           <!-- Failure State with WhatsApp Fallback -->
           <div class="note-state-box note-error-box" id="note-failure-view" style="display: none;">
             <div class="state-icon" aria-hidden="true">
-              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="8" x2="12" y2="12"></line>
                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -345,6 +349,25 @@
               </a>
             </div>
           </div>
+        </div>
+
+        <!-- Sticky Bottom Submit Action (Bug 5 Fix) -->
+        <div class="sheet-sticky-footer" id="sheet-sticky-footer">
+          <button type="submit" form="swan-floating-note-form" class="btn btn-primary btn-block submit-btn" id="swan-note-submit-btn">
+            <span class="btn-text" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+              <span>Send note with love</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </span>
+            <span class="btn-spinner" aria-hidden="true" style="display: none;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="spin">
+                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+                <path d="M12 2a10 10 0 0 1 10 10"></path>
+              </svg>
+              <span style="margin-left: 8px;">Sending note...</span>
+            </span>
+          </button>
         </div>
       </div>
     `;
@@ -388,7 +411,7 @@
       }
     });
 
-    // Star rating buttons
+    // Star rating buttons with gold fill and pop animation
     const starButtons = document.querySelectorAll('#star-picker .star-btn');
     const ratingInput = document.getElementById('note-rating-input');
     const ratingText = document.getElementById('rating-feedback-text');
@@ -407,9 +430,18 @@
         ratingText.textContent = ratingDescriptions[val] || 'Loved it';
         starButtons.forEach(b => {
           const bVal = parseInt(b.getAttribute('data-value'), 10);
-          b.classList.toggle('active', bVal <= val);
-          b.setAttribute('aria-checked', bVal === val);
+          const isActive = bVal <= val;
+          b.classList.toggle('active', isActive);
+          b.setAttribute('aria-checked', bVal === val ? 'true' : 'false');
+          const svg = b.querySelector('svg');
+          if (svg) {
+            svg.setAttribute('fill', isActive ? '#F5A623' : '#E5E7EB');
+            svg.setAttribute('stroke', isActive ? '#D97706' : '#D1D5DB');
+          }
         });
+        btn.classList.remove('tap-pop');
+        void btn.offsetWidth; // trigger reflow for animation
+        btn.classList.add('tap-pop');
         saveDraft();
       });
 
@@ -450,23 +482,77 @@
       if (el) el.addEventListener('input', saveDraft);
     });
 
-    // Visibility toggle (hides/shows consent requirement)
-    const visRadios = document.querySelectorAll('input[name="visibility"]');
+    // Segmented Control (Show on website / Only send to Bhumika)
+    const segPublic = document.getElementById('seg-public');
+    const segPrivate = document.getElementById('seg-private');
+    const visInput = document.getElementById('note-visibility-input');
     const consentContainer = document.getElementById('consent-container');
     const consentCheck = document.getElementById('note-consent-check');
+    const privateNoteHint = document.getElementById('private-note-hint');
 
-    visRadios.forEach(radio => {
-      radio.addEventListener('change', () => {
-        if (radio.value === 'public') {
-          consentContainer.style.display = 'block';
-          consentCheck.required = true;
-        } else {
-          consentContainer.style.display = 'none';
-          consentCheck.required = false;
-        }
+    if (segPublic && segPrivate) {
+      segPublic.addEventListener('click', () => {
+        segPublic.classList.add('active');
+        segPublic.setAttribute('aria-checked', 'true');
+        segPrivate.classList.remove('active');
+        segPrivate.setAttribute('aria-checked', 'false');
+        if (visInput) visInput.value = 'public';
+        if (consentContainer) consentContainer.style.display = 'block';
+        if (consentCheck) consentCheck.required = true;
+        if (privateNoteHint) privateNoteHint.style.display = 'none';
         saveDraft();
       });
-    });
+
+      segPrivate.addEventListener('click', () => {
+        segPrivate.classList.add('active');
+        segPrivate.setAttribute('aria-checked', 'true');
+        segPublic.classList.remove('active');
+        segPublic.setAttribute('aria-checked', 'false');
+        if (visInput) visInput.value = 'private';
+        if (consentContainer) consentContainer.style.display = 'none';
+        if (consentCheck) consentCheck.required = false;
+        if (privateNoteHint) privateNoteHint.style.display = 'block';
+        saveDraft();
+      });
+    }
+
+    // Swipe-down gesture to dismiss bottom sheet on mobile
+    const sheet = document.getElementById('swan-bottom-sheet');
+    const dragTarget = document.getElementById('sheet-drag-handle-wrap') || document.querySelector('.sheet-header');
+    let startY = 0;
+    let currentY = 0;
+    let isDragging = false;
+
+    if (dragTarget && sheet) {
+      dragTarget.addEventListener('touchstart', (e) => {
+        if (window.innerWidth > 600) return;
+        startY = e.touches[0].clientY;
+        currentY = startY;
+        isDragging = true;
+        sheet.style.transition = 'none';
+      }, { passive: true });
+
+      dragTarget.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        currentY = e.touches[0].clientY;
+        const deltaY = currentY - startY;
+        if (deltaY > 0) {
+          sheet.style.transform = `translateY(${deltaY}px)`;
+        }
+      }, { passive: true });
+
+      dragTarget.addEventListener('touchend', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        sheet.style.transition = '';
+        const deltaY = currentY - startY;
+        if (deltaY > 70) {
+          closeNoteModal();
+        } else {
+          sheet.style.transform = '';
+        }
+      });
+    }
 
     // Photo input & phone compression
     const photoInput = document.getElementById('note-photo-file');
@@ -654,7 +740,7 @@
         first_name: document.getElementById('note-name-input')?.value || '',
         city: document.getElementById('note-city-input')?.value || '',
         product_id: document.getElementById('note-product-select')?.value || '',
-        visibility: document.querySelector('input[name="visibility"]:checked')?.value || 'public',
+        visibility: document.getElementById('note-visibility-input')?.value || 'public',
         consent: document.getElementById('note-consent-check')?.checked ?? true,
         order_contact: document.getElementById('note-order-contact')?.value || '',
         timestamp: Date.now()
@@ -695,8 +781,13 @@
         if (p) p.value = draft.product_id;
       }
       if (draft.visibility) {
-        const v = document.querySelector(`input[name="visibility"][value="${draft.visibility}"]`);
-        if (v) v.click();
+        if (draft.visibility === 'private') {
+          const segPrivate = document.getElementById('seg-private');
+          if (segPrivate) segPrivate.click();
+        } else {
+          const segPublic = document.getElementById('seg-public');
+          if (segPublic) segPublic.click();
+        }
       }
       if (draft.consent !== undefined) {
         const check = document.getElementById('note-consent-check');
@@ -775,7 +866,7 @@
     const firstName = (document.getElementById('note-name-input').value || '').trim();
     const city = (document.getElementById('note-city-input').value || '').trim();
     const productIdRaw = document.getElementById('note-product-select').value;
-    const isPublic = document.querySelector('input[name="visibility"]:checked')?.value === 'public';
+    const isPublic = (document.getElementById('note-visibility-input')?.value || 'public') === 'public';
     const consent = document.getElementById('note-consent-check').checked;
     const orderContact = (document.getElementById('note-order-contact')?.value || '').trim();
 
@@ -991,7 +1082,20 @@
       if (submissionSuccess) {
         recordSubmissionSuccess();
         clearDraft();
-        showSuccessView(firstName, isPublic);
+        btnSpinner.style.display = 'none';
+        btnText.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="drawn-check" style="margin-right: 6px; display: inline-block;">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Sent with love!</span>
+        `;
+        submitBtn.style.background = '#16A34A';
+        submitBtn.style.borderColor = '#16A34A';
+        setTimeout(() => {
+          showSuccessView(firstName, isPublic);
+          submitBtn.style.background = '';
+          submitBtn.style.borderColor = '';
+        }, 700);
       } else {
         throw new Error('Could not record your note to database or local storage.');
       }

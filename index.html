@@ -27,16 +27,19 @@
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
   <link rel="alternate icon" href="favicon.ico">
 
-  <!-- Google Fonts: Cormorant Garamond & Poppins -->
+  <!-- Google Fonts: Cormorant Garamond & Poppins with display=swap & non-blocking preload -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap">
+  </noscript>
 
   <!-- Global Stylesheet -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=20261027v2">
 
-  <!-- Preload LCP Hero Image -->
-  <link rel="preload" as="image" href="assets/images/hero-bouquet.webp" type="image/webp" fetchpriority="high">
+  <!-- Preload LCP Hero Image (Mobile Optimized) -->
+  <link rel="preload" as="image" href="assets/images/hero-bouquet-sm.webp" type="image/webp" fetchpriority="high">
 
   <!-- JSON-LD Structured Data: Store & LocalBusiness -->
   <script type="application/ld+json">
@@ -116,8 +119,9 @@
         <div class="hero-visual">
           <div class="hero-arch-card" id="hero-arch-container" style="overflow: hidden; position: relative; aspect-ratio: 1 / 1;">
             <picture>
-              <source srcset="assets/images/hero-bouquet.webp 1024w, assets/images/hero-bouquet-sm.webp 500w" sizes="(max-width: 600px) 100vw, 480px" type="image/webp">
-              <img src="assets/images/hero-bouquet.webp" alt="Handcrafted pastel crochet flower bouquet by Swan Studio" width="500" height="500" fetchpriority="high" style="width: 100%; height: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 140px 140px var(--radius-lg) var(--radius-lg); display: block;">
+              <source srcset="assets/images/hero-bouquet-sm.webp" media="(max-width: 600px)" type="image/webp">
+              <source srcset="assets/images/hero-bouquet.webp" type="image/webp">
+              <img src="assets/images/hero-bouquet-sm.webp" alt="Handcrafted pastel crochet flower bouquet by Swan Studio" width="480" height="480" fetchpriority="high" decoding="async" style="width: 100%; height: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 140px 140px var(--radius-lg) var(--radius-lg); display: block;">
             </picture>
           </div>
         </div>
@@ -196,8 +200,19 @@
           </p>
         </div>
 
-        <div class="products-grid" id="featured-products-grid">
-          <!-- Dynamically populated from active catalog with real photos -->
+        <div class="products-grid" id="featured-products-grid" style="min-height: 380px;">
+          <div class="product-card skeleton-card">
+            <div class="skeleton-line" style="width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-sm); margin-bottom: 0.75rem;"></div>
+            <div class="skeleton-line" style="width: 40%; height: 14px; margin-bottom: 0.5rem;"></div>
+            <div class="skeleton-line" style="width: 75%; height: 18px; margin-bottom: 0.5rem;"></div>
+            <div class="skeleton-line" style="width: 50%; height: 16px;"></div>
+          </div>
+          <div class="product-card skeleton-card">
+            <div class="skeleton-line" style="width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-sm); margin-bottom: 0.75rem;"></div>
+            <div class="skeleton-line" style="width: 40%; height: 14px; margin-bottom: 0.5rem;"></div>
+            <div class="skeleton-line" style="width: 75%; height: 18px; margin-bottom: 0.5rem;"></div>
+            <div class="skeleton-line" style="width: 50%; height: 16px;"></div>
+          </div>
         </div>
 
         <div style="text-align: center; margin-top: var(--space-2xl);">
@@ -278,7 +293,7 @@
         </div>
 
         <!-- Dynamic Container: Skeletons -> Cards or Honest Empty Invitation -->
-        <div id="home-reviews-container">
+        <div id="home-reviews-container" style="min-height: 220px;">
           <div class="home-reviews-track" id="home-reviews-skeleton">
             <div class="review-skeleton-card">
               <div class="skeleton-line" style="width: 100px; height: 18px; margin-bottom: 1rem;"></div>
@@ -674,46 +689,54 @@
 
           container.innerHTML = `
             <div class="home-reviews-track" id="home-reviews-track">
-              ${items.map(r => `
-                <article class="home-review-card">
-                  <div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                      <div class="home-review-stars" aria-label="${r.rating} stars">
-                        ${renderStarGlyphs(r.rating)}
-                      </div>
-                      ${r.verifiedBuyer ? `
-                        <span class="verified-buyer-badge" title="Verified buyer">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                          Verified buyer
-                        </span>
-                      ` : ''}
-                    </div>
-                    <p class="home-review-body">
-                      ${escapeHtml(r.body)}
-                    </p>
-                    ${r.photoUrl ? `
-                      <div style="margin-bottom: 0.75rem;">
-                        <img src="${escapeHtml(r.photoUrl)}" alt="Customer photo by ${escapeHtml(r.displayName)}" loading="lazy" class="home-review-thumb">
-                      </div>
-                    ` : ''}
-                  </div>
-                  <div class="home-review-meta">
+              ${items.map(r => {
+                const authorName = r.displayName || 'Kind Customer';
+                const bodyText = r.body || 'Loved this handmade creation!';
+                const dateStr = formatDate(r.createdAt);
+                return `
+                  <article class="home-review-card">
                     <div>
-                      <span class="home-review-author">${escapeHtml(r.displayName)}</span>
-                      ${r.city ? `<span class="home-review-city"> • ${escapeHtml(r.city)}</span>` : ''}
-                      ${r.productName ? `
-                        <div class="home-review-product">
-                          ${escapeHtml(r.productName)}
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div class="home-review-stars" aria-label="${r.rating} stars">
+                          ${renderSwanStars(r.rating, 16)}
+                        </div>
+                        ${r.verifiedBuyer ? `
+                          <span class="verified-buyer-badge" title="Verified buyer">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            Verified buyer
+                          </span>
+                        ` : ''}
+                      </div>
+                      <p class="home-review-body">
+                        ${escapeHtml(bodyText)}
+                      </p>
+                      ${r.photoUrl ? `
+                        <div style="margin-bottom: 0.75rem;">
+                          <img src="${escapeHtml(r.photoUrl)}" alt="Customer photo by ${escapeHtml(authorName)}" loading="lazy" class="home-review-thumb">
                         </div>
                       ` : ''}
                     </div>
-                  </div>
-                </article>
-              `).join('')}
+                    <div class="home-review-meta">
+                      <div>
+                        <span class="home-review-author">${escapeHtml(authorName)}</span>
+                        ${r.city ? `<span class="home-review-city"> • ${escapeHtml(r.city)}</span>` : ''}
+                        ${r.productName ? `
+                          <div class="home-review-product">
+                            ${escapeHtml(r.productName)}
+                          </div>
+                        ` : ''}
+                      </div>
+                      <time datetime="${escapeHtml(r.createdAt || '')}" style="font-size: 0.76rem; color: #8C7B74; white-space: nowrap;">
+                        ${dateStr}
+                      </time>
+                    </div>
+                  </article>
+                `;
+              }).join('')}
             </div>
           `;
 
-          // Setup dot indicators on mobile
+          // Setup dot indicators & 6s auto-advance carousel on mobile
           if (dotsContainer) {
             if (items.length > 1) {
               dotsContainer.innerHTML = items.map((_, i) => `
@@ -723,21 +746,65 @@
 
               const track = document.getElementById('home-reviews-track');
               if (track) {
-                track.addEventListener('scroll', () => {
-                  const cardWidth = track.firstElementChild ? track.firstElementChild.offsetWidth + 20 : 300;
-                  const activeIndex = Math.min(items.length - 1, Math.round(track.scrollLeft / cardWidth));
-                  dotsContainer.querySelectorAll('.home-review-dot').forEach((dot, idx) => {
-                    dot.classList.toggle('active', idx === activeIndex);
+                let currentIndex = 0;
+                let autoTimer = null;
+                let isPaused = false;
+                let isVisible = false;
+
+                const getCardWidth = () => track.firstElementChild ? track.firstElementChild.offsetWidth + 20 : 300;
+
+                const updateDots = (idx) => {
+                  dotsContainer.querySelectorAll('.home-review-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === idx);
                   });
+                };
+
+                track.addEventListener('scroll', () => {
+                  const cardWidth = getCardWidth();
+                  currentIndex = Math.min(items.length - 1, Math.round(track.scrollLeft / cardWidth));
+                  updateDots(currentIndex);
                 }, { passive: true });
 
                 dotsContainer.querySelectorAll('.home-review-dot').forEach(dot => {
                   dot.addEventListener('click', () => {
                     const idx = parseInt(dot.getAttribute('data-index'), 10);
-                    const cardWidth = track.firstElementChild ? track.firstElementChild.offsetWidth + 20 : 300;
-                    track.scrollTo({ left: idx * cardWidth, behavior: 'smooth' });
+                    currentIndex = idx;
+                    track.scrollTo({ left: idx * getCardWidth(), behavior: 'smooth' });
+                    updateDots(idx);
                   });
                 });
+
+                // Auto advance every 6s (Part 3 Item 7)
+                const startAuto = () => {
+                  if (autoTimer) clearInterval(autoTimer);
+                  autoTimer = setInterval(() => {
+                    if (!isPaused && isVisible && window.innerWidth <= 768) {
+                      currentIndex = (currentIndex + 1) % items.length;
+                      track.scrollTo({ left: currentIndex * getCardWidth(), behavior: 'smooth' });
+                      updateDots(currentIndex);
+                    }
+                  }, 6000);
+                };
+
+                track.addEventListener('pointerenter', () => { isPaused = true; });
+                track.addEventListener('pointerleave', () => { isPaused = false; });
+                track.addEventListener('touchstart', () => { isPaused = true; }, { passive: true });
+                track.addEventListener('touchend', () => {
+                  setTimeout(() => { isPaused = false; }, 2500);
+                }, { passive: true });
+
+                if ('IntersectionObserver' in window) {
+                  const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                      isVisible = entry.isIntersecting;
+                    });
+                  }, { threshold: 0.15 });
+                  observer.observe(track);
+                } else {
+                  isVisible = true;
+                }
+
+                startAuto();
               }
             } else {
               dotsContainer.style.display = 'none';
@@ -750,12 +817,37 @@
         }
       }
 
-      function renderStarGlyphs(count) {
+      function renderSwanStars(rating, size = 16) {
+        const num = Math.max(0, Math.min(5, parseFloat(rating) || 5));
         let out = '';
+        const gradId = 'halfStarGrad_' + Math.random().toString(36).substring(2, 8);
+        let defsAdded = false;
+
         for (let i = 1; i <= 5; i++) {
-          out += `<svg width="16" height="16" viewBox="0 0 24 24" fill="${i <= count ? '#F59E0B' : '#E5E7EB'}" stroke="none" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+          if (i <= Math.floor(num)) {
+            out += `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="#F5A623" stroke="#D97706" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block!important;vertical-align:middle!important;flex-shrink:0!important;" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+          } else if (i - num < 1 && (num % 1) >= 0.25) {
+            if (!defsAdded) {
+              out += `<svg width="0" height="0" style="position:absolute;width:0;height:0;"><defs><linearGradient id="${gradId}"><stop offset="50%" stop-color="#F5A623"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs></svg>`;
+              defsAdded = true;
+            }
+            out += `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="url(#${gradId})" stroke="#D97706" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block!important;vertical-align:middle!important;flex-shrink:0!important;" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+          } else {
+            out += `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="#E5E7EB" stroke="#D1D5DB" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block!important;vertical-align:middle!important;flex-shrink:0!important;" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+          }
         }
         return out;
+      }
+      const renderStarGlyphs = renderSwanStars;
+
+      function formatDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+          const d = new Date(dateStr);
+          return d.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+        } catch (e) {
+          return '';
+        }
       }
 
       function escapeHtml(str) {
