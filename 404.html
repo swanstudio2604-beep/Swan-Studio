@@ -25,20 +25,37 @@
 
   <main id="main" class="section section-cream" style="min-height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 4rem 1rem;">
     <div class="container" style="max-width: 600px;">
-      <div style="display: flex; justify-content: center; margin-bottom: 1rem; color: var(--rose-text);" aria-hidden="true">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 12a4 4 0 0 1 8 0"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+      <div class="yarn-unravel-wrap" style="display: flex; justify-content: center; margin-bottom: 1.5rem;" aria-hidden="true">
+        <svg class="yarn-unravel-svg" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Yarn ball core -->
+          <g class="yarn-ball-core">
+            <circle cx="50" cy="50" r="38" fill="#FDF2F4" stroke="#C78391" stroke-width="3"/>
+            <!-- Texture skein lines -->
+            <path d="M22 45C30 30 70 30 78 45" stroke="#C78391" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M25 55C35 70 65 70 75 55" stroke="#C78391" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M35 20C45 35 45 65 35 80" stroke="#C78391" stroke-width="2" stroke-linecap="round"/>
+            <path d="M65 20C55 35 55 65 65 80" stroke="#C78391" stroke-width="2" stroke-linecap="round"/>
+            <path d="M25 35C40 45 60 45 75 35" stroke="#E3A8B4" stroke-width="2" stroke-linecap="round"/>
+            <path d="M25 65C40 55 60 55 75 65" stroke="#E3A8B4" stroke-width="2" stroke-linecap="round"/>
+          </g>
+          <!-- Unravelling loose thread curving away -->
+          <path class="yarn-loose-thread" d="M72 82C85 95 105 100 120 90C135 80 145 92 155 98" stroke="#C78391" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <!-- Crochet hook resting nearby -->
+          <path d="M98 30L125 7" stroke="#8C7B74" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M125 7C126 5 129 6 128 8" stroke="#8C7B74" stroke-width="2" stroke-linecap="round"/>
+        </svg>
       </div>
       <h1 class="section-title" style="font-size: clamp(2.4rem, 6vw, 3.6rem); margin-bottom: 0.5rem; color: var(--cocoa);">
         404 — Loose Thread
       </h1>
-      <p class="section-subtitle" style="font-size: 1.1rem; color: #73615A; margin-bottom: 2rem;">
+      <p class="section-subtitle" style="font-size: 1.05rem; color: #73615A; margin-bottom: 2rem;">
         The page you are looking for has unraveled or never existed in our atelier. Let's guide you back to our handmade creations.
       </p>
 
       <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
         <a href="index.html" class="btn btn-primary" style="min-height: 44px; display: inline-flex; align-items: center;">Return to Home</a>
-        <a href="shop.html" class="btn btn-secondary" style="min-height: 44px; display: inline-flex; align-items: center;">Browse Handmade Shop</a>
-        <a href="blog.html" class="btn btn-secondary" style="min-height: 44px; display: inline-flex; align-items: center;">Read Atelier Stories</a>
+        <a href="shop.html" class="btn btn-outline" style="min-height: 44px; display: inline-flex; align-items: center; border-color: var(--rose); color: var(--rose-text);">Browse Shop</a>
+        <a href="custom-order.html" class="btn btn-outline" style="min-height: 44px; display: inline-flex; align-items: center; border-color: var(--rose); color: var(--rose-text);">Custom Order</a>
       </div>
     </div>
   </main>

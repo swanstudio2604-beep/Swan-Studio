@@ -385,12 +385,53 @@
           </div>
         `;
 
+        // Mobile Sticky Bottom Bar (Part 3 Item 5)
+        const oldSticky = document.getElementById('product-mobile-sticky-bar');
+        if (oldSticky) oldSticky.remove();
+
+        const stickyBar = document.createElement('div');
+        stickyBar.className = 'product-mobile-sticky-bar';
+        stickyBar.id = 'product-mobile-sticky-bar';
+        stickyBar.innerHTML = `
+          <div class="sticky-bar-info">
+            <span class="sticky-bar-label">Total</span>
+            <span class="sticky-bar-price">₹${(Number(product.price) || 0).toLocaleString('en-IN')}</span>
+          </div>
+          <div class="sticky-bar-cta" style="display: flex; gap: 0.5rem; align-items: center;">
+            <a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="min-height: 42px; padding: 0.45rem 0.75rem; font-size: 0.8rem; border-color: var(--rose); color: var(--rose-text); display: inline-flex; align-items: center; gap: 4px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg>
+              <span>Enquire</span>
+            </a>
+            ${isOutOfStock ? `
+              <span class="sold-out-text" style="font-size: 0.82rem; font-weight: 600;">Sold out</span>
+            ` : `
+              <button type="button" class="btn btn-primary" id="mobile-sticky-add-btn" style="min-height: 42px; padding: 0.45rem 1rem; font-size: 0.85rem;">
+                Add to Bag
+              </button>
+            `}
+          </div>
+        `;
+        document.body.appendChild(stickyBar);
+
+        // Elevate dock above mobile sticky bar
+        const dock = document.getElementById('swan-action-dock');
+        if (dock) dock.classList.add('dock-product-elevated');
+
         // Quantity selector interactions (in-stock only)
         const qtyMinus = document.getElementById('qty-minus');
         const qtyPlus = document.getElementById('qty-plus');
         const qtyInput = document.getElementById('qty-input');
         const addToCartBtn = document.getElementById('add-to-cart-btn');
         const feedbackMsg = document.getElementById('cart-feedback-msg');
+        const mobileStickyAdd = document.getElementById('mobile-sticky-add-btn');
+
+        if (mobileStickyAdd && addToCartBtn) {
+          mobileStickyAdd.addEventListener('click', () => {
+            addToCartBtn.click();
+            mobileStickyAdd.textContent = '✓ Added!';
+            setTimeout(() => { mobileStickyAdd.textContent = 'Add to Bag'; }, 1600);
+          });
+        }
 
         if (!isOutOfStock && qtyMinus && qtyPlus && qtyInput) {
           qtyMinus.addEventListener('click', () => {

@@ -216,14 +216,133 @@ function initStickyHeader() {
   const header = document.getElementById('navbar');
   if (!header) return;
 
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 20) {
-      header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+
+        // 1. Soft shadow appearing after first scroll
+        if (currentY > 20) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+
+        // 2. Shrinks and hides when scrolling down, returns when scrolling up
+        const isMenuOpen = document.body.classList.contains('menu-open');
+        const isModalOpen = document.body.classList.contains('swan-modal-open');
+        if (currentY > 120 && currentY > lastScrollY && !isMenuOpen && !isModalOpen) {
+          header.classList.add('header-hidden');
+        } else {
+          header.classList.remove('header-hidden');
+        }
+
+        lastScrollY = currentY;
+        ticking = false;
+      });
+      ticking = true;
     }
   }, { passive: true });
 }
+
+// Slim Scroll-Progress Bar in Brand Gradient
+function initScrollProgress() {
+  let bar = document.getElementById('swan-scroll-progress');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'swan-scroll-progress';
+    bar.className = 'swan-scroll-progress';
+    bar.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(bar);
+  }
+
+  window.addEventListener('scroll', () => {
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = total > 0 ? (window.scrollY / total) * 100 : 0;
+    bar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+  }, { passive: true });
+}
+
+// Scroll Reveals & Self-Drawing Stitch Line Dividers
+function initScrollReveals() {
+  if (typeof IntersectionObserver === 'undefined') return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-revealed', 'in-view');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.15,
+    rootMargin: '0px 0px -40px 0px'
+  });
+
+  document.querySelectorAll('.reveal-on-scroll, .stitch-divider, .home-review-card, .category-card').forEach(el => {
+    observer.observe(el);
+  });
+}
+
+// Toast notification helper
+function showSwanToast(message, iconSvg = '') {
+  let toast = document.getElementById('swan-toast-banner');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'swan-toast-banner';
+    toast.className = 'swan-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+  }
+
+  const defaultIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+  toast.innerHTML = `${iconSvg || defaultIcon}<span>${message}</span>`;
+  toast.classList.add('is-active');
+
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(() => {
+    toast.classList.remove('is-active');
+  }, 2600);
+}
+window.showSwanToast = showSwanToast;
+
+// Wishlist toggle helper with spring heart pop & toast
+function toggleWishlist(slug) {
+  if (!slug) return false;
+  let list = [];
+  try {
+    list = JSON.parse(localStorage.getItem('swan_wishlist') || '[]');
+  } catch (e) {
+    list = [];
+  }
+  const index = list.indexOf(slug);
+  let isSaved = false;
+  if (index >= 0) {
+    list.splice(index, 1);
+    isSaved = false;
+  } else {
+    list.push(slug);
+    isSaved = true;
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try { navigator.vibrate(10); } catch (e) {}
+    }
+  }
+  localStorage.setItem('swan_wishlist', JSON.stringify(list));
+
+  // Update all heart icons for this slug
+  document.querySelectorAll(`.wishlist-btn[data-slug="${slug}"]`).forEach(btn => {
+    btn.classList.toggle('active', isSaved);
+    btn.setAttribute('aria-label', isSaved ? 'Remove from wishlist' : 'Save to wishlist');
+  });
+
+  showSwanToast(isSaved ? 'Saved to your wishlist' : 'Removed from wishlist', isSaved ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="var(--rose)" stroke="var(--rose-text)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>` : '');
+  return isSaved;
+}
+window.toggleWishlist = toggleWishlist;
 
 // ---------------------------------------------------------------------------
 // 5. Shared Footer Injection (Including Non-Negotiable Developer Credit)
@@ -423,24 +542,130 @@ function updateMobileBillingBar() {
 window.updateMobileBillingBar = updateMobileBillingBar;
 
 // ---------------------------------------------------------------------------
-// 7. Floating Accessible WhatsApp Button
+// 7. Action Dock: Unified Floating WhatsApp & Leave Note Stack (Bug 6 & 8 Fix)
 // ---------------------------------------------------------------------------
+function renderActionDock() {
+  if (window.location.pathname.includes('/admin/')) return;
+  const path = window.location.pathname.split('/').pop() || 'index.html';
+  if (path === 'order-confirmation.html') return;
+
+  let dock = document.getElementById('swan-action-dock');
+  if (!dock) {
+    dock = document.createElement('div');
+    dock.id = 'swan-action-dock';
+    dock.className = 'swan-action-dock';
+    dock.setAttribute('role', 'region');
+    dock.setAttribute('aria-label', 'Quick Actions');
+    document.body.appendChild(dock);
+  }
+
+  // 1. Leave Note Button
+  if (!document.getElementById('swan-floating-note-btn')) {
+    const noteBtn = document.createElement('button');
+    noteBtn.type = 'button';
+    noteBtn.id = 'swan-floating-note-btn';
+    noteBtn.className = 'dock-btn dock-note-btn';
+    noteBtn.setAttribute('aria-label', 'Leave a kind note for Bhumika');
+    noteBtn.setAttribute('title', 'Leave a note');
+    noteBtn.innerHTML = `
+      <span class="dock-btn-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+      </span>
+      <span class="dock-btn-label">Leave a note</span>
+    `;
+    noteBtn.addEventListener('click', () => {
+      if (typeof openNoteModal === 'function') {
+        openNoteModal();
+      }
+    });
+    dock.appendChild(noteBtn);
+  }
+
+  // 2. WhatsApp Button
+  if (!document.getElementById('swan-floating-whatsapp')) {
+    const waBtn = document.createElement('a');
+    waBtn.id = 'swan-floating-whatsapp';
+    waBtn.className = 'dock-btn dock-wa-btn';
+    const waNum = SITE.whatsapp || '9509966512';
+    const waUrl = SITE.whatsappUrl || `https://wa.me/91${waNum}`;
+    waBtn.href = `${waUrl}?text=${encodeURIComponent("Hi Bhumika! I'm browsing the Swan Studio website and would like to inquire about a crochet creation.")}`;
+    waBtn.target = '_blank';
+    waBtn.rel = 'noopener noreferrer';
+    waBtn.setAttribute('aria-label', 'Chat directly with Bhumika on WhatsApp');
+    waBtn.setAttribute('title', 'Chat on WhatsApp');
+    waBtn.innerHTML = `
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19.01L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67ZM8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7.02 8.48 7.02 9.7C7.02 10.92 7.91 12.1 8.03 12.27C8.16 12.43 9.77 14.91 12.23 15.97C12.82 16.22 13.27 16.37 13.63 16.49C14.22 16.68 14.76 16.65 15.19 16.59C15.67 16.52 16.66 15.99 16.87 15.4C17.07 14.82 17.07 14.32 17.01 14.22C16.95 14.12 16.79 14.06 16.55 13.94C16.31 13.82 15.12 13.24 14.9 13.16C14.68 13.08 14.52 13.04 14.36 13.28C14.2 13.52 13.74 14.06 13.6 14.22C13.46 14.38 13.32 14.4 13.08 14.28C12.84 14.16 11.83 13.83 10.63 12.76C9.7 11.93 9.07 10.91 8.95 10.71C8.83 10.51 8.94 10.4 9.06 10.28C9.17 10.17 9.31 9.99 9.43 9.85C9.55 9.71 9.59 9.61 9.67 9.45C9.75 9.29 9.71 9.15 9.65 9.03C9.59 8.91 9.13 7.78 8.94 7.31C8.75 6.86 8.56 6.92 8.42 6.91L8.03 6.91C7.87 6.91 8.53 7.33 8.53 7.33Z"/>
+      </svg>
+    `;
+    dock.appendChild(waBtn);
+  }
+
+  // Scroll collapse/expand & keyboard hide handlers
+  setupDockInteractions(dock);
+}
+
+function setupDockInteractions(dock) {
+  let lastY = window.scrollY;
+  const noteBtn = document.getElementById('swan-floating-note-btn');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  window.addEventListener('scroll', () => {
+    const curY = window.scrollY;
+    // Collapse note button on scroll down, expand on scroll up
+    if (noteBtn && !prefersReduced) {
+      if (curY > lastY && curY > 80) {
+        noteBtn.classList.add('collapsed');
+      } else {
+        noteBtn.classList.remove('collapsed');
+      }
+    }
+
+    // Hide or elevate dock when approaching footer to guarantee 0 overlap
+    const footer = document.querySelector('footer') || document.getElementById('site-footer');
+    if (footer) {
+      const footerRect = footer.getBoundingClientRect();
+      if (footerRect.top < window.innerHeight) {
+        const overlap = window.innerHeight - footerRect.top;
+        dock.style.transform = `translateY(-${Math.max(0, overlap + 10)}px)`;
+      } else {
+        dock.style.transform = '';
+      }
+    }
+
+    lastY = curY;
+  }, { passive: true });
+
+  // Virtual keyboard open detection (visualViewport)
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      const isKeyboardOpen = window.visualViewport.height < window.innerHeight * 0.75;
+      dock.classList.toggle('dock-hidden', isKeyboardOpen);
+    });
+  }
+
+  // Input focus/blur hide protection
+  document.addEventListener('focusin', (e) => {
+    if (e.target && e.target.matches && e.target.matches('input, textarea, select')) {
+      dock.classList.add('dock-hidden');
+    }
+  });
+
+  document.addEventListener('focusout', (e) => {
+    if (e.target && e.target.matches && e.target.matches('input, textarea, select')) {
+      setTimeout(() => {
+        if (!document.activeElement || !document.activeElement.matches || !document.activeElement.matches('input, textarea, select')) {
+          dock.classList.remove('dock-hidden');
+        }
+      }, 100);
+    }
+  });
+}
+
 function renderFloatingWhatsApp() {
-  if (document.getElementById('swan-floating-whatsapp')) return;
-  const btn = document.createElement('a');
-  btn.id = 'swan-floating-whatsapp';
-  btn.className = 'whatsapp-floating-btn';
-  btn.href = `${SITE.whatsappUrl}?text=${encodeURIComponent("Hi Bhumika! I'm browsing the Swan Studio website and would like to inquire about a crochet creation.")}`;
-  btn.target = '_blank';
-  btn.rel = 'noopener noreferrer';
-  btn.setAttribute('aria-label', 'Chat directly with Bhumika on WhatsApp');
-  btn.innerHTML = `
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19.01L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67ZM8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7.02 8.48 7.02 9.7C7.02 10.92 7.91 12.1 8.03 12.27C8.16 12.43 9.77 14.91 12.23 15.97C12.82 16.22 13.27 16.37 13.63 16.49C14.22 16.68 14.76 16.65 15.19 16.59C15.67 16.52 16.66 15.99 16.87 15.4C17.07 14.82 17.07 14.32 17.01 14.22C16.95 14.12 16.79 14.06 16.55 13.94C16.31 13.82 15.12 13.24 14.9 13.16C14.68 13.08 14.52 13.04 14.36 13.28C14.2 13.52 13.74 14.06 13.6 14.22C13.46 14.38 13.32 14.4 13.08 14.28C12.84 14.16 11.83 13.83 10.63 12.76C9.7 11.93 9.07 10.91 8.95 10.71C8.83 10.51 8.94 10.4 9.06 10.28C9.17 10.17 9.31 9.99 9.43 9.85C9.55 9.71 9.59 9.61 9.67 9.45C9.75 9.29 9.71 9.15 9.65 9.03C9.59 8.91 9.13 7.78 8.94 7.31C8.75 6.86 8.56 6.92 8.42 6.91L8.03 6.91C7.87 6.91 8.53 7.33 8.53 7.33Z"/>
-    </svg>
-    <span>Chat on WhatsApp</span>
-  `;
-  document.body.appendChild(btn);
+  renderActionDock();
 }
 
 // ---------------------------------------------------------------------------
@@ -537,8 +762,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderHeader();
   renderFooter();
   renderMobileBillingBar();
-  renderFloatingWhatsApp();
+  renderActionDock();
   loadSiteConfig();
+  initScrollProgress();
+  initScrollReveals();
 
   // Load floating reviews & note modal on public storefront pages if not yet included
   if (!window.location.pathname.includes('/admin/') && !window.openNoteModal) {

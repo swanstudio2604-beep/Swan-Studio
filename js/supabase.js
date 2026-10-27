@@ -178,7 +178,7 @@ async function fetchProductBySlug(slug) {
       .eq('is_published', true)
       .eq('is_hidden', false)
       .is('deleted_at', null)
-      .single();
+      .maybeSingle();
 
     if (error || !data) return { isLive: false, data: null };
     return { isLive: true, data: normalizeProduct(data) };
