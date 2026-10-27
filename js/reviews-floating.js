@@ -43,8 +43,8 @@
   function renderFloatingButton() {
     if (document.getElementById('swan-floating-note-btn')) return;
 
-    // Hide if payment step on checkout.html or if on reviews.html (page has dedicated review actions)
-    if (currentPath === 'checkout.html' || currentPath === 'order-confirmation.html' || currentPath === 'reviews.html') {
+    // Hide if payment step on checkout.html or if on reviews page (page has dedicated review actions)
+    if (window.location.pathname.toLowerCase().includes('reviews') || currentPath === 'checkout.html' || currentPath === 'order-confirmation.html') {
       return;
     }
 
@@ -626,6 +626,8 @@
 
     overlay.style.display = 'flex';
     document.body.classList.add('swan-modal-open');
+    const dock = document.getElementById('swan-action-dock');
+    if (dock) dock.style.display = 'none';
     formOpenTime = Date.now();
 
     // Trigger animation
@@ -651,6 +653,8 @@
     overlay.classList.remove('is-active');
     sheet.classList.remove('is-active');
     document.body.classList.remove('swan-modal-open');
+    const dock = document.getElementById('swan-action-dock');
+    if (dock) dock.style.display = '';
 
     setTimeout(() => {
       overlay.style.display = 'none';

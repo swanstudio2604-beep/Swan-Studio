@@ -559,8 +559,8 @@ function renderActionDock() {
     document.body.appendChild(dock);
   }
 
-  // 1. Leave Note Button (do not show on reviews.html or checkout)
-  const isReviewsPage = window.location.pathname.includes('reviews.html');
+  // 1. Leave Note Button (do not show on reviews or checkout)
+  const isReviewsPage = window.location.pathname.toLowerCase().includes('reviews');
   const isCheckoutPage = window.location.pathname.includes('checkout.html') || window.location.pathname.includes('order-confirmation.html');
   if (!document.getElementById('swan-floating-note-btn') && !isReviewsPage && !isCheckoutPage) {
     const noteBtn = document.createElement('button');

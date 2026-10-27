@@ -4735,9 +4735,15 @@ input[type="file"]:not(.photo-upload-input)::file-selector-button:hover {
 }
 
 .swan-action-dock.dock-hidden,
-body.swan-modal-open .swan-action-dock {
+body.swan-modal-open .swan-action-dock,
+body.swan-modal-open #swan-action-dock,
+body.swan-modal-open .dock-btn,
+body.swan-modal-open #swan-floating-whatsapp,
+body.swan-modal-open #swan-floating-note-btn {
+  display: none !important;
   transform: translateY(140%) !important;
   opacity: 0 !important;
+  visibility: hidden !important;
   pointer-events: none !important;
 }
 
@@ -4876,21 +4882,22 @@ body.swan-modal-open {
 .swan-modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(45, 30, 24, 0.65);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(30, 18, 14, 0.72) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
 }
 
 .swan-bottom-sheet {
   position: relative;
   width: 100%;
   max-height: 90dvh;
-  background: var(--cream);
+  background: #FFFFFF !important;
   border-radius: 24px 24px 0 0;
+  border-top: 1.5px solid rgba(199, 131, 145, 0.28);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: var(--shadow-sheet);
+  box-shadow: 0 -16px 48px rgba(35, 22, 18, 0.28), 0 -4px 12px rgba(35, 22, 18, 0.08) !important;
   transform: translateY(100%);
   transition: transform var(--duration-slow) var(--ease-out);
   z-index: 2;
@@ -4910,10 +4917,12 @@ body.swan-modal-open {
   .swan-bottom-sheet {
     max-width: 480px;
     border-radius: 20px;
+    border: 1.5px solid rgba(199, 131, 145, 0.25);
     max-height: 85vh;
     transform: scale(0.95);
     opacity: 0;
     transition: transform var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out);
+    box-shadow: 0 20px 60px rgba(35, 22, 18, 0.32) !important;
   }
 
   .swan-bottom-sheet.is-active {
@@ -4945,13 +4954,13 @@ body.swan-modal-open {
 }
 
 .sheet-header {
-  padding: 0.75rem 1.25rem 0.85rem 1.25rem;
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.95rem 1.25rem 0.95rem 1.25rem;
+  border-bottom: 1px solid rgba(199, 131, 145, 0.18);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   flex-shrink: 0;
-  background: #FFFDFB;
+  background: #FFFFFF !important;
   box-sizing: border-box;
 }
 
@@ -4984,14 +4993,14 @@ body.swan-modal-open {
 }
 
 .sheet-close-btn {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: none;
-  background: rgba(74, 53, 47, 0.06);
+  border: 1px solid rgba(199, 131, 145, 0.25);
+  background: #FDF7F4;
   color: var(--cocoa);
   cursor: pointer;
   flex-shrink: 0;
@@ -5013,6 +5022,7 @@ body.swan-modal-open {
   -webkit-overflow-scrolling: touch;
   padding: 1.15rem 1.25rem 9.5rem 1.25rem;
   flex: 1;
+  background: #FAFAF9 !important;
   box-sizing: border-box;
   overscroll-behavior: contain;
 }
@@ -5021,7 +5031,7 @@ body.swan-modal-open {
 .sheet-sticky-footer {
   position: sticky;
   bottom: 0;
-  background: linear-gradient(180deg, rgba(255, 249, 245, 0.88) 0%, rgba(255, 249, 245, 0.98) 25%, #FFF9F5 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, #FFFFFF 100%) !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   padding: 0.85rem 1.25rem calc(0.85rem + env(safe-area-inset-bottom)) 1.25rem;
@@ -6207,6 +6217,8 @@ body.swan-modal-open {
 @keyframes yarnUnravel {
   0% { stroke-dashoffset: 140; }
   100% { stroke-dashoffset: 0; }
+}
+
 /* Product Page Mobile Sticky Bar (Part 3 Item 5) */
 .product-mobile-sticky-bar {
   display: none;
