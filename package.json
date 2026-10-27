@@ -13,7 +13,8 @@
     "test:delete": "playwright test tests/delete.spec.js",
     "test:content": "playwright test tests/content.spec.js",
     "test:reviews": "playwright test tests/reviews.spec.js",
-    "test:ux": "playwright test tests/ux.spec.js"
+    "test:ux": "playwright test tests/ux.spec.js",
+    "test:ui": "playwright test tests/ui.spec.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
