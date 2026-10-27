@@ -16,7 +16,7 @@ const SITE = {
   whatsappUrl: 'https://wa.me/919509966512',
   upiId: '9509966512@fam',
   email: 'swanstudio2604@gmail.com', // Official atelier support email
-  announcement: '✨ Handcrafted with love in India • Custom crochet creations & personalized gifts ✨',
+  announcement: 'Handcrafted with love in India • Custom crochet creations & personalized gifts',
   social: {
     instagram: 'https://www.instagram.com/swan_handcrafted_studio.3568',
     instagramHandle: '@swan_handcrafted_studio.3568',
@@ -355,7 +355,9 @@ function renderMobileBillingBar() {
       <div class="mobile-billing-inner">
         <a href="cart.html" class="mobile-billing-info" id="mobile-bill-info-btn" aria-label="Review shopping bag items">
           <div class="mobile-billing-badge-row">
-            <span class="mobile-billing-icon">🛍️</span>
+            <span class="mobile-billing-icon" aria-hidden="true" style="display: inline-flex; align-items: center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            </span>
             <span id="mobile-bill-items-count" class="mobile-billing-count">0 items</span>
           </div>
           <div class="mobile-billing-amount-wrap">
@@ -523,14 +525,31 @@ async function loadSiteConfig() {
 window.loadSiteConfig = loadSiteConfig;
 
 // ---------------------------------------------------------------------------
-// 9. DOM Initialization
+// 9. DOM Initialization & Mirror Guard
 // ---------------------------------------------------------------------------
+// Mirror redirect for GitHub Pages to primary canonical domain
+if (typeof window !== 'undefined' && window.location && window.location.hostname === 'swanstudio2604-beep.github.io') {
+  const targetPath = window.location.pathname.replace(/^\/Swan-Studio\/?/, '/') || '/';
+  window.location.replace('https://swan-studio.onslate.in' + (targetPath.startsWith('/') ? targetPath : '/' + targetPath) + window.location.search + window.location.hash);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderHeader();
   renderFooter();
   renderMobileBillingBar();
   renderFloatingWhatsApp();
   loadSiteConfig();
+
+  // Load floating reviews & note modal on public storefront pages if not yet included
+  if (!window.location.pathname.includes('/admin/') && !window.openNoteModal) {
+    const existing = document.querySelector('script[src*="reviews-floating.js"]');
+    if (!existing) {
+      const script = document.createElement('script');
+      script.src = window.location.pathname.includes('/admin/') ? '../js/reviews-floating.js' : 'js/reviews-floating.js';
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+  }
 });
 
 // Sync cart across browser tabs

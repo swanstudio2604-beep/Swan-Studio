@@ -2,7 +2,7 @@
 # SWAN STUDIO — Robots Exclusion Protocol
 # Brand: Swan Studio | Founder: Bhumika Nama (Jaipur, India)
 # Tagline: Every Stitch Tells a Story.
-# Canonical Domain: https://swan-studio.onrender.com
+# Canonical Domain: https://swan-studio.onslate.in
 # ============================================================================
 
 User-agent: *
@@ -32,4 +32,4 @@ Disallow: /login.html
 Disallow: /signup.html
 
 # Sitemap
-Sitemap: https://swan-studio.onrender.com/sitemap.xml
+Sitemap: https://swan-studio.onslate.in/sitemap.xml

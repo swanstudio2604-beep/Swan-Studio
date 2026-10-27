@@ -11,7 +11,9 @@
     "test:mobile": "node tests/mobile.spec.js",
     "test:lighthouse": "node tests/lighthouse.js",
     "test:delete": "playwright test tests/delete.spec.js",
-    "test:content": "playwright test tests/content.spec.js"
+    "test:content": "playwright test tests/content.spec.js",
+    "test:reviews": "playwright test tests/reviews.spec.js",
+    "test:ux": "playwright test tests/ux.spec.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

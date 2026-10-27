@@ -2,13 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Homepage -->
   <url>
-    <loc>https://swan-studio.onrender.com/</loc>
+    <loc>https://swan-studio.onslate.in/</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://swan-studio.onrender.com/index.html</loc>
+    <loc>https://swan-studio.onslate.in/index.html</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -16,7 +16,7 @@
 
   <!-- Product Catalog -->
   <url>
-    <loc>https://swan-studio.onrender.com/shop.html</loc>
+    <loc>https://swan-studio.onslate.in/shop.html</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -24,37 +24,37 @@
 
   <!-- Products -->
   <url>
-    <loc>https://swan-studio.onrender.com/product.html?slug=daisy-delight-bouquet</loc>
+    <loc>https://swan-studio.onslate.in/product.html?slug=daisy-delight-bouquet</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://swan-studio.onrender.com/product.html?slug=pastel-granny-square-tote</loc>
+    <loc>https://swan-studio.onslate.in/product.html?slug=pastel-granny-square-tote</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://swan-studio.onrender.com/product.html?slug=sleepy-bunny-amigurumi</loc>
+    <loc>https://swan-studio.onslate.in/product.html?slug=sleepy-bunny-amigurumi</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://swan-studio.onrender.com/product.html?slug=lavender-bookmark-set</loc>
+    <loc>https://swan-studio.onslate.in/product.html?slug=lavender-bookmark-set</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://swan-studio.onrender.com/product.html?slug=eternal-tulip-pot</loc>
+    <loc>https://swan-studio.onslate.in/product.html?slug=eternal-tulip-pot</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://swan-studio.onrender.com/product.html?slug=chunky-crochet-clutch</loc>
+    <loc>https://swan-studio.onslate.in/product.html?slug=chunky-crochet-clutch</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -62,7 +62,7 @@
 
   <!-- Custom Orders -->
   <url>
-    <loc>https://swan-studio.onrender.com/custom-order.html</loc>
+    <loc>https://swan-studio.onslate.in/custom-order.html</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
@@ -70,19 +70,19 @@
 
   <!-- Brand Story & Atelier Reviews -->
   <url>
-    <loc>https://swan-studio.onrender.com/about.html</loc>
+    <loc>https://swan-studio.onslate.in/about.html</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://swan-studio.onrender.com/reviews.html</loc>
+    <loc>https://swan-studio.onslate.in/reviews.html</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://swan-studio.onrender.com/contact.html</loc>
+    <loc>https://swan-studio.onslate.in/contact.html</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -90,25 +90,25 @@
 
   <!-- Store Information & Operational Policies -->
   <url>
-    <loc>https://swan-studio.onrender.com/shipping.html</loc>
+    <loc>https://swan-studio.onslate.in/shipping.html</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://swan-studio.onrender.com/returns.html</loc>
+    <loc>https://swan-studio.onslate.in/returns.html</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://swan-studio.onrender.com/privacy.html</loc>
+    <loc>https://swan-studio.onslate.in/privacy.html</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://swan-studio.onrender.com/terms.html</loc>
+    <loc>https://swan-studio.onslate.in/terms.html</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>

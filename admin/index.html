@@ -153,6 +153,12 @@
           <div class="kpi-subtext" id="stat-week-orders-text" style="color: var(--cocoa); font-weight: 500;">0 orders this week</div>
         </div>
 
+        <a href="reviews.html" class="kpi-card" style="border-left: 4px solid #D97706; padding: 1.15rem; text-decoration: none; color: inherit; display: block;">
+          <div class="kpi-label" style="color: #B45309;">💌 Pending Notes</div>
+          <div class="kpi-value" id="stat-pending-reviews-kpi" style="font-size: 1.45rem; color: #D97706;">0</div>
+          <div class="kpi-subtext" style="color: #B45309;">Moderate love notes &rarr;</div>
+        </a>
+
         <a href="custom-orders.html" class="kpi-card" style="border-left: 4px solid #8B5CF6; padding: 1.15rem; text-decoration: none; color: inherit; display: block;">
           <div class="kpi-label" style="color: #6D28D9;">✨ Pending Custom</div>
           <div class="kpi-value" id="stat-pending-custom" style="font-size: 1.45rem; color: #7C3AED;">0</div>
@@ -798,6 +804,24 @@
           }
         } catch (e) {
           console.warn('Could not fetch custom commissions for dashboard:', e);
+        }
+
+        // Pending Customer Reviews & Notes count
+        try {
+          const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+          if (client) {
+            const { count, error } = await client
+              .from('reviews')
+              .select('*', { count: 'exact', head: true })
+              .eq('status', 'pending');
+
+            if (!error && count !== null) {
+              const pendingRevEl = document.getElementById('stat-pending-reviews-kpi');
+              if (pendingRevEl) pendingRevEl.textContent = count;
+            }
+          }
+        } catch (e) {
+          console.warn('Could not fetch pending reviews count for dashboard:', e);
         }
       }
 

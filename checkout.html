@@ -5,21 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout — Swan Studio | Delivery & Review</title>
   <meta name="description" content="Secure checkout for handmade crochet creations at Swan Studio by Bhumika Nama in Jaipur. Enter your delivery address and review order totals.">
-  <link rel="canonical" href="https://swan-studio.onrender.com/checkout.html">
+  <link rel="canonical" href="https://swan-studio.onslate.in/checkout.html">
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
   <link rel="shortcut icon" href="favicon.ico">
 
   <!-- OpenGraph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://swan-studio.onrender.com/checkout.html">
+  <meta property="og:url" content="https://swan-studio.onslate.in/checkout.html">
   <meta property="og:title" content="Checkout — Swan Studio">
   <meta property="og:description" content="Secure checkout for handmade crochet creations at Swan Studio by Bhumika Nama in Jaipur.">
-  <meta property="og:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+  <meta property="og:image" content="https://swan-studio.onslate.in/assets/images/og-image.jpg">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Checkout — Swan Studio">
-  <meta name="twitter:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+  <meta name="twitter:image" content="https://swan-studio.onslate.in/assets/images/og-image.jpg">
   
   <!-- Google Fonts: Cormorant Garamond & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,15 +60,15 @@
       <!-- Checkout 3-Stage Journey Ribbon -->
       <div class="checkout-journey-ribbon">
         <div class="checkout-step-pill completed">
-          <span>✓</span> 1. Bag Review
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block; vertical-align:middle; margin-right:4px;"><polyline points="20 6 9 17 4 12"></polyline></svg> 1. Bag Review
         </div>
         <div class="checkout-step-divider done"></div>
         <div class="checkout-step-pill active">
-          <span>📍</span> 2. Delivery Address
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> 2. Delivery Address
         </div>
         <div class="checkout-step-divider"></div>
         <div class="checkout-step-pill">
-          <span>💳</span> 3. Manual UPI Payment
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg> 3. Manual UPI Payment
         </div>
       </div>
 
@@ -78,7 +78,7 @@
         <!-- Left Column: Delivery Form -->
         <div class="checkout-card-box" style="background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); padding: 2rem; box-shadow: var(--shadow-sm);">
           <h2 style="font-size: 1.4rem; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px dashed var(--border-subtle);">
-            📍 Delivery Details
+            Delivery Details
           </h2>
 
           <form id="checkout-form" novalidate>
@@ -169,7 +169,7 @@
             </div>
 
             <div id="summary-discount-row" style="display: none; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.92rem; color: #2B7A4B;">
-              <span id="summary-discount-label">🏷️ Coupon Discount</span>
+              <span id="summary-discount-label">Coupon Discount</span>
               <span id="summary-discount" style="font-weight: 600;">-₹0.00</span>
             </div>
 
@@ -192,7 +192,7 @@
             </div>
 
             <p id="checkout-shipping-banner" style="font-size: 0.78rem; color: #8A7670; margin-bottom: 1rem; word-break: break-word; overflow-wrap: break-word; line-height: 1.45;">
-              🎉 Free delivery on orders ₹999 and above pan-India!
+              Free delivery on orders ₹999 and above pan-India!
             </p>
 
             <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; padding-top: 1rem; border-top: 2px dashed var(--border-subtle); font-size: 1.2rem; font-weight: 700; color: var(--cocoa); flex-wrap: wrap;">
@@ -256,7 +256,7 @@
       }
       const shipBanner = document.getElementById('checkout-shipping-banner');
       if (shipBanner) {
-        shipBanner.textContent = `🎉 Free delivery on orders ₹${cfg.threshold.toLocaleString('en-IN')} and above pan-India!`;
+        shipBanner.textContent = `Free delivery on orders ₹${cfg.threshold.toLocaleString('en-IN')} and above pan-India!`;
       }
 
       async function refreshSummary() {
@@ -325,11 +325,11 @@
         
         if (discount > 0 && appliedCoupon) {
           discountRowEl.style.display = 'flex';
-          discountLabelEl.textContent = `🏷️ Coupon (${appliedCoupon.code})`;
+          discountLabelEl.textContent = `Coupon (${appliedCoupon.code})`;
           discountEl.textContent = `-₹${discount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
           coInputWrap.style.display = 'none';
           coAppliedWrap.style.display = 'flex';
-          coAppliedTag.textContent = `🏷️ ${appliedCoupon.code} (-₹${discount.toFixed(2)})`;
+          coAppliedTag.textContent = `${appliedCoupon.code} (-₹${discount.toFixed(2)})`;
         } else {
           discountRowEl.style.display = 'none';
           coInputWrap.style.display = 'flex';
@@ -416,10 +416,10 @@
           errorBox.style.display = 'block';
           const waUrl = err.whatsappFallbackUrl || `https://wa.me/919509966512?text=Hello%20Swan%20Studio!%20I%20would%20like%20to%20complete%20my%20order.`;
           errorBox.innerHTML = `
-            <div style="margin-bottom: 0.5rem; font-weight: 600; color: #9A5565;">⚠️ ${err.message || 'Unable to place order in database.'}</div>
+            <div style="margin-bottom: 0.5rem; font-weight: 600; color: #9A5565;">${err.message || 'Unable to place order in database.'}</div>
             <div style="font-size: 0.85rem; color: #73615A; margin-bottom: 0.75rem;">Don't worry! You can complete your order directly with Bhumika on WhatsApp:</div>
             <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 0.5rem; background: #25D366; color: white; border-color: #25D366; text-decoration: none; padding: 0.6rem 1.15rem; border-radius: 999px; font-weight: 600;">
-              <span>💬 Complete Order via WhatsApp</span>
+              <span>Complete Order via WhatsApp</span>
             </a>
           `;
           submitBtn.disabled = false;

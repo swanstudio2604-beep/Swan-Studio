@@ -13,6 +13,9 @@
  */
 
 window.SWAN_CONFIG = {
+  // Primary Canonical Production Domain
+  siteUrl: 'https://swan-studio.onslate.in',
+
   // Swan Studio Supabase Project URL
   supabaseUrl: 'https://hzlimdfxvojkqsszmulj.supabase.co',
 

@@ -5,21 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Shopping Bag — Swan Studio | Handmade Crochet</title>
   <meta name="description" content="Review items in your shopping bag. Handcrafted crochet creations from Swan Studio by Bhumika Nama in Jaipur.">
-  <link rel="canonical" href="https://swan-studio.onrender.com/cart.html">
+  <link rel="canonical" href="https://swan-studio.onslate.in/cart.html">
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
   <link rel="shortcut icon" href="favicon.ico">
 
   <!-- OpenGraph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://swan-studio.onrender.com/cart.html">
+  <meta property="og:url" content="https://swan-studio.onslate.in/cart.html">
   <meta property="og:title" content="Your Shopping Bag — Swan Studio">
   <meta property="og:description" content="Review items in your shopping bag. Handcrafted crochet creations from Swan Studio by Bhumika Nama.">
-  <meta property="og:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+  <meta property="og:image" content="https://swan-studio.onslate.in/assets/images/og-image.jpg">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Your Shopping Bag — Swan Studio">
-  <meta name="twitter:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+  <meta name="twitter:image" content="https://swan-studio.onslate.in/assets/images/og-image.jpg">
   
   <!-- Google Fonts: Cormorant Garamond & Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,15 +60,15 @@
       <!-- Checkout 3-Stage Journey Ribbon -->
       <div class="checkout-journey-ribbon" style="margin-bottom: var(--space-xl);">
         <div class="checkout-step-pill active">
-          <span>🛍️</span> 1. Bag Review
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg> 1. Bag Review
         </div>
         <div class="checkout-step-divider"></div>
         <div class="checkout-step-pill">
-          <span>📍</span> 2. Delivery Address
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> 2. Delivery Address
         </div>
         <div class="checkout-step-divider"></div>
         <div class="checkout-step-pill">
-          <span>💳</span> 3. Manual UPI Payment
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block; vertical-align:middle; margin-right:4px;"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg> 3. Manual UPI Payment
         </div>
       </div>
 
@@ -367,8 +367,8 @@
 
           return `
             <div style="display: flex; gap: 1.25rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1.25rem;" data-index="${index}">
-              <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #FFF6F0; border: 1px dashed var(--rose); display: flex; align-items: center; justify-content: center; font-size: 1.75rem;">
-                🧶
+              <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #FFF6F0; border: 1px dashed var(--rose); display: flex; align-items: center; justify-content: center; color: var(--rose-text);">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12a4 4 0 0 1 8 0"></path></svg>
               </div>
               <div style="flex: 1;">
                 <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">
@@ -437,7 +437,7 @@
 
             couponInputWrapper.style.display = 'none';
             couponAppliedBadge.style.display = 'flex';
-            appliedCodeText.textContent = `🏷️ ${val.code} Applied`;
+            appliedCodeText.textContent = `${val.code} Applied`;
             appliedDiscountText.textContent = `Saving ₹${discount.toFixed(2)}`;
           } else {
             // No longer valid (e.g. subtotal dropped below min order threshold)

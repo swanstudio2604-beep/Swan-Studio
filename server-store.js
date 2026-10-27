@@ -884,14 +884,18 @@ function restoreBlogPost(id) {
 
 function getPublicReviews() {
   const store = readStore();
-  return (store.reviews || []).filter(r => r.status === 'APPROVED');
+  return (store.reviews || []).filter(r => {
+    const status = String(r.status || '').toLowerCase();
+    const isPublic = r.is_public !== false;
+    return (status === 'approved') && isPublic && !r.deleted_at;
+  });
 }
 
 function getAdminReviews({ status = null } = {}) {
   const store = readStore();
-  let list = store.reviews || [];
+  let list = (store.reviews || []).filter(r => !r.deleted_at);
   if (status && status !== 'ALL') {
-    list = list.filter(r => r.status === status);
+    list = list.filter(r => String(r.status || '').toLowerCase() === status.toLowerCase());
   }
   list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   return list;
@@ -900,16 +904,30 @@ function getAdminReviews({ status = null } = {}) {
 function createReview(data) {
   const store = readStore();
   if (!store.reviews) store.reviews = [];
+  const name = (data.display_name || data.displayName || data.author_name || data.authorName || 'Cherished Patron').trim();
+  const noteBody = (data.body || data.comment || '').trim();
   const newRev = {
-    id: 'rev-' + Date.now(),
-    author_name: (data.author_name || data.authorName || 'Cherished Patron').trim(),
-    author_city: (data.author_city || data.authorCity || 'India').trim(),
+    id: data.id || ('rev-' + Date.now()),
+    type: data.type || 'note',
+    author_name: name,
+    display_name: name,
+    author_city: (data.city || data.author_city || data.authorCity || '').trim(),
+    city: (data.city || data.author_city || data.authorCity || '').trim(),
     rating: Math.min(5, Math.max(1, parseInt(data.rating, 10) || 5)),
     title: (data.title || '').trim(),
-    comment: (data.comment || '').trim(),
-    status: data.status || 'PENDING',
-    verified_purchase: Boolean(data.verified_purchase || data.verifiedPurchase),
-    created_at: new Date().toISOString()
+    comment: noteBody,
+    body: noteBody,
+    product_id: data.product_id || data.productId || null,
+    order_id: data.order_id || data.orderId || null,
+    photo_path: data.photo_path || data.photoPath || null,
+    is_public: data.is_public !== undefined ? Boolean(data.is_public) : (data.isPublic !== undefined ? Boolean(data.isPublic) : true),
+    consent_public: Boolean(data.consent_public || data.consentPublic),
+    status: (data.status || 'pending').toLowerCase(),
+    verified_buyer: Boolean(data.verified_buyer || data.verifiedBuyer),
+    featured: Boolean(data.featured),
+    admin_reply: data.admin_reply || data.adminReply || null,
+    customer_contact: data.customer_contact || data.customerContact || null,
+    created_at: data.created_at || new Date().toISOString()
   };
   store.reviews.unshift(newRev);
   writeStore(store);
@@ -922,11 +940,22 @@ function updateReview(id, data) {
   const rev = store.reviews.find(r => String(r.id) === String(id));
   if (!rev) return null;
   
-  if (data.status) rev.status = data.status;
-  if (data.verified_purchase !== undefined) rev.verified_purchase = Boolean(data.verified_purchase);
+  if (data.status !== undefined) rev.status = String(data.status).toLowerCase();
+  if (data.verified_buyer !== undefined) rev.verified_buyer = Boolean(data.verified_buyer);
+  if (data.verifiedBuyer !== undefined) rev.verified_buyer = Boolean(data.verifiedBuyer);
+  if (data.featured !== undefined) rev.featured = Boolean(data.featured);
   if (data.rating !== undefined) rev.rating = parseInt(data.rating, 10);
-  if (data.comment !== undefined) rev.comment = data.comment;
-  if (data.title !== undefined) rev.title = data.title;
+  if (data.body !== undefined) {
+    if (!rev.original_body && rev.body && rev.body !== data.body) {
+      rev.original_body = rev.body;
+    }
+    rev.body = data.body;
+    rev.comment = data.body;
+  }
+  if (data.admin_reply !== undefined) rev.admin_reply = data.admin_reply;
+  if (data.adminReply !== undefined) rev.admin_reply = data.adminReply;
+  if (data.deleted_at !== undefined) rev.deleted_at = data.deleted_at;
+  if (data.photo_path !== undefined) rev.photo_path = data.photo_path;
   
   rev.updated_at = new Date().toISOString();
   writeStore(store);
@@ -946,7 +975,7 @@ function deleteReview(id) {
 // ---------------------------------------------------------------------------
 // SITEMAP XML GENERATOR
 // ---------------------------------------------------------------------------
-function generateSitemapXml(baseUrl = 'https://swan-studio.onrender.com') {
+function generateSitemapXml(baseUrl = 'https://swan-studio.onslate.in') {
   const products = getPublicProducts();
   const categories = getPublicCategories();
   const blogPosts = getPublicBlogPosts();

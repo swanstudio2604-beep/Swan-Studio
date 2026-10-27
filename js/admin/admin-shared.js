@@ -97,8 +97,9 @@ const ADMIN = {
           <ul class="admin-nav">
             ${navItems.map(item => `
               <li>
-                <a href="${item.href}" class="admin-nav-link ${item.key === activeKey ? 'active' : ''}">
-                  ${item.label}
+                <a href="${item.href}" class="admin-nav-link ${item.key === activeKey ? 'active' : ''}" style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>${item.label}</span>
+                  ${item.key === 'reviews' ? '<span class="admin-badge-count" id="admin-sidebar-reviews-count" style="display:none; background:#F59E0B; color:#1F2937; font-size:0.72rem; font-weight:700; padding:0.1rem 0.45rem; border-radius:999px; margin-left:auto;">0</span>' : ''}
                 </a>
               </li>
             `).join('')}
@@ -134,9 +135,10 @@ const ADMIN = {
           <span class="tab-icon">✨</span>
           <span class="tab-label">Custom</span>
         </a>
-        <button type="button" class="admin-tabbar-item" id="admin-tabbar-more-btn" aria-label="Open full menu">
+        <button type="button" class="admin-tabbar-item" id="admin-tabbar-more-btn" aria-label="Open full menu" style="position: relative;">
           <span class="tab-icon">☰</span>
           <span class="tab-label">More</span>
+          <span id="admin-tabbar-reviews-dot" style="display:none; position: absolute; top: 4px; right: 18px; width: 8px; height: 8px; border-radius: 50%; background: #F59E0B;"></span>
         </button>
       </nav>
     `;

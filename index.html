@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Swan Studio — Everlasting Crochet Bouquets & Handmade Gifts | Bhumika Nama</title>
   <meta name="description" content="Artisanal handmade crochet floral bouquets, totes, plushies, and custom gifts handcrafted with love and premium milk cotton yarn by Bhumika Nama in Jaipur, India.">
-  <link rel="canonical" href="https://swan-studio.onrender.com/">
+  <link rel="canonical" href="https://swan-studio.onslate.in/">
   
   <!-- OpenGraph / Social Meta -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://swan-studio.onrender.com/">
+  <meta property="og:url" content="https://swan-studio.onslate.in/">
   <meta property="og:title" content="Swan Studio — Everlasting Crochet Bouquets & Handmade Gifts">
   <meta property="og:description" content="Handcrafted everlasting crochet bouquets, bags, and personalized gifts made with premium milk cotton yarn in Jaipur, India.">
-  <meta property="og:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+  <meta property="og:image" content="https://swan-studio.onslate.in/assets/images/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Swan Studio — Handcrafted Crochet Floral Bouquets and Gifts">
@@ -21,7 +21,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Swan Studio — Everlasting Crochet Bouquets & Handmade Gifts">
   <meta name="twitter:description" content="Handcrafted everlasting crochet bouquets, bags, and plushies made with love by Bhumika Nama in Jaipur, India.">
-  <meta name="twitter:image" content="https://swan-studio.onrender.com/assets/images/og-image.jpg">
+  <meta name="twitter:image" content="https://swan-studio.onslate.in/assets/images/og-image.jpg">
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
@@ -44,9 +44,9 @@
     "@context": "https://schema.org",
     "@type": "Store",
     "name": "Swan Studio",
-    "image": "https://swan-studio.onrender.com/assets/images/og-image.jpg",
+    "image": "https://swan-studio.onslate.in/assets/images/og-image.jpg",
     "description": "Artisanal handmade crochet floral bouquets, totes, plushies, and custom gifts by Bhumika Nama in Jaipur, India.",
-    "url": "https://swan-studio.onrender.com/",
+    "url": "https://swan-studio.onslate.in/",
     "telephone": "+919509966512",
     "priceRange": "₹299 - ₹1,499",
     "paymentAccepted": "UPI",
@@ -269,7 +269,57 @@
       </div>
     </section>
 
-    <!-- 6. Shop by Occasion & Budget -->
+    <!-- 6. Kind Words From Our Customers -->
+    <section class="home-reviews-section" id="customer-reviews-home" aria-labelledby="home-reviews-heading">
+      <div class="container">
+        <div class="home-reviews-header">
+          <h2 class="home-reviews-title" id="home-reviews-heading">Kind words from our customers</h2>
+          <p class="home-reviews-subtitle">Notes from people who received a Swan Studio piece.</p>
+        </div>
+
+        <!-- Dynamic Container: Skeletons -> Cards or Honest Empty Invitation -->
+        <div id="home-reviews-container">
+          <div class="home-reviews-track" id="home-reviews-skeleton">
+            <div class="review-skeleton-card">
+              <div class="skeleton-line" style="width: 100px; height: 18px; margin-bottom: 1rem;"></div>
+              <div class="skeleton-line" style="width: 100%; height: 14px; margin-bottom: 0.5rem;"></div>
+              <div class="skeleton-line" style="width: 85%; height: 14px; margin-bottom: 0.5rem;"></div>
+              <div class="skeleton-line" style="width: 60%; height: 14px; margin-bottom: 1.5rem;"></div>
+              <div class="skeleton-line" style="width: 120px; height: 16px;"></div>
+            </div>
+            <div class="review-skeleton-card">
+              <div class="skeleton-line" style="width: 100px; height: 18px; margin-bottom: 1rem;"></div>
+              <div class="skeleton-line" style="width: 100%; height: 14px; margin-bottom: 0.5rem;"></div>
+              <div class="skeleton-line" style="width: 85%; height: 14px; margin-bottom: 0.5rem;"></div>
+              <div class="skeleton-line" style="width: 60%; height: 14px; margin-bottom: 1.5rem;"></div>
+              <div class="skeleton-line" style="width: 120px; height: 16px;"></div>
+            </div>
+            <div class="review-skeleton-card">
+              <div class="skeleton-line" style="width: 100px; height: 18px; margin-bottom: 1rem;"></div>
+              <div class="skeleton-line" style="width: 100%; height: 14px; margin-bottom: 0.5rem;"></div>
+              <div class="skeleton-line" style="width: 85%; height: 14px; margin-bottom: 0.5rem;"></div>
+              <div class="skeleton-line" style="width: 60%; height: 14px; margin-bottom: 1.5rem;"></div>
+              <div class="skeleton-line" style="width: 120px; height: 16px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Swipe Dot Indicators -->
+        <div class="home-review-dots" id="home-reviews-dots" style="display: none;"></div>
+
+        <!-- Call to Actions -->
+        <div class="home-reviews-cta-row">
+          <button type="button" class="btn btn-primary open-note-modal-btn" id="btn-home-leave-note" style="min-height: 48px; padding: 0.75rem 1.4rem;">
+            Leave a note
+          </button>
+          <a href="reviews.html" class="btn btn-outline" style="min-height: 48px; padding: 0.75rem 1.25rem; border-color: var(--rose); color: var(--rose-text);" id="link-read-all-notes">
+            Read all notes &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Shop by Occasion & Budget (Distinct Real Filters) -->
     <section class="section section-white" id="gifts" aria-labelledby="gifts-heading">
       <div class="container">
         <div class="section-header">
@@ -293,24 +343,7 @@
             </div>
           </a>
 
-          <a href="shop.html?search=birthday" class="gift-card">
-            <div class="gift-icon-box" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-text);">
-                <path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/>
-                <path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1"/>
-                <path d="M2 21h20"/>
-                <line x1="7" y1="8" x2="7" y2="3"/>
-                <line x1="12" y1="8" x2="12" y2="3"/>
-                <line x1="17" y1="8" x2="17" y2="3"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="gift-card-title">Birthday Gift Ideas</h3>
-              <span class="gift-card-link">See Birthday Gifts &rarr;</span>
-            </div>
-          </a>
-
-          <a href="shop.html?category=bouquets" class="gift-card">
+          <a href="shop.html?category=crochet-bouquets" class="gift-card">
             <div class="gift-icon-box" aria-hidden="true">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-text);">
                 <circle cx="12" cy="12" r="3"/>
@@ -318,59 +351,52 @@
               </svg>
             </div>
             <div>
-              <h3 class="gift-card-title">Anniversary Blooms</h3>
-              <span class="gift-card-link">Browse Everlasting Bouquets &rarr;</span>
+              <h3 class="gift-card-title">Everlasting Bouquets</h3>
+              <span class="gift-card-link">Browse Floral Creations &rarr;</span>
             </div>
           </a>
 
-          <a href="custom-order.html" class="gift-card">
+          <a href="shop.html?category=amigurumi-toys" class="gift-card">
             <div class="gift-icon-box" aria-hidden="true">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-text);">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
             </div>
             <div>
-              <h3 class="gift-card-title">Personalized Keepsakes</h3>
-              <span class="gift-card-link">Request Custom Design &rarr;</span>
+              <h3 class="gift-card-title">Amigurumi &amp; Toys</h3>
+              <span class="gift-card-link">See Soft Companions &rarr;</span>
+            </div>
+          </a>
+
+          <a href="shop.html?category=accessories-wearables" class="gift-card">
+            <div class="gift-icon-box" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--rose-text);">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="gift-card-title">Wearables &amp; Bags</h3>
+              <span class="gift-card-link">Explore Handcrafted Totes &rarr;</span>
             </div>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- 7. Honest Community Reflections & Love Notes -->
-    <section class="section section-cream" id="customer-reviews-home" aria-labelledby="home-reviews-heading">
-      <div class="container">
-        <div class="section-header">
-          <div class="hero-tagline-badge" style="margin-bottom: 0.6rem;">
-            <span>💌 Atelier Community</span>
-          </div>
-          <h2 class="section-title" id="home-reviews-heading">Love Notes &amp; Unboxing Reflections</h2>
-          <p class="section-subtitle">
-            Every parcel from Swan Studio is hand-tied with brown kraft paper, twine, and a personalized note from Bhumika. We cherish hearing from everyone who receives a creation.
-          </p>
-        </div>
-
-        <div style="background: var(--white); border-radius: var(--radius-lg); border: 1.5px dashed var(--rose); padding: 2.25rem 1.75rem; text-align: center; max-width: 680px; margin: 0 auto 2.5rem auto; box-shadow: var(--shadow-sm);">
-          <div style="font-size: 2rem; margin-bottom: 0.5rem;" aria-hidden="true">💌</div>
-          <h3 style="font-size: 1.35rem; color: var(--cocoa); margin-bottom: 0.5rem;">Have you received a Swan Studio creation?</h3>
-          <p style="font-size: 0.92rem; color: #73615A; line-height: 1.6; margin-bottom: 1.5rem;">
-            Whether it was a birthday bouquet, an adorable plushie friend, or a custom commission, your reflection means the world to our small studio. Share your experience or send an unboxing photo!
-          </p>
-          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a href="reviews.html#write-review" class="btn btn-primary">
-              Leave a Love Note &rarr;
-            </a>
-            <a href="https://wa.me/919509966512?text=Hi%20Bhumika!%20I%20wanted%20to%20share%20an%20unboxing%20photo%20of%20my%20crochet%20order!" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="border-color: var(--rose); color: var(--rose-text);">
-              Share on WhatsApp
-            </a>
-          </div>
-        </div>
-
+    <!-- 8. Custom Order Band -->
+    <section class="custom-order-band" aria-labelledby="custom-heading">
+      <div class="container custom-band-inner">
+        <h2 id="custom-heading">Looking for Something Made Just for You?</h2>
+        <p>
+          Have a specific color palette, favorite flowers, or a personalized keepsake in mind? Bhumika works closely with you on WhatsApp to turn your idea into a handcrafted crochet piece.
+        </p>
+        <a href="custom-order.html" class="btn btn-primary" id="band-custom-btn" style="min-height: 48px; display: inline-flex; align-items: center; justify-content: center;">Request a Custom Order</a>
       </div>
     </section>
 
-    <!-- 8. Instagram Simple Logo Link (Spot 2: Homepage Centered Strip) -->
+    <!-- 9. Instagram Simple Logo Link -->
     <section class="home-instagram-strip" aria-label="Swan Studio on Instagram">
       <div class="container" style="text-align: center;">
         <a href="https://www.instagram.com/swan_handcrafted_studio.3568" target="_blank" rel="noopener noreferrer" class="home-instagram-link" aria-label="Swan Studio on Instagram" title="Follow @swan_handcrafted_studio.3568 on Instagram">
@@ -386,17 +412,6 @@
       </div>
     </section>
 
-    <!-- 9. Custom Order Band -->
-    <section class="custom-order-band" aria-labelledby="custom-heading">
-      <div class="container custom-band-inner">
-        <h2 id="custom-heading">Looking for Something Made Just for You?</h2>
-        <p>
-          Have a specific color palette, favorite flowers, or a personalized keepsake in mind? Bhumika works closely with you on WhatsApp to turn your idea into a handcrafted crochet piece.
-        </p>
-        <a href="custom-order.html" class="btn btn-primary" id="band-custom-btn">Request a Custom Order</a>
-      </div>
-    </section>
-
   </main>
 
   <!-- Global Site Footer (Injected by js/main.js with "Developed with ❤️ by Mridul") -->
@@ -408,6 +423,7 @@
   <script src="js/api-config.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/reviews-floating.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       // Dynamic Home Collections Loader
@@ -608,6 +624,156 @@
       }
 
       await loadFeaturedCreations();
+
+      // Dynamic Home Customer Reviews & Notes Loader
+      async function loadHomeReviews() {
+        const container = document.getElementById('home-reviews-container');
+        const dotsContainer = document.getElementById('home-reviews-dots');
+        const skeleton = document.getElementById('home-reviews-skeleton');
+        if (!container) return;
+
+        try {
+          const res = await fetchApprovedReviews();
+          const reviews = (res && res.data) ? res.data : [];
+
+          if (skeleton) skeleton.remove();
+
+          if (!reviews.length) {
+            container.innerHTML = `
+              <div style="background: var(--white); border-radius: var(--radius-lg); border: 1.5px dashed var(--rose); padding: 2.25rem 1.75rem; text-align: center; max-width: 620px; margin: 0 auto; box-shadow: var(--shadow-sm);">
+                <div style="width: 52px; height: 52px; margin: 0 auto 1rem auto; display: flex; align-items: center; justify-content: center; background: #FFF0F3; border-radius: 50%; color: var(--rose-text);">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                </div>
+                <h3 style="font-family: var(--font-serif); font-size: 1.45rem; color: var(--cocoa); margin-bottom: 0.45rem;">
+                  Be the first to share a note
+                </h3>
+                <p style="font-size: 0.92rem; color: #7A6962; line-height: 1.6; margin-bottom: 1.25rem;">
+                  Whether you received a gift bouquet, a soft companion, or a custom piece, Bhumika reads every note personally.
+                </p>
+                <button type="button" class="btn btn-primary open-note-modal-btn" style="min-height: 48px; padding: 0.75rem 1.5rem;">
+                  Share your note
+                </button>
+              </div>
+            `;
+            if (dotsContainer) dotsContainer.style.display = 'none';
+            return;
+          }
+
+          // Prioritize photo notes, then 4-5 stars, then newest
+          const sorted = [...reviews].sort((a, b) => {
+            const aHasPhoto = Boolean(a.photoUrl);
+            const bHasPhoto = Boolean(b.photoUrl);
+            if (aHasPhoto !== bHasPhoto) return bHasPhoto - aHasPhoto;
+            if (b.rating !== a.rating) return b.rating - a.rating;
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          });
+
+          const items = sorted.slice(0, 6);
+
+          container.innerHTML = `
+            <div class="home-reviews-track" id="home-reviews-track">
+              ${items.map(r => `
+                <article class="home-review-card">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                      <div class="home-review-stars" aria-label="${r.rating} stars">
+                        ${renderStarGlyphs(r.rating)}
+                      </div>
+                      ${r.verifiedBuyer ? `
+                        <span class="verified-buyer-badge" title="Verified buyer">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          Verified buyer
+                        </span>
+                      ` : ''}
+                    </div>
+                    <p class="home-review-body">
+                      ${escapeHtml(r.body)}
+                    </p>
+                    ${r.photoUrl ? `
+                      <div style="margin-bottom: 0.75rem;">
+                        <img src="${escapeHtml(r.photoUrl)}" alt="Customer photo by ${escapeHtml(r.displayName)}" loading="lazy" class="home-review-thumb">
+                      </div>
+                    ` : ''}
+                  </div>
+                  <div class="home-review-meta">
+                    <div>
+                      <span class="home-review-author">${escapeHtml(r.displayName)}</span>
+                      ${r.city ? `<span class="home-review-city"> • ${escapeHtml(r.city)}</span>` : ''}
+                      ${r.productName ? `
+                        <div class="home-review-product">
+                          ${escapeHtml(r.productName)}
+                        </div>
+                      ` : ''}
+                    </div>
+                  </div>
+                </article>
+              `).join('')}
+            </div>
+          `;
+
+          // Setup dot indicators on mobile
+          if (dotsContainer) {
+            if (items.length > 1) {
+              dotsContainer.innerHTML = items.map((_, i) => `
+                <button type="button" class="home-review-dot ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Go to note ${i + 1}"></button>
+              `).join('');
+              dotsContainer.style.display = 'flex';
+
+              const track = document.getElementById('home-reviews-track');
+              if (track) {
+                track.addEventListener('scroll', () => {
+                  const cardWidth = track.firstElementChild ? track.firstElementChild.offsetWidth + 20 : 300;
+                  const activeIndex = Math.min(items.length - 1, Math.round(track.scrollLeft / cardWidth));
+                  dotsContainer.querySelectorAll('.home-review-dot').forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === activeIndex);
+                  });
+                }, { passive: true });
+
+                dotsContainer.querySelectorAll('.home-review-dot').forEach(dot => {
+                  dot.addEventListener('click', () => {
+                    const idx = parseInt(dot.getAttribute('data-index'), 10);
+                    const cardWidth = track.firstElementChild ? track.firstElementChild.offsetWidth + 20 : 300;
+                    track.scrollTo({ left: idx * cardWidth, behavior: 'smooth' });
+                  });
+                });
+              }
+            } else {
+              dotsContainer.style.display = 'none';
+            }
+          }
+
+        } catch (err) {
+          console.error('Failed to load home reviews:', err);
+          if (skeleton) skeleton.remove();
+        }
+      }
+
+      function renderStarGlyphs(count) {
+        let out = '';
+        for (let i = 1; i <= 5; i++) {
+          out += `<svg width="16" height="16" viewBox="0 0 24 24" fill="${i <= count ? '#F59E0B' : '#E5E7EB'}" stroke="none" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+        }
+        return out;
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      await loadHomeReviews();
+
+      // Live update: new approved notes appear within about a minute with no redeploy
+      if (typeof subscribeToApprovedReviews === 'function') {
+        subscribeToApprovedReviews(loadHomeReviews);
+      }
     });
   </script>
 </body>

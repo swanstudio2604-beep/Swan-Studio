@@ -29,7 +29,9 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 }
 
 // Configurable CORS origins
+const PRIMARY_DOMAIN = 'https://swan-studio.onslate.in';
 const allowedOrigins = [
+  'https://swan-studio.onslate.in',
   'https://swanstudio2604-beep.github.io',
   'http://localhost:8080',
   'http://localhost:8085',
@@ -63,6 +65,20 @@ app.use(cors({
 
 app.use(express.json({ limit: '12mb' }));
 app.use(express.urlencoded({ extended: true, limit: '12mb' }));
+
+// ---------------------------------------------------------------------------
+// Primary Domain Mirror Guard & 301 Redirect for Render Mirror
+// ---------------------------------------------------------------------------
+app.use((req, res, next) => {
+  const host = (req.get('host') || '').toLowerCase();
+  if (host.includes('onrender.com')) {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    if (req.method === 'GET' && !req.path.startsWith('/api') && req.path !== '/health') {
+      return res.redirect(301, `${PRIMARY_DOMAIN}${req.originalUrl}`);
+    }
+  }
+  next();
+});
 
 // ---------------------------------------------------------------------------
 // Security Headers Middleware
@@ -913,28 +929,39 @@ app.get('/api/reviews', (req, res) => {
 });
 
 app.post('/api/reviews', (req, res) => {
-  const { authorName, authorCity, rating, title, comment } = req.body;
+  const authorName = req.body.displayName || req.body.display_name || req.body.authorName || req.body.author_name;
+  const comment = req.body.body || req.body.comment;
   if (!authorName || !comment) {
     return res.status(400).json({
       success: false,
-      error: 'Author name and review comment are required.'
+      error: 'Author name and review body are required.'
     });
   }
 
   const safeData = {
+    type: req.body.type || 'note',
     authorName: sanitizeInput(authorName),
-    authorCity: sanitizeInput(authorCity || 'India'),
-    rating: parseInt(rating, 10) || 5,
-    title: sanitizeInput(title || ''),
+    displayName: sanitizeInput(authorName),
+    authorCity: sanitizeInput(req.body.city || req.body.authorCity || req.body.author_city || ''),
+    city: sanitizeInput(req.body.city || req.body.authorCity || req.body.author_city || ''),
+    rating: parseInt(req.body.rating, 10) || 5,
+    title: sanitizeInput(req.body.title || ''),
     comment: sanitizeInput(comment),
-    status: 'PENDING',
-    verifiedPurchase: false
+    body: sanitizeInput(comment),
+    productId: req.body.productId || req.body.product_id || null,
+    orderId: req.body.orderId || req.body.order_id || null,
+    photoPath: req.body.photoPath || req.body.photo_path || null,
+    isPublic: req.body.isPublic !== undefined ? Boolean(req.body.isPublic) : (req.body.is_public !== undefined ? Boolean(req.body.is_public) : true),
+    consentPublic: Boolean(req.body.consentPublic || req.body.consent_public),
+    customerContact: sanitizeInput(req.body.customerContact || req.body.customer_contact || ''),
+    status: 'pending',
+    verifiedBuyer: false
   };
 
   const newReview = Store.createReview(safeData);
   return res.status(201).json({
     success: true,
-    message: 'Thank you! Your love note has been received and will appear after owner review.',
+    message: 'Thank you! Your note has been received and will appear after Bhumika approves it.',
     data: newReview
   });
 });

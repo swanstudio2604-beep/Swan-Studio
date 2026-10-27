@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Customer Reviews Moderation — Swan Studio Admin Atelier</title>
+  <title>Customer Reviews & Notes Moderation — Swan Studio Admin Atelier</title>
   <meta name="robots" content="noindex, nofollow">
   
   <!-- Google Fonts: Cormorant Garamond & Poppins -->
@@ -13,6 +13,138 @@
 
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/admin.css?v=m3">
+  <style>
+    /* Mobile-first card moderation styling */
+    .review-admin-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+
+    .review-admin-card.pending {
+      border-left: 5px solid #F59E0B;
+    }
+
+    .review-admin-card.approved {
+      border-left: 5px solid #16A34A;
+    }
+
+    .review-admin-card.hidden {
+      border-left: 5px solid #9CA3AF;
+    }
+
+    .review-admin-card.private {
+      border-left: 5px solid #8B5CF6;
+      background: #FAF8FF;
+    }
+
+    .review-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .review-body-box {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--cocoa);
+      background: #FFFDFB;
+      padding: 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      position: relative;
+    }
+
+    .review-body-box.edited::after {
+      content: ' (edited for typos)';
+      font-size: 0.72rem;
+      color: #9CA3AF;
+      font-style: italic;
+    }
+
+    .photo-admin-preview {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #F9FAFB;
+      border-radius: var(--radius-sm);
+      border: 1px solid #E5E7EB;
+    }
+
+    .photo-admin-thumb {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid #D1D5DB;
+    }
+
+    .admin-reply-form {
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      background: #FFF8F1;
+      border-radius: var(--radius-sm);
+      border: 1px dashed var(--rose);
+    }
+
+    .action-btn-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--border-subtle);
+    }
+
+    .undo-toast-wrap {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1F2937;
+      color: #FFF;
+      padding: 0.75rem 1.25rem;
+      border-radius: 999px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      z-index: 100000;
+      font-size: 0.86rem;
+      max-width: 90vw;
+    }
+
+    .undo-btn {
+      background: #F59E0B;
+      color: #1F2937;
+      font-weight: 700;
+      border: none;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      .action-btn-row .btn {
+        flex: 1 1 calc(50% - 0.25rem);
+        min-height: 44px;
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -26,67 +158,84 @@
     <main class="admin-main">
       <div class="admin-header-row">
         <div>
-          <h1 class="admin-page-title">Customer Reviews Moderation</h1>
+          <h1 class="admin-page-title">Customer Reviews &amp; Notes</h1>
           <p class="admin-page-subtitle">
-            Approve genuine love notes before they appear on the public storefront. No fake reviews can be created from admin.
+            Approve genuine love notes before they appear on the public storefront. Bhumika reads every reflection personally.
           </p>
         </div>
-        <div style="display: flex; gap: 0.75rem; align-items: center;">
-          <a href="../reviews.html" target="_blank" class="btn btn-secondary btn-sm">
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+          <a href="../reviews.html" target="_blank" class="btn btn-secondary btn-sm" style="min-height: 44px; display: inline-flex; align-items: center;">
             👁️ View Public Wall
           </a>
         </div>
       </div>
 
       <!-- KPI Summary Cards -->
-      <div class="admin-stats-grid">
-        <div class="admin-stat-card" style="border-left: 4px solid #D97706;">
+      <div class="admin-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem;">
+        <div class="admin-stat-card" style="border-left: 4px solid #D97706; padding: 1rem;">
           <div class="admin-stat-label">Pending Approval</div>
           <div class="admin-stat-value" id="stat-pending-reviews" style="color: #D97706;">0</div>
-          <div class="admin-stat-meta">Awaiting your approval</div>
+          <div class="admin-stat-meta">Awaiting review</div>
         </div>
 
-        <div class="admin-stat-card" style="border-left: 4px solid #16A34A;">
-          <div class="admin-stat-label">Approved & Public</div>
+        <div class="admin-stat-card" style="border-left: 4px solid #16A34A; padding: 1rem;">
+          <div class="admin-stat-label">Approved &amp; Live</div>
           <div class="admin-stat-value" id="stat-approved-reviews" style="color: #16A34A;">0</div>
-          <div class="admin-stat-meta">Live on public shop</div>
+          <div class="admin-stat-meta">Public on shop</div>
         </div>
 
-        <div class="admin-stat-card">
+        <div class="admin-stat-card" style="border-left: 4px solid #8B5CF6; padding: 1rem;">
+          <div class="admin-stat-label">Private Notes</div>
+          <div class="admin-stat-value" id="stat-private-reviews" style="color: #7C3AED;">0</div>
+          <div class="admin-stat-meta">For Bhumika only</div>
+        </div>
+
+        <div class="admin-stat-card" style="padding: 1rem;">
           <div class="admin-stat-label">Average Rating</div>
           <div class="admin-stat-value" id="stat-avg-rating">5.0 ★</div>
-          <div class="admin-stat-meta">Genuine customer reviews</div>
+          <div class="admin-stat-meta">Approved reviews</div>
         </div>
       </div>
 
       <!-- Moderation Filter Tabs -->
-      <div class="admin-toolbar" style="flex-wrap: wrap; gap: 0.75rem;">
+      <div class="admin-toolbar" style="flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem;">
         <input 
           type="search" 
           id="review-search" 
-          class="admin-search-input" 
-          placeholder="Search by buyer name, city, comment..."
-          style="max-width: 320px;"
+          class="admin-search-input form-control" 
+          placeholder="Search by buyer name, city, note..."
+          style="max-width: 300px; min-height: 44px; font-size: 16px;"
         >
-        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-          <button id="tab-all-reviews" class="category-pill active">All (<span id="count-all">0</span>)</button>
-          <button id="tab-pending-reviews" class="category-pill" style="border-color: #FCD34D; color: #B45309;">⏳ Pending (<span id="count-pending">0</span>)</button>
-          <button id="tab-approved-reviews" class="category-pill" style="border-color: #86EFAC; color: #16A34A;">🟢 Approved (<span id="count-approved">0</span>)</button>
-          <button id="tab-hidden-reviews" class="category-pill">⚪ Hidden (<span id="count-hidden">0</span>)</button>
+        <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;" role="tablist">
+          <button id="tab-pending-reviews" class="category-pill active" style="min-height: 44px; padding: 0.4rem 0.85rem; border-color: #FCD34D; color: #B45309;" role="tab" aria-selected="true">
+            ⏳ Pending (<span id="count-pending">0</span>)
+          </button>
+          <button id="tab-approved-reviews" class="category-pill" style="min-height: 44px; padding: 0.4rem 0.85rem; border-color: #86EFAC; color: #16A34A;" role="tab" aria-selected="false">
+            🟢 Approved (<span id="count-approved">0</span>)
+          </button>
+          <button id="tab-private-reviews" class="category-pill" style="min-height: 44px; padding: 0.4rem 0.85rem; border-color: #DDD6FE; color: #7C3AED;" role="tab" aria-selected="false">
+            🔒 Private Notes (<span id="count-private">0</span>)
+          </button>
+          <button id="tab-hidden-reviews" class="category-pill" style="min-height: 44px; padding: 0.4rem 0.85rem;" role="tab" aria-selected="false">
+            ⚪ Hidden (<span id="count-hidden">0</span>)
+          </button>
+          <button id="tab-all-reviews" class="category-pill" style="min-height: 44px; padding: 0.4rem 0.85rem;" role="tab" aria-selected="false">
+            All (<span id="count-all">0</span>)
+          </button>
         </div>
       </div>
 
       <!-- Notice: Integrity Rule -->
-      <div style="background: #FFF9F7; border: 1px dashed var(--rose); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1.5rem; font-size: 0.84rem; color: var(--cocoa); display: flex; align-items: center; gap: 0.75rem;">
-        <span style="font-size: 1.25rem;">🔒</span>
+      <div style="background: #FFF9F7; border: 1px dashed var(--rose); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1.25rem; font-size: 0.84rem; color: var(--cocoa); display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 1.25rem;" aria-hidden="true">🔒</span>
         <div>
-          <strong>Strict Store Integrity Rule:</strong> Admin cannot manufacture or create fake customer reviews. Only genuine customer submissions via the verified purchase flow or public wall appear here for your moderation.
+          <strong>Strict Store Integrity Rule:</strong> No fake or manufactured reviews can be generated. Only genuine customer submissions via the floating note form or order link appear here for your moderation.
         </div>
       </div>
 
       <!-- Reviews Feed / Stacked Cards Container -->
       <div id="reviews-list-container" class="admin-stacked-cards" style="display: flex; flex-direction: column; gap: 1rem;">
-        <div style="text-align: center; padding: 2.5rem; color: #8A7670;">Loading customer reviews...</div>
+        <div style="text-align: center; padding: 2.5rem; color: #8A7670;">Loading customer reviews and notes...</div>
       </div>
 
       <!-- Footer Mount -->
@@ -95,6 +244,42 @@
 
   </div>
 
+  <!-- Typo Edit Warning Modal -->
+  <div id="typo-edit-modal" style="display: none; position: fixed; inset: 0; z-index: 100005; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 1rem;">
+    <div style="background: #FFF; border-radius: var(--radius-md); max-width: 480px; width: 100%; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+      <h3 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--cocoa); margin-bottom: 0.5rem;">
+        ✏️ Edit Note Text (Typos Only)
+      </h3>
+      <div style="background: #FFFBEB; border-left: 4px solid #F59E0B; padding: 0.65rem 0.85rem; font-size: 0.8rem; color: #92400E; margin-bottom: 1rem; line-height: 1.5;">
+        ⚠️ <strong>Integrity Warning:</strong> You are editing a customer's real words. Only correct minor spelling, punctuation or typos without altering their meaning, sentiment, or praise. The original text is preserved in history.
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label for="edit-note-textarea" style="font-size: 0.84rem; font-weight: 600; color: var(--cocoa); display: block; margin-bottom: 0.35rem;">
+          Customer Note Text
+        </label>
+        <textarea id="edit-note-textarea" rows="4" class="form-control" style="width: 100%; font-size: 16px; padding: 0.65rem; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm);"></textarea>
+      </div>
+      <input type="hidden" id="edit-note-id">
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-edit" style="min-height: 44px; padding: 0.5rem 1rem;">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-save-typo-edit" style="min-height: 44px; padding: 0.5rem 1rem;">Save correction</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo Lightbox Modal -->
+  <div id="admin-photo-lightbox" style="display: none; position: fixed; inset: 0; z-index: 100006; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; padding: 1rem;">
+    <div style="position: relative; max-width: 90vw; max-height: 90vh;">
+      <button type="button" id="admin-lightbox-close" style="position: absolute; top: -44px; right: 0; width: 44px; height: 44px; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+        ✕
+      </button>
+      <img src="" alt="Enlarged photo" id="admin-lightbox-img" style="max-width: 90vw; max-height: 80vh; object-fit: contain; border-radius: 8px;">
+    </div>
+  </div>
+
+  <!-- Undo Toast Mount -->
+  <div id="undo-toast-mount"></div>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
   <script src="../js/config.js"></script>
@@ -102,6 +287,7 @@
   <script src="../js/supabase.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/admin/admin-shared.js"></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       const authorized = await ADMIN.init('reviews');
@@ -109,100 +295,135 @@
 
       const listContainer = document.getElementById('reviews-list-container');
       const searchInput = document.getElementById('review-search');
-      const tabAll = document.getElementById('tab-all-reviews');
+      
       const tabPending = document.getElementById('tab-pending-reviews');
       const tabApproved = document.getElementById('tab-approved-reviews');
+      const tabPrivate = document.getElementById('tab-private-reviews');
       const tabHidden = document.getElementById('tab-hidden-reviews');
+      const tabAll = document.getElementById('tab-all-reviews');
 
-      let currentFilter = 'all';
+      let currentFilter = 'pending';
       let allReviews = [];
+      let lastDeletedItem = null;
+      let undoTimer = null;
 
+      // 1. Fetch all reviews (full admin view)
       async function loadReviews() {
-        listContainer.innerHTML = '<div style="text-align: center; padding: 2.5rem; color: #8A7670;">Loading live customer reviews from Supabase...</div>';
         const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-        if (!client) {
-          allReviews = [];
-          renderStats();
-          renderFeed();
-          return;
-        }
 
         try {
-          const { data, error } = await client
-            .from('reviews')
-            .select(`
-              id,
-              customer_name,
-              customer_email,
-              rating,
-              title,
-              comment,
-              status,
-              is_verified_buyer,
-              created_at,
-              products:product_id (
-                name,
-                slug,
-                image_url
-              )
-            `)
-            .order('created_at', { ascending: false });
+          let data = [];
 
-          if (error) {
-            console.warn('Error fetching reviews:', error.message);
-            allReviews = [];
-          } else {
-            allReviews = (data || []).map(r => ({
-              id: r.id,
-              authorName: r.customer_name || 'Verified Buyer',
-              authorEmail: r.customer_email || '',
-              authorCity: '',
-              rating: r.rating || 5,
-              title: r.title || '',
-              comment: r.comment || '',
-              productName: r.products?.name || '',
-              status: (r.status || 'pending').toUpperCase(),
-              verifiedPurchase: Boolean(r.is_verified_buyer),
-              createdAt: r.created_at
-            }));
+          if (client) {
+            try {
+              const res = await client
+                .from('reviews')
+                .select('*')
+                .order('created_at', { ascending: false });
+              
+              if (!res.error && Array.isArray(res.data)) {
+                data = res.data.slice();
+              }
+            } catch (supaErr) {
+              console.warn('Supabase fetch error:', supaErr);
+            }
           }
-        } catch (e) {
-          console.error('Reviews load exception:', e);
-          allReviews = [];
+
+          // Always merge with local admin reviews from /api/admin/reviews
+          try {
+            const apiRes = await fetch('/api/admin/reviews');
+            if (apiRes.ok) {
+              const json = await apiRes.json();
+              if (json.data && Array.isArray(json.data)) {
+                const existingIds = new Set(data.map(d => String(d.id)));
+                for (const item of json.data) {
+                  if (!existingIds.has(String(item.id))) {
+                    data.push(item);
+                    existingIds.add(String(item.id));
+                  }
+                }
+              }
+            }
+          } catch (apiErr) {
+            console.warn('API fallback error:', apiErr);
+          }
+
+          if (fetchErr && (!data || data.length === 0)) {
+            console.error('Error fetching admin reviews:', fetchErr.message);
+            listContainer.innerHTML = `<div class="admin-card" style="text-align: center; padding: 2rem; color: #DC2626;">Error loading notes: ${escapeHtml(fetchErr.message)}</div>`;
+            return;
+          }
+
+          allReviews = (data || []).map(r => {
+            const rawName = r.display_name || (r.customer_name ? r.customer_name.split(' ')[0] : (r.author_name || 'Kind Buyer'));
+            const rawBody = r.body || r.comment || '';
+            const statusNorm = (r.status || 'pending').toLowerCase();
+            const isPublic = r.is_public !== false;
+
+            return {
+              id: r.id,
+              type: r.type || 'note',
+              rating: parseInt(r.rating, 10) || 5,
+              body: rawBody,
+              originalBody: r.original_body || null,
+              displayName: rawName,
+              city: r.city || '',
+              productId: r.product_id,
+              productName: r.products?.name || '',
+              orderId: r.order_id,
+              photoPath: r.photo_path || null,
+              isPublic: isPublic,
+              consentPublic: Boolean(r.consent_public),
+              status: statusNorm,
+              verifiedBuyer: Boolean(r.verified_buyer || r.is_verified_buyer),
+              featured: Boolean(r.featured),
+              adminReply: r.admin_reply || '',
+              customerContact: r.customer_contact || r.customer_email || '',
+              createdAt: r.created_at,
+              approvedAt: r.approved_at,
+              deletedAt: r.deleted_at
+            };
+          });
+
+          updateDashboardBadges();
+          renderStats();
+          renderFeed();
+
+        } catch (err) {
+          console.error('Load reviews exception:', err);
+          listContainer.innerHTML = `<div class="admin-card" style="text-align: center; padding: 2rem; color: #DC2626;">Exception: ${escapeHtml(err.message)}</div>`;
         }
-
-        renderStats();
-        renderFeed();
       }
 
-      async function updateReviewStatus(id, newStatus) {
-        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-        if (!client) throw new Error('Database not connected');
-        const dbStatus = newStatus.toLowerCase();
-        const { error } = await client.from('reviews').update({ status: dbStatus }).eq('id', id);
-        if (error) throw new Error(error.message);
-      }
-
-      async function deleteReviewRecord(id) {
-        const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-        if (!client) throw new Error('Database not connected');
-        const { error } = await client.from('reviews').delete().eq('id', id);
-        if (error) throw new Error(error.message);
+      function updateDashboardBadges() {
+        const pendingCount = allReviews.filter(r => r.status === 'pending' && !r.deletedAt).length;
+        
+        // Update sidebar badges if present
+        const sidebarReviewBadge = document.getElementById('admin-badge-reviews');
+        if (sidebarReviewBadge) {
+          sidebarReviewBadge.textContent = pendingCount;
+          sidebarReviewBadge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+        }
       }
 
       function renderStats() {
-        const pending = allReviews.filter(r => r.status === 'PENDING').length;
-        const approved = allReviews.filter(r => r.status === 'APPROVED').length;
-        const hidden = allReviews.filter(r => r.status === 'HIDDEN').length;
+        const nonDeleted = allReviews.filter(r => !r.deletedAt);
+        const pending = nonDeleted.filter(r => r.status === 'pending').length;
+        const approved = nonDeleted.filter(r => r.status === 'approved' && r.isPublic).length;
+        const privateNotes = nonDeleted.filter(r => !r.isPublic).length;
+        const hidden = nonDeleted.filter(r => r.status === 'hidden').length;
 
         document.getElementById('stat-pending-reviews').textContent = pending;
         document.getElementById('stat-approved-reviews').textContent = approved;
-        document.getElementById('count-all').textContent = allReviews.length;
+        document.getElementById('stat-private-reviews').textContent = privateNotes;
+
         document.getElementById('count-pending').textContent = pending;
         document.getElementById('count-approved').textContent = approved;
+        document.getElementById('count-private').textContent = privateNotes;
         document.getElementById('count-hidden').textContent = hidden;
+        document.getElementById('count-all').textContent = nonDeleted.length;
 
-        const approvedReviews = allReviews.filter(r => r.status === 'APPROVED');
+        const approvedReviews = nonDeleted.filter(r => r.status === 'approved');
         if (approvedReviews.length > 0) {
           const avg = (approvedReviews.reduce((sum, r) => sum + (r.rating || 5), 0) / approvedReviews.length).toFixed(1);
           document.getElementById('stat-avg-rating').textContent = `${avg} ★`;
@@ -213,16 +434,21 @@
 
       function renderFeed() {
         const query = searchInput.value.trim().toLowerCase();
-        const filtered = allReviews.filter(r => {
-          if (currentFilter === 'pending' && r.status !== 'PENDING') return false;
-          if (currentFilter === 'approved' && r.status !== 'APPROVED') return false;
-          if (currentFilter === 'hidden' && r.status !== 'HIDDEN') return false;
+        const nonDeleted = allReviews.filter(r => !r.deletedAt);
+
+        const filtered = nonDeleted.filter(r => {
+          if (currentFilter === 'pending' && r.status !== 'pending') return false;
+          if (currentFilter === 'approved' && (r.status !== 'approved' || !r.isPublic)) return false;
+          if (currentFilter === 'private' && r.isPublic) return false;
+          if (currentFilter === 'hidden' && r.status !== 'hidden') return false;
+
           if (query) {
-            const mName = (r.authorName || '').toLowerCase().includes(query);
-            const mCity = (r.authorCity || '').toLowerCase().includes(query);
-            const mComment = (r.comment || '').toLowerCase().includes(query);
+            const mName = (r.displayName || '').toLowerCase().includes(query);
+            const mCity = (r.city || '').toLowerCase().includes(query);
+            const mBody = (r.body || '').toLowerCase().includes(query);
             const mProd = (r.productName || '').toLowerCase().includes(query);
-            if (!mName && !mCity && !mComment && !mProd) return false;
+            const mContact = (r.customerContact || '').toLowerCase().includes(query);
+            if (!mName && !mCity && !mBody && !mProd && !mContact) return false;
           }
           return true;
         });
@@ -230,60 +456,155 @@
         if (filtered.length === 0) {
           listContainer.innerHTML = `
             <div class="admin-card" style="text-align: center; padding: 2.5rem; color: #8A7670;">
-              <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">💌</span>
-              No customer reviews found matching "${currentFilter}" filter.
+              <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;" aria-hidden="true">💌</span>
+              No customer notes or reviews matching "${escapeHtml(currentFilter)}" filter.
             </div>
           `;
           return;
         }
 
+        const supaUrl = (window.SWAN_CONFIG && window.SWAN_CONFIG.supabaseUrl) || 'https://hzlimdfxvojkqsszmulj.supabase.co';
+
         listContainer.innerHTML = filtered.map(r => {
           const stars = '★'.repeat(r.rating || 5) + '☆'.repeat(5 - (r.rating || 5));
-          const dateStr = r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent';
-          
-          let statusBadge = '';
-          if (r.status === 'APPROVED') {
+          const dateStr = r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent';
+          const isEdited = Boolean(r.originalBody && r.originalBody !== r.body);
+
+          // Card class
+          let cardTypeClass = 'pending';
+          let statusBadge = '<span class="badge" style="background: #FFFBEB; color: #B45309; border: 1px solid #FCD34D;">⏳ Pending Approval</span>';
+
+          if (!r.isPublic) {
+            cardTypeClass = 'private';
+            statusBadge = '<span class="badge" style="background: #F3E8FF; color: #6D28D9; border: 1px solid #DDD6FE;">🔒 Private (For Bhumika Only)</span>';
+          } else if (r.status === 'approved') {
+            cardTypeClass = 'approved';
             statusBadge = '<span class="badge" style="background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;">🟢 Live on Public Shop</span>';
-          } else if (r.status === 'PENDING') {
-            statusBadge = '<span class="badge" style="background: #FFFBEB; color: #B45309; border: 1px solid #FCD34D;">⏳ Pending Approval</span>';
-          } else {
+          } else if (r.status === 'hidden') {
+            cardTypeClass = 'hidden';
             statusBadge = '<span class="badge" style="background: #F3F4F6; color: #4B5563; border: 1px solid #D1D5DB;">⚪ Hidden</span>';
           }
 
+          // Photo URL
+          let photoPublicUrl = null;
+          if (r.photoPath) {
+            photoPublicUrl = r.photoPath.startsWith('http')
+              ? r.photoPath
+              : `${supaUrl}/storage/v1/object/public/${r.status === 'approved' ? 'public-review-photos' : 'pending-review-photos'}/${r.photoPath}`;
+          }
+
+          // Clean phone for WhatsApp/call
+          const rawPhone = (r.customerContact || '').replace(/[^0-9]/g, '');
+          const hasPhone = rawPhone.length >= 10;
+          const phoneFormatted = hasPhone ? (rawPhone.startsWith('91') ? rawPhone : `91${rawPhone.slice(-10)}`) : null;
+
           return `
-            <div class="admin-card review-admin-card" style="padding: 1.25rem; border-left: 4px solid ${r.status === 'APPROVED' ? '#16A34A' : (r.status === 'PENDING' ? '#F59E0B' : '#9CA3AF')};">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+            <div class="review-admin-card ${cardTypeClass}" id="review-card-${r.id}">
+              <div class="review-meta-row">
                 <div>
                   <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                    <strong style="font-size: 1rem; color: var(--cocoa);">${r.authorName}</strong>
-                    ${r.verifiedPurchase ? '<span class="badge" style="background: #ECFDF5; color: #047857; font-size: 0.72rem;">✓ Verified Buyer</span>' : ''}
+                    <strong style="font-size: 1.05rem; color: var(--cocoa);">${escapeHtml(r.displayName)}</strong>
+                    ${r.city ? `<span style="font-size: 0.84rem; color: #8A7670;">(${escapeHtml(r.city)})</span>` : ''}
+                    ${r.verifiedBuyer ? '<span class="badge" style="background: #DCFCE7; color: #166534; font-size: 0.72rem; font-weight: 600;">✓ Verified Buyer</span>' : ''}
+                    ${r.featured ? '<span class="badge" style="background: #FEF3C7; color: #B45309; font-size: 0.72rem; font-weight: 600;">⭐ Featured on Home</span>' : ''}
                   </div>
-                  <div style="font-size: 0.85rem; color: #B45309; letter-spacing: 2px; margin-top: 0.2rem;">${stars}</div>
+                  <div style="font-size: 0.92rem; color: #D97706; letter-spacing: 2px; margin-top: 0.2rem;" aria-label="${r.rating} stars">${stars}</div>
                 </div>
                 <div style="text-align: right;">
                   ${statusBadge}
-                  <div style="font-size: 0.75rem; color: #8A7670; margin-top: 0.25rem;">${dateStr}</div>
+                  <div style="font-size: 0.75rem; color: #8A7670; margin-top: 0.35rem;">${dateStr}</div>
                 </div>
               </div>
 
-              ${r.productName ? `<div style="font-size: 0.82rem; color: var(--rose-text); font-weight: 500; margin-bottom: 0.45rem;">🧶 Creation: ${r.productName}</div>` : ''}
-              ${r.title ? `<div style="font-size: 0.92rem; font-weight: 600; color: var(--cocoa); margin-bottom: 0.25rem;">"${r.title}"</div>` : ''}
-              
-              <p style="font-size: 0.88rem; color: #51413C; line-height: 1.5; margin-bottom: 1rem; background: #FFFDFB; padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-                ${r.comment}
-              </p>
+              ${r.productName ? `
+                <div style="font-size: 0.84rem; color: var(--rose-text); font-weight: 600;">
+                  🧶 Piece: ${escapeHtml(r.productName)}
+                </div>
+              ` : ''}
 
-              <!-- Moderation Actions (Min 44x44px touch targets on mobile) -->
-              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; justify-content: flex-end; pt: 0.5rem; border-top: 1px dashed var(--admin-border);">
-                ${r.status !== 'APPROVED' ? `
-                  <button type="button" class="btn btn-primary btn-sm btn-approve" data-id="${r.id}" style="min-height: 44px; padding: 0.5rem 1rem; display: inline-flex; align-items: center; gap: 0.4rem;">
-                    <span>✓</span> Approve & Publish
+              <!-- Note Body (with typo edit trigger) -->
+              <div class="review-body-box ${isEdited ? 'edited' : ''}">
+                <div style="white-space: pre-wrap;">${escapeHtml(r.body)}</div>
+                <button type="button" class="btn-open-typo-edit" data-id="${r.id}" style="position: absolute; top: 0.4rem; right: 0.4rem; background: rgba(81,65,60,0.06); border: none; border-radius: 4px; font-size: 0.74rem; padding: 0.2rem 0.5rem; cursor: pointer; color: var(--cocoa);" title="Fix spelling or typos">
+                  ✏️ Edit typos
+                </button>
+              </div>
+
+              ${isEdited ? `
+                <details style="font-size: 0.76rem; color: #8C7B74;">
+                  <summary style="cursor: pointer;">View original submitted text</summary>
+                  <div style="padding: 0.4rem 0.6rem; background: #F9FAFB; border-radius: 4px; margin-top: 0.25rem;">
+                    "${escapeHtml(r.originalBody)}"
+                  </div>
+                </details>
+              ` : ''}
+
+              <!-- Photo Section -->
+              ${r.photoPath ? `
+                <div class="photo-admin-preview">
+                  <img src="${escapeHtml(photoPublicUrl)}" alt="Customer submission" class="photo-admin-thumb" data-full="${escapeHtml(photoPublicUrl)}" title="Tap to enlarge">
+                  <div style="flex: 1; font-size: 0.82rem;">
+                    <div><strong>Attached Photo</strong></div>
+                    <span style="font-size: 0.74rem; color: #6B7280;">Tap thumbnail to view full image</span>
+                  </div>
+                  <button type="button" class="btn btn-secondary btn-sm btn-reject-photo" data-id="${r.id}" style="min-height: 38px; color: #DC2626; border-color: #FCA5A5;">
+                    ✕ Remove photo
+                  </button>
+                </div>
+              ` : ''}
+
+              <!-- Customer Contact Direct Buttons (WhatsApp & Call) -->
+              ${(phoneFormatted || r.customerContact) ? `
+                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; font-size: 0.84rem; background: #F9FAFB; padding: 0.5rem 0.75rem; border-radius: var(--radius-sm);">
+                  <span style="color: #6B7280;">Contact: <strong>${escapeHtml(r.customerContact)}</strong></span>
+                  ${phoneFormatted ? `
+                    <a href="https://wa.me/${phoneFormatted}?text=${encodeURIComponent(`Hi ${r.displayName}! Thank you so much for your kind note at Swan Studio.`)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="min-height: 38px; padding: 0.3rem 0.65rem; color: #15803D; border-color: #86EFAC;">
+                      💬 WhatsApp
+                    </a>
+                    <a href="tel:${phoneFormatted}" class="btn btn-secondary btn-sm" style="min-height: 38px; padding: 0.3rem 0.65rem;">
+                      📞 Call
+                    </a>
+                  ` : ''}
+                </div>
+              ` : ''}
+
+              <!-- Admin Public Reply Box -->
+              <div class="admin-reply-form">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <label for="reply-input-${r.id}" style="font-size: 0.8rem; font-weight: 600; color: var(--rose-text);">
+                    💌 Bhumika's Public Reply
+                  </label>
+                  ${r.adminReply ? '<span style="font-size: 0.72rem; color: #16A34A; font-weight: 600;">✓ Live on public card</span>' : ''}
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                  <input type="text" id="reply-input-${r.id}" class="form-control" placeholder="Write a warm reply..." value="${escapeHtml(r.adminReply)}" style="flex: 1; min-height: 40px; font-size: 0.86rem; padding: 0.4rem 0.65rem;">
+                  <button type="button" class="btn btn-primary btn-sm btn-save-reply" data-id="${r.id}" style="min-height: 40px; padding: 0.4rem 0.85rem;">
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              <!-- Moderation Action Buttons -->
+              <div class="action-btn-row">
+                ${r.status !== 'approved' ? `
+                  <button type="button" class="btn btn-primary btn-sm btn-approve" data-id="${r.id}" style="min-height: 44px; padding: 0.5rem 1rem;">
+                    ✓ Approve &amp; Publish
+                  </button>
+                ` : `
+                  <button type="button" class="btn btn-secondary btn-sm btn-feature" data-id="${r.id}" data-featured="${r.featured}" style="min-height: 44px; padding: 0.5rem 0.85rem; border-color: #FCD34D;">
+                    ${r.featured ? '⭐ Unfeature from Home' : '⭐ Feature on Home'}
+                  </button>
+                `}
+
+                ${!r.verifiedBuyer ? `
+                  <button type="button" class="btn btn-secondary btn-sm btn-mark-verified" data-id="${r.id}" style="min-height: 44px; padding: 0.5rem 0.85rem;" title="Confirm real order link">
+                    ✓ Mark Verified Buyer
                   </button>
                 ` : ''}
 
-                ${r.status !== 'HIDDEN' ? `
+                ${r.status !== 'hidden' ? `
                   <button type="button" class="btn btn-secondary btn-sm btn-hide" data-id="${r.id}" style="min-height: 44px; padding: 0.5rem 0.85rem;">
-                    🚫 Hide from Public
+                    🚫 Hide
                   </button>
                 ` : ''}
 
@@ -295,88 +616,373 @@
           `;
         }).join('');
 
-        // Wire handlers
+        bindCardEvents();
+      }
+
+      function bindCardEvents() {
+        // 1. Approve
         listContainer.querySelectorAll('.btn-approve').forEach(btn => {
           btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
-            const rev = allReviews.find(r => r.id === id);
-            if (!rev) return;
+            const id = btn.getAttribute('data-id');
+            btn.disabled = true;
+            btn.textContent = 'Approving...';
             try {
-              btn.disabled = true;
-              btn.textContent = 'Approving...';
-              await updateReviewStatus(id, 'APPROVED');
-              rev.status = 'APPROVED';
-              renderStats();
-              renderFeed();
-              ADMIN.showToast(`✓ Review by ${rev.authorName} is now live on the public shop!`);
-            } catch (err) {
-              ADMIN.showToast('Failed to approve review: ' + err.message, 'danger');
-              btn.disabled = false;
-            }
-          });
-        });
+              const client = getSupabaseClient();
+              const review = allReviews.find(r => r.id === id);
 
-        listContainer.querySelectorAll('.btn-hide').forEach(btn => {
-          btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
-            const rev = allReviews.find(r => r.id === id);
-            if (!rev) return;
-            try {
-              btn.disabled = true;
-              await updateReviewStatus(id, 'HIDDEN');
-              rev.status = 'HIDDEN';
-              renderStats();
-              renderFeed();
-              ADMIN.showToast('Review hidden from public storefront.');
-            } catch (err) {
-              ADMIN.showToast('Failed to hide review: ' + err.message, 'danger');
-              btn.disabled = false;
-            }
-          });
-        });
-
-        listContainer.querySelectorAll('.btn-delete').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const id = btn.dataset.id;
-            const rev = allReviews.find(r => r.id === id);
-            if (!rev) return;
-            ADMIN.confirm({
-              title: 'Delete Customer Review?',
-              message: `Are you sure you want to permanently delete this review from ${rev.authorName}? This action cannot be undone.`,
-              confirmText: 'Delete Review',
-              danger: true,
-              onConfirm: async () => {
+              // If review has a photo in pending-review-photos, copy to public-review-photos
+              if (review && review.photoPath && client) {
                 try {
-                  await deleteReviewRecord(id);
-                  allReviews = allReviews.filter(r => r.id !== id);
-                  renderStats();
-                  renderFeed();
-                  ADMIN.showToast('Review permanently removed.');
-                } catch (err) {
-                  ADMIN.showToast('Failed to delete review: ' + err.message, 'danger');
+                  const { error: copyErr } = await client.storage
+                    .from('pending-review-photos')
+                    .copy(review.photoPath, review.photoPath, {
+                      destinationBucket: 'public-review-photos'
+                    });
+                  if (copyErr) console.warn('Photo copy notice:', copyErr.message);
+                } catch (cErr) {}
+              }
+
+              let updateSuccess = false;
+              if (client) {
+                try {
+                  const { error } = await client
+                    .from('reviews')
+                    .update({
+                      status: 'approved',
+                      approved_at: new Date().toISOString()
+                    })
+                    .eq('id', id);
+
+                  if (!error) updateSuccess = true;
+                  else {
+                    // Try without approved_at for legacy schema
+                    const { error: legErr } = await client
+                      .from('reviews')
+                      .update({ status: 'approved' })
+                      .eq('id', id);
+                    if (!legErr) updateSuccess = true;
+                  }
+                } catch (supaErr) {
+                  console.warn('Supabase approve error:', supaErr);
                 }
               }
-            });
+
+              if (!updateSuccess) {
+                const apiRes = await fetch(`/api/admin/reviews/${id}`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ status: 'approved' })
+                });
+                if (apiRes.ok) updateSuccess = true;
+              }
+
+              if (!updateSuccess) throw new Error('Could not update status in database or server.');
+
+              ADMIN.toast('Review approved and published live!');
+              await loadReviews();
+            } catch (err) {
+              alert('Error approving review: ' + err.message);
+              btn.disabled = false;
+              btn.textContent = '✓ Approve & Publish';
+            }
+          });
+        });
+
+        // 2. Hide
+        listContainer.querySelectorAll('.btn-hide').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.getAttribute('data-id');
+            try {
+              let hideSuccess = false;
+              const client = getSupabaseClient();
+              if (client) {
+                try {
+                  const { error } = await client
+                    .from('reviews')
+                    .update({ status: 'hidden' })
+                    .eq('id', id);
+                  if (!error) hideSuccess = true;
+                } catch (e) {}
+              }
+
+              if (!hideSuccess) {
+                const apiRes = await fetch(`/api/admin/reviews/${id}`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ status: 'hidden' })
+                });
+                if (apiRes.ok) hideSuccess = true;
+              }
+
+              if (!hideSuccess) throw new Error('Could not hide review');
+              ADMIN.toast('Review hidden from public view.');
+              await loadReviews();
+            } catch (err) {
+              alert('Error hiding review: ' + err.message);
+            }
+          });
+        });
+
+        // 3. Delete with Undo (Soft delete)
+        listContainer.querySelectorAll('.btn-delete').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.getAttribute('data-id');
+            const item = allReviews.find(r => r.id === id);
+            if (!item) return;
+
+            try {
+              const client = getSupabaseClient();
+              // Soft delete by setting deleted_at
+              const { error } = await client
+                .from('reviews')
+                .update({ deleted_at: new Date().toISOString() })
+                .eq('id', id);
+
+              if (error) throw new Error(error.message);
+
+              lastDeletedItem = item;
+              showUndoToast(item);
+              await loadReviews();
+            } catch (err) {
+              alert('Error deleting note: ' + err.message);
+            }
+          });
+        });
+
+        // 4. Feature on Home toggle
+        listContainer.querySelectorAll('.btn-feature').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.getAttribute('data-id');
+            const isFeat = btn.getAttribute('data-featured') === 'true';
+            try {
+              const client = getSupabaseClient();
+              const { error } = await client
+                .from('reviews')
+                .update({ featured: !isFeat })
+                .eq('id', id);
+
+              if (error) throw new Error(error.message);
+              ADMIN.toast(!isFeat ? 'Featured on home page!' : 'Removed from featured.');
+              await loadReviews();
+            } catch (err) {
+              alert('Error toggling featured: ' + err.message);
+            }
+          });
+        });
+
+        // 5. Mark Verified Buyer
+        listContainer.querySelectorAll('.btn-mark-verified').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.getAttribute('data-id');
+            try {
+              const client = getSupabaseClient();
+              const { error } = await client
+                .from('reviews')
+                .update({ verified_buyer: true, is_verified_buyer: true })
+                .eq('id', id);
+
+              if (error) throw new Error(error.message);
+              ADMIN.toast('Marked as Verified Buyer!');
+              await loadReviews();
+            } catch (err) {
+              alert('Error marking verified: ' + err.message);
+            }
+          });
+        });
+
+        // 6. Save Public Reply
+        listContainer.querySelectorAll('.btn-save-reply').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const id = btn.getAttribute('data-id');
+            const input = document.getElementById(`reply-input-${id}`);
+            const replyText = (input?.value || '').trim();
+
+            try {
+              btn.disabled = true;
+              btn.textContent = 'Saving...';
+              const client = getSupabaseClient();
+              const { error } = await client
+                .from('reviews')
+                .update({ admin_reply: replyText || null })
+                .eq('id', id);
+
+              if (error) throw new Error(error.message);
+              ADMIN.toast(replyText ? 'Public reply saved!' : 'Reply cleared.');
+              await loadReviews();
+            } catch (err) {
+              alert('Error saving reply: ' + err.message);
+            } finally {
+              btn.disabled = false;
+              btn.textContent = 'Save';
+            }
+          });
+        });
+
+        // 7. Reject / Remove Photo
+        listContainer.querySelectorAll('.btn-reject-photo').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            if (!confirm('Remove this photo attachment?')) return;
+            const id = btn.getAttribute('data-id');
+            try {
+              const client = getSupabaseClient();
+              const { error } = await client
+                .from('reviews')
+                .update({ photo_path: null })
+                .eq('id', id);
+
+              if (error) throw new Error(error.message);
+              ADMIN.toast('Photo attachment removed.');
+              await loadReviews();
+            } catch (err) {
+              alert('Error removing photo: ' + err.message);
+            }
+          });
+        });
+
+        // 8. Open Typo Edit Modal
+        listContainer.querySelectorAll('.btn-open-typo-edit').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id');
+            const review = allReviews.find(r => r.id === id);
+            if (!review) return;
+
+            document.getElementById('edit-note-id').value = id;
+            document.getElementById('edit-note-textarea').value = review.body;
+            document.getElementById('typo-edit-modal').style.display = 'flex';
+          });
+        });
+
+        // 9. Photo Lightbox click
+        listContainer.querySelectorAll('.photo-admin-thumb').forEach(img => {
+          img.addEventListener('click', () => {
+            const full = img.getAttribute('data-full');
+            document.getElementById('admin-lightbox-img').src = full;
+            document.getElementById('admin-photo-lightbox').style.display = 'flex';
           });
         });
       }
 
-      function setFilter(filterKey, activeTab) {
-        [tabAll, tabPending, tabApproved, tabHidden].forEach(t => t.classList.remove('active'));
-        activeTab.classList.add('active');
-        currentFilter = filterKey;
-        renderFeed();
+      // Undo Toast Handling
+      function showUndoToast(item) {
+        if (undoTimer) clearTimeout(undoTimer);
+        const mount = document.getElementById('undo-toast-mount');
+        mount.innerHTML = `
+          <div class="undo-toast-wrap">
+            <span>Note from ${escapeHtml(item.displayName)} deleted.</span>
+            <button type="button" class="undo-btn" id="btn-undo-delete">Undo</button>
+          </div>
+        `;
+
+        document.getElementById('btn-undo-delete').addEventListener('click', async () => {
+          try {
+            const client = getSupabaseClient();
+            await client.from('reviews').update({ deleted_at: null }).eq('id', item.id);
+            mount.innerHTML = '';
+            ADMIN.toast('Deletion undone.');
+            await loadReviews();
+          } catch (e) {
+            console.error('Undo exception:', e);
+          }
+        });
+
+        undoTimer = setTimeout(() => {
+          mount.innerHTML = '';
+        }, 8000);
       }
 
-      tabAll.addEventListener('click', () => setFilter('all', tabAll));
-      tabPending.addEventListener('click', () => setFilter('pending', tabPending));
-      tabApproved.addEventListener('click', () => setFilter('approved', tabApproved));
-      tabHidden.addEventListener('click', () => setFilter('hidden', tabHidden));
+      // Save Typo Correction
+      document.getElementById('btn-save-typo-edit').addEventListener('click', async () => {
+        const id = document.getElementById('edit-note-id').value;
+        const newText = (document.getElementById('edit-note-textarea').value || '').trim();
+        const review = allReviews.find(r => r.id === id);
 
-      searchInput.addEventListener('input', () => renderFeed());
+        if (!newText || newText.length < 5) {
+          alert('Note text must be at least 5 characters.');
+          return;
+        }
 
-      loadReviews();
+        try {
+          const client = getSupabaseClient();
+          const orig = review.originalBody || review.body;
+
+          const { error } = await client
+            .from('reviews')
+            .update({
+              body: newText,
+              comment: newText,
+              original_body: orig
+            })
+            .eq('id', id);
+
+          if (error) throw new Error(error.message);
+
+          document.getElementById('typo-edit-modal').style.display = 'none';
+          ADMIN.toast('Typo correction saved.');
+          await loadReviews();
+        } catch (err) {
+          alert('Error saving typo edit: ' + err.message);
+        }
+      });
+
+      document.getElementById('btn-cancel-edit').addEventListener('click', () => {
+        document.getElementById('typo-edit-modal').style.display = 'none';
+      });
+
+      // Photo Lightbox close
+      document.getElementById('admin-lightbox-close').addEventListener('click', () => {
+        document.getElementById('admin-photo-lightbox').style.display = 'none';
+      });
+      document.getElementById('admin-photo-lightbox').addEventListener('click', (e) => {
+        if (e.target.id === 'admin-photo-lightbox') {
+          document.getElementById('admin-photo-lightbox').style.display = 'none';
+        }
+      });
+
+      // Tabs switching
+      const tabs = [
+        { el: tabPending, key: 'pending' },
+        { el: tabApproved, key: 'approved' },
+        { el: tabPrivate, key: 'private' },
+        { el: tabHidden, key: 'hidden' },
+        { el: tabAll, key: 'all' }
+      ];
+
+      tabs.forEach(({ el, key }) => {
+        if (el) {
+          el.addEventListener('click', () => {
+            tabs.forEach(t => {
+              if (t.el) {
+                t.el.classList.remove('active');
+                t.el.setAttribute('aria-selected', 'false');
+              }
+            });
+            el.classList.add('active');
+            el.setAttribute('aria-selected', 'true');
+            currentFilter = key;
+            renderFeed();
+          });
+        }
+      });
+
+      // Search input
+      searchInput.addEventListener('input', () => {
+        renderFeed();
+      });
+
+      // Initial load
+      await loadReviews();
     });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
   </script>
+
 </body>
 </html>

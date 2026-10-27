@@ -353,6 +353,52 @@ async function fetchBlogPostBySlug(slug) {
 }
 
 /**
+ * Normalizes review records from Supabase into a consistent client shape.
+ */
+function normalizeReview(r) {
+  if (!r) return null;
+  const supaUrl = (typeof window !== 'undefined' && window.SWAN_CONFIG && window.SWAN_CONFIG.supabaseUrl) || SUPABASE_CONFIG.url;
+  
+  const rawName = r.display_name || (r.customer_name ? r.customer_name.split(' ')[0] : (r.author_name ? r.author_name.split(' ')[0] : 'Kind Friend'));
+  const rawBody = r.body || r.comment || '';
+  const photoPath = r.photo_path || null;
+  const photoUrl = photoPath ? (
+    photoPath.startsWith('http') 
+      ? photoPath 
+      : `${supaUrl}/storage/v1/object/public/public-review-photos/${photoPath}`
+  ) : null;
+
+  return {
+    id: r.id,
+    type: r.type || 'note',
+    rating: parseInt(r.rating, 10) || 5,
+    body: rawBody,
+    displayName: rawName,
+    display_name: rawName,
+    city: r.city || r.author_city || '',
+    productId: r.product_id || null,
+    product_id: r.product_id || null,
+    productName: r.product_name || r.products?.name || '',
+    productSlug: r.product_slug || r.products?.slug || '',
+    photoPath: photoPath,
+    photo_path: photoPath,
+    photoUrl: photoUrl,
+    photo_url: photoUrl,
+    isPublic: r.is_public !== false,
+    is_public: r.is_public !== false,
+    verifiedBuyer: Boolean(r.verified_buyer || r.is_verified_buyer || r.verified_purchase),
+    verified_buyer: Boolean(r.verified_buyer || r.is_verified_buyer || r.verified_purchase),
+    featured: Boolean(r.featured),
+    adminReply: r.admin_reply || null,
+    admin_reply: r.admin_reply || null,
+    createdAt: r.created_at,
+    created_at: r.created_at,
+    approvedAt: r.approved_at || null,
+    approved_at: r.approved_at || null
+  };
+}
+
+/**
  * Fetches approved reviews for a product or the whole atelier.
  */
 async function fetchApprovedReviews(productId = null) {
@@ -360,6 +406,42 @@ async function fetchApprovedReviews(productId = null) {
   if (!client) return { isLive: false, data: [] };
 
   try {
+    // Attempt 1: Try public view approved_reviews
+    try {
+      let viewQuery = client
+        .from('approved_reviews')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (productId) {
+        viewQuery = viewQuery.eq('product_id', productId);
+      }
+
+      const { data: viewData, error: viewErr } = await viewQuery;
+      if (!viewErr && Array.isArray(viewData)) {
+        let results = viewData.slice();
+        try {
+          const apiRes = await fetch('/api/reviews');
+          if (apiRes.ok) {
+            const apiJson = await apiRes.json();
+            if (apiJson.data && Array.isArray(apiJson.data)) {
+              const existing = new Set(results.map(r => String(r.id)));
+              for (const item of apiJson.data) {
+                if (!existing.has(String(item.id))) {
+                  results.push(item);
+                  existing.add(String(item.id));
+                }
+              }
+            }
+          }
+        } catch (e) {}
+        return { isLive: true, data: results.map(normalizeReview).filter(Boolean) };
+      }
+    } catch (vErr) {
+      // Fall through to direct reviews query
+    }
+
+    // Attempt 2: Query public.reviews table
     let query = client
       .from('reviews')
       .select('*, products(name, slug, image_url)')
@@ -375,11 +457,61 @@ async function fetchApprovedReviews(productId = null) {
       console.warn('fetchApprovedReviews error:', error.message);
       return { isLive: false, data: [] };
     }
-    return { isLive: true, data: data || [] };
+    const filtered = (data || []).filter(r => r.deleted_at === null || r.deleted_at === undefined);
+    try {
+      const apiRes = await fetch('/api/reviews');
+      if (apiRes.ok) {
+        const apiJson = await apiRes.json();
+        if (apiJson.data && Array.isArray(apiJson.data)) {
+          const existing = new Set(filtered.map(r => String(r.id)));
+          for (const item of apiJson.data) {
+            if (!existing.has(String(item.id))) {
+              filtered.push(item);
+              existing.add(String(item.id));
+            }
+          }
+        }
+      }
+    } catch (e) {}
+    return { isLive: true, data: filtered.map(normalizeReview).filter(Boolean) };
   } catch (err) {
     console.error('fetchApprovedReviews exception:', err);
     return { isLive: false, data: [] };
   }
+}
+
+/**
+ * Subscribes to live review updates and polls every 60s for seamless freshness without redeploy.
+ */
+function subscribeToApprovedReviews(onUpdate) {
+  if (typeof onUpdate !== 'function') return () => {};
+  const client = getSupabaseClient();
+  let channel = null;
+
+  if (client && typeof client.channel === 'function') {
+    try {
+      channel = client
+        .channel('public:reviews:live')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'reviews' }, () => {
+          onUpdate();
+        })
+        .subscribe();
+    } catch (e) {
+      console.warn('Realtime subscription note:', e);
+    }
+  }
+
+  // 60-second polling fallback
+  const intervalId = setInterval(() => {
+    onUpdate();
+  }, 60000);
+
+  return () => {
+    if (intervalId) clearInterval(intervalId);
+    if (channel && client) {
+      client.removeChannel(channel).catch(() => {});
+    }
+  };
 }
 
 /**
@@ -503,4 +635,10 @@ async function uploadImageToBucket(file, pathPrefix = 'catalog') {
 
   const { data: urlData } = client.storage.from('images').getPublicUrl(data.path);
   return urlData.publicUrl;
+}
+
+if (typeof window !== 'undefined') {
+  window.fetchApprovedReviews = fetchApprovedReviews;
+  window.subscribeToApprovedReviews = subscribeToApprovedReviews;
+  window.normalizeReview = normalizeReview;
 }
