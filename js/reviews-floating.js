@@ -109,6 +109,9 @@
         <!-- Sheet Header -->
         <div class="sheet-header">
           <div>
+            <div class="sheet-badge-top">
+              <span>💌</span> Handcrafted Note
+            </div>
             <h2 class="sheet-title" id="note-modal-title">Leave a kind note</h2>
             <p class="sheet-subtitle">Share what you received and how it felt to open it.</p>
           </div>
@@ -130,30 +133,32 @@
 
             <!-- Star Rating (1 to 5) with Gold Palette and Tap Pop -->
             <div class="form-group rating-group">
-              <label class="form-label" id="star-rating-label">How did you like it? *</label>
-              <div class="star-picker" role="radiogroup" aria-labelledby="star-rating-label" id="star-picker">
-                ${[1, 2, 3, 4, 5].map(val => `
-                  <button type="button" class="star-btn ${val <= 5 ? 'active' : ''}" data-value="${val}" role="radio" aria-checked="${val === 5}" aria-label="${val} star${val > 1 ? 's' : ''}">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="${val <= 5 ? '#F5A623' : '#E5E7EB'}" stroke="${val <= 5 ? '#D97706' : '#D1D5DB'}" stroke-width="1" aria-hidden="true">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                  </button>
-                `).join('')}
+              <label class="form-label" id="star-rating-label">How did you like it? <span class="badge-field-req">Required</span></label>
+              <div class="star-picker-card">
+                <div class="star-picker" role="radiogroup" aria-labelledby="star-rating-label" id="star-picker">
+                  ${[1, 2, 3, 4, 5].map(val => `
+                    <button type="button" class="star-btn ${val <= 5 ? 'active' : ''}" data-value="${val}" role="radio" aria-checked="${val === 5}" aria-label="${val} star${val > 1 ? 's' : ''}">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="${val <= 5 ? '#F5A623' : '#E5E7EB'}" stroke="${val <= 5 ? '#D97706' : '#D1D5DB'}" stroke-width="1" aria-hidden="true">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      </svg>
+                    </button>
+                  `).join('')}
+                </div>
+                <div class="rating-feedback-text" id="rating-feedback-text">✨ 5 out of 5 — Loved it! Absolutely delighted</div>
               </div>
-              <div class="rating-feedback-text" id="rating-feedback-text">✨ 5 out of 5 — Loved it! Absolutely delighted</div>
               <input type="hidden" name="rating" id="note-rating-input" value="5">
               <div class="form-error-msg" id="err-rating"></div>
             </div>
 
             <!-- Your Note Body with Character Counter Underneath -->
             <div class="form-group">
-              <label for="note-body-input" class="form-label">Your note *</label>
+              <label for="note-body-input" class="form-label">Your note <span class="badge-field-req">Required</span></label>
               <textarea 
                 id="note-body-input" 
                 name="body" 
                 rows="4" 
                 class="form-control" 
-                placeholder="What did you receive, and how did it feel to open it?"
+                placeholder="What did you receive, and how did it feel to open it? Tell Bhumika your thoughts..."
                 minlength="10" 
                 maxlength="600"
                 required
@@ -164,10 +169,10 @@
               <div class="form-error-msg" id="err-body"></div>
             </div>
 
-            <!-- First Name & City Row -->
-            <div class="form-row">
+            <!-- First Name & City Row (Clean 2-col on mobile) -->
+            <div class="form-row form-row-compact">
               <div class="form-group flex-1">
-                <label for="note-name-input" class="form-label">Your first name *</label>
+                <label for="note-name-input" class="form-label">First name <span class="badge-field-req">Required</span></label>
                 <input 
                   type="text" 
                   id="note-name-input" 
@@ -181,7 +186,7 @@
               </div>
 
               <div class="form-group flex-1">
-                <label for="note-city-input" class="form-label">City (optional)</label>
+                <label for="note-city-input" class="form-label">City <span class="badge-field-opt">Optional</span></label>
                 <input 
                   type="text" 
                   id="note-city-input" 
@@ -195,7 +200,7 @@
 
             <!-- Which piece? (Real DB dropdown) -->
             <div class="form-group">
-              <label for="note-product-select" class="form-label">Which piece was it? (optional)</label>
+              <label for="note-product-select" class="form-label">Which piece was it? <span class="badge-field-opt">Optional</span></label>
               <select id="note-product-select" name="product_id" class="form-control form-select">
                 <option value="">Select a piece (or leave blank)</option>
                 <option value="custom_order">Custom order</option>
@@ -205,7 +210,7 @@
 
             <!-- Custom Styled Photo Upload Card (Bug 5 Fix) -->
             <div class="form-group">
-              <label class="form-label">Photo (unboxing or finished piece)</label>
+              <label class="form-label">Photo <span class="badge-field-opt">Optional</span></label>
               <div class="photo-upload-card" id="photo-upload-card">
                 <input 
                   type="file" 
@@ -839,6 +844,18 @@
           <option value="custom_order">Custom order</option>
           <option value="not_sure">Not sure</option>
         `;
+
+        // Auto-select current product if on product detail page
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const currentSlug = urlParams.get('slug');
+          if (currentSlug) {
+            const matching = products.find(p => p.slug === currentSlug);
+            if (matching) {
+              select.value = matching.id;
+            }
+          }
+        } catch (e) {}
       }
     } catch (err) {
       console.warn('Could not populate product selector:', err);
@@ -1215,6 +1232,58 @@
   // ---------------------------------------------------------------------------
   window.openNoteModal = openNoteModal;
   window.closeNoteModal = closeNoteModal;
+  window.escapeSwanHtml = escapeHtml;
+
+  window.formatSwanDate = function (dateString) {
+    if (!dateString) return '';
+    try {
+      const d = new Date(dateString);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleDateString('en-IN', {
+        month: 'short',
+        year: 'numeric'
+      });
+    } catch (e) {
+      return '';
+    }
+  };
+
+  window.renderSwanStars = function (rating, size = 16) {
+    const fullStars = Math.floor(rating);
+    const hasHalf = (rating - fullStars) >= 0.3 && (rating - fullStars) < 0.8;
+    const total = 5;
+    let html = '';
+
+    for (let i = 1; i <= total; i++) {
+      if (i <= fullStars) {
+        html += `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="#F5A623" stroke="#D97706" stroke-width="1" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        `;
+      } else if (i === fullStars + 1 && hasHalf) {
+        const clipId = `half-star-${Math.random().toString(36).substr(2, 6)}`;
+        html += `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">
+            <defs>
+              <clipPath id="${clipId}">
+                <rect x="0" y="0" width="12" height="24" />
+              </clipPath>
+            </defs>
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#E5E7EB" stroke="#D1D5DB" stroke-width="1"></polygon>
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="#F5A623" stroke="#D97706" stroke-width="1" clip-path="url(#${clipId})"></polygon>
+          </svg>
+        `;
+      } else {
+        html += `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="#E5E7EB" stroke="#D1D5DB" stroke-width="1" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        `;
+      }
+    }
+    return html;
+  };
 
   function initReviewsFloating() {
     renderFloatingButton();

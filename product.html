@@ -68,6 +68,25 @@
         <!-- Injected via JavaScript -->
       </div>
 
+      <!-- Customer Reflections Section -->
+      <section class="product-reviews-section" id="product-reviews-section" style="margin-top: var(--space-3xl); padding-top: var(--space-2xl); border-top: 1px dashed var(--border-subtle);">
+        <div style="text-align: center; max-width: 600px; margin: 0 auto 2rem auto;">
+          <span class="hero-tagline-badge" style="margin-bottom: 0.5rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <span>💌</span> Customer Reflections
+          </span>
+          <h2 style="font-family: var(--font-serif); font-size: clamp(1.8rem, 3.5vw, 2.4rem); color: var(--cocoa); margin-bottom: 0.4rem;">
+            Notes on this creation
+          </h2>
+          <p style="color: #73615A; font-size: 0.95rem; line-height: 1.5; margin: 0 auto;">
+            Unboxing reflections from people who welcomed this handmade piece into their home.
+          </p>
+        </div>
+
+        <div id="product-reviews-container">
+          <div style="text-align: center; padding: 2rem; color: #8A7670;">Loading reflections...</div>
+        </div>
+      </section>
+
       <!-- Related Creations Section -->
       <div style="margin-top: var(--space-3xl); padding-top: var(--space-2xl); border-top: 1px dashed var(--border-subtle);">
         <h2 style="font-size: 2rem; margin-bottom: 0.5rem; text-align: center;">You May Also Adore</h2>
@@ -92,6 +111,7 @@
   <script src="js/api-config.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/reviews-floating.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       const container = document.getElementById('product-details-container');
@@ -496,6 +516,125 @@
               console.error(e);
             }
           });
+        }
+
+        // Load Reviews on this specific creation
+        try {
+          const revContainer = document.getElementById('product-reviews-container');
+          if (revContainer && typeof fetchApprovedReviews === 'function') {
+            const revRes = await fetchApprovedReviews(product.id);
+            const allReviews = (revRes && revRes.data) ? revRes.data : [];
+            const productReviews = allReviews.filter(r => r.productId === product.id);
+
+            const safeEscape = window.escapeSwanHtml || function (s) {
+              return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            };
+            const safeDate = window.formatSwanDate || function (d) {
+              try { return new Date(d).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }); } catch (e) { return ''; }
+            };
+            const safeStars = window.renderSwanStars || function (r) {
+              return '★★★★★';
+            };
+
+            if (productReviews.length === 0) {
+              revContainer.innerHTML = `
+                <div class="product-empty-reviews" style="background: #FFFFFF; border: 1.5px dashed rgba(199, 131, 145, 0.35); border-radius: 20px; padding: 2.25rem 1.5rem; text-align: center; max-width: 520px; margin: 0 auto; box-shadow: 0 4px 18px rgba(74, 53, 47, 0.04);">
+                  <div style="width: 48px; height: 48px; margin: 0 auto 0.85rem auto; display: flex; align-items: center; justify-content: center; background: #FFF0F3; border-radius: 50%; color: var(--rose-text); font-size: 1.35rem;">
+                    🌸
+                  </div>
+                  <h3 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--cocoa); margin-bottom: 0.35rem;">
+                    Be the first to share an unboxing note
+                  </h3>
+                  <p style="font-size: 0.9rem; color: #7A6962; line-height: 1.55; margin-bottom: 1.25rem;">
+                    Received this handcrafted piece? Share what made you smile when opening your parcel — Bhumika reads every note personally.
+                  </p>
+                  <button type="button" class="btn btn-primary open-note-modal-btn" style="min-height: 46px; padding: 0.65rem 1.4rem; border-radius: 999px;">
+                    Leave a note for this piece
+                  </button>
+                </div>
+              `;
+            } else {
+              const isSingle = productReviews.length === 1;
+              revContainer.innerHTML = `
+                <div class="${isSingle ? 'single-review-grid' : ''}" style="${isSingle ? 'max-width: 580px; margin: 0 auto;' : 'display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;'}">
+                  ${productReviews.map(r => {
+                    const rating = Math.min(5, Math.max(1, parseInt(r.rating, 10) || 5));
+                    const authorName = r.displayName || 'Kind Customer';
+                    const initial = (authorName.trim()[0] || 'K').toUpperCase();
+                    const bodyText = r.body || 'Loved this handmade piece!';
+                    const dateStr = safeDate(r.createdAt);
+                    const cityStr = r.city ? r.city : 'Verified Customer';
+                    return `
+                      <article class="home-review-card artisan-review-card">
+                        <div class="card-inner-content">
+                          <div class="review-card-header">
+                            <div class="review-author-wrap">
+                              <div class="review-avatar" aria-hidden="true">${safeEscape(initial)}</div>
+                              <div class="review-author-details">
+                                <div class="review-author-name-row">
+                                  <span class="home-review-author">${safeEscape(authorName)}</span>
+                                  ${r.verifiedBuyer ? `
+                                    <span class="verified-buyer-badge" title="Verified buyer">
+                                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                      Verified
+                                    </span>
+                                  ` : ''}
+                                </div>
+                                <span class="home-review-location">
+                                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                  ${safeEscape(cityStr)}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="review-rating-pill" aria-label="${rating} out of 5 stars">
+                              <span class="rating-pill-num">${rating}.0</span>
+                              <div class="rating-stars-inline home-review-stars">${safeStars(rating, 14)}</div>
+                            </div>
+                          </div>
+
+                          <div class="review-quote-wrap">
+                            <svg class="review-quote-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                            </svg>
+                            <p class="home-review-body">
+                              ${safeEscape(bodyText)}
+                            </p>
+                          </div>
+
+                          ${r.photoUrl ? `
+                            <div style="margin-bottom: 0.85rem;">
+                              <img src="${safeEscape(r.photoUrl)}" alt="Customer photo by ${safeEscape(authorName)}" loading="lazy" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1.5px solid rgba(199, 131, 145, 0.3);">
+                            </div>
+                          ` : ''}
+
+                          ${r.adminReply ? `
+                            <div class="admin-reply-box" style="margin-top: 0.75rem;">
+                              <div class="admin-reply-header">Reply from Bhumika:</div>
+                              <p class="admin-reply-text">${safeEscape(r.adminReply)}</p>
+                            </div>
+                          ` : ''}
+                        </div>
+
+                        <div class="home-review-meta">
+                          <span class="product-chip-link"><span>🌸</span> ${safeEscape(product.name)}</span>
+                          <time datetime="${safeEscape(r.createdAt || '')}" class="home-review-date">
+                            ${dateStr}
+                          </time>
+                        </div>
+                      </article>
+                    `;
+                  }).join('')}
+                </div>
+                <div style="text-align: center; margin-top: 1.5rem;">
+                  <button type="button" class="btn btn-primary open-note-modal-btn" style="min-height: 46px; padding: 0.65rem 1.4rem; border-radius: 999px;">
+                    Leave a note for this piece
+                  </button>
+                </div>
+              `;
+            }
+          }
+        } catch (revErr) {
+          console.warn('Failed to load reflections for product:', revErr);
         }
 
         // Render Related Products (Excluding current)
