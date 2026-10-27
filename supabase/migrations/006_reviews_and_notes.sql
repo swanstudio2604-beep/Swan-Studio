@@ -68,6 +68,8 @@ UPDATE public.reviews SET approved_at = updated_at WHERE status = 'approved' AND
 
 ALTER TABLE public.reviews ALTER COLUMN body SET NOT NULL;
 ALTER TABLE public.reviews ALTER COLUMN display_name SET NOT NULL;
+ALTER TABLE public.reviews ALTER COLUMN customer_name DROP NOT NULL;
+ALTER TABLE public.reviews ALTER COLUMN comment DROP NOT NULL;
 
 -- Consent integrity constraint: public reviews must have consent_public = true
 DO $$
@@ -365,6 +367,9 @@ BEGIN
     rating,
     body,
     display_name,
+    customer_name,
+    author_name,
+    comment,
     city,
     product_id,
     order_id,
@@ -382,6 +387,9 @@ BEGIN
     p_rating,
     v_clean_body,
     v_clean_name,
+    v_clean_name,
+    v_clean_name,
+    v_clean_body,
     v_clean_city,
     p_product_id,
     p_order_id,
