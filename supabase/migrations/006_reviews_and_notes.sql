@@ -27,11 +27,15 @@ CREATE TABLE IF NOT EXISTS public.reviews (
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS type TEXT NOT NULL DEFAULT 'note' CHECK (type IN ('review', 'note'));
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS body TEXT;
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS display_name TEXT;
+ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS author_name TEXT;
+ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS customer_name TEXT;
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS city TEXT DEFAULT '';
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS photo_path TEXT DEFAULT NULL;
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT true;
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS consent_public BOOLEAN NOT NULL DEFAULT false;
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS verified_buyer BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS is_verified_buyer BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS verified_purchase BOOLEAN NOT NULL DEFAULT false;
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS featured BOOLEAN NOT NULL DEFAULT false;
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS admin_reply TEXT DEFAULT NULL;
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS original_body TEXT DEFAULT NULL;
@@ -45,26 +49,16 @@ SET body = comment
 WHERE body IS NULL AND comment IS NOT NULL;
 
 UPDATE public.reviews
-SET display_name = COALESCE(NULLIF(split_part(author_name, ' ', 1), ''), 'Friend')
-WHERE display_name IS NULL AND author_name IS NOT NULL;
+SET display_name = COALESCE(
+  display_name,
+  NULLIF(split_part(COALESCE(customer_name, author_name, ''), ' ', 1), ''),
+  'Friend'
+)
+WHERE display_name IS NULL;
 
--- In case customer_name was used in earlier seed
-DO $$
-BEGIN
-  IF EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'public' AND table_name = 'reviews' AND column_name = 'customer_name'
-  ) THEN
-    EXECUTE 'UPDATE public.reviews SET display_name = COALESCE(display_name, split_part(customer_name, '' '', 1)) WHERE display_name IS NULL';
-  END IF;
-
-  IF EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'public' AND table_name = 'reviews' AND column_name = 'is_verified_buyer'
-  ) THEN
-    EXECUTE 'UPDATE public.reviews SET verified_buyer = COALESCE(verified_buyer, is_verified_buyer)';
-  END IF;
-END $$;
+UPDATE public.reviews
+SET verified_buyer = COALESCE(verified_buyer, is_verified_buyer, verified_purchase, false)
+WHERE verified_buyer IS NULL;
 
 -- Set defaults for null values before enforcing NOT NULL
 UPDATE public.reviews SET body = 'Handcrafted with love.' WHERE body IS NULL;
@@ -126,7 +120,9 @@ BEGIN
     -- Also keep legacy fields synced for backwards compatibility
     NEW.comment := NEW.body;
     NEW.author_name := NEW.display_name;
+    NEW.customer_name := COALESCE(NEW.customer_name, NEW.display_name);
     NEW.verified_purchase := NEW.verified_buyer;
+    NEW.is_verified_buyer := NEW.verified_buyer;
 
     RETURN NEW;
   ELSIF TG_OP = 'UPDATE' THEN
@@ -143,7 +139,9 @@ BEGIN
     NEW.updated_at := NOW();
     NEW.comment := NEW.body;
     NEW.author_name := NEW.display_name;
+    NEW.customer_name := COALESCE(NEW.customer_name, NEW.display_name);
     NEW.verified_purchase := NEW.verified_buyer;
+    NEW.is_verified_buyer := NEW.verified_buyer;
 
     RETURN NEW;
   END IF;
