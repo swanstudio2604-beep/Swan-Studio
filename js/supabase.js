@@ -94,8 +94,26 @@ function normalizeProduct(p) {
     dimensions: p.dimensions || '',
     colors: Array.isArray(p.colors) ? p.colors : [],
     variants: Array.isArray(p.variants) ? p.variants : [],
-    stock: (p.stock_quantity !== undefined && p.stock_quantity !== null) ? parseInt(p.stock_quantity, 10) : 0,
-    stock_quantity: (p.stock_quantity !== undefined && p.stock_quantity !== null) ? parseInt(p.stock_quantity, 10) : 0,
+    stock: (() => {
+      let s = (p.stock_quantity !== undefined && p.stock_quantity !== null) ? parseInt(p.stock_quantity, 10) : 0;
+      if (typeof localStorage !== 'undefined' && p.id) {
+        try {
+          const overrides = JSON.parse(localStorage.getItem('swan_product_stock_overrides') || '{}');
+          if (overrides[p.id] !== undefined) s = parseInt(overrides[p.id], 10);
+        } catch (e) {}
+      }
+      return s;
+    })(),
+    stock_quantity: (() => {
+      let s = (p.stock_quantity !== undefined && p.stock_quantity !== null) ? parseInt(p.stock_quantity, 10) : 0;
+      if (typeof localStorage !== 'undefined' && p.id) {
+        try {
+          const overrides = JSON.parse(localStorage.getItem('swan_product_stock_overrides') || '{}');
+          if (overrides[p.id] !== undefined) s = parseInt(overrides[p.id], 10);
+        } catch (e) {}
+      }
+      return s;
+    })(),
     madeToOrder: Boolean(p.made_to_order),
     made_to_order: Boolean(p.made_to_order),
     prepTime: p.prep_time || (p.made_to_order ? '4–7 business days' : 'Ready to Ship'),
@@ -117,7 +135,7 @@ function normalizeProduct(p) {
  * Fetches published products from live server API with Supabase fallback and filters.
  */
 async function fetchProducts({ category = 'all', search = '', sort = 'featured', featuredOnly = false, maxPrice = null, hideSoldOut = false } = {}) {
-  // 1. Primary: Server API
+  // 1. Primary: Server API if returning JSON
   try {
     const params = new URLSearchParams();
     if (category && category !== 'all') params.set('category', category);
@@ -128,7 +146,7 @@ async function fetchProducts({ category = 'all', search = '', sort = 'featured',
     if (hideSoldOut) params.set('hideSoldOut', 'true');
 
     const res = await fetch(`/api/products?${params.toString()}`);
-    if (res.ok) {
+    if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         return { isLive: true, data: json.data.map(normalizeProduct) };
@@ -145,23 +163,27 @@ async function fetchProducts({ category = 'all', search = '', sort = 'featured',
   }
 
   try {
+    const isCategoryFilter = category && category !== 'all';
+    const selectStr = isCategoryFilter ? '*, categories!inner(name, slug)' : '*, categories(name, slug)';
     let query = client
       .from('products')
-      .select('*, categories(name, slug)')
+      .select(selectStr)
       .eq('is_published', true)
       .eq('is_hidden', false)
       .is('deleted_at', null)
       .is('archived_at', null);
 
     if (featuredOnly) query = query.eq('is_featured', true);
-    if (category && category !== 'all') query = query.eq('categories.slug', category);
+    if (isCategoryFilter) query = query.eq('categories.slug', category);
     if (search && search.trim()) query = query.ilike('name', `%${search.trim()}%`);
     if (maxPrice !== null && !isNaN(Number(maxPrice))) query = query.lte('price', Number(maxPrice));
 
-    if (sort === 'price-low') {
+    if (sort === 'price-low' || sort === 'price-asc') {
       query = query.order('price', { ascending: true });
-    } else if (sort === 'price-high') {
+    } else if (sort === 'price-high' || sort === 'price-desc') {
       query = query.order('price', { ascending: false });
+    } else if (sort === 'name-asc') {
+      query = query.order('name', { ascending: true });
     } else if (sort === 'newest') {
       query = query.order('created_at', { ascending: false });
     } else {
@@ -191,10 +213,10 @@ async function fetchProducts({ category = 'all', search = '', sort = 'featured',
 async function fetchProductBySlug(slug) {
   if (!slug) return { isLive: false, data: null };
 
-  // 1. Primary: Server API
+  // 1. Primary: Server API if returning JSON
   try {
     const res = await fetch(`/api/products/${encodeURIComponent(slug)}`);
-    if (res.ok) {
+    if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
       const json = await res.json();
       if (json.success && json.data) {
         return { isLive: true, data: normalizeProduct(json.data) };
@@ -230,10 +252,10 @@ async function fetchProductBySlug(slug) {
  * Fetches active, non-deleted categories from live server API with Supabase fallback.
  */
 async function fetchCategories() {
-  // 1. Primary: Server API
+  // 1. Primary: Server API if returning JSON
   try {
     const res = await fetch('/api/categories');
-    if (res.ok) {
+    if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         return { isLive: true, data: json.data };
@@ -333,15 +355,21 @@ const DEFAULT_STORIES_FALLBACK = [
 
 function getLocalStoriesFallback() {
   try {
+    let deletedIds = [];
+    try {
+      deletedIds = JSON.parse(localStorage.getItem('swan_permanently_deleted_story_ids') || '[]');
+    } catch (e) {}
+
     const raw = localStorage.getItem('swan_admin_stories');
-    if (raw) {
+    if (raw !== null) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed)) {
+        return parsed.filter(p => !deletedIds.includes(String(p.id)));
+      }
     }
-    localStorage.setItem('swan_admin_stories', JSON.stringify(DEFAULT_STORIES_FALLBACK));
-    return DEFAULT_STORIES_FALLBACK.slice();
+    return DEFAULT_STORIES_FALLBACK.filter(p => !deletedIds.includes(String(p.id)));
   } catch {
-    return DEFAULT_STORIES_FALLBACK.slice();
+    return [];
   }
 }
 
@@ -349,14 +377,20 @@ function getLocalStoriesFallback() {
  * Fetches published blog posts from Supabase (with resilient local fallback).
  */
 async function fetchBlogPosts({ limit = 10 } = {}) {
-  // 1. Check local server API first
+  let deletedIds = [];
+  try {
+    deletedIds = JSON.parse(localStorage.getItem('swan_permanently_deleted_story_ids') || '[]');
+  } catch (e) {}
+
+  // 1. Check local server API first if returning JSON
   try {
     const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
     const res = await fetch(`${baseUrl}/api/blog`);
-    if (res.ok) {
+    if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
       const json = await res.json();
       if (json && Array.isArray(json.data) && json.data.length > 0) {
-        return { isLive: true, data: json.data.slice(0, limit) };
+        const filtered = json.data.filter(p => !deletedIds.includes(String(p.id)));
+        return { isLive: true, data: filtered.slice(0, limit) };
       }
     }
   } catch (err) {}
@@ -375,7 +409,8 @@ async function fetchBlogPosts({ limit = 10 } = {}) {
         .limit(limit);
 
       if (!error && data && data.length > 0) {
-        return { isLive: true, data };
+        const filtered = data.filter(p => !deletedIds.includes(String(p.id)));
+        return { isLive: true, data: filtered };
       }
     } catch (err) {
       console.warn('fetchBlogPosts Supabase fallback:', err);
@@ -384,7 +419,7 @@ async function fetchBlogPosts({ limit = 10 } = {}) {
 
   // Local fallback
   const local = getLocalStoriesFallback();
-  const published = local.filter(p => !p.deleted_at && (p.status || '').toLowerCase() === 'published');
+  const published = local.filter(p => !p.deleted_at && (p.status || '').toLowerCase() === 'published' && !deletedIds.includes(String(p.id)));
   return { isLive: false, data: published.slice(0, limit) };
 }
 
@@ -394,11 +429,11 @@ async function fetchBlogPosts({ limit = 10 } = {}) {
 async function fetchBlogPostBySlug(slug) {
   if (!slug) return { isLive: false, data: null };
 
-  // 1. Check local server API first
+  // 1. Check local server API first if returning JSON
   try {
     const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
     const res = await fetch(`${baseUrl}/api/blog/${encodeURIComponent(slug)}`);
-    if (res.ok) {
+    if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
       const json = await res.json();
       if (json && json.data) {
         return { isLive: true, data: json.data };
@@ -436,7 +471,7 @@ function normalizeReview(r) {
   if (!r) return null;
   const supaUrl = (typeof window !== 'undefined' && window.SWAN_CONFIG && window.SWAN_CONFIG.supabaseUrl) || SUPABASE_CONFIG.url;
   
-  const rawName = r.display_name || (r.customer_name ? r.customer_name.split(' ')[0] : (r.author_name ? r.author_name.split(' ')[0] : 'Kind Friend'));
+  const rawName = r.display_name || r.customer_name || r.author_name || r.reviewer_name || 'Kind Customer';
   const rawBody = r.body || r.comment || '';
   const photoPath = r.photo_path || null;
   const photoUrl = photoPath ? (
@@ -519,10 +554,10 @@ async function fetchApprovedReviews(productId = null) {
     }
   }
 
-  // 2. Merge with /api/reviews
+  // 2. Merge with /api/reviews if returning JSON
   try {
     const apiRes = await fetch('/api/reviews');
-    if (apiRes.ok) {
+    if (apiRes.ok && apiRes.headers.get('content-type')?.includes('application/json')) {
       const apiJson = await apiRes.json();
       if (apiJson.data && Array.isArray(apiJson.data)) {
         const existing = new Set(results.map(r => String(r.id)));

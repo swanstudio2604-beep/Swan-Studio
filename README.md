@@ -8,9 +8,9 @@
 
 | Component | Platform | Live URL | Status |
 |---|---|---|---|
-| **Frontend** | GitHub Pages | [https://swanstudio2604-beep.github.io/Swan-Studio/](https://swanstudio2604-beep.github.io/Swan-Studio/) | 🟢 Active |
-| **Backend API** | Render / Local | [https://swan-studio-api.onrender.com/](https://swan-studio-api.onrender.com/) | 🟢 Configured |
-| **Backend Health** | Render / Local | [https://swan-studio-api.onrender.com/health](https://swan-studio-api.onrender.com/health) | 🩺 Health Check |
+| **Production Store** | Custom Domain / Zoho Grid | [https://swan-studio.onslate.in](https://swan-studio.onslate.in) | 🟢 Primary Active |
+| **Admin Atelier** | Custom Domain / Role Guarded | [https://swan-studio.onslate.in/admin](https://swan-studio.onslate.in/admin) | 👑 Active |
+| **Database & Auth** | Supabase PostgreSQL | `hzlimdfxvojkqsszmulj.supabase.co` | 🟢 Active |
 | **Repository** | GitHub | [https://github.com/swanstudio2604-beep/Swan-Studio](https://github.com/swanstudio2604-beep/Swan-Studio) | 📦 Public |
 
 ---

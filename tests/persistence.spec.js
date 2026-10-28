@@ -95,13 +95,18 @@ test.describe('Swan Studio Supabase Persistence & Storefront Suite', () => {
     await page.goto('/reviews.html');
     await page.waitForLoadState('domcontentloaded');
 
-    // Verify review submission form or review section
-    const reviewForm = page.locator('#write-review, .review-form-card');
-    await expect(reviewForm).toBeVisible();
+    // Verify floating review note trigger button exists
+    const noteBtn = page.locator('#swan-floating-note-btn');
+    await expect(noteBtn).toBeVisible({ timeout: 10000 });
 
-    // Verify star rating selector exists
-    const starSelector = page.locator('.star-rating, #rating-stars-input, [data-rating], .review-star-btn');
-    expect(await starSelector.count()).toBeGreaterThan(0);
+    // Open review note form
+    await noteBtn.click();
+    const reviewForm = page.locator('#swan-floating-note-form');
+    await expect(reviewForm).toBeVisible({ timeout: 5000 });
+
+    // Verify star rating selector exists in the form
+    const starSelector = page.locator('#star-picker, .star-picker');
+    await expect(starSelector).toBeVisible();
   });
 
   test('5. Admin portal enforces strict authentication redirect for unauthorized guests', async ({ page }) => {

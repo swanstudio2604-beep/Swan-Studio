@@ -461,7 +461,7 @@
 
           qtyPlus.addEventListener('click', () => {
             let val = parseInt(qtyInput.value, 10) || 1;
-            const maxQty = isMadeToOrder ? 10 : Math.max(1, Math.min(10, stock));
+            const maxQty = isMadeToOrder ? 10 : Math.max(1, Math.min(10, stock || 10));
             if (val < maxQty) qtyInput.value = val + 1;
           });
         }
@@ -469,7 +469,7 @@
         // Add to Cart handler (in-stock only)
         if (addToCartBtn) {
           addToCartBtn.addEventListener('click', () => {
-            if (isOutOfStock || stock <= 0) {
+            if (isOutOfStock || (!isMadeToOrder && stock <= 0)) {
               alert('Sorry, this creation is currently sold out and cannot be added to your bag.');
               return;
             }
@@ -483,12 +483,16 @@
               const existingIndex = cart.findIndex(item => item.id === product.id);
               if (existingIndex > -1) {
                 cart[existingIndex].quantity = (cart[existingIndex].quantity || 1) + qty;
+                if (!cart[existingIndex].image && (product.imageUrl || product.image_url)) {
+                  cart[existingIndex].image = product.imageUrl || product.image_url;
+                }
               } else {
                 cart.push({
                   id: product.id,
                   slug: product.slug,
                   name: product.name,
                   price: product.price,
+                  image: product.imageUrl || product.image_url || 'assets/images/hero-bouquet.webp',
                   quantity: qty
                 });
               }

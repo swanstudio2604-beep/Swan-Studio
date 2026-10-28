@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In — Swan Studio | Customer Account</title>
+  <title>Sign In & Account — Swan Studio | Jaipur</title>
   <meta name="description" content="Sign in to your Swan Studio customer account to track your orders, view saved custom creations, and manage your delivery details.">
   <meta name="robots" content="noindex, nofollow">
   
@@ -14,6 +14,24 @@
 
   <!-- Global Stylesheet -->
   <link rel="stylesheet" href="css/style.css?v=2.2.3">
+  <style>
+    .auth-tab-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: none;
+      border: none;
+      color: var(--rose-text);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+    .auth-tab-switch:hover {
+      color: var(--cocoa);
+    }
+  </style>
 </head>
 <body>
 
@@ -38,11 +56,11 @@
       <!-- Context Alert / Security Notice -->
       <div id="auth-alert" style="display: none; margin-bottom: 1.25rem; padding: 0.85rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; line-height: 1.5;"></div>
 
-      <!-- Login Card -->
-      <div class="auth-card">
+      <!-- Main Login Card -->
+      <div class="auth-card" id="card-login">
         
         <!-- Customer vs Admin Atelier Mode Switcher -->
-        <div class="auth-role-tabs" role="tablist">
+        <div class="auth-role-tabs" role="tablist" id="auth-role-tabs">
           <button type="button" class="auth-role-tab active" id="tab-cust-mode" role="tab" aria-selected="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             <span>Customer Sign In</span>
@@ -71,9 +89,9 @@
           <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
               <label for="login-password" class="form-label" style="margin: 0;">Password</label>
-              <a href="#" id="forgot-password-link" style="font-size: 0.8rem; color: var(--rose-text); text-decoration: underline;">
+              <button type="button" id="btn-show-forgot" class="auth-tab-switch" style="font-size: 0.82rem;">
                 Forgot password?
-              </a>
+              </button>
             </div>
             <input 
               type="password" 
@@ -87,7 +105,7 @@
 
           <!-- Helper hint -->
           <div id="login-hint-text" style="font-size: 0.78rem; color: #8A7670; margin-bottom: 0.85rem;">
-            Customers: Use your registered email & password.
+            Customers: Use your registered email &amp; password.
           </div>
 
           <!-- Sign In Button -->
@@ -111,6 +129,89 @@
 
       </div>
 
+      <!-- Forgot Password Card (Toggled on "Forgot password?") -->
+      <div class="auth-card" id="card-forgot" style="display: none;">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+          <div style="width: 50px; height: 50px; border-radius: 50%; background: #FFF0F2; color: var(--rose-text); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.65rem; border: 1px solid rgba(199, 131, 145, 0.3);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+          <h2 style="font-size: 1.4rem; color: var(--cocoa); margin-bottom: 0.35rem; font-family: var(--font-serif);">Password Assistance</h2>
+          <p style="font-size: 0.86rem; color: #73615A; line-height: 1.5;">
+            Enter your registered email address below. We will send you a secure link to create a new password.
+          </p>
+        </div>
+
+        <form id="forgot-form" novalidate>
+          <div class="form-group">
+            <label for="forgot-email" class="form-label">Your Registered Email</label>
+            <input 
+              type="email" 
+              id="forgot-email" 
+              class="form-control" 
+              placeholder="you@example.com" 
+              required
+            >
+          </div>
+
+          <button type="submit" id="forgot-submit-btn" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-weight: 600; margin-top: 0.5rem;">
+            Send Password Reset Link ✉️
+          </button>
+        </form>
+
+        <div id="forgot-feedback" style="display: none; margin-top: 1rem; padding: 0.85rem; border-radius: var(--radius-sm); font-size: 0.85rem; text-align: center;"></div>
+
+        <div style="text-align: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle); font-size: 0.88rem;">
+          <button type="button" id="btn-back-to-login" class="auth-tab-switch">
+            &larr; Back to Sign In
+          </button>
+        </div>
+      </div>
+
+      <!-- Set New Password Card (Shown on recovery link arrival) -->
+      <div class="auth-card" id="card-recovery" style="display: none;">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+          <div style="width: 50px; height: 50px; border-radius: 50%; background: #ECFDF5; color: #047857; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.65rem; border: 1px solid #A7F3D0;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <h2 style="font-size: 1.45rem; color: var(--cocoa); margin-bottom: 0.35rem; font-family: var(--font-serif);">Set New Password</h2>
+          <p style="font-size: 0.86rem; color: #73615A; line-height: 1.5;">
+            Create a new strong password for your Swan Studio account.
+          </p>
+        </div>
+
+        <form id="recovery-form" novalidate>
+          <div class="form-group">
+            <label for="recovery-password" class="form-label">New Password (min. 8 characters) <span style="color: var(--rose);">*</span></label>
+            <input 
+              type="password" 
+              id="recovery-password" 
+              class="form-control" 
+              placeholder="Enter new password" 
+              autocomplete="new-password"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="recovery-confirm" class="form-label">Confirm New Password <span style="color: var(--rose);">*</span></label>
+            <input 
+              type="password" 
+              id="recovery-confirm" 
+              class="form-control" 
+              placeholder="Confirm new password" 
+              autocomplete="new-password"
+              required
+            >
+          </div>
+
+          <button type="submit" id="recovery-submit-btn" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-weight: 600; margin-top: 0.5rem;">
+            Save Password &amp; Sign In ✓
+          </button>
+        </form>
+
+        <div id="recovery-feedback" style="display: none; margin-top: 1rem; padding: 0.85rem; border-radius: var(--radius-sm); font-size: 0.85rem; text-align: center;"></div>
+      </div>
+
     </div>
   </main>
 
@@ -122,15 +223,18 @@
   <script src="js/config.js"></script>
   <script src="js/api-config.js"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/auth.js?v=2.2.3"></script>
-  <script src="js/main.js?v=2.2.3"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('login-form');
-      const submitBtn = document.getElementById('login-submit-btn');
-      const feedback = document.getElementById('login-feedback');
+      const cardLogin = document.getElementById('card-login');
+      const cardForgot = document.getElementById('card-forgot');
+      const cardRecovery = document.getElementById('card-recovery');
+
+      const loginForm = document.getElementById('login-form');
+      const loginSubmitBtn = document.getElementById('login-submit-btn');
+      const loginFeedback = document.getElementById('login-feedback');
       const alertBox = document.getElementById('auth-alert');
-      const forgotLink = document.getElementById('forgot-password-link');
       const tabCust = document.getElementById('tab-cust-mode');
       const tabAdmin = document.getElementById('tab-admin-mode');
       const idInput = document.getElementById('login-email');
@@ -139,6 +243,19 @@
       const signupRow = document.getElementById('signup-prompt-row');
       const pageTitle = document.getElementById('login-title');
       const pageSubtitle = document.getElementById('login-subtitle');
+
+      const btnShowForgot = document.getElementById('btn-show-forgot');
+      const btnBackToLogin = document.getElementById('btn-back-to-login');
+      const forgotForm = document.getElementById('forgot-form');
+      const forgotEmailInput = document.getElementById('forgot-email');
+      const forgotSubmitBtn = document.getElementById('forgot-submit-btn');
+      const forgotFeedback = document.getElementById('forgot-feedback');
+
+      const recoveryForm = document.getElementById('recovery-form');
+      const recoveryPassword = document.getElementById('recovery-password');
+      const recoveryConfirm = document.getElementById('recovery-confirm');
+      const recoverySubmitBtn = document.getElementById('recovery-submit-btn');
+      const recoveryFeedback = document.getElementById('recovery-feedback');
 
       let currentMode = 'customer'; // 'customer' or 'admin'
 
@@ -155,7 +272,7 @@
           idLabel.textContent = 'Admin ID or Email';
           idInput.placeholder = 'admin or swanstudio2604@gmail.com';
           idInput.value = idInput.value || 'swanstudio2604@gmail.com';
-          submitBtn.textContent = 'Enter Admin Atelier 👑';
+          loginSubmitBtn.textContent = 'Enter Admin Atelier 👑';
           hintText.textContent = '🔒 Administrator credentials verified against secure atelier access.';
           if (signupRow) signupRow.style.display = 'none';
         } else {
@@ -168,7 +285,7 @@
           pageSubtitle.textContent = 'Sign in to view your orders, payment verification status, and saved details.';
           idLabel.textContent = 'Email Address';
           idInput.placeholder = 'you@example.com';
-          submitBtn.textContent = 'Sign In to Customer Account';
+          loginSubmitBtn.textContent = 'Sign In to Customer Account';
           hintText.textContent = 'Customers: Use your registered email & password.';
           if (signupRow) signupRow.style.display = 'block';
         }
@@ -177,12 +294,21 @@
       if (tabCust) tabCust.addEventListener('click', () => setMode('customer'));
       if (tabAdmin) tabAdmin.addEventListener('click', () => setMode('admin'));
 
-      // Check reason from URL query
+      // Check URL parameters & hash fragments
       const urlParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
       const reason = urlParams.get('reason');
       const adminReq = urlParams.get('admin');
+      const isRecovery = urlParams.get('type') === 'recovery' || hashParams.get('type') === 'recovery' || window.location.hash.includes('access_token');
 
-      if (reason === 'unauthorized_admin' || adminReq === '1') {
+      // Check if arriving from Supabase password recovery email
+      if (isRecovery) {
+        cardLogin.style.display = 'none';
+        cardForgot.style.display = 'none';
+        cardRecovery.style.display = 'block';
+        pageTitle.textContent = 'Reset Password';
+        pageSubtitle.textContent = 'Enter your new password below to securely update your account.';
+      } else if (reason === 'unauthorized_admin' || adminReq === '1') {
         setMode('admin');
         alertBox.style.display = 'block';
         alertBox.style.background = '#FFF0F2';
@@ -203,36 +329,77 @@
         alertBox.innerHTML = '✓ You have safely signed out of Swan Studio.';
       }
 
-      form.addEventListener('submit', async (e) => {
+      // Supabase event listener for recovery session
+      const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+      if (client && client.auth) {
+        client.auth.onAuthStateChange((event) => {
+          if (event === 'PASSWORD_RECOVERY') {
+            cardLogin.style.display = 'none';
+            cardForgot.style.display = 'none';
+            cardRecovery.style.display = 'block';
+            pageTitle.textContent = 'Reset Password';
+            pageSubtitle.textContent = 'Enter your new password below to update your account.';
+          }
+        });
+      }
+
+      // Switch to Forgot Password View
+      if (btnShowForgot) {
+        btnShowForgot.addEventListener('click', (e) => {
+          e.preventDefault();
+          cardLogin.style.display = 'none';
+          cardForgot.style.display = 'block';
+          forgotFeedback.style.display = 'none';
+          pageTitle.textContent = 'Password Assistance';
+          pageSubtitle.textContent = 'Receive a secure reset link to recover your Swan Studio account.';
+          if (idInput.value.includes('@')) {
+            forgotEmailInput.value = idInput.value.trim();
+          }
+          forgotEmailInput.focus();
+        });
+      }
+
+      // Switch back to Login View
+      if (btnBackToLogin) {
+        btnBackToLogin.addEventListener('click', (e) => {
+          e.preventDefault();
+          cardForgot.style.display = 'none';
+          cardLogin.style.display = 'block';
+          setMode(currentMode);
+        });
+      }
+
+      // 1. Submit Login Form
+      loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        feedback.style.display = 'none';
+        loginFeedback.style.display = 'none';
 
         let identifier = idInput.value.trim();
         const password = document.getElementById('login-password').value;
 
         if (!identifier || !password) {
-          showFeedback('Please enter both your identifier and password.', 'error');
+          showFeedback(loginFeedback, 'Please enter both your email/ID and password.', 'error');
           return;
         }
 
-        // Convenience: allow entering "admin" in Admin Atelier mode
         if (currentMode === 'admin' && identifier.toLowerCase() === 'admin') {
           identifier = 'swanstudio2604@gmail.com';
         }
 
-        submitBtn.disabled = true;
-        submitBtn.textContent = currentMode === 'admin' ? 'Verifying Admin credentials...' : 'Signing in...';
+        loginSubmitBtn.disabled = true;
+        loginSubmitBtn.textContent = currentMode === 'admin' ? 'Verifying Admin credentials...' : 'Signing in...';
 
         try {
-          const { profile, isDemo } = await AUTH.signIn({ email: identifier, password });
+          const { profile } = await AUTH.signIn({ email: identifier, password });
           
           if (profile && profile.role === 'admin') {
-            showFeedback('✓ Admin credentials verified! Opening Atelier Dashboard...', 'success');
+            showFeedback(loginFeedback, '✓ Admin credentials verified! Opening Atelier Dashboard...', 'success');
             setTimeout(() => {
               window.location.href = 'admin/index.html';
             }, 700);
           } else {
-            showFeedback(`✓ Welcome back, ${profile.full_name || 'Customer'}! Loading your account...`, 'success');
+            const customerName = profile?.full_name || 'Customer';
+            showFeedback(loginFeedback, `✓ Welcome back, ${customerName}! Loading your account...`, 'success');
             setTimeout(() => {
               const redirect = urlParams.get('redirect') || 'account.html';
               window.location.href = redirect;
@@ -240,44 +407,92 @@
           }
 
         } catch (err) {
-          showFeedback(err.message || 'Invalid credentials. Please try again.', 'error');
-          submitBtn.disabled = false;
-          submitBtn.textContent = currentMode === 'admin' ? 'Enter Admin Atelier 👑' : 'Sign In to Customer Account';
+          showFeedback(loginFeedback, err.message || 'Invalid credentials. Please verify your details.', 'error');
+          loginSubmitBtn.disabled = false;
+          loginSubmitBtn.textContent = currentMode === 'admin' ? 'Enter Admin Atelier 👑' : 'Sign In to Customer Account';
         }
       });
 
-      forgotLink.addEventListener('click', async (e) => {
-        e.preventDefault();
-        let email = idInput.value.trim();
-        if (currentMode === 'admin' && email.toLowerCase() === 'admin') {
-          email = 'swanstudio2604@gmail.com';
-        }
-        if (!email || !email.includes('@')) {
-          showFeedback('Please enter your valid email address in the field above first, then click "Forgot password?".', 'error');
-          idInput.focus();
-          return;
-        }
+      // 2. Submit Forgot Password Form
+      if (forgotForm) {
+        forgotForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          forgotFeedback.style.display = 'none';
 
-        try {
-          await AUTH.resetPassword(email);
-          showFeedback(`✓ Password reset instructions have been dispatched to ${email}. Please check your inbox.`, 'success');
-        } catch (err) {
-          showFeedback(err.message || 'Unable to request password reset.', 'error');
-        }
-      });
+          const email = forgotEmailInput.value.trim();
+          if (!email || !email.includes('@')) {
+            showFeedback(forgotFeedback, 'Please enter a valid email address.', 'error');
+            forgotEmailInput.focus();
+            return;
+          }
 
-      function showFeedback(msg, type) {
-        feedback.style.display = 'block';
+          forgotSubmitBtn.disabled = true;
+          forgotSubmitBtn.textContent = 'Sending reset instructions...';
+
+          try {
+            await AUTH.resetPassword(email);
+            showFeedback(forgotFeedback, `✓ Password reset link has been dispatched to ${email}. Please check your inbox (and spam folder) to set your new password.`, 'success');
+            forgotSubmitBtn.disabled = false;
+            forgotSubmitBtn.textContent = 'Send Another Link';
+          } catch (err) {
+            showFeedback(forgotFeedback, err.message || 'Unable to request password reset. Please try again.', 'error');
+            forgotSubmitBtn.disabled = false;
+            forgotSubmitBtn.textContent = 'Send Password Reset Link ✉️';
+          }
+        });
+      }
+
+      // 3. Submit Recovery (Set New Password) Form
+      if (recoveryForm) {
+        recoveryForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          recoveryFeedback.style.display = 'none';
+
+          const pass1 = recoveryPassword.value;
+          const pass2 = recoveryConfirm.value;
+
+          if (!pass1 || pass1.length < 8) {
+            showFeedback(recoveryFeedback, 'Password must be at least 8 characters long.', 'error');
+            recoveryPassword.focus();
+            return;
+          }
+
+          if (pass1 !== pass2) {
+            showFeedback(recoveryFeedback, 'Passwords do not match. Please verify.', 'error');
+            recoveryConfirm.focus();
+            return;
+          }
+
+          recoverySubmitBtn.disabled = true;
+          recoverySubmitBtn.textContent = 'Updating password...';
+
+          try {
+            await AUTH.updatePassword(pass1);
+            showFeedback(recoveryFeedback, '✓ Your password has been successfully updated! Signing you in...', 'success');
+            setTimeout(() => {
+              window.location.href = 'account.html';
+            }, 1200);
+          } catch (err) {
+            showFeedback(recoveryFeedback, err.message || 'Failed to update password. Recovery link may have expired.', 'error');
+            recoverySubmitBtn.disabled = false;
+            recoverySubmitBtn.textContent = 'Save Password & Sign In ✓';
+          }
+        });
+      }
+
+      function showFeedback(el, msg, type) {
+        if (!el) return;
+        el.style.display = 'block';
         if (type === 'error') {
-          feedback.style.background = '#FFF0F2';
-          feedback.style.color = '#9A5565';
-          feedback.style.border = '1px solid var(--rose)';
+          el.style.background = '#FFF0F2';
+          el.style.color = '#9A5565';
+          el.style.border = '1px solid var(--rose)';
         } else {
-          feedback.style.background = '#EBF8F0';
-          feedback.style.color = '#1E6B39';
-          feedback.style.border = '1px solid #A9D5B7';
+          el.style.background = '#EBF8F0';
+          el.style.color = '#1E6B39';
+          el.style.border = '1px solid #A9D5B7';
         }
-        feedback.textContent = msg;
+        el.textContent = msg;
       }
     });
   </script>

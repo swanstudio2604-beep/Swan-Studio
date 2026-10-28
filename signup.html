@@ -186,7 +186,7 @@
         submitBtn.textContent = 'Creating account...';
 
         try {
-          const { isDemo } = await AUTH.signUp({
+          await AUTH.signUp({
             email,
             password,
             fullName,
@@ -194,7 +194,7 @@
           });
 
           showFeedback(
-            `Welcome to Swan Studio! Your customer account is ready. Redirecting... ${isDemo ? '(Demo Mode)' : ''}`,
+            `Welcome to Swan Studio, ${fullName}! Your customer account is ready. Redirecting to your account...`,
             'success'
           );
 

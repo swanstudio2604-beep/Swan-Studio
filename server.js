@@ -532,7 +532,7 @@ app.post('/api/admin/export-orders-csv', (req, res) => {
 // Dynamic XML Sitemap (Excludes deleted / hidden items)
 // ---------------------------------------------------------------------------
 app.get('/sitemap.xml', (req, res) => {
-  const host = req.get('host') || 'swan-studio.onrender.com';
+  const host = req.get('host') || 'swan-studio.onslate.in';
   const protocol = req.secure || req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
   const baseUrl = `${protocol}://${host}`;
   const xml = Store.generateSitemapXml(baseUrl);
@@ -716,7 +716,7 @@ app.post('/api/admin/categories/:id/restore', verifyAdminApiSession, (req, res) 
 function getRequestBaseUrl(req) {
   const forwardedProto = req.headers['x-forwarded-proto'];
   const protocol = forwardedProto || (req.secure ? 'https' : 'http');
-  const host = req.get('host') || 'swan-studio.onrender.com';
+  const host = req.get('host') || 'swan-studio.onslate.in';
   return `${protocol}://${host}`;
 }
 

@@ -697,17 +697,40 @@ Press Enter twice to start a new paragraph!" required></textarea>
     let currentPosts = [];
     let activeTab = 'ALL';
 
+    function getDeletedStoryIds() {
+      try {
+        const raw = localStorage.getItem('swan_permanently_deleted_story_ids');
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function markStoryPermanentlyDeleted(id) {
+      try {
+        const ids = getDeletedStoryIds();
+        if (!ids.includes(String(id))) {
+          ids.push(String(id));
+          localStorage.setItem('swan_permanently_deleted_story_ids', JSON.stringify(ids));
+        }
+      } catch (e) {}
+    }
+
     function getLocalStories() {
       try {
+        const deletedIds = getDeletedStoryIds();
         const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
+        if (stored !== null) {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed)) {
+            return parsed.filter(p => !deletedIds.includes(String(p.id)));
+          }
         }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_STORIES));
-        return INITIAL_STORIES.slice();
+        const initial = INITIAL_STORIES.filter(p => !deletedIds.includes(String(p.id)));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+        return initial.slice();
       } catch {
-        return INITIAL_STORIES.slice();
+        return [];
       }
     }
 
@@ -982,24 +1005,7 @@ Press Enter twice to start a new paragraph!" required></textarea>
         const isEdit = Boolean(editIdInput.value);
         let savedSuccessfully = false;
 
-        // 1. Sync to local server API (/api/admin/blog)
-        try {
-          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-          const url = isEdit ? `${baseUrl}/api/admin/blog/${editIdInput.value}` : `${baseUrl}/api/admin/blog`;
-          const method = isEdit ? 'PUT' : 'POST';
-          const apiRes = await fetch(url, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          if (apiRes.ok) {
-            savedSuccessfully = true;
-          }
-        } catch (apiErr) {
-          console.warn('Local API blog save note:', apiErr);
-        }
-
-        // 2. Try Supabase
+        // 1. Try Supabase
         const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
         if (client) {
           try {
@@ -1051,23 +1057,12 @@ Press Enter twice to start a new paragraph!" required></textarea>
         feed.style.display = 'none';
         empty.style.display = 'none';
 
+        const deletedIds = getDeletedStoryIds();
         let rawPosts = [];
 
-        // 1. Try local server API
-        try {
-          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-          const apiRes = await fetch(`${baseUrl}/api/admin/blog?all=1`);
-          if (apiRes.ok) {
-            const j = await apiRes.json();
-            if (j && Array.isArray(j.data) && j.data.length > 0) {
-              rawPosts = j.data;
-            }
-          }
-        } catch (e) {}
-
-        // 2. Try Supabase if server empty
+        // 1. Try Supabase first
         const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-        if (client && rawPosts.length === 0) {
+        if (client) {
           try {
             const { data, error } = await client
               .from('blog_posts')
@@ -1075,17 +1070,24 @@ Press Enter twice to start a new paragraph!" required></textarea>
               .order('created_at', { ascending: false });
 
             if (!error && Array.isArray(data) && data.length > 0) {
-              rawPosts = data;
+              rawPosts = data.filter(p => !deletedIds.includes(String(p.id)));
             }
           } catch (err) {
             console.warn('Supabase fetch note:', err);
           }
         }
 
-        // 3. Fallback to local storage if still empty
+        // 2. Merge with Local Storage stories
+        const local = getLocalStories();
         if (rawPosts.length === 0) {
-          rawPosts = getLocalStories();
+          rawPosts = local;
         } else {
+          const supaIds = new Set(rawPosts.map(p => String(p.id)));
+          local.forEach(lp => {
+            if (!supaIds.has(String(lp.id)) && !deletedIds.includes(String(lp.id))) {
+              rawPosts.push(lp);
+            }
+          });
           saveLocalStories(rawPosts);
         }
 
@@ -1214,20 +1216,17 @@ Press Enter twice to start a new paragraph!" required></textarea>
           b.addEventListener('click', async () => {
             const id = b.getAttribute('data-id');
             if (!confirm('Move this story to trash?')) return;
-            try {
-              const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-              await fetch(`${baseUrl}/api/admin/blog/${id}`, { method: 'DELETE' });
-            } catch (e) {}
+            const now = new Date().toISOString();
             const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
             if (client) {
               try {
-                await client.from('blog_posts').update({ deleted_at: new Date().toISOString() }).eq('id', id);
+                await client.from('blog_posts').update({ deleted_at: now }).eq('id', id);
               } catch (e) {}
             }
             const local = getLocalStories();
             const target = local.find(p => String(p.id) === String(id));
             if (target) {
-              target.deleted_at = new Date().toISOString();
+              target.deleted_at = now;
               saveLocalStories(local);
             }
             ADMIN.showToast('Story moved to trash');
@@ -1238,10 +1237,6 @@ Press Enter twice to start a new paragraph!" required></textarea>
         feed.querySelectorAll('.btn-restore').forEach(b => {
           b.addEventListener('click', async () => {
             const id = b.getAttribute('data-id');
-            try {
-              const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-              await fetch(`${baseUrl}/api/admin/blog/${id}/restore`, { method: 'POST' });
-            } catch (e) {}
             const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
             if (client) {
               try {
@@ -1263,10 +1258,7 @@ Press Enter twice to start a new paragraph!" required></textarea>
           b.addEventListener('click', async () => {
             const id = b.getAttribute('data-id');
             if (!confirm('Permanently delete this story? This cannot be undone.')) return;
-            try {
-              const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
-              await fetch(`${baseUrl}/api/admin/blog/${id}?permanent=1`, { method: 'DELETE' });
-            } catch (e) {}
+            markStoryPermanentlyDeleted(id);
             const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
             if (client) {
               try {

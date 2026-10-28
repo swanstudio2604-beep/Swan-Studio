@@ -5,7 +5,7 @@
 
 ## 📱 How to Open Your Store Admin
 1. Open Safari (iPhone) or Chrome (Android) on your phone.
-2. Go to: **`https://swan-studio.onrender.com/admin`**
+2. Go to: **`https://swan-studio.onslate.in/admin`**
    *(If you're not logged in, it will automatically take you to the secure login page).*
 3. Type your administrative email and password, then tap **Sign In as Atelier Owner**.
 4. 💡 **Phone Tip — Add to Home Screen:**
@@ -13,8 +13,8 @@
    - **On Android (Chrome):** Tap the three dots (⋮) in the top-right corner &rarr; tap **"Add to Home screen"**.
    - Now you have a Swan Studio Atelier icon right on your phone screen just like an app!
 
-> [!NOTE]
-> **Free Render Sleep Message:** Because our website hosting sleeps when idle, the very first time you open the admin after a few hours of inactivity, it might take 30–40 seconds to wake up. Don't worry! A gentle loading indicator will show while the server starts up.
+> [!TIP]
+> **Fast Direct Database Connection:** Swan Studio on `swan-studio.onslate.in` connects directly to PostgreSQL on Supabase with zero server cold starts or sleep delays!
 
 ---
 

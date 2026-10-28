@@ -173,14 +173,14 @@
             <!-- First Name & City Row (Clean 2-col on mobile) -->
             <div class="form-row form-row-compact">
               <div class="form-group flex-1">
-                <label for="note-name-input" class="form-label">First name <span class="badge-field-req">Required</span></label>
+                <label for="note-name-input" class="form-label">Reviewer Name <span class="badge-field-req">Required</span></label>
                 <input 
                   type="text" 
                   id="note-name-input" 
                   name="first_name" 
                   class="form-control" 
-                  placeholder="e.g. Priya" 
-                  maxlength="50"
+                  placeholder="e.g. Priya Sharma" 
+                  maxlength="60"
                   required
                 >
                 <div class="form-error-msg" id="err-name"></div>
@@ -914,9 +914,9 @@
 
     let hasError = false;
 
-    // First Name validation
+    // Reviewer Name validation
     if (!firstName || firstName.length < 2) {
-      setError('err-name', 'Please enter your first name (at least 2 letters).');
+      setError('err-name', 'Please enter your reviewer name (at least 2 letters).');
       hasError = true;
     }
 

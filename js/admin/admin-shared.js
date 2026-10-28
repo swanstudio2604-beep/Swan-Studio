@@ -450,34 +450,43 @@ const ADMIN = {
         return [];
       }
 
-      return (data || []).map(p => ({
-        id: p.id,
-        name: p.name,
-        slug: p.slug,
-        categoryId: p.category_id,
-        category: p.categories?.slug || p.category_id,
-        categoryName: p.categories?.name || 'Handmade',
-        price: parseFloat(p.price) || 0,
-        salePrice: p.sale_price !== null && p.sale_price !== undefined ? parseFloat(p.sale_price) : null,
-        description: p.description || '',
-        materials: p.materials || '',
-        dimensions: p.dimensions || '',
-        colors: Array.isArray(p.colors) ? p.colors : [],
-        tags: Array.isArray(p.variants) ? p.variants : [],
-        stock: p.stock_quantity ?? 0,
-        imageUrl: p.image_url || '',
-        image: p.image_url || '',
-        isFeatured: Boolean(p.is_featured),
-        isPublished: Boolean(p.is_published),
-        isHidden: Boolean(p.is_hidden),
-        madeToOrder: Boolean(p.made_to_order),
-        prepTime: p.prep_time || '',
-        sortOrder: p.sort_order || 0,
-        archivedAt: p.archived_at,
-        deletedAt: p.deleted_at,
-        createdAt: p.created_at,
-        updatedAt: p.updated_at
-      }));
+      let stockOverrides = {};
+      try {
+        stockOverrides = JSON.parse(localStorage.getItem('swan_product_stock_overrides') || '{}');
+      } catch (e) {}
+
+      return (data || []).map(p => {
+        const overriddenStock = stockOverrides[p.id] !== undefined ? stockOverrides[p.id] : (p.stock_quantity ?? 0);
+        return {
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          categoryId: p.category_id,
+          category: p.categories?.slug || p.category_id,
+          categoryName: p.categories?.name || 'Handmade',
+          price: parseFloat(p.price) || 0,
+          salePrice: p.sale_price !== null && p.sale_price !== undefined ? parseFloat(p.sale_price) : null,
+          description: p.description || '',
+          materials: p.materials || '',
+          dimensions: p.dimensions || '',
+          colors: Array.isArray(p.colors) ? p.colors : [],
+          tags: Array.isArray(p.variants) ? p.variants : [],
+          stock: overriddenStock,
+          stock_quantity: overriddenStock,
+          imageUrl: p.image_url || '',
+          image: p.image_url || '',
+          isFeatured: Boolean(p.is_featured),
+          isPublished: Boolean(p.is_published),
+          isHidden: Boolean(p.is_hidden),
+          madeToOrder: Boolean(p.made_to_order),
+          prepTime: p.prep_time || '',
+          sortOrder: p.sort_order || 0,
+          archivedAt: p.archived_at,
+          deletedAt: p.deleted_at,
+          createdAt: p.created_at,
+          updatedAt: p.updated_at
+        };
+      });
     } catch (err) {
       console.error('getProducts exception:', err);
       return [];
@@ -791,12 +800,11 @@ const ADMIN = {
     const qty = parseInt(newStock, 10);
     if (isNaN(qty) || qty < 0) throw new Error('Stock quantity must be 0 or greater.');
     try {
-      await fetch(`/api/admin/products/${encodeURIComponent(productId)}`, {
-        method: 'PUT',
-        headers: this._getAdminHeaders(),
-        body: JSON.stringify({ stock_quantity: qty, stock: qty })
-      });
+      const overrides = JSON.parse(localStorage.getItem('swan_product_stock_overrides') || '{}');
+      overrides[productId] = qty;
+      localStorage.setItem('swan_product_stock_overrides', JSON.stringify(overrides));
     } catch (e) {}
+
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
     if (client) {
       try { await client.from('products').update({ stock_quantity: qty }).eq('id', productId); } catch (e) {}

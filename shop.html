@@ -109,10 +109,8 @@
         <!-- Category Pills -->
         <div class="shop-categories" role="group" aria-label="Filter by category" id="category-pills">
           <button class="category-pill active" data-category="all">All Creations</button>
-          <button class="category-pill" data-category="bouquets">Floral Bouquets</button>
-          <button class="category-pill" data-category="bags">Bags &amp; Totes</button>
-          <button class="category-pill" data-category="plushies">Cute Plushies</button>
-          <button class="category-pill" data-category="accessories">Personalized Gifts</button>
+          <button class="category-pill" data-category="tops-wearable">Tops &amp; Wearable</button>
+          <button class="category-pill" data-category="flowers">Flowers</button>
           <button class="category-pill" data-category="under499" data-maxprice="499">Under ₹499</button>
         </div>
       </div>
@@ -193,15 +191,22 @@
       }
 
       // 2. Fetch Active Categories dynamically from Database
-      const catsData = await fetchCategories();
-      const validCategories = Array.isArray(catsData) ? catsData : (catsData.data || []);
+      const defaultCategories = [
+        { name: 'Tops & Wearable', slug: 'tops-wearable' },
+        { name: 'Flowers', slug: 'flowers' }
+      ];
+      let validCategories = defaultCategories;
+      try {
+        const catsData = await fetchCategories();
+        const list = Array.isArray(catsData) ? catsData : (catsData && catsData.data ? catsData.data : []);
+        if (list && list.length > 0) validCategories = list;
+      } catch (e) {}
 
-      // If ?category= is specified but is deleted or not found, redirect to shop
+      // If ?category= is specified but is deleted or not found, fall back to 'all'
       if (currentCategory !== 'all' && currentCategory !== 'under499') {
         const found = validCategories.some(c => c.slug === currentCategory);
         if (!found) {
-          window.location.replace('shop.html');
-          return;
+          currentCategory = 'all';
         }
       }
 

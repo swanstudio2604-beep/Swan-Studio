@@ -1,6 +1,6 @@
 # 🛡️ Swan Studio — Comprehensive Admin Panel & Mobile Usability Audit Report
 **Target Audience:** Bhumika Nama (Atelier Founder & Shop Owner, mobile-first operator)  
-**System Evaluated:** Swan Studio Admin Panel (`http://localhost:4000/admin` & `https://swan-studio.onrender.com/admin/`)  
+**System Evaluated:** Swan Studio Admin Panel (`http://localhost:4000/admin` & `https://swan-studio.onslate.in/admin`)  
 **Audit Viewports Tested:** 320px (iPhone SE/5), 360px (Samsung Galaxy), 390px (iPhone 12/13/14), 414px (iPhone Plus/Max)  
 **Security & Code Review Date:** October 2026  
 **Developer & DevOps:** Mridul (*Developed with ❤️ by Mridul*)
@@ -100,12 +100,10 @@ All 12 administrative screens were tested at 4 phone widths: **320px**, **360px*
 
 ---
 
-## 7. Render Free-Tier Cold Starts: Explanation & Solutions
-Swan Studio is currently deployed on Render's free tier. Free tier web services enter a sleep state after 15 minutes of inactivity. When Bhumika opens the admin panel in the morning, the server takes **30–50 seconds** to spin up its container:
-1. **In-App Messaging Added:** The login and admin loading screens display a friendly notice explaining the cold-start wake-up cycle so Bhumika knows the system is working and not frozen.
-2. **Recommended Solutions:**
-   - **Zero-Cost Uptime Ping:** Set up a free account on [UptimeRobot](https://uptimerobot.com/) or [Cron-Job.org](https://cron-job.org/) to send an HTTP GET request to `https://swan-studio.onrender.com/health` every 10 minutes. This keeps the free instance awake 24/7 at no cost.
-   - **Render Starter Tier ($7/mo):** Upgrading Render to the Starter plan eliminates idle sleep completely and provides dedicated CPU/RAM.
+## 7. Hosting & Production Deployment: Swan-Studio.onslate.in
+Swan Studio is hosted on `swan-studio.onslate.in` with direct PostgreSQL & Authentication via Supabase:
+1. **Zero Cold Starts:** By running static assets through high-performance hosting and connecting directly to Supabase via its real-time client, the shop and admin panel load instantaneously with zero server sleep delays.
+2. **Resilient Local Persistence:** Critical administrative workflows (inventory stock overrides, soft and permanent story deletions, and offline review moderation) utilize client-side local caching so that even during intermittent connectivity, administrative actions remain permanent and responsive.
 
 ---
 
