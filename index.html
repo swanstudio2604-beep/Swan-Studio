@@ -449,11 +449,11 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/api-config.js"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/main.js?v=2.2.3"></script>
-  <script src="js/reviews-floating.js?v=2.2.3"></script>
+  <script src="js/config.js?v=2.2.4"></script>
+  <script src="js/api-config.js?v=2.2.4"></script>
+  <script src="js/supabase.js?v=2.2.4"></script>
+  <script src="js/main.js?v=2.2.4"></script>
+  <script src="js/reviews-floating.js?v=2.2.4"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       // Dynamic Home Collections Loader
@@ -713,11 +713,11 @@
           container.innerHTML = `
             <div class="home-reviews-track ${isSingle ? 'single-review' : ''}" id="home-reviews-track">
               ${items.map(r => {
-                const authorName = r.displayName || 'Kind Customer';
-                const initial = (authorName.trim()[0] || 'K').toUpperCase();
-                const bodyText = r.body || 'Loved this handmade creation!';
-                const dateStr = formatDate(r.createdAt);
-                const cityStr = r.city ? r.city : 'Verified Customer';
+                const authorName = (r.displayName || r.display_name || r.customer_name || r.author_name || r.authorName || r.name || 'Kind Customer').trim();
+                const initial = (authorName[0] || 'K').toUpperCase();
+                const bodyText = r.body || r.comment || 'Loved this handmade creation!';
+                const dateStr = formatDate(r.createdAt || r.created_at);
+                const cityStr = r.city || r.author_city || 'Verified Customer';
                 const rating = Math.min(5, Math.max(1, parseInt(r.rating, 10) || 5));
                 return `
                   <article class="home-review-card">

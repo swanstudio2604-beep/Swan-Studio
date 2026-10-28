@@ -247,11 +247,11 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/api-config.js"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/main.js?v=2.2.3"></script>
-  <script src="js/reviews-floating.js?v=2.2.3"></script>
+  <script src="js/config.js?v=2.2.4"></script>
+  <script src="js/api-config.js?v=2.2.4"></script>
+  <script src="js/supabase.js?v=2.2.4"></script>
+  <script src="js/main.js?v=2.2.4"></script>
+  <script src="js/reviews-floating.js?v=2.2.4"></script>
 
   <script>
     (function () {
@@ -527,11 +527,11 @@
 
       function renderSingleCard(r) {
         const rating = Math.min(5, Math.max(1, parseInt(r.rating, 10) || 5));
-        const authorName = r.displayName || 'Kind Customer';
-        const initial = (authorName.trim()[0] || 'K').toUpperCase();
-        const bodyText = r.body || 'Loved this handmade piece!';
-        const dateStr = formatDate(r.createdAt);
-        const cityStr = r.city ? r.city : 'Verified Customer';
+        const authorName = (r.displayName || r.display_name || r.customer_name || r.author_name || r.authorName || r.name || 'Kind Customer').trim();
+        const initial = (authorName[0] || 'K').toUpperCase();
+        const bodyText = r.body || r.comment || 'Loved this handmade piece!';
+        const dateStr = formatDate(r.createdAt || r.created_at);
+        const cityStr = r.city || r.author_city || 'Verified Customer';
         const hasPhoto = Boolean(r.photoUrl);
         const isVerified = Boolean(r.verifiedBuyer);
         const hasReply = Boolean(r.adminReply);
