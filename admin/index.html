@@ -851,7 +851,7 @@
           return `
             <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; background: #FFFFFF; border: 1px solid var(--admin-border); border-radius: var(--radius-sm); box-shadow: 0 1px 3px rgba(0,0,0,0.03); gap: 0.75rem;">
               <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
-                <img src="${p.image || p.imageUrl || '../images/placeholder.jpg'}" alt="${p.title}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--admin-border); flex-shrink: 0;" onerror="this.src='../images/logo.png'">
+                <img src="${p.image || p.imageUrl || '../assets/images/hero-bouquet-sm.webp'}" alt="${p.title || p.name || 'Creation'}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--admin-border); flex-shrink: 0;" onerror="this.src='../assets/images/hero-bouquet-sm.webp'">
                 <div style="min-width: 0;">
                   <strong style="display: block; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--admin-text-main);">${p.title}</strong>
                   <div style="font-size: 0.76rem; color: #8A7670;">₹${p.price} • ${p.category || 'Creations'}</div>

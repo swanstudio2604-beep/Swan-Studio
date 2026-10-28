@@ -873,9 +873,10 @@ app.get('/api/blog/:slug', (req, res) => {
 });
 
 app.get('/api/admin/blog', verifyAdminApiSession, (req, res) => {
+  const all = req.query.all === '1' || req.query.all === 'true';
   const trash = req.query.trash === '1' || req.query.trash === 'true';
   const status = req.query.status || null;
-  const posts = Store.getAdminBlogPosts({ trash, status });
+  const posts = Store.getAdminBlogPosts({ all, trash, status });
   return res.status(200).json({
     success: true,
     data: posts

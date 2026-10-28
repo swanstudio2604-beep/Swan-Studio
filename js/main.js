@@ -559,14 +559,12 @@ function renderActionDock() {
     document.body.appendChild(dock);
   }
 
-  // 1. Leave Note Button (do not show on cart, checkout, reviews, login, or signup)
-  const isReviewsPage = window.location.pathname.toLowerCase().includes('reviews');
-  const isCheckoutPage = window.location.pathname.toLowerCase().includes('cart') || 
-                         window.location.pathname.toLowerCase().includes('checkout') || 
+  // 1. Leave Note Button (suppressed on checkout, order-confirmation, login, and signup)
+  const isCheckoutPage = window.location.pathname.toLowerCase().includes('checkout') || 
                          window.location.pathname.toLowerCase().includes('order-confirmation');
   const isAuthPage = window.location.pathname.toLowerCase().includes('login') ||
                      window.location.pathname.toLowerCase().includes('signup');
-  if (!document.getElementById('swan-floating-note-btn') && !isReviewsPage && !isCheckoutPage && !isAuthPage) {
+  if (!document.getElementById('swan-floating-note-btn') && !isCheckoutPage && !isAuthPage) {
     const noteBtn = document.createElement('button');
     noteBtn.type = 'button';
     noteBtn.id = 'swan-floating-note-btn';
@@ -618,28 +616,13 @@ function setupDockInteractions(dock) {
   const noteBtn = document.getElementById('swan-floating-note-btn');
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // 1. Hide floating action dock when an on-page note CTA is in view to prevent overlap
-  const onPageCtas = document.querySelectorAll('.home-reviews-cta-row, .open-note-modal-btn:not(#swan-floating-note-btn)');
+  // 1. Hide floating action dock when on-page home review CTA buttons are in view to prevent overlap
+  const onPageCtas = document.querySelectorAll('.home-reviews-cta-row');
   if (onPageCtas.length > 0 && 'IntersectionObserver' in window) {
     const ctaObserver = new IntersectionObserver((entries) => {
       const anyVisible = entries.some(e => e.isIntersecting);
       if (dock) {
-        if (anyVisible) {
-          dock.classList.add('dock-cta-hidden');
-        } else {
-          dock.classList.remove('dock-cta-hidden');
-        }
-      }
-      if (noteBtn) {
-        if (anyVisible) {
-          noteBtn.style.opacity = '0';
-          noteBtn.style.pointerEvents = 'none';
-          noteBtn.style.transform = 'scale(0.8)';
-        } else {
-          noteBtn.style.opacity = '';
-          noteBtn.style.pointerEvents = '';
-          noteBtn.style.transform = '';
-        }
+        dock.classList.toggle('dock-cta-hidden', anyVisible);
       }
     }, { threshold: 0.1 });
     onPageCtas.forEach(el => ctaObserver.observe(el));
@@ -705,13 +688,35 @@ function renderFloatingWhatsApp() {
 // ---------------------------------------------------------------------------
 async function loadSiteConfig() {
   try {
-    const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
     let changed = false;
+    let loadedContent = null;
+    let loadedSettings = null;
 
-    if (client) {
+    // 1. Try local server API first (authoritative database single source of truth)
+    try {
+      const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+      const [contentRes, settingsRes] = await Promise.all([
+        fetch(`${baseUrl}/api/content`, { cache: 'no-cache' }),
+        fetch(`${baseUrl}/api/settings`, { cache: 'no-cache' })
+      ]);
+      if (contentRes.ok) {
+        const cJson = await contentRes.json();
+        if (cJson && cJson.data) loadedContent = cJson.data;
+      }
+      if (settingsRes.ok) {
+        const sJson = await settingsRes.json();
+        if (sJson && sJson.data) loadedSettings = sJson.data;
+      }
+    } catch (apiErr) {
+      // Local server API might be unavailable in pure static host
+    }
+
+    // 2. Try Supabase site_content as fallback/sync
+    const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
+    if (client && !loadedContent) {
       try {
         const { data: rows, error } = await client.from('site_content').select('*');
-        if (!error && Array.isArray(rows)) {
+        if (!error && Array.isArray(rows) && rows.length > 0) {
           const contentMap = {};
           rows.forEach(r => {
             contentMap[r.key] = r.data;
@@ -723,38 +728,42 @@ async function loadSiteConfig() {
           const hero = contentMap.hero;
           const contact = contentMap.contact;
 
-          if (banner?.message) {
-            SITE.announcement = banner.message;
-            changed = true;
-          } else if (content.announcement) {
-            SITE.announcement = content.announcement;
-            changed = true;
-          }
-
-          if (contact?.whatsapp || settings.whatsapp) {
-            const wa = contact?.whatsapp || settings.whatsapp;
-            SITE.whatsapp = wa;
-            SITE.whatsappUrl = `https://wa.me/91${wa.replace(/[^0-9]/g, '')}`;
-            changed = true;
-          }
-          if (contact?.upiId || settings.upiId) {
-            SITE.upiId = contact?.upiId || settings.upiId;
-            changed = true;
-          }
-          if (contact?.email || settings.email) {
-            SITE.email = contact?.email || settings.email;
-            changed = true;
-          }
-          if (contact?.instagram || settings.instagram) {
-            SITE.social.instagram = (contact?.instagram || settings.instagram).split('?')[0];
-            changed = true;
-          }
-
-          window.SWAN_CONTENT = { ...content, hero, banner, contact, about: contentMap.about };
-          window.SWAN_SETTINGS = settings;
+          loadedContent = { ...content, hero, banner, contact, about: contentMap.about };
+          if (!loadedSettings) loadedSettings = settings;
         }
       } catch (supaErr) {
         console.warn('Supabase site_content fetch note:', supaErr);
+      }
+    }
+
+    if (loadedContent) {
+      window.SWAN_CONTENT = loadedContent;
+      const ann = loadedContent.announcement || loadedContent.banner?.message;
+      if (ann && ann !== SITE.announcement) {
+        SITE.announcement = ann;
+        changed = true;
+      }
+    }
+
+    if (loadedSettings) {
+      window.SWAN_SETTINGS = loadedSettings;
+      const s = loadedSettings;
+      if (s.whatsapp && s.whatsapp !== SITE.whatsapp) {
+        SITE.whatsapp = s.whatsapp;
+        SITE.whatsappUrl = `https://wa.me/91${s.whatsapp.replace(/[^0-9]/g, '')}`;
+        changed = true;
+      }
+      if (s.upiId && s.upiId !== SITE.upiId) {
+        SITE.upiId = s.upiId;
+        changed = true;
+      }
+      if (s.email && s.email !== SITE.email) {
+        SITE.email = s.email;
+        changed = true;
+      }
+      if (s.instagram && s.instagram.split('?')[0] !== SITE.social.instagram) {
+        SITE.social.instagram = s.instagram.split('?')[0];
+        changed = true;
       }
     }
 

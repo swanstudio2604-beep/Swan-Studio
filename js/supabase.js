@@ -114,9 +114,31 @@ function normalizeProduct(p) {
 }
 
 /**
- * Fetches published products from live Supabase database with filters.
+ * Fetches published products from live server API with Supabase fallback and filters.
  */
 async function fetchProducts({ category = 'all', search = '', sort = 'featured', featuredOnly = false, maxPrice = null, hideSoldOut = false } = {}) {
+  // 1. Primary: Server API
+  try {
+    const params = new URLSearchParams();
+    if (category && category !== 'all') params.set('category', category);
+    if (search && search.trim()) params.set('search', search.trim());
+    if (sort) params.set('sort', sort);
+    if (featuredOnly) params.set('featured', 'true');
+    if (maxPrice !== null && !isNaN(Number(maxPrice))) params.set('maxPrice', maxPrice);
+    if (hideSoldOut) params.set('hideSoldOut', 'true');
+
+    const res = await fetch(`/api/products?${params.toString()}`);
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        return { isLive: true, data: json.data.map(normalizeProduct) };
+      }
+    }
+  } catch (e) {
+    // Fallback to Supabase
+  }
+
+  // 2. Fallback: Supabase direct query
   const client = getSupabaseClient();
   if (!client) {
     return { isLive: false, data: [] };
@@ -164,11 +186,27 @@ async function fetchProducts({ category = 'all', search = '', sort = 'featured',
 }
 
 /**
- * Fetches a single published product by slug from Supabase.
+ * Fetches a single published product by slug from live server API with Supabase fallback.
  */
 async function fetchProductBySlug(slug) {
+  if (!slug) return { isLive: false, data: null };
+
+  // 1. Primary: Server API
+  try {
+    const res = await fetch(`/api/products/${encodeURIComponent(slug)}`);
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.data) {
+        return { isLive: true, data: normalizeProduct(json.data) };
+      }
+    }
+  } catch (e) {
+    // Fallback to Supabase
+  }
+
+  // 2. Fallback: Supabase direct query
   const client = getSupabaseClient();
-  if (!client || !slug) return { isLive: false, data: null };
+  if (!client) return { isLive: false, data: null };
 
   try {
     const { data, error } = await client
@@ -189,9 +227,23 @@ async function fetchProductBySlug(slug) {
 }
 
 /**
- * Fetches active, non-deleted categories from Supabase.
+ * Fetches active, non-deleted categories from live server API with Supabase fallback.
  */
 async function fetchCategories() {
+  // 1. Primary: Server API
+  try {
+    const res = await fetch('/api/categories');
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        return { isLive: true, data: json.data };
+      }
+    }
+  } catch (e) {
+    // Fallback to Supabase
+  }
+
+  // 2. Fallback: Supabase direct query
   const client = getSupabaseClient();
   if (!client) return { isLive: false, data: [] };
 
@@ -267,8 +319,8 @@ const DEFAULT_STORIES_FALLBACK = [
     author: 'Bhumika Nama',
     tags: ['Craftsmanship', 'Studio Diary'],
     read_time_minutes: 5,
-    cover_image: 'assets/images/product-corset-top.webp',
-    cover_image_alt: 'Black crochet corset top with delicate lace borders',
+    cover_image: 'assets/images/product-tote.webp',
+    cover_image_alt: 'Handcrafted floral crochet tote bag',
     excerpt: 'From sizing measurements to selecting breathable cotton yarn — step inside our Jaipur atelier to see how bespoke wearable crochet pieces are crafted.',
     body: `<h2>Wearable Art Custom-Fitted to You</h2>
 <p>A crochet garment is completely different from fast-fashion clothing. It is sculpted directly to your natural contours, stitch by stitch, loop by loop.</p>
@@ -297,6 +349,18 @@ function getLocalStoriesFallback() {
  * Fetches published blog posts from Supabase (with resilient local fallback).
  */
 async function fetchBlogPosts({ limit = 10 } = {}) {
+  // 1. Check local server API first
+  try {
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const res = await fetch(`${baseUrl}/api/blog`);
+    if (res.ok) {
+      const json = await res.json();
+      if (json && Array.isArray(json.data) && json.data.length > 0) {
+        return { isLive: true, data: json.data.slice(0, limit) };
+      }
+    }
+  } catch (err) {}
+
   const client = getSupabaseClient();
   if (client) {
     try {
@@ -329,6 +393,19 @@ async function fetchBlogPosts({ limit = 10 } = {}) {
  */
 async function fetchBlogPostBySlug(slug) {
   if (!slug) return { isLive: false, data: null };
+
+  // 1. Check local server API first
+  try {
+    const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+    const res = await fetch(`${baseUrl}/api/blog/${encodeURIComponent(slug)}`);
+    if (res.ok) {
+      const json = await res.json();
+      if (json && json.data) {
+        return { isLive: true, data: json.data };
+      }
+    }
+  } catch (err) {}
+
   const client = getSupabaseClient();
   if (client) {
     try {
@@ -403,81 +480,67 @@ function normalizeReview(r) {
  */
 async function fetchApprovedReviews(productId = null) {
   const client = getSupabaseClient();
-  if (!client) return { isLive: false, data: [] };
+  const isUuid = Boolean(productId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(productId));
+  let results = [];
 
-  try {
-    // Attempt 1: Try public view approved_reviews
+  // 1. Query Supabase
+  if (client) {
     try {
       let viewQuery = client
         .from('approved_reviews')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (productId) {
+      if (isUuid) {
         viewQuery = viewQuery.eq('product_id', productId);
       }
 
       const { data: viewData, error: viewErr } = await viewQuery;
       if (!viewErr && Array.isArray(viewData)) {
-        let results = viewData.slice();
-        try {
-          const apiRes = await fetch('/api/reviews');
-          if (apiRes.ok) {
-            const apiJson = await apiRes.json();
-            if (apiJson.data && Array.isArray(apiJson.data)) {
-              const existing = new Set(results.map(r => String(r.id)));
-              for (const item of apiJson.data) {
-                if (!existing.has(String(item.id))) {
-                  results.push(item);
-                  existing.add(String(item.id));
-                }
-              }
-            }
-          }
-        } catch (e) {}
-        return { isLive: true, data: results.map(normalizeReview).filter(Boolean) };
+        results = viewData.slice();
+      } else {
+        let query = client
+          .from('reviews')
+          .select('*, products(name, slug, image_url)')
+          .eq('status', 'approved')
+          .order('created_at', { ascending: false });
+
+        if (isUuid) {
+          query = query.eq('product_id', productId);
+        }
+
+        const { data, error } = await query;
+        if (!error && Array.isArray(data)) {
+          results = (data || []).filter(r => r.deleted_at === null || r.deleted_at === undefined);
+        }
       }
-    } catch (vErr) {
-      // Fall through to direct reviews query
+    } catch (err) {
+      console.warn('Supabase fetchApprovedReviews notice:', err);
     }
+  }
 
-    // Attempt 2: Query public.reviews table
-    let query = client
-      .from('reviews')
-      .select('*, products(name, slug, image_url)')
-      .eq('status', 'approved')
-      .order('created_at', { ascending: false });
-
-    if (productId) {
-      query = query.eq('product_id', productId);
-    }
-
-    const { data, error } = await query;
-    if (error) {
-      console.warn('fetchApprovedReviews error:', error.message);
-      return { isLive: false, data: [] };
-    }
-    const filtered = (data || []).filter(r => r.deleted_at === null || r.deleted_at === undefined);
-    try {
-      const apiRes = await fetch('/api/reviews');
-      if (apiRes.ok) {
-        const apiJson = await apiRes.json();
-        if (apiJson.data && Array.isArray(apiJson.data)) {
-          const existing = new Set(filtered.map(r => String(r.id)));
-          for (const item of apiJson.data) {
-            if (!existing.has(String(item.id))) {
-              filtered.push(item);
-              existing.add(String(item.id));
-            }
+  // 2. Merge with /api/reviews
+  try {
+    const apiRes = await fetch('/api/reviews');
+    if (apiRes.ok) {
+      const apiJson = await apiRes.json();
+      if (apiJson.data && Array.isArray(apiJson.data)) {
+        const existing = new Set(results.map(r => String(r.id)));
+        for (const item of apiJson.data) {
+          if (!existing.has(String(item.id))) {
+            results.push(item);
+            existing.add(String(item.id));
           }
         }
       }
-    } catch (e) {}
-    return { isLive: true, data: filtered.map(normalizeReview).filter(Boolean) };
-  } catch (err) {
-    console.error('fetchApprovedReviews exception:', err);
-    return { isLive: false, data: [] };
+    }
+  } catch (e) {}
+
+  if (productId && !isUuid) {
+    results = results.filter(r => r.product_id === productId || r.productId === productId);
   }
+
+  return { isLive: results.length > 0, data: results.map(normalizeReview).filter(Boolean) };
 }
 
 /**

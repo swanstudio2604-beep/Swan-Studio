@@ -43,9 +43,9 @@
   function renderFloatingButton() {
     if (document.getElementById('swan-floating-note-btn')) return;
 
-    // Hide on reviews, cart, checkout, order-confirmation, login, or signup pages
+    // Hide on checkout, order-confirmation, login, or signup pages
     const p = window.location.pathname.toLowerCase();
-    if (p.includes('reviews') || p.includes('cart') || p.includes('checkout') || p.includes('order-confirmation') || p.includes('login') || p.includes('signup')) {
+    if (p.includes('checkout') || p.includes('order-confirmation') || p.includes('login') || p.includes('signup')) {
       return;
     }
 
@@ -264,6 +264,8 @@
                 <button type="button" class="segment-btn" id="seg-private" role="radio" aria-checked="false" data-value="private">
                   Only send to Bhumika
                 </button>
+                <input type="radio" name="visibility_radio" id="vis-public" value="public" style="width:16px;height:16px;opacity:0.01;cursor:pointer;margin:0 4px;" checked aria-label="Show on the website">
+                <input type="radio" name="visibility_radio" id="vis-private" value="private" style="width:16px;height:16px;opacity:0.01;cursor:pointer;margin:0 4px;" aria-label="Only send to Bhumika">
               </div>
               <input type="hidden" name="visibility" id="note-visibility-input" value="public">
 
@@ -496,31 +498,49 @@
     const consentCheck = document.getElementById('note-consent-check');
     const privateNoteHint = document.getElementById('private-note-hint');
 
-    if (segPublic && segPrivate) {
-      segPublic.addEventListener('click', () => {
+    const visPublicRadio = document.getElementById('vis-public');
+    const visPrivateRadio = document.getElementById('vis-private');
+
+    function selectPublic() {
+      if (segPublic) {
         segPublic.classList.add('active');
         segPublic.setAttribute('aria-checked', 'true');
+      }
+      if (segPrivate) {
         segPrivate.classList.remove('active');
         segPrivate.setAttribute('aria-checked', 'false');
-        if (visInput) visInput.value = 'public';
-        if (consentContainer) consentContainer.style.display = 'block';
-        if (consentCheck) consentCheck.required = true;
-        if (privateNoteHint) privateNoteHint.style.display = 'none';
-        saveDraft();
-      });
+      }
+      if (visInput) visInput.value = 'public';
+      if (visPublicRadio) visPublicRadio.checked = true;
+      if (visPrivateRadio) visPrivateRadio.checked = false;
+      if (consentContainer) consentContainer.style.display = 'block';
+      if (consentCheck) consentCheck.required = true;
+      if (privateNoteHint) privateNoteHint.style.display = 'none';
+      saveDraft();
+    }
 
-      segPrivate.addEventListener('click', () => {
+    function selectPrivate() {
+      if (segPrivate) {
         segPrivate.classList.add('active');
         segPrivate.setAttribute('aria-checked', 'true');
+      }
+      if (segPublic) {
         segPublic.classList.remove('active');
         segPublic.setAttribute('aria-checked', 'false');
-        if (visInput) visInput.value = 'private';
-        if (consentContainer) consentContainer.style.display = 'none';
-        if (consentCheck) consentCheck.required = false;
-        if (privateNoteHint) privateNoteHint.style.display = 'block';
-        saveDraft();
-      });
+      }
+      if (visInput) visInput.value = 'private';
+      if (visPrivateRadio) visPrivateRadio.checked = true;
+      if (visPublicRadio) visPublicRadio.checked = false;
+      if (consentContainer) consentContainer.style.display = 'none';
+      if (consentCheck) consentCheck.required = false;
+      if (privateNoteHint) privateNoteHint.style.display = 'block';
+      saveDraft();
     }
+
+    if (segPublic) segPublic.addEventListener('click', selectPublic);
+    if (segPrivate) segPrivate.addEventListener('click', selectPrivate);
+    if (visPublicRadio) visPublicRadio.addEventListener('change', selectPublic);
+    if (visPrivateRadio) visPrivateRadio.addEventListener('change', selectPrivate);
 
     // Swipe-down gesture to dismiss bottom sheet on mobile
     const sheet = document.getElementById('swan-bottom-sheet');

@@ -238,7 +238,7 @@ function createProduct(payload) {
   // Ensure unique slug
   let uniqueSlug = slug;
   let counter = 1;
-  while (store.products.some(p => p.slug === uniqueSlug)) {
+  while (store.products.some(p => p.slug === uniqueSlug && p.deleted_at === null)) {
     uniqueSlug = `${slug}-${counter++}`;
   }
 
@@ -285,7 +285,7 @@ function createProduct(payload) {
 
 function updateProduct(id, updates) {
   const store = readStore();
-  const index = store.products.findIndex(p => String(p.id) === String(id));
+  const index = store.products.findIndex(p => String(p.id) === String(id) || p.slug === id);
   if (index === -1) return null;
 
   const current = store.products[index];
@@ -332,7 +332,7 @@ function updateProduct(id, updates) {
  */
 function deleteProduct(id, permanent = false) {
   const store = readStore();
-  const index = store.products.findIndex(p => String(p.id) === String(id));
+  const index = store.products.findIndex(p => String(p.id) === String(id) || p.slug === id);
   if (index === -1) return { success: false, rowsAffected: 0, error: 'Product not found' };
 
   if (permanent) {
@@ -356,7 +356,7 @@ function deleteProduct(id, permanent = false) {
  */
 function restoreProduct(id) {
   const store = readStore();
-  const product = store.products.find(p => String(p.id) === String(id));
+  const product = store.products.find(p => String(p.id) === String(id) || p.slug === id);
   if (!product) return { success: false, error: 'Product not found' };
 
   product.deleted_at = null;
@@ -448,7 +448,7 @@ function createCategory(payload) {
 
   let uniqueSlug = slug;
   let counter = 1;
-  while (store.categories.some(c => c.slug === uniqueSlug)) {
+  while (store.categories.some(c => c.slug === uniqueSlug && c.deleted_at === null)) {
     uniqueSlug = `${slug}-${counter++}`;
   }
 
@@ -457,10 +457,12 @@ function createCategory(payload) {
     name: String(payload.name || 'New Collection').trim(),
     slug: uniqueSlug,
     description: String(payload.description || '').trim(),
-    icon_emoji: payload.icon_emoji || '🌸',
-    image_url: payload.image_url || null,
-    sort_order: parseInt(payload.sort_order || store.categories.length + 1, 10),
-    is_hidden: Boolean(payload.is_hidden),
+    icon_emoji: payload.icon_emoji || payload.icon || '🌸',
+    icon: payload.icon_emoji || payload.icon || '🌸',
+    image_url: payload.image_url || payload.image || null,
+    image: payload.image_url || payload.image || null,
+    sort_order: parseInt(payload.sort_order ?? payload.sortOrder ?? (store.categories.length + 1), 10),
+    is_hidden: Boolean(payload.is_hidden || payload.isHidden),
     deleted_at: null,
     created_at: now,
     updated_at: now
@@ -473,7 +475,7 @@ function createCategory(payload) {
 
 function updateCategory(id, updates) {
   const store = readStore();
-  const index = store.categories.findIndex(c => String(c.id) === String(id));
+  const index = store.categories.findIndex(c => String(c.id) === String(id) || c.slug === id);
   if (index === -1) return null;
 
   const current = store.categories[index];
@@ -510,12 +512,12 @@ function updateCategory(id, updates) {
  */
 function deleteCategory(id, { permanent = false, moveToCategoryId = null, deleteProducts = false } = {}) {
   const store = readStore();
-  const cat = store.categories.find(c => String(c.id) === String(id));
+  const cat = store.categories.find(c => String(c.id) === String(id) || c.slug === id);
   if (!cat) return { success: false, rowsAffected: 0, error: 'Collection not found' };
 
   // Check active products belonging to this category
   const linkedProducts = store.products.filter(p => 
-    (String(p.category_id) === String(id) || p.category === cat.slug) && p.deleted_at === null
+    (String(p.category_id) === String(cat.id) || p.category === cat.slug) && p.deleted_at === null
   );
 
   if (linkedProducts.length > 0 && !moveToCategoryId && !deleteProducts) {
@@ -554,7 +556,7 @@ function deleteCategory(id, { permanent = false, moveToCategoryId = null, delete
   }
 
   // Delete category
-  const catIndex = store.categories.findIndex(c => String(c.id) === String(id));
+  const catIndex = store.categories.findIndex(c => String(c.id) === String(cat.id) || c.slug === cat.slug);
   if (permanent) {
     if (catIndex !== -1) store.categories.splice(catIndex, 1);
   } else {
@@ -566,13 +568,13 @@ function deleteCategory(id, { permanent = false, moveToCategoryId = null, delete
     success: true,
     rowsAffected: 1,
     permanent,
-    id
+    id: cat.id
   };
 }
 
 function restoreCategory(id) {
   const store = readStore();
-  const cat = store.categories.find(c => String(c.id) === String(id));
+  const cat = store.categories.find(c => String(c.id) === String(id) || c.slug === id);
   if (!cat) return { success: false, error: 'Category not found' };
 
   cat.deleted_at = null;
@@ -738,9 +740,10 @@ function getPublicBlogPostBySlug(slug) {
   return post;
 }
 
-function getAdminBlogPosts({ trash = false, status = null } = {}) {
+function getAdminBlogPosts({ trash = false, status = null, all = false } = {}) {
   const store = readStore();
   let list = (store.blog_posts || []).filter(p => {
+    if (all) return true;
     if (trash) {
       return Boolean(p.deleted_at);
     } else {
@@ -748,7 +751,7 @@ function getAdminBlogPosts({ trash = false, status = null } = {}) {
     }
   });
   
-  if (status && status !== 'ALL' && !trash) {
+  if (status && status !== 'ALL' && !trash && !all) {
     list = list.filter(p => p.status === status);
   }
   

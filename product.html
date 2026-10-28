@@ -556,7 +556,7 @@
             } else {
               const isSingle = productReviews.length === 1;
               revContainer.innerHTML = `
-                <div class="${isSingle ? 'single-review-grid' : ''}" style="${isSingle ? 'max-width: 580px; margin: 0 auto;' : 'display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;'}">
+                <div class="reviews-cards-grid ${isSingle ? 'single-review-grid' : ''}" style="${isSingle ? 'max-width: 580px; margin: 0 auto;' : ''}">
                   ${productReviews.map(r => {
                     const rating = Math.min(5, Math.max(1, parseInt(r.rating, 10) || 5));
                     const authorName = r.displayName || 'Kind Customer';

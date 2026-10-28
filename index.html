@@ -498,6 +498,13 @@
       function hydrateHomeContent(c) {
         if (!c) return;
 
+        // Announcement Bar
+        const announceText = c.announcement || c.banner?.message;
+        if (announceText) {
+          const announceEl = document.querySelector('.announcement-bar span');
+          if (announceEl) announceEl.textContent = announceText;
+        }
+
         // Hero Headline, Subheadline & Badge
         const heroBadge = c.heroBadge || c.hero?.badge;
         const heroHead = c.heroHeadline || c.hero?.headline;

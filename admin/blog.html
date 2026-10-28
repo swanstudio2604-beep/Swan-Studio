@@ -477,7 +477,10 @@
               <span>🔗 Store link:</span>
               <code style="background: var(--cream); padding: 0.15rem 0.45rem; border-radius: 4px; border: 1px solid var(--border-subtle); color: var(--cocoa);">blog-post.html?slug=<span id="slug-preview">...</span></code>
             </div>
-            <input type="hidden" id="story-slug-input">
+            <div style="margin-top: 0.5rem;">
+              <label for="story-slug-input" class="form-label" style="font-size: 0.8rem; color: #8A7670; margin-bottom: 0.2rem;">Story Web Link Slug</label>
+              <input type="text" id="story-slug-input" class="form-control" placeholder="e.g. art-of-slow-crochet" style="font-size: 0.88rem; padding: 0.5rem 0.75rem;">
+            </div>
           </div>
 
           <!-- Section 2: Story Topic & Tag -->
@@ -567,7 +570,12 @@ Press Enter twice to start a new paragraph!" required></textarea>
                 </div>
               </label>
             </div>
-            <input type="hidden" id="story-status-select" value="published">
+            <div style="margin-top: 0.65rem;">
+              <select id="story-status-select" name="story_status" class="form-input" style="width: 100%; font-size: 0.88rem; padding: 0.6rem 0.85rem; border: 1.5px solid var(--border-subtle); border-radius: 6px; background: #FFFFFF; color: var(--cocoa); cursor: pointer;">
+                <option value="published">🌟 Published (Visible immediately on your website)</option>
+                <option value="draft">📝 Save as Draft (Keep private to finish writing later)</option>
+              </select>
+            </div>
             <input type="hidden" id="story-date-input" value="">
           </div>
 
@@ -679,8 +687,8 @@ Press Enter twice to start a new paragraph!" required></textarea>
         author: 'Bhumika Nama',
         tags: ['Craftsmanship', 'Studio Diary'],
         read_time_minutes: 5,
-        cover_image: 'assets/images/product-corset-top.webp',
-        cover_image_alt: 'Black crochet corset top with delicate lace borders',
+        cover_image: 'assets/images/product-tote.webp',
+        cover_image_alt: 'Handcrafted floral crochet tote bag',
         excerpt: 'From sizing measurements to selecting breathable cotton yarn — step inside our Jaipur atelier to see how bespoke wearable crochet pieces are crafted.',
         body: `## Wearable Art Custom-Fitted to You\n\nA crochet garment is completely different from fast-fashion clothing. It is sculpted directly to your natural contours, stitch by stitch, loop by loop.\n\nWhen a client shares their bust, waist, and underbust measurements with us, we calculate the exact stitch count needed so the corset top or halter fits like a second skin — supportive, breathable, and utterly unique.\n\n> "Crochet conforms to the body with soft natural warmth that no synthetic fabric can duplicate."\n\n## Premium Cotton for Indian Weather\n\nWe work exclusively with soft 4-ply and 5-ply combed milk cotton yarn. It is breathable in warm weather, gentle on sensitive skin, and retains its graceful drape wash after wash.`
       }
@@ -795,6 +803,27 @@ Press Enter twice to start a new paragraph!" required></textarea>
       const slugPreview = document.getElementById('slug-preview');
       const choicePub = document.getElementById('choice-pub');
       const choiceDraft = document.getElementById('choice-draft');
+      const statusSelect = document.getElementById('story-status-select');
+
+      if (statusSelect) {
+        statusSelect.addEventListener('change', () => {
+          if (statusSelect.value === 'draft') {
+            choiceDraft.checked = true;
+          } else {
+            choicePub.checked = true;
+          }
+        });
+      }
+      if (choicePub) {
+        choicePub.addEventListener('change', () => {
+          if (choicePub.checked && statusSelect) statusSelect.value = 'published';
+        });
+      }
+      if (choiceDraft) {
+        choiceDraft.addEventListener('change', () => {
+          if (choiceDraft.checked && statusSelect) statusSelect.value = 'draft';
+        });
+      }
       const excerptInput = document.getElementById('story-excerpt-input');
       const tagsInput = document.getElementById('story-tags-input');
       const bodyInput = document.getElementById('story-body-input');
@@ -815,6 +844,10 @@ Press Enter twice to start a new paragraph!" required></textarea>
           slugInput.value = s;
           slugPreview.textContent = s || '...';
         }
+      });
+
+      slugInput.addEventListener('input', () => {
+        slugPreview.textContent = slugInput.value.trim() || '...';
       });
 
       // Tab Switching
@@ -877,8 +910,10 @@ Press Enter twice to start a new paragraph!" required></textarea>
           
           if ((post.status || 'published').toLowerCase() === 'draft') {
             choiceDraft.checked = true;
+            if (statusSelect) statusSelect.value = 'draft';
           } else {
             choicePub.checked = true;
+            if (statusSelect) statusSelect.value = 'published';
           }
 
           excerptInput.value = post.excerpt || '';
@@ -893,6 +928,7 @@ Press Enter twice to start a new paragraph!" required></textarea>
           editIdInput.value = '';
           document.getElementById('story-form').reset();
           choicePub.checked = true;
+          if (statusSelect) statusSelect.value = 'published';
           coverUrlInput.value = 'assets/images/hero-bouquet.webp';
           coverPreviewImg.src = '../assets/images/hero-bouquet.webp';
           slugPreview.textContent = '...';
@@ -921,8 +957,8 @@ Press Enter twice to start a new paragraph!" required></textarea>
         btnSave.disabled = true;
         btnSave.textContent = 'Saving...';
 
-        const isPublished = choicePub.checked;
-        const status = isPublished ? 'published' : 'draft';
+        const status = (statusSelect && statusSelect.value) || (choiceDraft && choiceDraft.checked ? 'draft' : 'published');
+        const isPublished = status.toLowerCase() === 'published';
         const rawBody = bodyInput.value.trim();
         const formattedBody = parseStoryToHtml(rawBody);
 
@@ -946,7 +982,24 @@ Press Enter twice to start a new paragraph!" required></textarea>
         const isEdit = Boolean(editIdInput.value);
         let savedSuccessfully = false;
 
-        // Try Supabase first
+        // 1. Sync to local server API (/api/admin/blog)
+        try {
+          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          const url = isEdit ? `${baseUrl}/api/admin/blog/${editIdInput.value}` : `${baseUrl}/api/admin/blog`;
+          const method = isEdit ? 'PUT' : 'POST';
+          const apiRes = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (apiRes.ok) {
+            savedSuccessfully = true;
+          }
+        } catch (apiErr) {
+          console.warn('Local API blog save note:', apiErr);
+        }
+
+        // 2. Try Supabase
         const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
         if (client) {
           try {
@@ -1000,9 +1053,21 @@ Press Enter twice to start a new paragraph!" required></textarea>
 
         let rawPosts = [];
 
-        // Try Supabase
+        // 1. Try local server API
+        try {
+          const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+          const apiRes = await fetch(`${baseUrl}/api/admin/blog?all=1`);
+          if (apiRes.ok) {
+            const j = await apiRes.json();
+            if (j && Array.isArray(j.data) && j.data.length > 0) {
+              rawPosts = j.data;
+            }
+          }
+        } catch (e) {}
+
+        // 2. Try Supabase if server empty
         const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-        if (client) {
+        if (client && rawPosts.length === 0) {
           try {
             const { data, error } = await client
               .from('blog_posts')
@@ -1011,16 +1076,17 @@ Press Enter twice to start a new paragraph!" required></textarea>
 
             if (!error && Array.isArray(data) && data.length > 0) {
               rawPosts = data;
-              saveLocalStories(data);
             }
           } catch (err) {
             console.warn('Supabase fetch note:', err);
           }
         }
 
-        // Fallback to local storage if remote empty
+        // 3. Fallback to local storage if still empty
         if (rawPosts.length === 0) {
           rawPosts = getLocalStories();
+        } else {
+          saveLocalStories(rawPosts);
         }
 
         const normalizedPosts = rawPosts.map(p => ({
@@ -1148,6 +1214,10 @@ Press Enter twice to start a new paragraph!" required></textarea>
           b.addEventListener('click', async () => {
             const id = b.getAttribute('data-id');
             if (!confirm('Move this story to trash?')) return;
+            try {
+              const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+              await fetch(`${baseUrl}/api/admin/blog/${id}`, { method: 'DELETE' });
+            } catch (e) {}
             const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
             if (client) {
               try {
@@ -1168,6 +1238,10 @@ Press Enter twice to start a new paragraph!" required></textarea>
         feed.querySelectorAll('.btn-restore').forEach(b => {
           b.addEventListener('click', async () => {
             const id = b.getAttribute('data-id');
+            try {
+              const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+              await fetch(`${baseUrl}/api/admin/blog/${id}/restore`, { method: 'POST' });
+            } catch (e) {}
             const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
             if (client) {
               try {
@@ -1189,6 +1263,10 @@ Press Enter twice to start a new paragraph!" required></textarea>
           b.addEventListener('click', async () => {
             const id = b.getAttribute('data-id');
             if (!confirm('Permanently delete this story? This cannot be undone.')) return;
+            try {
+              const baseUrl = typeof SWAN_API !== 'undefined' ? SWAN_API.getBaseUrl() : '';
+              await fetch(`${baseUrl}/api/admin/blog/${id}?permanent=1`, { method: 'DELETE' });
+            } catch (e) {}
             const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
             if (client) {
               try {

@@ -2505,8 +2505,8 @@
         btnBottom.textContent = 'Saving...';
         saveFeedback.style.display = 'none';
 
-        const finalMakerPhoto = currentMakerPhotoDataUrl || makerUrl.value.trim() || null;
-        const finalHeroPhoto = currentHeroPhotoDataUrl || heroUrl.value.trim() || null;
+        const finalMakerPhoto = makerUrl.value.trim() || currentMakerPhotoDataUrl || null;
+        const finalHeroPhoto = heroUrl.value.trim() || currentHeroPhotoDataUrl || null;
 
         const contentPayload = {
           announcement: announceInput.value.trim(),
@@ -2589,57 +2589,88 @@
 
         try {
           const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
-          if (!client) throw new Error('Database client not connected.');
 
-          const { error: upsertErr } = await client.from('site_content').upsert([
-            { key: 'content', data: contentPayload, updated_at: new Date().toISOString() },
-            { key: 'settings', data: settingsPayload, updated_at: new Date().toISOString() },
-            {
-              key: 'banner',
-              data: { enabled: true, message: contentPayload.announcement, linkText: 'Shop Now', linkUrl: 'shop.html' },
-              updated_at: new Date().toISOString()
-            },
-            {
-              key: 'hero',
-              data: {
-                eyebrow: contentPayload.heroBadge || 'Artisanal Handmade Crochet Atelier',
-                title: contentPayload.heroHeadline,
-                subtitle: contentPayload.heroSub,
-                image: contentPayload.heroImage,
-                ctaText: 'Explore Atelier Creations',
-                ctaUrl: 'shop.html'
-              },
-              updated_at: new Date().toISOString()
-            },
-            {
-              key: 'about',
-              data: {
-                founderName: contentPayload.makerName || 'Bhumika Nama',
-                founderRole: contentPayload.makerRole || 'Founder & Crochet Artisan',
-                quote: contentPayload.makerQuote || contentPayload.founderQuote,
-                photo: contentPayload.makerPhoto,
-                headline: contentPayload.storyHeadline,
-                story: contentPayload.storyPara1,
-                sec1Title: contentPayload.storySection1Title,
-                sec1Text: contentPayload.storySection1Text,
-                sec2Title: contentPayload.storySection2Title,
-                sec2Text: contentPayload.storySection2Text
-              },
-              updated_at: new Date().toISOString()
-            },
-            {
-              key: 'contact',
-              data: {
-                whatsapp: settingsPayload.whatsapp,
-                upiId: settingsPayload.upiId,
-                email: 'swanstudio2604@gmail.com',
-                instagram: settingsPayload.instagram || '@swanstudio.crochet'
-              },
-              updated_at: new Date().toISOString()
+          let supaSuccess = false;
+          let apiSuccess = false;
+
+          // 1. Sync to local Atelier server endpoint (populates store.json and /api/content immediately)
+          try {
+            const apiRes = await fetch('/api/admin/content', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(contentPayload)
+            });
+            if (apiRes.ok) {
+              apiSuccess = true;
             }
-          ]);
+          } catch (apiErr) {
+            console.warn('API content sync warning:', apiErr);
+          }
 
-          if (upsertErr) throw new Error(upsertErr.message);
+          // 2. Also upsert to Supabase site_content table
+          if (client) {
+            try {
+              const { error: upsertErr } = await client.from('site_content').upsert([
+                { key: 'content', data: contentPayload, updated_at: new Date().toISOString() },
+                { key: 'settings', data: settingsPayload, updated_at: new Date().toISOString() },
+                {
+                  key: 'banner',
+                  data: { enabled: true, message: contentPayload.announcement, linkText: 'Shop Now', linkUrl: 'shop.html' },
+                  updated_at: new Date().toISOString()
+                },
+                {
+                  key: 'hero',
+                  data: {
+                    eyebrow: contentPayload.heroBadge || 'Artisanal Handmade Crochet Atelier',
+                    title: contentPayload.heroHeadline,
+                    subtitle: contentPayload.heroSub,
+                    image: contentPayload.heroImage,
+                    ctaText: 'Explore Atelier Creations',
+                    ctaUrl: 'shop.html'
+                  },
+                  updated_at: new Date().toISOString()
+                },
+                {
+                  key: 'about',
+                  data: {
+                    founderName: contentPayload.makerName || 'Bhumika Nama',
+                    founderRole: contentPayload.makerRole || 'Founder & Crochet Artisan',
+                    quote: contentPayload.makerQuote || contentPayload.founderQuote,
+                    photo: contentPayload.makerPhoto,
+                    headline: contentPayload.storyHeadline,
+                    story: contentPayload.storyPara1,
+                    sec1Title: contentPayload.storySection1Title,
+                    sec1Text: contentPayload.storySection1Text,
+                    sec2Title: contentPayload.storySection2Title,
+                    sec2Text: contentPayload.storySection2Text
+                  },
+                  updated_at: new Date().toISOString()
+                },
+                {
+                  key: 'contact',
+                  data: {
+                    whatsapp: settingsPayload.whatsapp,
+                    upiId: settingsPayload.upiId,
+                    email: 'swanstudio2604@gmail.com',
+                    instagram: settingsPayload.instagram || '@swanstudio.crochet'
+                  },
+                  updated_at: new Date().toISOString()
+                }
+              ]);
+
+              if (!upsertErr) {
+                supaSuccess = true;
+              } else {
+                console.warn('Supabase site_content upsert note:', upsertErr.message);
+              }
+            } catch (supaErr) {
+              console.warn('Supabase site_content exception:', supaErr);
+            }
+          }
+
+          if (!supaSuccess && !apiSuccess) {
+            throw new Error('Unable to save changes to server or database.');
+          }
 
           // Update Save Feedback with "Live on your website" and "View on site" button
           const previewUrl = `../index.html?t=${Date.now()}`;

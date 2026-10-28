@@ -13,6 +13,15 @@ async function authenticateAdmin(context, baseURL) {
       path: '/'
     }
   ]);
+  await context.addInitScript(() => {
+    localStorage.setItem('swan_demo_user', JSON.stringify({
+      id: 'admin-swan',
+      email: 'swanstudio2604@gmail.com',
+      full_name: 'Bhumika Nama (Admin)',
+      role: 'admin',
+      token: 'swan_studio_audit_safe_key_2026'
+    }));
+  });
 }
 
 // Dispatches direct DOM click or fallback tap/click for rock-solid mobile compatibility
