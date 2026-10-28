@@ -559,9 +559,11 @@ function renderActionDock() {
     document.body.appendChild(dock);
   }
 
-  // 1. Leave Note Button (do not show on reviews or checkout)
+  // 1. Leave Note Button (do not show on cart, checkout, or reviews)
   const isReviewsPage = window.location.pathname.toLowerCase().includes('reviews');
-  const isCheckoutPage = window.location.pathname.includes('checkout.html') || window.location.pathname.includes('order-confirmation.html');
+  const isCheckoutPage = window.location.pathname.toLowerCase().includes('cart') || 
+                         window.location.pathname.toLowerCase().includes('checkout') || 
+                         window.location.pathname.toLowerCase().includes('order-confirmation');
   if (!document.getElementById('swan-floating-note-btn') && !isReviewsPage && !isCheckoutPage) {
     const noteBtn = document.createElement('button');
     noteBtn.type = 'button';
@@ -614,6 +616,33 @@ function setupDockInteractions(dock) {
   const noteBtn = document.getElementById('swan-floating-note-btn');
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // 1. Hide floating action dock when an on-page note CTA is in view to prevent overlap
+  const onPageCtas = document.querySelectorAll('.home-reviews-cta-row, .open-note-modal-btn:not(#swan-floating-note-btn)');
+  if (onPageCtas.length > 0 && 'IntersectionObserver' in window) {
+    const ctaObserver = new IntersectionObserver((entries) => {
+      const anyVisible = entries.some(e => e.isIntersecting);
+      if (dock) {
+        if (anyVisible) {
+          dock.classList.add('dock-cta-hidden');
+        } else {
+          dock.classList.remove('dock-cta-hidden');
+        }
+      }
+      if (noteBtn) {
+        if (anyVisible) {
+          noteBtn.style.opacity = '0';
+          noteBtn.style.pointerEvents = 'none';
+          noteBtn.style.transform = 'scale(0.8)';
+        } else {
+          noteBtn.style.opacity = '';
+          noteBtn.style.pointerEvents = '';
+          noteBtn.style.transform = '';
+        }
+      }
+    }, { threshold: 0.1 });
+    onPageCtas.forEach(el => ctaObserver.observe(el));
+  }
+
   window.addEventListener('scroll', () => {
     const curY = window.scrollY;
     // Collapse note button on scroll down, expand on scroll up
@@ -625,15 +654,14 @@ function setupDockInteractions(dock) {
       }
     }
 
-    // Hide or elevate dock when approaching footer to guarantee 0 overlap
+    // Hide dock cleanly when approaching bottom/footer to guarantee 0 overlap with CTAs or footer text
     const footer = document.querySelector('footer') || document.getElementById('site-footer');
     if (footer) {
       const footerRect = footer.getBoundingClientRect();
-      if (footerRect.top < window.innerHeight) {
-        const overlap = window.innerHeight - footerRect.top;
-        dock.style.transform = `translateY(-${Math.max(0, overlap + 10)}px)`;
+      if (footerRect.top < window.innerHeight + 20) {
+        dock.classList.add('dock-hidden');
       } else {
-        dock.style.transform = '';
+        dock.classList.remove('dock-hidden');
       }
     }
 

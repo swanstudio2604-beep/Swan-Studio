@@ -27,7 +27,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Global Stylesheet -->
-  <link rel="stylesheet" href="css/style.css?v=2.2.2">
+  <link rel="stylesheet" href="css/style.css?v=2.2.3">
 </head>
 <body>
 
@@ -177,7 +177,7 @@
   <script src="js/api-config.js"></script>
   <script src="js/supabase.js"></script>
   <script src="js/coupons.js?v=20261026_m4"></script>
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=2.2.3"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const itemsList = document.getElementById('cart-items-list');
@@ -229,13 +229,19 @@
       }
 
       let hasBlockedCartItems = false;
+      const productStatusCache = new Map();
 
-      async function renderCart() {
+      async function renderCart(fast = false) {
         const cart = getCartItems();
         if (cart.length === 0) {
           layoutEl.style.display = 'none';
           emptyEl.style.display = 'block';
           if (window.SwanCoupons) window.SwanCoupons.removeApplied();
+          const mobileBillBtn = document.getElementById('mobile-bill-checkout-btn');
+          if (mobileBillBtn) {
+            mobileBillBtn.style.pointerEvents = 'none';
+            mobileBillBtn.style.opacity = '0.6';
+          }
           return;
         }
 
@@ -245,15 +251,32 @@
         const deletedIds = JSON.parse(localStorage.getItem('swan_deleted_product_ids') || '[]');
         const archivedIds = JSON.parse(localStorage.getItem('swan_archived_product_ids') || '[]');
 
-        // Check each cart item's live or local status
+        // Check each cart item's live or local status (using cache on fast updates)
         hasBlockedCartItems = false;
         let blockedItemsCount = 0;
 
         const evaluatedCart = await Promise.all(cart.map(async (item) => {
+          const cacheKey = item.id || item.slug || item.name;
+          if (fast && productStatusCache.has(cacheKey)) {
+            const cached = productStatusCache.get(cacheKey);
+            if (cached.isUnavailable || cached.isOutOfStock) {
+              hasBlockedCartItems = true;
+              blockedItemsCount++;
+            }
+            return {
+              ...item,
+              product: cached.product,
+              isUnavailable: cached.isUnavailable,
+              isOutOfStock: cached.isOutOfStock
+            };
+          }
+
           let product = null;
           if (typeof fetchProductBySlug === 'function' && item.slug) {
-            const res = await fetchProductBySlug(item.slug);
-            product = res.data;
+            try {
+              const res = await fetchProductBySlug(item.slug);
+              product = res.data;
+            } catch (e) {}
           }
           if (!product) {
             let localList = [];
@@ -280,6 +303,8 @@
           const isUnavailable = !product;
           const isOutOfStock = product ? (typeof isProductSoldOut === 'function' ? isProductSoldOut(product) : Boolean(!product.madeToOrder && !product.made_to_order && (product.stock !== undefined && product.stock !== null) && Number(product.stock) <= 0)) : false;
 
+          productStatusCache.set(cacheKey, { product, isUnavailable, isOutOfStock });
+
           if (isUnavailable || isOutOfStock) {
             hasBlockedCartItems = true;
             blockedItemsCount++;
@@ -303,32 +328,29 @@
             subtotal += lineTotal;
           }
 
+          const safeName = (item.name || 'Crochet Creation').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+          const safeSlug = encodeURIComponent(item.slug || '');
+
           if (item.isOutOfStock) {
             return `
-              <div class="cart-item-sold-out" style="display: flex; gap: 1.25rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding: 1rem; margin-bottom: 0.5rem;" data-index="${index}">
-                <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #F3EAE6; border: 1px solid rgba(115, 97, 90, 0.2); display: flex; align-items: center; justify-content: center; color: #73615A; font-size: 0.76rem; font-weight: 600; text-transform: uppercase;">
-                  Sold out
+              <div class="cart-item-row cart-item-sold-out" data-index="${index}">
+                <div class="cart-item-thumb" style="background: #F3EAE6;">
+                  <span style="font-size: 0.68rem; font-weight: 700; color: #73615A; text-transform: uppercase;">Sold out</span>
                 </div>
-                <div style="flex: 1;">
-                  <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem;">
-                      <a href="product.html?slug=${item.slug || ''}" style="color: var(--cocoa);">${item.name}</a>
+                <div class="cart-item-details">
+                  <div class="cart-item-header-line">
+                    <h3 class="cart-item-title">
+                      <a href="product.html?slug=${safeSlug}">${safeName}</a>
                     </h3>
                     <span class="sold-out-pill">Sold out</span>
                   </div>
-                  <p style="font-size: 0.82rem; color: #73615A; margin-bottom: 0.4rem;">
-                    This creation is sold out. Please remove it from your bag to proceed with checkout.
-                  </p>
-                  <div style="display: flex; align-items: center; gap: 1rem;">
-                    <button class="btn-cart-remove" data-index="${index}" style="font-size: 0.84rem; color: var(--rose-text); font-weight: 600; text-decoration: underline; background: none; border: none; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center;">
-                      Remove from Bag
+                  <p class="cart-item-unit-price" style="color: #9A5565;">Sold out. Please remove to checkout.</p>
+                  <div class="cart-item-actions-line">
+                    <button type="button" class="btn-cart-remove" data-index="${index}" aria-label="Remove ${safeName} from bag">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      <span>Remove</span>
                     </button>
                   </div>
-                </div>
-                <div style="text-align: right; min-width: 80px;">
-                  <span style="font-size: 1.05rem; font-weight: 500; color: #8A7670;">
-                    ₹${lineTotal.toLocaleString('en-IN')}
-                  </span>
                 </div>
               </div>
             `;
@@ -336,62 +358,57 @@
 
           if (item.isUnavailable) {
             return `
-              <div class="cart-item-sold-out" style="display: flex; gap: 1.25rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding: 1rem; margin-bottom: 0.5rem;" data-index="${index}">
-                <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #F3EAE6; border: 1px solid rgba(115, 97, 90, 0.2); display: flex; align-items: center; justify-content: center; color: #73615A; font-size: 0.72rem; font-weight: 600; text-transform: uppercase;">
-                  Unavailable
+              <div class="cart-item-row cart-item-sold-out" data-index="${index}">
+                <div class="cart-item-thumb" style="background: #F3EAE6;">
+                  <span style="font-size: 0.66rem; font-weight: 700; color: #73615A; text-transform: uppercase;">N/A</span>
                 </div>
-                <div style="flex: 1;">
-                  <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                    <h3 style="font-size: 1.05rem; margin-bottom: 0.2rem; color: #6B7280;">
-                      ${item.name}
+                <div class="cart-item-details">
+                  <div class="cart-item-header-line">
+                    <h3 class="cart-item-title">
+                      ${safeName}
                     </h3>
-                    <span class="sold-out-pill" style="font-size: 0.7rem;">Unavailable</span>
+                    <span class="sold-out-pill">Unavailable</span>
                   </div>
-                  <p style="font-size: 0.82rem; color: #73615A; margin-bottom: 0.4rem;">
-                    This creation is no longer available in the store. Please remove it from your bag.
-                  </p>
-                  <div style="display: flex; align-items: center; gap: 1rem;">
-                    <button class="btn-cart-remove" data-index="${index}" style="font-size: 0.84rem; color: var(--rose-text); font-weight: 600; text-decoration: underline; background: none; border: none; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center;">
-                      Remove from Bag
+                  <p class="cart-item-unit-price" style="color: #73615A;">No longer available in store.</p>
+                  <div class="cart-item-actions-line">
+                    <button type="button" class="btn-cart-remove" data-index="${index}" aria-label="Remove ${safeName} from bag">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      <span>Remove</span>
                     </button>
                   </div>
-                </div>
-                <div style="text-align: right; min-width: 80px;">
-                  <span style="font-size: 1.1rem; font-weight: 600; color: #6B7280;">
-                    ₹${lineTotal.toLocaleString('en-IN')}
-                  </span>
                 </div>
               </div>
             `;
           }
 
           return `
-            <div style="display: flex; gap: 1.25rem; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 1.25rem;" data-index="${index}">
-              <div style="width: 72px; height: 72px; border-radius: var(--radius-sm); background: #FFF6F0; border: 1px dashed var(--rose); display: flex; align-items: center; justify-content: center; color: var(--rose-text);">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12a4 4 0 0 1 8 0"></path></svg>
-              </div>
-              <div style="flex: 1;">
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.2rem;">
-                  <a href="product.html?slug=${item.slug || ''}" style="color: var(--cocoa);">${item.name}</a>
-                </h3>
-                <p style="font-size: 0.88rem; color: #73615A; margin-bottom: 0.4rem;">
-                  Price: ₹${price.toLocaleString('en-IN')}
-                </p>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <div class="qty-selector" style="transform: scale(0.9); transform-origin: left center;">
-                    <button class="qty-btn btn-cart-minus" data-index="${index}">-</button>
-                    <input type="text" class="qty-input" value="${qty}" readonly>
-                    <button class="qty-btn btn-cart-plus" data-index="${index}">+</button>
+            <div class="cart-item-row" data-index="${index}" data-id="${encodeURIComponent(item.id || '')}">
+              <div class="cart-item-thumb">
+                ${item.image ? `<img src="${item.image}" alt="${safeName}" loading="lazy">` : `
+                  <div class="cart-item-placeholder" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 12a4 4 0 0 1 8 0"></path></svg>
                   </div>
-                  <button class="btn-cart-remove" data-index="${index}" style="font-size: 0.8rem; color: #9A5565; text-decoration: underline; background: none; border: none; cursor: pointer;">
-                    Remove
+                `}
+              </div>
+              <div class="cart-item-details">
+                <div class="cart-item-header-line">
+                  <h3 class="cart-item-title">
+                    <a href="product.html?slug=${safeSlug}">${safeName}</a>
+                  </h3>
+                  <span class="cart-item-line-total">₹${lineTotal.toLocaleString('en-IN')}</span>
+                </div>
+                <p class="cart-item-unit-price">Price: ₹${price.toLocaleString('en-IN')}</p>
+                <div class="cart-item-actions-line">
+                  <div class="qty-selector" role="group" aria-label="Quantity selector">
+                    <button type="button" class="qty-btn btn-cart-minus" data-index="${index}" aria-label="Decrease quantity of ${safeName}">-</button>
+                    <input type="text" class="qty-input" value="${qty}" readonly aria-label="Quantity of ${safeName}">
+                    <button type="button" class="qty-btn btn-cart-plus" data-index="${index}" aria-label="Increase quantity of ${safeName}">+</button>
+                  </div>
+                  <button type="button" class="btn-cart-remove" data-index="${index}" aria-label="Remove ${safeName} from bag">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <span>Remove</span>
                   </button>
                 </div>
-              </div>
-              <div style="text-align: right; min-width: 80px;">
-                <span style="font-size: 1.1rem; font-weight: 600; color: var(--cocoa);">
-                  ₹${lineTotal.toLocaleString('en-IN')}
-                </span>
               </div>
             </div>
           `;
@@ -406,6 +423,7 @@
         itemsList.innerHTML = warningBanner + itemsHtml;
 
         // Button state
+        const mobileBillBtn = document.getElementById('mobile-bill-checkout-btn');
         if (hasBlockedCartItems) {
           checkoutBtn.disabled = true;
           checkoutBtn.style.opacity = '0.7';
@@ -413,6 +431,10 @@
           checkoutBtn.style.background = '#8A7670';
           checkoutBtn.style.borderColor = '#8A7670';
           checkoutBtn.textContent = 'Remove Sold Out Items to Checkout';
+          if (mobileBillBtn) {
+            mobileBillBtn.style.pointerEvents = 'none';
+            mobileBillBtn.style.opacity = '0.6';
+          }
         } else {
           checkoutBtn.disabled = false;
           checkoutBtn.style.opacity = '1';
@@ -420,6 +442,10 @@
           checkoutBtn.style.background = '';
           checkoutBtn.style.borderColor = '';
           checkoutBtn.textContent = 'Proceed to Checkout';
+          if (mobileBillBtn) {
+            mobileBillBtn.style.pointerEvents = '';
+            mobileBillBtn.style.opacity = '';
+          }
         }
 
         subtotalEl.textContent = `₹${subtotal.toLocaleString('en-IN')}`;
@@ -455,8 +481,6 @@
 
         const total = Math.max(0, subtotal - discount);
         totalEl.textContent = `₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-        attachItemListeners();
       }
 
       function showFeedback(msg, type = 'info') {
@@ -471,43 +495,53 @@
         }
       }
 
-      function attachItemListeners() {
-        document.querySelectorAll('.btn-cart-minus').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const idx = parseInt(e.target.dataset.index, 10);
-            const cart = getCartItems();
-            if (cart[idx].quantity > 1) {
-              cart[idx].quantity -= 1;
-            } else {
-              cart.splice(idx, 1);
-            }
+      // Delegated event listener on itemsList: handles minus, plus, remove with ZERO lag and full touch support
+      itemsList.addEventListener('click', async (e) => {
+        const minusBtn = e.target.closest('.btn-cart-minus');
+        const plusBtn = e.target.closest('.btn-cart-plus');
+        const removeBtn = e.target.closest('.btn-cart-remove');
+
+        if (!minusBtn && !plusBtn && !removeBtn) return;
+        e.preventDefault();
+
+        const btn = minusBtn || plusBtn || removeBtn;
+        const idx = parseInt(btn.dataset.index, 10);
+        if (isNaN(idx)) return;
+
+        const cart = getCartItems();
+        if (!cart[idx]) return;
+
+        if (plusBtn) {
+          if ((cart[idx].quantity || 1) < 10) {
+            cart[idx].quantity = (cart[idx].quantity || 1) + 1;
             saveCartItems(cart);
-            await renderCart();
-          });
-        });
-
-        document.querySelectorAll('.btn-cart-plus').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const idx = parseInt(e.target.dataset.index, 10);
-            const cart = getCartItems();
-            if (cart[idx].quantity < 10) {
-              cart[idx].quantity += 1;
+            await renderCart(true); // fast re-render using productStatusCache
+          }
+        } else if (minusBtn) {
+          if ((cart[idx].quantity || 1) > 1) {
+            cart[idx].quantity = (cart[idx].quantity || 1) - 1;
+            saveCartItems(cart);
+            await renderCart(true); // fast re-render
+          } else {
+            // Remove item with fade out
+            const row = btn.closest('.cart-item-row');
+            if (row) row.classList.add('is-removing');
+            setTimeout(async () => {
+              cart.splice(idx, 1);
               saveCartItems(cart);
-              await renderCart();
-            }
-          });
-        });
-
-        document.querySelectorAll('.btn-cart-remove').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const idx = parseInt(e.target.dataset.index, 10);
-            const cart = getCartItems();
+              await renderCart(true);
+            }, 180);
+          }
+        } else if (removeBtn) {
+          const row = btn.closest('.cart-item-row');
+          if (row) row.classList.add('is-removing');
+          setTimeout(async () => {
             cart.splice(idx, 1);
             saveCartItems(cart);
-            await renderCart();
-          });
-        });
-      }
+            await renderCart(true);
+          }, 180);
+        }
+      });
 
       // Sample code chip quick fill
       document.querySelectorAll('.sample-code-chip').forEach(btn => {
@@ -557,12 +591,20 @@
 
       checkoutBtn.addEventListener('click', () => {
         if (hasBlockedCartItems) {
-          alert('Please remove sold out creations from your bag before proceeding to checkout.');
+          if (typeof showSwanToast === 'function') {
+            showSwanToast('Please remove sold out creations from your bag first.');
+          } else {
+            alert('Please remove sold out creations from your bag before proceeding to checkout.');
+          }
           return;
         }
         const cart = getCartItems();
         if (cart.length === 0) {
-          alert('Your shopping bag is empty.');
+          if (typeof showSwanToast === 'function') {
+            showSwanToast('Your shopping bag is empty.');
+          } else {
+            alert('Your shopping bag is empty.');
+          }
           return;
         }
         window.location.href = 'checkout.html';

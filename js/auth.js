@@ -190,13 +190,14 @@ const AUTH = {
   /**
    * Sends a password reset email via Supabase Auth.
    */
-  async resetPassword({ email }) {
+  async resetPassword(param) {
     const client = typeof getSupabaseClient === 'function' ? getSupabaseClient() : null;
     if (!client) {
       throw new Error('Database is not connected.');
     }
 
-    if (!email || !email.includes('@')) {
+    const email = typeof param === 'string' ? param : (param && param.email);
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
       throw new Error('Please enter a valid email address.');
     }
 

@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Global Stylesheet -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=2.2.3">
 </head>
 <body>
 
@@ -122,8 +122,8 @@
   <script src="js/config.js"></script>
   <script src="js/api-config.js"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/auth.js?v=2.2.3"></script>
+  <script src="js/main.js?v=2.2.3"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('login-form');
@@ -207,12 +207,17 @@
         e.preventDefault();
         feedback.style.display = 'none';
 
-        const identifier = idInput.value.trim();
+        let identifier = idInput.value.trim();
         const password = document.getElementById('login-password').value;
 
         if (!identifier || !password) {
           showFeedback('Please enter both your identifier and password.', 'error');
           return;
+        }
+
+        // Convenience: allow entering "admin" in Admin Atelier mode
+        if (currentMode === 'admin' && identifier.toLowerCase() === 'admin') {
+          identifier = 'swanstudio2604@gmail.com';
         }
 
         submitBtn.disabled = true;
@@ -243,17 +248,21 @@
 
       forgotLink.addEventListener('click', async (e) => {
         e.preventDefault();
-        const email = idInput.value.trim();
-        if (!email) {
-          alert('Please enter your email address in the field above first, then click "Forgot password?".');
+        let email = idInput.value.trim();
+        if (currentMode === 'admin' && email.toLowerCase() === 'admin') {
+          email = 'swanstudio2604@gmail.com';
+        }
+        if (!email || !email.includes('@')) {
+          showFeedback('Please enter your valid email address in the field above first, then click "Forgot password?".', 'error');
+          idInput.focus();
           return;
         }
 
         try {
           await AUTH.resetPassword(email);
-          alert(`Password reset instructions have been dispatched to ${email}.`);
+          showFeedback(`✓ Password reset instructions have been dispatched to ${email}. Please check your inbox.`, 'success');
         } catch (err) {
-          alert(err.message || 'Unable to request password reset.');
+          showFeedback(err.message || 'Unable to request password reset.', 'error');
         }
       });
 

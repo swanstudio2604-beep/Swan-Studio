@@ -43,8 +43,9 @@
   function renderFloatingButton() {
     if (document.getElementById('swan-floating-note-btn')) return;
 
-    // Hide if payment step on checkout.html or if on reviews page (page has dedicated review actions)
-    if (window.location.pathname.toLowerCase().includes('reviews') || currentPath === 'checkout.html' || currentPath === 'order-confirmation.html') {
+    // Hide on reviews, cart, checkout, or order-confirmation pages
+    const p = window.location.pathname.toLowerCase();
+    if (p.includes('reviews') || p.includes('cart') || p.includes('checkout') || p.includes('order-confirmation')) {
       return;
     }
 

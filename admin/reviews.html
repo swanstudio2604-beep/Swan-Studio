@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/style.css?v=2.2.3">
   <link rel="stylesheet" href="../css/admin.css?v=m3">
   <style>
     /* Mobile-first card moderation styling */
@@ -313,6 +313,7 @@
 
         try {
           let data = [];
+          let fetchErr = null;
 
           if (client) {
             try {
@@ -323,9 +324,13 @@
               
               if (!res.error && Array.isArray(res.data)) {
                 data = res.data.slice();
+              } else if (res.error) {
+                fetchErr = res.error;
+                console.warn('Supabase fetch returned error:', res.error);
               }
             } catch (supaErr) {
-              console.warn('Supabase fetch error:', supaErr);
+              fetchErr = supaErr;
+              console.warn('Supabase fetch exception:', supaErr);
             }
           }
 
@@ -342,6 +347,8 @@
                     existingIds.add(String(item.id));
                   }
                 }
+                // If local fallback succeeded, clear fetch error
+                fetchErr = null;
               }
             }
           } catch (apiErr) {
@@ -350,7 +357,7 @@
 
           if (fetchErr && (!data || data.length === 0)) {
             console.error('Error fetching admin reviews:', fetchErr.message);
-            listContainer.innerHTML = `<div class="admin-card" style="text-align: center; padding: 2rem; color: #DC2626;">Error loading notes: ${escapeHtml(fetchErr.message)}</div>`;
+            listContainer.innerHTML = `<div class="admin-card" style="text-align: center; padding: 2rem; color: #DC2626;">Error loading notes: ${escapeHtml(fetchErr.message || 'Unable to connect to database.')}</div>`;
             return;
           }
 
