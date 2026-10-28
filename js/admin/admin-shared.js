@@ -358,6 +358,13 @@ const ADMIN = {
     }, undoCallback ? 10000 : duration);
   },
 
+  /**
+   * Alias for showToast for backwards compatibility
+   */
+  toast(message, type = 'success', options = {}) {
+    return this.showToast(message, type, options);
+  },
+
   // --------------------------------------------------------------------------
   // Helper for admin authorization headers
   _getAdminHeaders() {

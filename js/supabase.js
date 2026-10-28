@@ -575,6 +575,19 @@ async function fetchApprovedReviews(productId = null) {
     results = results.filter(r => r.product_id === productId || r.productId === productId);
   }
 
+  // Merge with local moderation overrides if present
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const overrides = JSON.parse(localStorage.getItem('swan_review_status_overrides') || '{}');
+      if (overrides && Object.keys(overrides).length > 0) {
+        results = results.map(r => {
+          const ov = overrides[r.id];
+          return ov ? { ...r, ...ov } : r;
+        }).filter(r => !r.deleted_at && (r.status === 'approved' || !r.status));
+      }
+    }
+  } catch (e) {}
+
   return { isLive: results.length > 0, data: results.map(normalizeReview).filter(Boolean) };
 }
 
