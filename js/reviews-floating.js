@@ -43,9 +43,9 @@
   function renderFloatingButton() {
     if (document.getElementById('swan-floating-note-btn')) return;
 
-    // Hide on reviews, cart, checkout, or order-confirmation pages
+    // Hide on reviews, cart, checkout, order-confirmation, login, or signup pages
     const p = window.location.pathname.toLowerCase();
-    if (p.includes('reviews') || p.includes('cart') || p.includes('checkout') || p.includes('order-confirmation')) {
+    if (p.includes('reviews') || p.includes('cart') || p.includes('checkout') || p.includes('order-confirmation') || p.includes('login') || p.includes('signup')) {
       return;
     }
 

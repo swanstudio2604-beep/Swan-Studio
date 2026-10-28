@@ -559,12 +559,14 @@ function renderActionDock() {
     document.body.appendChild(dock);
   }
 
-  // 1. Leave Note Button (do not show on cart, checkout, or reviews)
+  // 1. Leave Note Button (do not show on cart, checkout, reviews, login, or signup)
   const isReviewsPage = window.location.pathname.toLowerCase().includes('reviews');
   const isCheckoutPage = window.location.pathname.toLowerCase().includes('cart') || 
                          window.location.pathname.toLowerCase().includes('checkout') || 
                          window.location.pathname.toLowerCase().includes('order-confirmation');
-  if (!document.getElementById('swan-floating-note-btn') && !isReviewsPage && !isCheckoutPage) {
+  const isAuthPage = window.location.pathname.toLowerCase().includes('login') ||
+                     window.location.pathname.toLowerCase().includes('signup');
+  if (!document.getElementById('swan-floating-note-btn') && !isReviewsPage && !isCheckoutPage && !isAuthPage) {
     const noteBtn = document.createElement('button');
     noteBtn.type = 'button';
     noteBtn.id = 'swan-floating-note-btn';
